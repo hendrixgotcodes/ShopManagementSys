@@ -1,0 +1,44 @@
+.loginNav {
+    width: 100%;
+    background-color: $primary_green;
+    height: 2.3rem;
+    -webkit-app-region: drag;
+    display: flex;
+    position: relative;
+
+    & .controlBox {
+        width: 8%;
+        background-color: $primary_green;
+        // background-color: #fff;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        right: 0;
+        -webkit-app-region: no-drag;
+        display: flex;
+
+        & .control {
+            width: 33%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            cursor: pointer;
+
+            &:hover {
+                transition: background-color 0.3s;
+                background-color: lighten($color: $primary_green, $amount: 5);
+            }
+
+
+            & img {
+                width: 40%;
+                height: 50%;
+            }
+        }
+
+        & .controlBox_close:hover {
+            background-color: $secondary_red;
+        }
+    }
+}

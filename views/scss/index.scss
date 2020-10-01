@@ -1,0 +1,181 @@
+@import './components/fonts';
+@import './components/variables';
+@import './base/reset';
+
+body {
+    height: 100vh;
+    background-color: $primary_green;
+    overflow-y: hidden;
+}
+
+@import './layout/navBar';
+
+.loginForm {
+
+    width: 100%;
+    height: 90%;
+    background-color: $primary_green;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: $WHITE;
+    font-family: 'Roboto-Slab';
+    position: relative;
+}
+
+.banner {
+    position: absolute;
+    width: 100%;
+    height: 1%;
+    top: 5%;
+    left: 0;
+    // background-color: $WHITE;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    & .imgBanner {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+}
+
+.loginForm_center {
+    width: 100%;
+    position: relative;
+    // margin-top: 4%;
+
+
+    h1 {
+        font-size: 2.5rem;
+        font-family: 'Roboto';
+
+        em {
+            color: $secondary_yellow;
+            font-style: normal;
+        }
+    }
+
+    .logo {
+        width: 20%;
+    }
+
+
+
+
+    & .loginForm_fields {
+        margin: 2rem 0;
+        margin-top: 3.5rem;
+        width: 100%;
+        color: $WHITE;
+        font-family: 'Roboto';
+
+        & .form_lbl {
+            display: block;
+            width: 35.4%;
+            height: 4.5rem;
+            margin: 2.5rem 0;
+            // background-color: red;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1.2rem;
+            position: relative;
+            // color: $secondary_yellow;
+
+            & .form_tb {
+                width: 100%;
+                height: 85%;
+                margin-top: .3rem;
+                border: 5px solid rgba($color: #61E0AE, $alpha: 0.3);
+                border-radius: 4px;
+                padding: .5rem;
+                outline: none;
+                font-size: 1.2rem;
+                color: darken($color: $primary_black, $amount: 15);
+                transition: border-color .3s;
+
+                &:focus {
+                    border-color: rgba($color: #61E0AE, $alpha: 1.0);
+                }
+            }
+
+            & .form_pass_visibility {
+                position: absolute;
+                width: 10%;
+                background-color: rgba($color: $primary_green, $alpha: .8);
+                height: 72%;
+                right: 1%;
+                top: 45%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border-radius:  0 2px 2px 0;
+                cursor: pointer;
+
+               
+                .vis_icon{
+                    width: 60%;
+                    height: 60%;
+                }
+            }
+
+            & .form_check{
+                position: absolute;
+                width: 10%;
+                height: 72%;
+                right: 1%;
+                top: 45%;
+                opacity: 0;
+            }
+        }
+
+
+    }
+
+    .form_btn {
+        width: 10%;
+        background-color: $primary_green--dark;
+        display: block;
+        height: 12%;
+        display: flex;
+        font-family: 'Roboto';
+        justify-content: center;
+        align-items: center;
+        border: 8px solid rgba($color: #61E0AE, $alpha: 0.3);
+        border-radius: 5px;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+
+        &::before {
+            display: block;
+            position: absolute;
+            left: 0%;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba($color: $primary_yellow, $alpha: 1);
+            content: '';
+            // z-index: 2;
+            transition: .3s;
+            transform: translateX(-100%);
+
+
+        }
+
+        &:hover::before {
+
+            transform: translateX(0%);
+
+        }
+
+        &:hover span {
+            transition: .3s;
+            z-index: 2;
+        }
+    }
+
+}

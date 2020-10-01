@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../css/index.css">
+</head>
+
+<body>
+    <nav class="loginNav">
+        <div class="controlBox" aria-placeholder="Control Box">
+            <div class="controlBox_minimize control" aria-placeholder="minimize">
+                <img src="../Icons/Control_Box/Minimize.png" alt="">
+            </div>
+            <div class="controlBox_maximize control" aria-placeholder="maximize">
+                <img src="../Icons/Control_Box/Maximize.png" id="restore_maxi" alt="">
+            </div>
+            <div class="controlBox_close control" aria-placeholder="close">
+                <img src="../Icons/Control_Box/Close.png" alt="">
+            </div>
+        </div>
+    </nav>
+    <form action="" class="loginForm">
+        <!-- <div class="banner" aria-placeholder="banner">
+            <img src="../Icons/Banner/HomeBanner.png" alt="" class="img_banner">
+        </div> -->
+        <center class="loginForm_center">
+            <!-- <h1><em>DUFFY</em> STATIONERY</h1> -->
+            <img class="logo" src="../Icons/logo/logo.png" alt="">
+            <div class="loginForm_fields">
+                <label for="username" class="form_lbl">
+                    User Name
+                    <input type="text" name="username" placeholder="Username goes here"
+                        aria-placeholder="Enter username here" id="password" class="form_tb">
+                </label>
+                <label for="password" class="form_lbl">
+                    Password
+                    <input type="password" name="password" placeholder="Password goes here"
+                        aria-placeholder="Enter Password Here" id="password" class="form_tb">
+                    <div class="form_pass_visibility">
+                        <img src="../Icons/watch.svg" class="vis_icon" alt="">
+                    </div>
+                    <input type="checkbox" name="" id="" class="form_check">
+                </label>
+            </div>
+            <submit class="form_btn"><span>Open Store</span></submit>
+        </center>
+    </form>
+
+    <script src="../../controller/LoginController.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,27 @@
+{
+  "name": "shop_management_system",
+  "version": "1.0.0",
+  "description": "Shop and product management",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon --exec electron .",
+    "sass": "node-sass -w ./views/scss -o ./views/css --recursive"
+  },
+  "repository": {
+    "type": "git",
+    "url": "'A shop management system'"
+  },
+  "dependencies": {
+    "@popperjs/core": "^2.5.3",
+    "electron": "10.1.2",
+    "mysql2": "2.2.5",
+    "node-sass": "^4.14.1"
+  },
+  "keywords": [
+    "shop",
+    "management",
+    "system"
+  ],
+  "author": "Samuel O. Asare",
+  "license": "ISC"
+}
