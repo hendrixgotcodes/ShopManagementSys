@@ -1,4 +1,5 @@
-// import * as tippy from '../../node_modules/tippy.js/dist/tippy.esm'
+import tippy from 'tippy.js';
+import 'tippy.js/dist/tippy.css';
 
 const span = document.createElement('span');
 span.innerText = 'Toggle password visibility';
@@ -8,7 +9,7 @@ tippy(".form_check", {
   interactive: true,
   content: span,
   placement: "right",
-//   arrow: roundArrow,
-    theme: 'material'
+  //   arrow: roundArrow,
+  theme: 'material'
 
 })

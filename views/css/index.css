@@ -215,7 +215,8 @@ body {
         right: 1%;
         top: 45%;
         opacity: 0;
-        cursor: pointer; }
+        cursor: pointer;
+        transition: .5s; }
   .loginForm_center .form_btn {
     width: 10%;
     background-color: #204B40;

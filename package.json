@@ -6,20 +6,24 @@
   "scripts": {
     "start": "nodemon --exec electron .",
     "sass": "node-sass -w ./views/scss -o ./views/css --recursive",
-    "build": "browserify  ./controller/utilities/ToolTipController.js -o ./build/build.js "
+    "build": "webpack "
   },
   "repository": {
     "type": "node",
     "url": "'A shop management system'"
   },
   "dependencies": {
-    "babel": "^6.23.0",
-    "browserify": "^16.5.2",
     "electron": "10.1.2",
     "mysql2": "2.2.5",
     "node-sass": "^4.14.1",
+    "@babel/core": "^7.11.6",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^8.1.0",
+    "babel-preset-env": "^1.7.0",
+    "css-loader": "^4.3.0",
     "tippy.js": "^6.2.6",
-    "watchify": "^3.11.1"
+    "webpack": "^4.44.2",
+    "webpack-dev-server": "^3.11.0"
   },
   "parserOptions": {
     "sourceType": "module"
@@ -30,5 +34,8 @@
     "system"
   ],
   "author": "Samuel O. Asare",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "webpack-cli": "^3.3.12"
+  }
 }

@@ -1,4 +1,4 @@
 node_modules/
 kk/
-.babelrc
 build/
+webpack.config.js
