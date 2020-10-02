@@ -5,17 +5,24 @@
   "main": "app.js",
   "scripts": {
     "start": "nodemon --exec electron .",
-    "sass": "node-sass -w ./views/scss -o ./views/css --recursive"
+    "sass": "node-sass -w ./views/scss -o ./views/css --recursive",
+    "build": "browserify  ./controller/utilities/ToolTipController.js -o ./build/build.js "
   },
   "repository": {
-    "type": "git",
+    "type": "node",
     "url": "'A shop management system'"
   },
   "dependencies": {
-    "@popperjs/core": "^2.5.3",
+    "babel": "^6.23.0",
+    "browserify": "^16.5.2",
     "electron": "10.1.2",
     "mysql2": "2.2.5",
-    "node-sass": "^4.14.1"
+    "node-sass": "^4.14.1",
+    "tippy.js": "^6.2.6",
+    "watchify": "^3.11.1"
+  },
+  "parserOptions": {
+    "sourceType": "module"
   },
   "keywords": [
     "shop",

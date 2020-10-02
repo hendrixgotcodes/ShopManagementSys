@@ -13,7 +13,8 @@ class MainWWindow extends BrowserWindow {
             width: 1500,
             height: 800,
             webPreferences: {
-                nodeIntegration: true
+                nodeIntegration: true,
+                
             },
             center: true,
             frame: false,

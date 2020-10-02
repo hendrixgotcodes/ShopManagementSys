@@ -63,6 +63,27 @@
   padding: 0;
   box-sizing: border-box; }
 
+#tooltip_cb {
+  color: white;
+  font-weight: 500;
+  font-family: 'Roboto';
+  font-size: .8rem; }
+
+.tippy-tooltip.tomato-theme {
+  background-color: #EFB526; }
+
+.tippy-tooltip.tomato-theme[data-placement^='top'] .tippy-arrow {
+  bottom: -4px; }
+
+.tippy-tooltip.tomato-theme[data-placement^='bottom'] .tippy-arrow {
+  top: -4px; }
+
+.tippy-tooltip.tomato-theme[data-placement^='left'] .tippy-arrow {
+  right: -4px; }
+
+.tippy-tooltip.tomato-theme[data-placement^='right'] .tippy-arrow {
+  left: -4px; }
+
 body {
   height: 100vh;
   background-color: #35594B;
@@ -70,14 +91,21 @@ body {
 
 .loginNav {
   width: 100%;
-  background-color: #35594B;
+  background-color: #223930;
   height: 2.3rem;
   -webkit-app-region: drag;
   display: flex;
-  position: relative; }
+  position: relative;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.233);
+  z-index: 2;
+  justify-content: space-between;
+  align-items: center; }
+  .loginNav .nav_logo {
+    width: 4%;
+    height: 80%;
+    margin-left: .5%; }
   .loginNav .controlBox {
     width: 8%;
-    background-color: #35594B;
     height: 100%;
     position: absolute;
     top: 0;
@@ -169,7 +197,7 @@ body {
         position: absolute;
         width: 10%;
         background-color: rgba(53, 89, 75, 0.8);
-        height: 72%;
+        height: 73%;
         right: 1%;
         top: 45%;
         display: flex;
@@ -186,7 +214,8 @@ body {
         height: 72%;
         right: 1%;
         top: 45%;
-        opacity: 0; }
+        opacity: 0;
+        cursor: pointer; }
   .loginForm_center .form_btn {
     width: 10%;
     background-color: #204B40;
@@ -218,3 +247,5 @@ body {
     .loginForm_center .form_btn:hover span {
       transition: .3s;
       z-index: 2; }
+    .loginForm_center .form_btn:focus {
+      outline-color: #EFB526; }

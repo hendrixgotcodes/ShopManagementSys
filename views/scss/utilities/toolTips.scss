@@ -1,0 +1,23 @@
+#tooltip_cb {
+    color: white;
+    font-weight: 500;
+    font-family: 'Roboto';
+    font-size: .8rem;
+}
+
+.tippy-tooltip.tomato-theme{
+    background-color: $primary_yellow;
+}
+
+.tippy-tooltip.tomato-theme[data-placement^='top'] .tippy-arrow{
+    bottom: -4px;
+}
+.tippy-tooltip.tomato-theme[data-placement^='bottom'] .tippy-arrow{
+    top: -4px;
+}
+.tippy-tooltip.tomato-theme[data-placement^='left'] .tippy-arrow{
+    right: -4px;
+}
+.tippy-tooltip.tomato-theme[data-placement^='right'] .tippy-arrow{
+    left: -4px;
+}

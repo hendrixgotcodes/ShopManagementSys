@@ -1,3 +1,4 @@
 node_modules/
-views/icons/
 kk/
+.babelrc
+build/

@@ -1,6 +1,7 @@
 @import './components/fonts';
 @import './components/variables';
 @import './base/reset';
+@import './utilities/toolTips.scss';
 
 body {
     height: 100vh;
@@ -105,29 +106,30 @@ body {
                 position: absolute;
                 width: 10%;
                 background-color: rgba($color: $primary_green, $alpha: .8);
-                height: 72%;
+                height: 73%;
                 right: 1%;
                 top: 45%;
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                border-radius:  0 2px 2px 0;
+                border-radius: 0 2px 2px 0;
                 cursor: pointer;
 
-               
-                .vis_icon{
+
+                .vis_icon {
                     width: 60%;
                     height: 60%;
                 }
             }
 
-            & .form_check{
+            & .form_check {
                 position: absolute;
                 width: 10%;
                 height: 72%;
                 right: 1%;
                 top: 45%;
                 opacity: 0;
+                cursor: pointer;
             }
         }
 
@@ -175,6 +177,10 @@ body {
         &:hover span {
             transition: .3s;
             z-index: 2;
+        }
+
+        &:focus {
+            outline-color: $primary_yellow;
         }
     }
 
