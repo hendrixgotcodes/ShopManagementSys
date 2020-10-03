@@ -1,7 +1,11 @@
+//Imports
 const {
     ipcRenderer
 } = require('electron');
-let isFullScreen = false;
+
+
+
+//DOM Elements
 const controlBoxMinimize = document.querySelector('.controlBox_minimize');
 const controlBoxMaximize = document.querySelector('.controlBox_maximize');
 const controlBoxClose = document.querySelector('.controlBox_close');
@@ -11,6 +15,10 @@ const formCheck = document.querySelector('.form_check');
 const password = document.querySelector('#password');
 const visIcon = document.querySelector('.vis_icon');
 
+//Program Variables
+let isFullScreen = false;
+
+
 
 //Adding event listeners to trigger minimize, maximize and events in the mainWindow Controller
 controlBoxMinimize.addEventListener('click', sendMinimizeEvent)
@@ -18,6 +26,9 @@ controlBoxMaximize.addEventListener('click', sendMaximizeEvent)
 controlBoxClose.addEventListener('click', sendCloseEvent)
 formBtn.addEventListener('click', loadStore);
 formCheck.addEventListener('click', togglePassVisibility)
+
+
+
 
 //Event Listeners From IPC
 ipcRenderer.on('isFullScreen', () => {

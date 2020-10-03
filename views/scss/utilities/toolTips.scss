@@ -4,6 +4,10 @@
     font-family: 'Roboto';
     font-size: .8rem;
 }
+.tippy-box[data-theme~='tomato'] {
+    background-color: $primary_yellow;
+    color: $WHITE;
+  }
 
 .tippy-tooltip.tomato-theme{
     background-color: $primary_yellow;
