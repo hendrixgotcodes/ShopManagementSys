@@ -36,6 +36,10 @@ app.on('ready', () => {
     loadMainWindow();
     // mainWindow.setAlwaysOnTop(true, "floating", .5)
     // mainWindow.setAlwaysOnTop(false)
+});
+
+app.on('window-all-closed',()=>{
+    app.quit();
 })
 
 //Listening To Events Sent By the loginController

@@ -8,34 +8,61 @@ import '../../node_modules/tippy.js/themes/material.css'
 
 let span = document.createElement('span');
 span.innerText = 'Toggle password visibility';
-span.id = 'tooltip_cb';
+span.className = 'tooltip_cb';
 
-tippy(`.form_check`, {
+tippy.setDefaultProps({
   interactive: true,
-  content: span,
   placement: "right",
   theme: 'tomato',
   arrow: true,
   // arrow: roundArrow,
 })
 
-tippy('#store',{
-  content: 'Store Front',
-  placement: "right",
-  theme: 'tomato',
-  arrow: true
+tippy(`.form_check`, {
+  content: span,
+})
+
+
+// SHOP PAGE TOOLTIP
+let storeFront = document.createElement('span');
+storeFront.innerText = 'Store front';
+storeFront.className = 'tooltip_cb';
+
+let inventory = document.createElement('span');
+inventory.innerText = 'Inventory';
+inventory.className = 'tooltip_cb';
+
+
+let analytics = document.createElement('span');
+analytics.innerText = 'Analytics';
+analytics.className = 'tooltip_cb';
+
+let account = document.createElement('span');
+account.innerText = 'Account Settings';
+account.className = 'tooltip_cb';
+
+let settings = document.createElement('span');
+settings.innerText = 'General Settings';
+settings.className = 'tooltip_cb';
+
+tippy('.tip_store', {
+  content: storeFront
 });
 
-tippy('#inventory',{
-  content: 'Inventory',
-  placement: "right",
-  theme: 'tomato',
-  arrow: true
+tippy('.tip_inventory', {
+  content: inventory
 });
 
-tippy('#analytics',{
-  content: 'Analytics',
-  placement: "right",
-  theme: 'tomato',
-  arrow: true
+tippy('.tip_analytics', {
+  content: analytics
+})
+
+tippy('#account', {
+  content: account,
+  placement: 'bottom'
+})
+
+tippy('#settings', {
+  content: settings,
+  placement: 'bottom'
 })

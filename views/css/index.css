@@ -63,29 +63,33 @@
   padding: 0;
   box-sizing: border-box; }
 
-#tooltip_cb {
+.tooltip_cb {
   color: white;
   font-weight: 500;
-  font-family: 'Roboto';
-  font-size: .8rem; }
+  font-family: "Roboto";
+  font-size: 0.8rem; }
 
-.tippy-box[data-theme~='tomato'] {
+.tippy-box[data-theme~="tomato"] {
   background-color: #EFB526;
   color: #fff; }
 
 .tippy-tooltip.tomato-theme {
   background-color: #EFB526; }
 
-.tippy-tooltip.tomato-theme[data-placement^='top'] .tippy-arrow {
+.tippy-box[data-theme~='tomato'][data-placement^='top'] > .tippy-arrow::before {
+  border-top-color: #EFB526;
   bottom: -4px; }
 
-.tippy-tooltip.tomato-theme[data-placement^='bottom'] .tippy-arrow {
+.tippy-box[data-theme~='tomato'][data-placement^='bottom'] > .tippy-arrow::before {
+  border-bottom-color: #EFB526;
   top: -4px; }
 
-.tippy-tooltip.tomato-theme[data-placement^='left'] .tippy-arrow {
+.tippy-box[data-theme~='tomato'][data-placement^='left'] > .tippy-arrow::before {
+  border-left-color: #EFB526;
   right: -4px; }
 
-.tippy-tooltip.tomato-theme[data-placement^='right'] .tippy-arrow {
+.tippy-box[data-theme~='tomato'][data-placement^='right'] > .tippy-arrow::before {
+  border-right-color: #EFB526;
   left: -4px; }
 
 body {

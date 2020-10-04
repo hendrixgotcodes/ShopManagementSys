@@ -63,29 +63,33 @@
   padding: 0;
   box-sizing: border-box; }
 
-#tooltip_cb {
+.tooltip_cb {
   color: white;
   font-weight: 500;
-  font-family: 'Roboto';
-  font-size: .8rem; }
+  font-family: "Roboto";
+  font-size: 0.8rem; }
 
-.tippy-box[data-theme~='tomato'] {
+.tippy-box[data-theme~="tomato"] {
   background-color: #EFB526;
   color: #fff; }
 
 .tippy-tooltip.tomato-theme {
   background-color: #EFB526; }
 
-.tippy-tooltip.tomato-theme[data-placement^='top'] .tippy-arrow {
+.tippy-box[data-theme~='tomato'][data-placement^='top'] > .tippy-arrow::before {
+  border-top-color: #EFB526;
   bottom: -4px; }
 
-.tippy-tooltip.tomato-theme[data-placement^='bottom'] .tippy-arrow {
+.tippy-box[data-theme~='tomato'][data-placement^='bottom'] > .tippy-arrow::before {
+  border-bottom-color: #EFB526;
   top: -4px; }
 
-.tippy-tooltip.tomato-theme[data-placement^='left'] .tippy-arrow {
+.tippy-box[data-theme~='tomato'][data-placement^='left'] > .tippy-arrow::before {
+  border-left-color: #EFB526;
   right: -4px; }
 
-.tippy-tooltip.tomato-theme[data-placement^='right'] .tippy-arrow {
+.tippy-box[data-theme~='tomato'][data-placement^='right'] > .tippy-arrow::before {
+  border-right-color: #EFB526;
   left: -4px; }
 
 body {
@@ -217,7 +221,8 @@ body {
       background-color: #fff;
       display: flex;
       align-items: center;
-      padding: 0 2rem; }
+      padding: 0 2rem;
+      position: relative; }
       .main_body .mainBody_content .content_toolBar .toolBar_lbl {
         position: relative;
         width: 25%;
@@ -286,13 +291,14 @@ body {
         .main_body .mainBody_content .content_toolBar .toolBar_select .select_dropdown {
           width: 100%;
           position: absolute;
-          bottom: -4.4rem;
+          bottom: -6.6rem;
           left: 0;
-          box-shadow: -1px 1px 3px rgba(0, 0, 0, 0.1);
+          box-shadow: -1px 1px 3px rgba(0, 0, 0, 0.17);
           background-color: #fff;
           color: #646766;
           display: none;
-          z-index: 1; }
+          z-index: 1;
+          border-radius: 3px; }
           .main_body .mainBody_content .content_toolBar .toolBar_select .select_dropdown .selectDropdown_value {
             padding: .5rem;
             transition: .3s;
@@ -300,6 +306,92 @@ body {
             display: inline-block; }
             .main_body .mainBody_content .content_toolBar .toolBar_select .select_dropdown .selectDropdown_value:hover {
               background-color: #F1F2F2; }
+      .main_body .mainBody_content .content_toolBar .Sales {
+        width: 30%;
+        display: flex;
+        justify-content: center;
+        color: #646766;
+        align-items: center;
+        flex-direction: column;
+        height: 80%;
+        position: absolute;
+        right: 2rem; }
+        .main_body .mainBody_content .content_toolBar .Sales center {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          flex-direction: column;
+          text-align: justify;
+          align-self: flex-end; }
+        .main_body .mainBody_content .content_toolBar .Sales .lbl_salesTag {
+          font-size: .8rem;
+          align-self: flex-end; }
+        .main_body .mainBody_content .content_toolBar .Sales .salesMade {
+          font-size: 1.8rem;
+          align-self: flex-end;
+          color: #35594B; }
+    .main_body .mainBody_content .contentContainer {
+      width: 100%;
+      height: 90%; }
+      .main_body .mainBody_content .contentContainer .contentTable {
+        width: 100%;
+        border-collapse: collapse;
+        color: #fff;
+        height: 100%;
+        display: block; }
+        .main_body .mainBody_content .contentContainer .contentTable .tableHeader {
+          width: 100%;
+          background-color: #35594B;
+          text-align: center;
+          height: 8%;
+          display: block; }
+          .main_body .mainBody_content .contentContainer .contentTable .tableHeader .tableHead {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            width: 100%; }
+            .main_body .mainBody_content .contentContainer .contentTable .tableHeader .tableHead .tableHead_items {
+              height: 100%;
+              display: flex;
+              justify-content: center;
+              align-items: center; }
+        .main_body .mainBody_content .contentContainer .contentTable .tableBody {
+          color: #646766;
+          text-align: center;
+          display: block;
+          width: 100%;
+          overflow-y: auto;
+          height: 92%;
+          padding: 0; }
+          .main_body .mainBody_content .contentContainer .contentTable .tableBody .bodyRow {
+            display: flex;
+            height: 4rem;
+            width: 100%;
+            justify-content: center;
+            align-items: center; }
+            .main_body .mainBody_content .contentContainer .contentTable .tableBody .bodyRow:nth-child(even) {
+              background-color: #fff; }
+      .main_body .mainBody_content .contentContainer .tb_cb {
+        width: 5%; }
+      .main_body .mainBody_content .contentContainer .tb_Names, .main_body .mainBody_content .contentContainer .tb_Brands, .main_body .mainBody_content .contentContainer .tb_Category {
+        width: 22%;
+        display: flex;
+        justify-content: center;
+        align-items: center; }
+      .main_body .mainBody_content .contentContainer .tb_Stock, .main_body .mainBody_content .contentContainer .tb_Price {
+        width: 15.5%; }
+      .main_body .mainBody_content .contentContainer .td_cb {
+        width: 2%; }
+      .main_body .mainBody_content .contentContainer .td_Names, .main_body .mainBody_content .contentContainer .td_Brands, .main_body .mainBody_content .contentContainer .td_Category {
+        width: 22%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center; }
+      .main_body .mainBody_content .contentContainer .td_Stock, .main_body .mainBody_content .contentContainer .td_Price {
+        width: 15.5%;
+        text-align: center; }
   .main_body .footer {
     justify-self: flex-end;
     width: 100%;
@@ -312,7 +404,8 @@ body {
     font-weight: 400;
     font-size: .8rem;
     color: #204B40;
-    padding: 0 2rem; }
+    padding: 0 2rem;
+    border-top: 3px solid #b8d5ca; }
     .main_body .footer .footer_actions {
       width: 25%;
       height: 100%;

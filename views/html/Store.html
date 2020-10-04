@@ -17,13 +17,13 @@
       <div class="menu_iconsContainer">
 
         <div id="store" tabindex="1" class="menu_icons tabItem">
-          <img src="../Icons/menuIcons/storefront.svg" id="storefront" alt="Goto StoreFront" class="menuIcon">
+          <img src="../Icons/menuIcons/storefront.svg" id="storefront" alt="Goto StoreFront" class="menuIcon tip_store">
         </div>
         <div id="inventory" tabindex="2" class="menu_icons current tabItem">
-          <img src="../Icons/menuIcons/inventory.png" id="menuIcon_png" alt="Goto Inventory" class="menuIcon">
+          <img  src="../Icons/menuIcons/inventory.png" id="menuIcon_png" alt="Goto Inventory" class="menuIcon tip_inventory">
         </div>
         <div id="analytics" tabindex="3" class="menu_icons tabItem">
-          <img src="../Icons/menuIcons/analytics.svg" alt="Goto analytics" class="menuIcon">
+          <img src="../Icons/menuIcons/analytics.svg" alt="Goto analytics" class="menuIcon tip_analytics">
         </div>
 
       </div>
@@ -32,8 +32,8 @@
 
     <div class="menu_b">
       <center>
-        <img tabindex="4" src="../Icons/menuIcons/Tray/account.svg" alt="" class="menu_items tabItem">
-        <img tabindex="5" src="../Icons/menuIcons/Tray/settings.svg" alt="" class="menu_items tabItem">
+        <img tabindex="4" id="account" src="../Icons/menuIcons/Tray/account.svg" alt="" class="menu_items tabItem">
+        <img tabindex="5" id="settings" src="../Icons/menuIcons/Tray/settings.svg" alt="" class="menu_items tabItem">
       </center>
     </div>
 
@@ -82,11 +82,241 @@
               Name
             </span>
             <span class="selectDropdown_value">
-              Date
+              Category
+            </span>
+            <span class="selectDropdown_value">
+              Brand
             </span>
           </div>
         </div>
+
+        <div class="Sales">
+           <center>
+            <label for="" class="lbl_salesTag">Sales Made Today</label>
+            <label for="" class="salesMade">
+              <span class="salesCurrency">GH¢</span>
+              0.00
+            </label>
+           </center>
+        </div>
       </div>
+
+     <div class="contentContainer">
+        <table class="contentTable">
+          <thead class="tableHeader">
+            <tr class="tableHead">
+              <th class="tableHead_items tb_Cb">
+                <input type="checkbox" name="" id="">
+              </th>
+              <th class="tableHead_items tb_Names">
+                Name
+              </th>
+              <th class="tableHead_items tb_Brands">
+                Brand
+              </th>
+              <th class="tableHead_items tb_Category">
+                Category
+              </th>
+              <th class="tableHead_items tb_Stock">
+                In Stock
+              </th>
+              <th class="tableHead_items tb_Price">
+                Unit Price <span class="currency"> (GH¢)</span>
+              </th>
+            </tr>
+          </thead>
+
+          <tbody class="tableBody">
+            <tr class="bodyRow">
+              <td class="td_cb">
+              <input type="checkbox" class="selectOne" aria-placeholder="select one">
+              </td>
+              <td class="td_Names">Push Pins</td>
+              <td class="td_Brands">N/A</td>
+              <td class="td_Category">Pins</td>
+              <td class="td_Stock">20</td>
+              <td class="td_Price">0.5</td>
+            </tr>
+
+            <tr class="bodyRow">
+              <td class="td_cb">
+                <input type="checkbox" class="selectOne" aria-placeholder="select one">
+                </td>
+                <td class="td_Names">Papyrus</td>
+                <td class="td_Brands">N/A</td>
+                <td class="td_Category">Tissues</td>
+                <td class="td_Stock">100</td>
+                <td class="td_Price">1</td>
+            </tr>
+
+            <tr class="bodyRow">
+              <td class="td_cb">
+                <input type="checkbox" class="selectOne" aria-placeholder="select one">
+                </td>
+                <td class="td_Names">Colored Eraser</td>
+                <td class="td_Brands">N/A</td>
+                <td class="td_Category">Eraser</td>
+                <td class="td_Stock">30</td>
+                <td class="td_Price">0.3</td>
+            </tr>
+
+            <tr class="bodyRow">
+              <td class="td_cb">
+                <input type="checkbox" class="selectOne" aria-placeholder="select one">
+                </td>
+                <td class="td_Names">Teachers Notebook</td>
+                <td class="td_Brands">Ghana Schools</td>
+                <td class="td_Category">Books</td>
+                <td class="td_Stock">20</td>
+                <td class="td_Price">3.5</td>
+            </tr>
+
+            <tr class="bodyRow">
+              <td class="td_cb">
+                <input type="checkbox" class="selectOne" aria-placeholder="select one">
+                </td>
+                <td class="td_Names">Papyrus</td>
+                <td class="td_Brands">N/A</td>
+                <td class="td_Category">Tissues</td>
+                <td class="td_Stock">100</td>
+                <td class="td_Price">1</td>
+            </tr>
+
+            <tr class="bodyRow">
+              <td class="td_cb">
+                <input type="checkbox" class="selectOne" aria-placeholder="select one">
+                </td>
+                <td class="td_Names">Teachers Notebook</td>
+                <td class="td_Brands">Ghana Schools</td>
+                <td class="td_Category">Books</td>
+                <td class="td_Stock">20</td>
+                <td class="td_Price">3.5</td>
+            </tr>
+
+            <tr class="bodyRow">
+              <td class="td_cb">
+                <input type="checkbox" class="selectOne" aria-placeholder="select one">
+                </td>
+                <td class="td_Names">Papyrus</td>
+                <td class="td_Brands">N/A</td>
+                <td class="td_Category">Tissues</td>
+                <td class="td_Stock">100</td>
+                <td class="td_Price">1</td>
+            </tr>
+
+            <tr class="bodyRow">
+              <td class="td_cb">
+                <input type="checkbox" class="selectOne" aria-placeholder="select one">
+                </td>
+                <td class="td_Names">Teachers Notebook</td>
+                <td class="td_Brands">Ghana Schools</td>
+                <td class="td_Category">Books</td>
+                <td class="td_Stock">20</td>
+                <td class="td_Price">3.5</td>
+            </tr>
+
+            <tr class="bodyRow">
+              <td class="td_cb">
+                <input type="checkbox" class="selectOne" aria-placeholder="select one">
+                </td>
+                <td class="td_Names">Papyrus</td>
+                <td class="td_Brands">N/A</td>
+                <td class="td_Category">Tissues</td>
+                <td class="td_Stock">100</td>
+                <td class="td_Price">1</td>
+            </tr>
+
+            <tr class="bodyRow">
+              <td class="td_cb">
+                <input type="checkbox" class="selectOne" aria-placeholder="select one">
+                </td>
+                <td class="td_Names">Teachers Notebook</td>
+                <td class="td_Brands">Ghana Schools</td>
+                <td class="td_Category">Books</td>
+                <td class="td_Stock">20</td>
+                <td class="td_Price">3.5</td>
+            </tr>
+
+            <tr class="bodyRow">
+              <td class="td_cb">
+                <input type="checkbox" class="selectOne" aria-placeholder="select one">
+                </td>
+                <td class="td_Names">Papyrus</td>
+                <td class="td_Brands">N/A</td>
+                <td class="td_Category">Tissues</td>
+                <td class="td_Stock">100</td>
+                <td class="td_Price">1</td>
+            </tr>
+
+            <tr class="bodyRow">
+              <td class="td_cb">
+                <input type="checkbox" class="selectOne" aria-placeholder="select one">
+                </td>
+                <td class="td_Names">Teachers Notebook</td>
+                <td class="td_Brands">Ghana Schools</td>
+                <td class="td_Category">Books</td>
+                <td class="td_Stock">20</td>
+                <td class="td_Price">3.5</td>
+            </tr>
+
+            <tr class="bodyRow">
+              <td class="td_cb">
+                <input type="checkbox" class="selectOne" aria-placeholder="select one">
+                </td>
+                <td class="td_Names">Papyrus</td>
+                <td class="td_Brands">N/A</td>
+                <td class="td_Category">Tissues</td>
+                <td class="td_Stock">100</td>
+                <td class="td_Price">1</td>
+            </tr>
+
+            <tr class="bodyRow">
+              <td class="td_cb">
+                <input type="checkbox" class="selectOne" aria-placeholder="select one">
+                </td>
+                <td class="td_Names">Teachers Notebook</td>
+                <td class="td_Brands">Ghana Schools</td>
+                <td class="td_Category">Books</td>
+                <td class="td_Stock">20</td>
+                <td class="td_Price">3.5</td>
+            </tr>
+
+            <tr class="bodyRow">
+              <td class="td_cb">
+                <input type="checkbox" class="selectOne" aria-placeholder="select one">
+                </td>
+                <td class="td_Names">Papyrus</td>
+                <td class="td_Brands">N/A</td>
+                <td class="td_Category">Tissues</td>
+                <td class="td_Stock">100</td>
+                <td class="td_Price">1</td>
+            </tr>
+
+            <tr class="bodyRow">
+              <td class="td_cb">
+                <input type="checkbox" class="selectOne" aria-placeholder="select one">
+                </td>
+                <td class="td_Names">Teachers Notebook</td>
+                <td class="td_Brands">Ghana Schools</td>
+                <td class="td_Category">Books</td>
+                <td class="td_Stock">20</td>
+                <td class="td_Price">3.5</td>
+            </tr>
+
+            <tr class="bodyRow">
+              <td class="td_cb">
+                <input type="checkbox" class="selectOne" aria-placeholder="select one">
+                </td>
+                <td class="td_Names">Papyrus</td>
+                <td class="td_Brands">N/A</td>
+                <td class="td_Category">Tissues</td>
+                <td class="td_Stock">100</td>
+                <td class="td_Price">1</td>
+            </tr>
+          </tbody>
+        </table>
+ 
+     </div>
 
 
     </div>

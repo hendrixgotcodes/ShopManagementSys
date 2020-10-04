@@ -181,6 +181,7 @@ body {
             display: flex;
             align-items: center;
             padding: 0 2rem;
+            position: relative;
 
             .toolBar_lbl {
                 position: relative;
@@ -267,22 +268,23 @@ body {
 
                 }
 
-                &:hover .select_dropdown{
+                &:hover .select_dropdown {
                     display: block;
                 }
 
                 .select_dropdown {
                     width: 100%;
                     position: absolute;
-                    bottom: -4.4rem;
+                    bottom: -6.6rem;
                     left: 0;
-                    box-shadow: -1px 1px 3px rgba($color: #000000, $alpha: .1);
+                    box-shadow: -1px 1px 3px rgba($color: #000000, $alpha: .17);
                     background-color: $WHITE;
                     color: $primary_black;
                     display: none;
                     z-index: 1;
+                    border-radius: 3px;
 
-                   
+
                     .selectDropdown_value {
                         padding: .5rem;
                         transition: .3s;
@@ -295,6 +297,46 @@ body {
                     }
                 }
             }
+
+            .Sales {
+                width: 30%;
+                display: flex;
+                justify-content: center;
+                color: $primary_black;
+                align-items: center;
+                flex-direction: column;
+                height: 80%;
+                position: absolute;
+                right: 2rem;
+
+                & center {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    flex-direction: column;
+                    text-align: justify;
+                    align-self: flex-end;
+                }
+
+                .lbl_salesTag {
+                    font-size: .8rem;
+                    align-self: flex-end;
+                }
+
+                .salesMade {
+                    font-size: 1.8rem;
+                    align-self: flex-end;
+                    color: $primary_green;
+                }
+            }
+        }
+
+        .contentContainer {
+            width: 100%;
+            height: 90%;
+            // position: relative;
+
+            @import '../scss/layout/tables/storeTables';
         }
     }
 
@@ -311,6 +353,7 @@ body {
         font-size: .8rem;
         color: $primary_green--dark;
         padding: 0 2rem;
+        border-top: 3px solid lighten($color: $primary_green, $amount: 50);
 
 
         .footer_actions {
