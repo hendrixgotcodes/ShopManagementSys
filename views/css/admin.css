@@ -221,7 +221,7 @@ body {
       background-color: #fff;
       display: flex;
       align-items: center;
-      padding: 0 2rem;
+      padding: 0 1rem;
       position: relative; }
       .main_body .mainBody_content .content_toolBar .toolBar_lbl {
         position: relative;
@@ -303,11 +303,15 @@ body {
             padding: .5rem;
             transition: .3s;
             width: 100%;
-            display: inline-block; }
+            display: inline-block;
+            cursor: pointer; }
             .main_body .mainBody_content .content_toolBar .toolBar_select .select_dropdown .selectDropdown_value:hover {
               background-color: #F1F2F2; }
+            .main_body .mainBody_content .content_toolBar .toolBar_select .select_dropdown .selectDropdown_value:last-child {
+              border-bottom-right-radius: 3px;
+              border-bottom-left-radius: 3px; }
       .main_body .mainBody_content .content_toolBar .Sales {
-        width: 30%;
+        width: fit-content;
         display: flex;
         justify-content: center;
         color: #646766;
@@ -315,21 +319,29 @@ body {
         flex-direction: column;
         height: 80%;
         position: absolute;
-        right: 2rem; }
+        right: 2rem;
+        background-color: #F1F2F2;
+        padding: 1rem;
+        border-radius: 3px;
+        box-shadow: -1px 2px 4px rgba(0, 0, 0, 0.163);
+        cursor: pointer; }
         .main_body .mainBody_content .content_toolBar .Sales center {
           display: flex;
           justify-content: center;
           align-items: center;
           flex-direction: column;
-          text-align: justify;
-          align-self: flex-end; }
+          text-align: center;
+          align-self: flex-end;
+          cursor: pointer; }
         .main_body .mainBody_content .content_toolBar .Sales .lbl_salesTag {
           font-size: .8rem;
-          align-self: flex-end; }
+          align-self: center;
+          cursor: pointer; }
         .main_body .mainBody_content .content_toolBar .Sales .salesMade {
           font-size: 1.8rem;
           align-self: flex-end;
-          color: #35594B; }
+          color: #35594B;
+          cursor: pointer; }
     .main_body .mainBody_content .contentContainer {
       width: 100%;
       height: 90%; }
@@ -352,10 +364,18 @@ body {
             height: 100%;
             width: 100%; }
             .main_body .mainBody_content .contentContainer .contentTable .tableHeader .tableHead .tableHead_items {
-              height: 100%;
               display: flex;
               justify-content: center;
               align-items: center; }
+              .main_body .mainBody_content .contentContainer .contentTable .tableHeader .tableHead .tableHead_items .items_pad {
+                cursor: pointer;
+                border-radius: 3px;
+                padding: .3rem .5rem;
+                transition: background-color .3s; }
+                .main_body .mainBody_content .contentContainer .contentTable .tableHeader .tableHead .tableHead_items .items_pad:active {
+                  background-color: #142e28; }
+                .main_body .mainBody_content .contentContainer .contentTable .tableHeader .tableHead .tableHead_items .items_pad:hover {
+                  background-color: #204B40; }
         .main_body .mainBody_content .contentContainer .contentTable .tableBody {
           color: #646766;
           text-align: center;
@@ -374,22 +394,28 @@ body {
               background-color: #fff; }
       .main_body .mainBody_content .contentContainer .tb_cb {
         width: 5%; }
-      .main_body .mainBody_content .contentContainer .tb_Names, .main_body .mainBody_content .contentContainer .tb_Brands, .main_body .mainBody_content .contentContainer .tb_Category {
+      .main_body .mainBody_content .contentContainer .tb_Names,
+      .main_body .mainBody_content .contentContainer .tb_Brands,
+      .main_body .mainBody_content .contentContainer .tb_Category {
         width: 22%;
         display: flex;
         justify-content: center;
         align-items: center; }
-      .main_body .mainBody_content .contentContainer .tb_Stock, .main_body .mainBody_content .contentContainer .tb_Price {
+      .main_body .mainBody_content .contentContainer .tb_Stock,
+      .main_body .mainBody_content .contentContainer .tb_Price {
         width: 15.5%; }
       .main_body .mainBody_content .contentContainer .td_cb {
         width: 2%; }
-      .main_body .mainBody_content .contentContainer .td_Names, .main_body .mainBody_content .contentContainer .td_Brands, .main_body .mainBody_content .contentContainer .td_Category {
+      .main_body .mainBody_content .contentContainer .td_Names,
+      .main_body .mainBody_content .contentContainer .td_Brands,
+      .main_body .mainBody_content .contentContainer .td_Category {
         width: 22%;
         display: flex;
         justify-content: center;
         align-items: center;
         text-align: center; }
-      .main_body .mainBody_content .contentContainer .td_Stock, .main_body .mainBody_content .contentContainer .td_Price {
+      .main_body .mainBody_content .contentContainer .td_Stock,
+      .main_body .mainBody_content .contentContainer .td_Price {
         width: 15.5%;
         text-align: center; }
   .main_body .footer {
@@ -404,7 +430,7 @@ body {
     font-weight: 400;
     font-size: .8rem;
     color: #204B40;
-    padding: 0 2rem;
+    padding: 0 1rem;
     border-top: 3px solid #b8d5ca; }
     .main_body .footer .footer_actions {
       width: 25%;
@@ -436,3 +462,7 @@ body {
         border-radius: 3px;
         color: #fff;
         font-size: 1rem; }
+    .main_body .footer .footer_clock #clock_blinker {
+      position: absolute; }
+    .main_body .footer .footer_clock .clock_min {
+      margin-left: .3rem; }

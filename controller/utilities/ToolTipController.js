@@ -45,6 +45,7 @@ let settings = document.createElement('span');
 settings.innerText = 'General Settings';
 settings.className = 'tooltip_cb';
 
+
 tippy('.tip_store', {
   content: storeFront
 });
@@ -65,4 +66,16 @@ tippy('#account', {
 tippy('#settings', {
   content: settings,
   placement: 'bottom'
+})
+
+
+//"FilterBy" DropDown Menu
+const ul_categories = document.createElement('ul');
+itemCategories.forEach((item)=>{
+
+  let newItem = document.createElement('li');
+  newItem.innerHTML = item;
+  
+  ul_categories.appendChild(newItem);
+
 })
