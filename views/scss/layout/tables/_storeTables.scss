@@ -1,0 +1,117 @@
+.contentTable {
+    width: 100%;
+    border-collapse: collapse;
+    color: $WHITE;
+    height: 100%;
+    display: block;
+
+
+    & .tableHeader {
+        width: 100%;
+        background-color: $primary_green;
+        text-align: center;
+        height: 8%;
+        display: block;
+        // padding: 0 2rem;
+        // position: relative;
+
+        & .tableHead {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            width: 100%;
+
+            & .tableHead_items {
+                // height: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+               
+
+                & .items_pad{
+                    cursor: pointer;
+                    border-radius: 3px;
+                    padding: .3rem .5rem;
+                    transition: background-color .3s;
+
+                    &:active {
+                        background-color: darken($color: $primary_green--dark, $amount: 8);
+                    }
+
+                    &:hover{
+                        background-color: $primary_green--dark;
+                    }
+    
+                }
+                
+               
+            }
+
+        }
+    }
+
+    & .tableBody {
+        color: $primary_black;
+        text-align: center;
+        display: block;
+        width: 100%;
+        overflow-y: auto;
+        height: 92%;
+        padding: 0;
+
+        & .bodyRow {
+            display: flex;
+            height: 4rem;
+            width: 100%;
+            justify-content: center;
+            align-items: center;
+
+            &:nth-child(even) {
+                background-color: $WHITE;
+            }
+
+        }
+    }
+}
+
+.tb_cb {
+    width: 5%;
+}
+
+.tb_Names,
+.tb_Brands,
+.tb_Category {
+    width: 22%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.tb_Stock,
+.tb_Price {
+    width: 15.5%;
+}
+
+
+.td_cb {
+    width: 2%;
+}
+
+.td_Names,
+.td_Brands,
+.td_Category {
+    width: 22%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+
+}
+
+.td_Stock,
+.td_Price {
+    width: 15.5%;
+    text-align: center;
+}

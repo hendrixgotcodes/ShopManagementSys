@@ -1,0 +1,72 @@
+.footer {
+    justify-self: flex-end;
+    width: 100%;
+    height: 6%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0px 3px 6px rgba($color: #000000, $alpha: 0.26);
+    background-color: $WHITE;
+    font-weight: 400;
+    font-size: .8rem;
+    color: $primary_green--dark;
+    padding: 0 1rem;
+    border-top: 3px solid lighten($color: $primary_green, $amount: 50);
+
+
+    .footer_actions {
+        width: 25%;
+        height: 100%;
+        display: flex;
+        justify-content: flex-end;
+        align-self: flex-end;
+        // background-color: red;
+        align-items: center;
+        font-size: 1rem;
+
+        .footer_lbl {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            width: 80%;
+
+            .footer_tb {
+                width: 30%;
+                height: 68%;
+                margin-left: .8rem;
+                border: 1px solid $primary_black;
+                border-radius: 3px;
+                outline-color: lighten($color: $primary_green, $amount: 15);
+                text-align: center;
+            }
+
+        }
+
+        .footer_btn {
+            width: 38%;
+            height: 68%;
+            background-color: $primary_green;
+            border: none;
+            border-radius: 3px;
+            color: $WHITE;
+            font-size: 1rem;
+        }
+
+
+    }
+
+    .footer_clock {
+        // display: block;
+
+        & #clock_blinker {
+            position: absolute;
+        }
+
+        .clock_min{
+            margin-left: .3rem;
+        }
+    }
+
+
+}

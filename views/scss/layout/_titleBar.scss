@@ -1,0 +1,50 @@
+.titleBar {
+    z-index: 1;
+    justify-self: flex-start;
+    width: 100%;
+    height: 4.5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0px 3px 6px rgba($color: #000000, $alpha: 0.16);
+    -webkit-app-region: drag;
+    background-color: $WHITE;
+    font-weight: 400;
+    font-size: .8rem;
+    color: $primary_green--dark;
+
+    .titleBar_location {
+        margin-left: 2%;
+        font-weight: 500;
+    }
+
+    .titleBar_controlBox {
+        width: 9%;
+        height: 100%;
+        -webkit-app-region: no-drag;
+        display: flex;
+
+        & .control {
+            width: 33%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+
+            &:hover {
+                transition: background-color 0.3s;
+                background-color: lighten($color: $primary_green, $amount: 5);
+            }
+
+
+            & img {
+                width: 40%;
+                height: 50%;
+            }
+        }
+
+        & .controlBox_close:hover {
+            background-color: $secondary_red;
+        }
+    }
+}
