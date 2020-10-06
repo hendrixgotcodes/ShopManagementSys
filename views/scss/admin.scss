@@ -7,9 +7,24 @@ body {
     height: 100vh;
     display: flex;
     background-color: $OFFWHITE;
+    position: relative;
 
+    .contentCover{
+        position: absolute;
+        top: 0;
+        left: 0;
+        transition: background-color .5s;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 10;
+    }
+    .contentCover--shown{
+        background-color: rgba($color: #000000, $alpha: .6);
+    }
 
 }
+
 
 .tabItem {
     outline-color: lighten($color: $primary_green, $amount: 15);
@@ -121,10 +136,12 @@ body {
     @import '../scss/layout/titleBar';
 
 
+
     .mainBody_content {
         width: 100%;
         height: 89.5%;
         justify-self: center;
+        position: relative;
 
         @import '../scss/layout/toolBar';
 
@@ -135,6 +152,8 @@ body {
 
             @import '../scss/layout/tables/storeTables';
         }
+
+       
     }
 
     @import '../scss/layout/footer';

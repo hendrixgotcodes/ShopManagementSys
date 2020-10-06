@@ -42,6 +42,14 @@
                 height: 50%;
             }
         }
+        
+        // Hover action will switcht to this in store page
+        .store{
+            &:hover {
+                transition: background-color 0.3s;
+                background-color: $WHITE;
+            }
+        }
 
         & .controlBox_close:hover {
             background-color: $secondary_red;

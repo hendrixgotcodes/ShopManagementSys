@@ -48,13 +48,13 @@
       <div class="titleBar_userType">Maame Dufie</div>
 
       <div class="titleBar_controlBox">
-        <div class="controlBox_minimize control" aria-placeholder="minimize">
+        <div class="controlBox_minimize control store" aria-placeholder="minimize">
           <img src="../Icons/Control_Box/Store/Minimize.png" alt="" />
         </div>
-        <div class="controlBox_maximize control" aria-placeholder="maximize">
+        <div class="controlBox_maximize control store" aria-placeholder="maximize">
           <img src="../Icons/Control_Box/Store/Maximize.png" id="restore_maxi" alt="" />
         </div>
-        <div class="controlBox_close control" aria-placeholder="close">
+        <div class="controlBox_close control store" aria-placeholder="close">
           <img src="../Icons/Control_Box/Store/Close.png" alt="" />
         </div>
       </div>
@@ -78,14 +78,14 @@
             </center>
             <img src="../Icons/toolBar/play_arrow-black-18dp.svg" alt="" class="selectValue_icon arrow">
           </div>
-          <div class="select_dropdown">
-            <span class="selectDropdown_value tip_category">
+          <div tabindex="0" class="select_dropdown">
+            <span tabindex="0" class="selectDropdown_value tip_category">
               Category
             </span>
-            <span class="selectDropdown_value tip_brand">
+            <span tabindex="0" class="selectDropdown_value tip_brand">
               Brand
             </span>
-            <span class="selectDropdown_value tip_default">
+            <span tabindex="0" class="selectDropdown_value tip_default">
               Default
             </span>
           </div>
@@ -347,6 +347,8 @@
 
 
   </div>
+  <div class="contentCover"></div>
+
   <script src="../../controller/StoreController.js"></script>
   <script src="../../views/js/sortTable.js"></script>
   <script src="../../build/toolTips.js"></script>

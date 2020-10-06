@@ -68,13 +68,11 @@ let clicked = false;
 document.querySelectorAll(".contentTable .th_sort ").forEach(headerCell => {
     headerCell.querySelector('.items_pad').addEventListener("click", () => {
         const tableElement = headerCell.parentElement.parentElement.parentElement;
-        // console.log('tableElement:' + tableElement);
 
         const headerIndex = Array.prototype.indexOf.call(headerCell.parentElement.children, headerCell);
         console.log('headerIndex:' + headerIndex);
 
         const currentIsAscending = headerCell.classList.contains("th-sort-asc");
-        // console.log('currentIsAscending:' + currentIsAscending);
 
 
         sortTableByColumn(tableElement, headerIndex, !currentIsAscending);
@@ -97,13 +95,11 @@ let clickedNum = false;
 document.querySelectorAll(".contentTable .th_sortNumber ").forEach(headerCell => {
     headerCell.querySelector('.items_pad').addEventListener("click", () => {
         const tableElement = headerCell.parentElement.parentElement.parentElement;
-        // console.log('tableElement:' + tableElement);
 
         const headerIndex = Array.prototype.indexOf.call(headerCell.parentElement.children, headerCell);
         console.log('headerIndex:' + headerIndex);
 
         const currentIsAscending = headerCell.classList.contains("th-sort-asc");
-        // console.log('currentIsAscending:' + currentIsAscending);
 
 
         sortTableByColumnNumber(tableElement, headerIndex, !currentIsAscending);

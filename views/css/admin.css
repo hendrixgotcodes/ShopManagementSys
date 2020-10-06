@@ -105,7 +105,19 @@
 body {
   height: 100vh;
   display: flex;
-  background-color: #F1F2F2; }
+  background-color: #F1F2F2;
+  position: relative; }
+  body .contentCover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: background-color .5s;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10; }
+  body .contentCover--shown {
+    background-color: rgba(0, 0, 0, 0.6); }
 
 .tabItem {
   outline-color: #528973; }
@@ -219,12 +231,16 @@ body {
         .main_body .titleBar .titleBar_controlBox .control img {
           width: 40%;
           height: 50%; }
+      .main_body .titleBar .titleBar_controlBox .store:hover {
+        transition: background-color 0.3s;
+        background-color: #fff; }
       .main_body .titleBar .titleBar_controlBox .controlBox_close:hover {
         background-color: #ce2727; }
   .main_body .mainBody_content {
     width: 100%;
     height: 89.5%;
-    justify-self: center; }
+    justify-self: center;
+    position: relative; }
     .main_body .mainBody_content .content_toolBar {
       width: 100%;
       height: 10%;

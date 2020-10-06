@@ -14,7 +14,7 @@ class MainWWindow extends BrowserWindow {
             height: 800,
             webPreferences: {
                 nodeIntegration: true,
-                
+
             },
             center: true,
             frame: false,
@@ -34,7 +34,7 @@ class MainWWindow extends BrowserWindow {
         globalShortcut.register('ctrl+r', () => {
             that.reload();
         })
-                
+
 
     }
 

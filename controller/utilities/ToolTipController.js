@@ -78,6 +78,9 @@ tippy('#settings', {
 const ul_categories = document.createElement('ul');
 const ul_brands = document.createElement('ul');
 
+ul_categories.setAttribute("tabIndex", "0");
+ul_brands.setAttribute("tabIndex", "0");
+
 
 // Dynamically adding list items based on categories and brands respectively
 items_in_Categories.forEach((item) => {
@@ -85,7 +88,8 @@ items_in_Categories.forEach((item) => {
   let newItem = document.createElement('li');
   newItem.innerHTML = item;
   newItem.className = "selectDropdown_value";
-  
+  newItem.setAttribute("tabIndex", "0");
+
   newItem.addEventListener("click", () => {
     const wrapped =  wrapText(newItem.innerHTML)
 
@@ -102,6 +106,8 @@ items_in_Brands.forEach((item) => {
   let newItem = document.createElement('li');
   newItem.innerHTML = item;
   newItem.className = "selectDropdown_value";
+  newItem.setAttribute("tabIndex", "0");
+
 
   ul_brands.appendChild(newItem);
 
