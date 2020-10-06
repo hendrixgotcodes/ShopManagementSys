@@ -27,53 +27,60 @@
                 display: flex;
                 justify-content: center;
                 align-items: center;
-               
+                position: relative;
 
-                & .items_pad{
-                    cursor: pointer;
-                    border-radius: 3px;
-                    padding: .3rem .5rem;
-                    transition: background-color .3s;
 
-                    &:active {
-                        background-color: darken($color: $primary_green--dark, $amount: 8);
-                    }
+            }
 
-                    &:hover{
-                        background-color: $primary_green--dark;
-                    }
-    
+            & .items_pad {
+                cursor: pointer;
+                border-radius: 3px;
+                padding: .2rem .4rem;
+                transition: background-color .3s;
+                margin-right: .2rem;
+                width: 1.5rem;
+                height: 100%;
+                color: $WHITE;
+
+                &:active {
+                    background-color: darken($color: $primary_green--dark, $amount: 8);
                 }
-                
-               
+
+                &:hover {
+                    background-color: $primary_green--dark;
+                }
+
             }
 
-        }
-    }
-
-    & .tableBody {
-        color: $primary_black;
-        text-align: center;
-        display: block;
-        width: 100%;
-        overflow-y: auto;
-        height: 92%;
-        padding: 0;
-
-        & .bodyRow {
-            display: flex;
-            height: 4rem;
-            width: 100%;
-            justify-content: center;
-            align-items: center;
-
-            &:nth-child(even) {
-                background-color: $WHITE;
-            }
 
         }
+
     }
 }
+
+& .tableBody {
+    color: $primary_black;
+    text-align: center;
+    display: block;
+    width: 100%;
+    overflow-y: auto;
+    height: 92%;
+    padding: 0;
+
+    & .bodyRow {
+        display: flex;
+        height: 4rem;
+        width: 100%;
+        justify-content: center;
+        align-items: center;
+
+        &:nth-child(even) {
+            background-color: $WHITE;
+        }
+
+    }
+}
+
 
 .tb_cb {
     width: 5%;

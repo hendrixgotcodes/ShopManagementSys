@@ -3,7 +3,10 @@ import tippy, {
 } from 'tippy.js';
 import '../../node_modules/tippy.js/dist/tippy-bundle.umd';
 import tippyBundleUmd from '../../node_modules/tippy.js/dist/tippy-bundle.umd';
-import '../../node_modules/tippy.js/themes/material.css'
+import '../../node_modules/tippy.js/themes/material.css';
+import "../../node_modules/tippy.js/themes/light.css";
+import 'tippy.js/themes/light.css';
+import 'tippy.js/animations/perspective.css'
 
 
 let span = document.createElement('span');
@@ -69,13 +72,62 @@ tippy('#settings', {
 })
 
 
-//"FilterBy" DropDown Menu
+/************************Popup Menu for "FilterBy"**************************/
+
+//Unordered lists which will be passed into tippyJS
 const ul_categories = document.createElement('ul');
-itemCategories.forEach((item)=>{
+const ul_brands = document.createElement('ul');
+
+
+// Dynamically adding list items based on categories and brands respectively
+items_in_Categories.forEach((item) => {
 
   let newItem = document.createElement('li');
   newItem.innerHTML = item;
+  newItem.className = "selectDropdown_value";
   
+  newItem.addEventListener("click", () => {
+    const wrapped =  wrapText(newItem.innerHTML)
+
+    selectValue_span.innerHTML = wrapped;
+    selectValue_span.setAttribute("value", wrapped)
+  })
+
   ul_categories.appendChild(newItem);
 
+});
+
+items_in_Brands.forEach((item) => {
+
+  let newItem = document.createElement('li');
+  newItem.innerHTML = item;
+  newItem.className = "selectDropdown_value";
+
+  ul_brands.appendChild(newItem);
+
+  newItem.addEventListener("click", () => {
+    const wrapped =  wrapText(newItem.innerHTML)
+
+    selectValue_span.innerHTML = wrapped;
+    selectValue_span.setAttribute("value", wrapped)
+  })
+
+});
+
+
+tippy('.tip_category', {
+  content: ul_categories,
+  placement: 'right-start',
+  theme: 'white',
+  arrow: false,
+  offset: [0, 0],
+  animation: 'perspective',
+})
+
+tippy('.tip_brand', {
+  content: ul_brands,
+  placement: 'right-start',
+  theme: 'white',
+  arrow: false,
+  offset: [0, 0]
 })

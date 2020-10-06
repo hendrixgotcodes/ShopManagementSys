@@ -27,7 +27,7 @@ function getTime(){
     hour.innerHTML = hrs;
 
     mins = now.getMinutes()
-    mins = mins < 10 ? mins = `'0'${mins}` : mins = mins;
+    mins = mins < 10 ? mins = `0${mins}` : mins = mins;
 
     min.innerHTML = mins;
 

@@ -41,6 +41,7 @@
             top: 30%;
             border-top-right-radius: 3px;
             border-bottom-right-radius: 3px;
+            outline-color: $primary_green;
         }
     }
 
@@ -99,14 +100,14 @@
         .select_dropdown {
             width: 100%;
             position: absolute;
-            bottom: -6.6rem;
+            bottom: -7.2rem;
             left: 0;
             box-shadow: -1px 1px 3px rgba($color: #000000, $alpha: .17);
             background-color: $WHITE;
             color: $primary_black;
             display: none;
             z-index: 1;
-            border-radius: 3px;
+            border-radius: 4px;
 
 
             .selectDropdown_value {
@@ -115,12 +116,17 @@
                 width: 100%;
                 display: inline-block;
                 cursor: pointer;
+                list-style: none; //For dynamically displayed tippy
+                width: 100%;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
 
                 &:hover {
                     background-color: $OFFWHITE;
                 }
 
-                &:last-child{
+                &:last-child {
                     border-bottom-right-radius: 3px;
                     border-bottom-left-radius: 3px;
                 }

@@ -5,6 +5,8 @@
     font-size: 0.8rem;
 }
 
+
+// Tomato Theme
 .tippy-box[data-theme~="tomato"] {
     background-color: $primary_yellow;
     color: $WHITE;
@@ -34,4 +36,24 @@
 .tippy-box[data-theme~='tomato'][data-placement^='right']>.tippy-arrow::before {
     border-right-color: $primary_yellow;
     left: -4px;
+}
+
+
+
+
+/*************************WHITE THEME***********************************/
+
+.tippy-box[data-theme~='white'] {
+    background-color: $WHITE;
+    color: $primary_black;
+    border-radius: 3px;
+    box-shadow: -1px 1px 3px rgba($color: #000000, $alpha: .17);
+    padding: 0rem ;
+    // text-align: center;
+     
+    & .tippy-content{
+        padding: 0;
+    }
+    
+    
 }
