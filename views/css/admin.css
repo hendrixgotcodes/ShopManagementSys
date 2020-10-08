@@ -111,13 +111,14 @@ body {
     position: absolute;
     top: 0;
     left: 0;
-    transition: background-color .5s;
+    transition: background-color .3s;
     width: 100%;
     height: 100%;
     pointer-events: none;
     z-index: 10; }
   body .contentCover--shown {
-    background-color: rgba(0, 0, 0, 0.6); }
+    background-color: rgba(0, 0, 0, 0.4);
+    pointer-events: fill; }
 
 .tabItem {
   outline-color: #528973; }
@@ -176,7 +177,8 @@ body {
   height: 20%;
   display: flex;
   align-items: center;
-  justify-content: center; }
+  justify-content: center;
+  position: relative; }
   .menu_b center {
     display: flex;
     align-items: center;
@@ -455,6 +457,254 @@ body {
       .main_body .mainBody_content .contentContainer .td_Price {
         width: 15.5%;
         text-align: center; }
+    .main_body .mainBody_content .settingsModal {
+      position: absolute;
+      top: 10%;
+      left: 15%;
+      width: 65%;
+      height: 85%;
+      background-color: #fff;
+      border-radius: 10px;
+      z-index: 11;
+      overflow: hidden;
+      background-color: #35594B;
+      box-shadow: -3px 3px 20px rgba(0, 0, 0, 0.463); }
+      .main_body .mainBody_content .settingsModal .settingsContainer {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: space-around;
+        align-items: center; }
+        .main_body .mainBody_content .settingsModal .settingsContainer .modalPage {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border-radius: 15px; }
+          .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_menu {
+            width: 12%;
+            height: 100%;
+            background-color: #35594B;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+            border-radius: 15px; }
+            .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_menu .modalMenu_item {
+              width: 100%;
+              height: 33.4%;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              transition: 0.3s;
+              cursor: pointer; }
+              .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_menu .modalMenu_item:first-child {
+                border-top-left-radius: 10px; }
+              .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_menu .modalMenu_item:last-child {
+                border-bottom-left-radius: 10px; }
+              .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_menu .modalMenu_item:hover {
+                background-color: #204B40; }
+              .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_menu .modalMenu_item img {
+                width: 36%; }
+            .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_menu .currentPage {
+              background-color: #204B40; }
+          .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content {
+            width: 90%;
+            height: 100%;
+            background-color: #fff;
+            position: relative; }
+            .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .modalHeader {
+              width: 100%;
+              background-color: #F1F2F2;
+              height: 10%;
+              box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
+              padding: 0 1rem;
+              display: flex;
+              justify-content: flex-start;
+              align-items: center;
+              z-index: 1;
+              position: absolute; }
+              .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .modalHeader .modalTitle {
+                font-weight: 400;
+                font-size: 1.32rem;
+                color: #35594B; }
+              .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .modalHeader img {
+                width: 6%;
+                height: 40%; }
+            .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider {
+              height: 300%;
+              transition: .5s ease-out;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              flex-direction: column; }
+              .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .modalContent_settings {
+                width: 100%;
+                height: 31%; }
+              .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings {
+                margin-top: 8%;
+                position: relative; }
+                .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .modalBanner {
+                  width: 100%;
+                  background-color: #646766;
+                  height: 5%;
+                  color: #fff;
+                  z-index: 0;
+                  padding: .5rem; }
+                .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .modal_table {
+                  border-collapse: collapse;
+                  position: relative;
+                  height: 100%;
+                  width: 100%; }
+                  .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .modal_table .modal_tHead {
+                    height: 3rem;
+                    background-color: #35594B;
+                    color: #fff;
+                    position: sticky;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center; }
+                    .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .modal_table .modal_tHead th {
+                      width: 33.33%; }
+                .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .modal_tBody {
+                  color: #646766;
+                  text-align: center;
+                  display: block;
+                  width: 100%;
+                  overflow-y: auto;
+                  height: 100%;
+                  margin-top: .1%; }
+                  .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .modal_tBody tr {
+                    height: 4rem;
+                    background-color: #F1F2F2;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    padding: 0 1rem; }
+                    .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .modal_tBody tr:nth-child(even) {
+                      background-color: #fff; }
+                    .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .modal_tBody tr td {
+                      display: block;
+                      width: 33.33%; }
+                .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .modal_btn_add {
+                  width: 7%;
+                  height: 9.5%;
+                  border-radius: 100%;
+                  background-color: #487966;
+                  box-shadow: -3px 3px 6px rgba(0, 0, 0, 0.176);
+                  position: absolute;
+                  bottom: 1.5rem;
+                  right: 1rem;
+                  cursor: pointer;
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  overflow: hidden; }
+                  .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .modal_btn_add::after {
+                    content: '';
+                    position: absolute;
+                    width: 100%;
+                    height: 100%;
+                    top: 0;
+                    bottom: 0;
+                    transform: scale(0);
+                    transition: .3s;
+                    background-color: #528973;
+                    border-radius: 100%; }
+                  .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .modal_btn_add:hover::after {
+                    scale: 1;
+                    transform: scale(1); }
+                  .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .modal_btn_add img {
+                    z-index: 1; }
+              .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .accSettings {
+                margin-top: 10%;
+                padding: 1rem; }
+                .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .accSettings center {
+                  width: 100%;
+                  height: 80%;
+                  display: flex;
+                  flex-wrap: wrap;
+                  justify-content: space-between;
+                  align-items: center;
+                  flex-direction: column; }
+                .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .accSettings .settingsLabel {
+                  display: block;
+                  width: 44%;
+                  height: 30%;
+                  background-color: #d7d9d9;
+                  padding: 1rem;
+                  border-radius: 4px;
+                  color: #35594B;
+                  margin-right: 1rem;
+                  text-align: left;
+                  display: flex;
+                  justify-content: center;
+                  align-items: flex-start;
+                  flex-direction: column; }
+                  .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .accSettings .settingsLabel input {
+                    align-self: center;
+                    display: block;
+                    width: 100%;
+                    height: 50%;
+                    padding: .8rem;
+                    margin-top: .3rem;
+                    border-radius: 3px;
+                    border: 1px solid #6e7676; }
+                    .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .accSettings .settingsLabel input:focus {
+                      outline: 3px solid rgba(53, 89, 75, 0.4);
+                      outline-offset: 1px; }
+                .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .accSettings .modal_btn_submit {
+                  width: 15%;
+                  margin-top: 1rem;
+                  height: 7%;
+                  background-color: #35594B;
+                  font-size: .9rem;
+                  border-radius: 3px;
+                  border: 1px solid #35594B;
+                  color: #fff;
+                  cursor: pointer;
+                  margin-top: 6%;
+                  margin-left: 2%; }
+              .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .genSettings {
+                margin-top: 10%;
+                padding: 1rem; }
+                .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .genSettings .settingsLabel {
+                  display: block;
+                  width: 50%;
+                  height: 18%;
+                  background-color: #d7d9d9;
+                  padding: 1rem;
+                  border-radius: 4px;
+                  color: #35594B; }
+                  .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .genSettings .settingsLabel .modal_ddMenu {
+                    display: block;
+                    width: 100%;
+                    height: 2rem;
+                    margin-top: .5rem;
+                    outline: none;
+                    border-radius: 3px;
+                    border: 1px solid #6e7676;
+                    cursor: pointer;
+                    font-family: Roboto;
+                    color: #35594B; }
+                .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .genSettings .modal_btn_submit {
+                  width: 15%;
+                  margin-top: 1rem;
+                  height: 8%;
+                  background-color: #35594B;
+                  font-size: .9rem;
+                  border-radius: 3px;
+                  border: 1px solid #35594B;
+                  color: #fff;
+                  cursor: pointer; }
+            .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider--onAdmin {
+              transform: translateY(0%); }
+            .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider--onAcc {
+              transform: translateY(-33%); }
+            .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider--onGen {
+              transform: translateY(-66%); }
   .main_body .footer {
     justify-self: flex-end;
     width: 100%;

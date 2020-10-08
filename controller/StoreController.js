@@ -2,6 +2,8 @@
  * @param {HTMLTableElement} tableEl
  */
 
+const { ipcRenderer } = require("electron");
+
 /*********************************DOM ELEMENTS********************* */
 const items_in_Categories = ["Books","Tisues"];
 const items_in_Brands = ["Ghana Schools", "N/A"];
@@ -16,6 +18,7 @@ const selectValue_span = document.querySelector('.selectValue_span');
 const toolBarTB = document.querySelector('.toolBar_tb');
 const settings = document.querySelector('#settings');
 const contentCover = document.querySelector('.contentCover');
+const mainBodyContent = document.querySelector('.mainBody_content')
 
 
 
@@ -38,6 +41,8 @@ settings.addEventListener("click",(e)=>{
     contentCover.classList.toggle('contentCover--shown');
     openSettings();
 })
+
+//For modalSlider
 
 
 
@@ -81,3 +86,10 @@ function removeTR(value){
    
     
 };
+
+
+//Send message to open Settings Window
+function openSettings(){
+    ipcRenderer.send('open_settings');
+}
+

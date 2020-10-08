@@ -1,6 +1,7 @@
 const {
     BrowserWindow,
-    globalShortcut
+    globalShortcut,
+    dialog
 } = require('electron');
 
 //Loading directory which contains static files
@@ -36,7 +37,13 @@ class MainWWindow extends BrowserWindow {
         })
 
 
+        this.webContents.on('open_settings',(e)=>{
+            dialog.
+        })
+
     }
+
+
 
 }
 //Exporting module

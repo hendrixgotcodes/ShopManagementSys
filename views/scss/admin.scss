@@ -13,14 +13,15 @@ body {
         position: absolute;
         top: 0;
         left: 0;
-        transition: background-color .5s;
+        transition: background-color .3s;
         width: 100%;
         height: 100%;
         pointer-events: none;
         z-index: 10;
     }
     .contentCover--shown{
-        background-color: rgba($color: #000000, $alpha: .6);
+        background-color: rgba($color: #000000, $alpha: .4);
+        pointer-events: fill;
     }
 
 }
@@ -105,6 +106,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
 
     & center {
         display: flex;
@@ -122,6 +124,12 @@ body {
             }
         }
     }
+
+    // .menuB_cb{
+    //     position: absolute;
+    //     top: 50%;
+    //     left: 60%;
+    // }
 }
 
 .main_body {
@@ -152,6 +160,8 @@ body {
 
             @import '../scss/layout/tables/storeTables';
         }
+
+        @import '../scss/utilities/modals';
 
        
     }
