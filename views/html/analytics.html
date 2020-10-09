@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Store Front</title>
+  <link rel="stylesheet" href="../../views/css/store.css">
+</head>
+
+<body>
+
+  <div class="main_menu">
+    <div class="menu_a">
+      <label for="" class="lbl_storeName"><img src="../Icons/logo/logo.png" alt=""></label>
+
+      <div class="menu_iconsContainer">
+
+        <div id="goto_store" tabindex="1" class="menu_icons tabItem">
+          <img src="../Icons/menuIcons/storefront.svg" id="storefront" alt="Goto StoreFront" class="menuIcon tip_store">
+        </div>
+        <div id="goto_inventory" tabindex="2" class="menu_icons tabItem" aria-placeholder="Go to Inventory">
+          <img src="../Icons/menuIcons/inventory.png" id="menuIcon_png" alt="Goto Inventory"
+            class="menuIcon tip_inventory">
+        </div>
+        <div id="goto_analytics" tabindex="3" class="menu_icons current tabItem" aria-placeholder="Go to analytics">
+          <img src="../Icons/menuIcons/analytics.svg" alt="Goto analytics" class="menuIcon tip_analytics">
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="menu_b">
+      <center>
+        <img tabindex="4" id="account" src="../Icons/menuIcons/Tray/account.svg" alt="" class="menu_items tabItem">
+        <!-- <input type="checkbox" name="" id="" class="menuB_cb"> -->
+        <img tabindex="5" id="settings" src="../Icons/menuIcons/Tray/settings.svg" alt="" class="menu_items tabItem">
+      </center>
+    </div>
+
+  </div>
+
+  <div class="main_body">
+
+    <div class="titleBar" aria-placeholder="Title Bar">
+
+      <div class="titleBar_location">SHOP</div>
+      <div class="titleBar_userType">Maame Dufie</div>
+
+      <div class="titleBar_controlBox">
+        <div class="controlBox_minimize control store" aria-placeholder="minimize">
+          <img src="../Icons/Control_Box/Store/Minimize.png" alt="" />
+        </div>
+        <div class="controlBox_maximize control store" aria-placeholder="maximize">
+          <img src="../Icons/Control_Box/Store/Maximize.png" id="restore_maxi" alt="" />
+        </div>
+        <div class="controlBox_close control store" aria-placeholder="close">
+          <img src="../Icons/Control_Box/Store/Close.png" alt="" />
+        </div>
+      </div>
+
+    </div>
+
+    <div class="mainBody_content">
+      
+
+      <div class="contentContainer">
+   
+      </div>
+
+
+    </div>
+
+    <div class="footer">
+      <div class="footer_clock"">
+        <span class=" clock_hour">6</span>
+        <span id="clock_blinker">: </span>
+        <span class="clock_min"> 15</span>
+        <span class="clock_ampm">PM</span>
+      </div>
+      <div class="select">
+        <div tabindex="7" class="select_value">
+          <center class="selectValue_center">
+            <img src="../Icons/toolBar/funnel.svg" class="selectValue_icon" alt="">
+            <span class="selectValue_span">Filter By:</span>
+          </center>
+          <img src="../Icons/toolBar/play_arrow-black-18dp.svg" alt="" class="selectValue_icon arrow">
+        </div>
+        <div tabindex="0" class="select_dropdown">
+          <span tabindex="0" class="selectDropdown_value tip_category">
+            Category
+          </span>
+          <span tabindex="0" class="selectDropdown_value tip_brand">
+            Brand
+          </span>
+          <span tabindex="0" class="selectDropdown_value tip_default">
+            Default
+          </span>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+
+   
+    <!--  -->
+
+  <div class="contentCover"></div>
+
+  <script src="../../controller/StoreController.js"></script>
+  <script src="../../views/js/sortTable.js"></script>
+  <script src="../../build/toolTips.js"></script>
+  <script src="../../views/js/clock.js"></script>
+  <script src="../../controller/modals/settingsController.js"></script>
+  <!-- <script src="../../build/toolTips_Modals.js"></script> -->
+</body>
+
+</html>
