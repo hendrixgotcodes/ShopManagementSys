@@ -60,6 +60,22 @@ ipcMain.on('close', () => {
     app.quit()
 })
 
-ipcMain.on('loadStore', () => {
+
+/***************Loads Program Pages */
+ipcMain.on('loadStore', (e, userType) => {
     mainWindow.loadFile('./views/html/Store.html');
-})
+    mainWindow.userType = userType;
+});
+
+ipcMain.on('loadInventory',(e, userType)=>{
+    mainWindow.loadFile('./views/html/inventory.html');
+    mainWindow.userType = userType;
+    console.log(mainWindow.userType);
+});
+
+ipcMain.on('loadAnalytics',(e, userType)=>{
+    mainWindow.loadFile('./views/html/analytics.html');
+    mainWindow.userType = userType;
+    console.log(mainWindow.userType);
+});
+

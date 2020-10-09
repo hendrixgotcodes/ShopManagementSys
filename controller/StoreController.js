@@ -7,7 +7,7 @@ const { ipcRenderer } = require("electron");
 /*********************************DOM ELEMENTS********************* */
 const items_in_Categories = ["Books","Tisues"];
 const items_in_Brands = ["Ghana Schools", "N/A"];
-
+const userType = 'Maame Dufie'
 
 
 
@@ -19,6 +19,9 @@ const toolBarTB = document.querySelector('.toolBar_tb');
 const settings = document.querySelector('#settings');
 const contentCover = document.querySelector('.contentCover');
 const mainBodyContent = document.querySelector('.mainBody_content')
+const goto_Store = document.querySelector('#goto_store')
+const goto_Inventory = document.querySelector('#goto_inventory');
+const goto_Analytics = document.querySelector('#goto_analytics');
 
 
 
@@ -36,13 +39,23 @@ tip_default.addEventListener('click',()=>{
 // })
 
 
-//For Settings
+//For "settings"
 settings.addEventListener("click",(e)=>{
     contentCover.classList.toggle('contentCover--shown');
     openSettings();
 })
 
-//For modalSlider
+//For "contentCover" To Close Modal Settings
+contentCover.addEventListener('click', ()=>{
+    removeSettingsModal(contentCover)
+
+});
+
+
+//For "goto_Inventory"
+goto_Store.addEventListener('click',loadStore)
+goto_Inventory.addEventListener('click',loadInventory)
+goto_Analytics.addEventListener('click', loadAnalytics);
 
 
 
@@ -87,9 +100,26 @@ function removeTR(value){
     
 };
 
+//Opens Setting modal
+function removeSettingsModal(cover){
+    if (mainBodyContent.querySelector('.settingsModal') !== null){
+        mainBodyContent.removeChild(mainBodyContent.querySelector('.settingsModal'));
+    }
 
-//Send message to open Settings Window
-function openSettings(){
-    ipcRenderer.send('open_settings');
+    cover.classList.toggle('contentCover--shown')
 }
+
+//Triggers an event to load the pages in the  ipcMain
+function loadStore(){
+    ipcRenderer.send('loadStore', userType)
+}
+
+function loadInventory(){
+    ipcRenderer.send('loadInventory',userType)
+}
+
+function loadAnalytics(){
+    ipcRenderer.send('loadAnalytics',userType)
+}
+
 

@@ -17,6 +17,7 @@ const visIcon = document.querySelector('.vis_icon');
 
 //Program Variables
 let isFullScreen = false;
+const userType = 'Maame Dufie'
 
 
 
@@ -61,7 +62,7 @@ function sendCloseEvent() {
 }
 
 function loadStore(e) {
-    ipcRenderer.send('loadStore');
+    ipcRenderer.send('loadStore', userType);
 }
 
 //Function to toggle password visibility

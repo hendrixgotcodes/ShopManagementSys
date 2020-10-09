@@ -22,6 +22,9 @@ class MainWWindow extends BrowserWindow {
             icon: icon,
         })
 
+        //Program Variables
+        let userType = null;
+
         //Loading file to window and pointing to static directory
 
         this.loadURL(staticURL);
@@ -36,10 +39,6 @@ class MainWWindow extends BrowserWindow {
             that.reload();
         })
 
-
-        this.webContents.on('open_settings',(e)=>{
-            dialog.
-        })
 
     }
 

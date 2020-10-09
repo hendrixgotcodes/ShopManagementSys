@@ -40,9 +40,9 @@ let analytics = document.createElement('span');
 analytics.innerText = 'Analytics';
 analytics.className = 'tooltip_cb';
 
-let account = document.createElement('span');
-account.innerText = 'Account Settings';
-account.className = 'tooltip_cb';
+let info = document.createElement('span');
+info.innerText = 'Info';
+info.className = 'tooltip_cb';
 
 let settings = document.createElement('span');
 settings.innerText = 'General Settings';
@@ -62,7 +62,7 @@ tippy('.tip_analytics', {
 })
 
 tippy('#account', {
-  content: account,
+  content: info,
   placement: 'bottom'
 })
 
