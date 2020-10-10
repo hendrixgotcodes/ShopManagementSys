@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Store Front</title>
-  <link rel="stylesheet" href="../../views/css/store.css">
+  <link rel="stylesheet" href="../../views/css/analytics.css">
 </head>
 
 <body>
@@ -64,8 +64,42 @@
 
     <div class="mainBody_content">
       
+      <div  class="content_toolBar">
+        <button tabindex="0" class="toolBar_btn--alpha btn_clear tabItem">
+            Clear
+            <img src="../Icons/toolBar/btnAdd--green.svg" class="ico_btn_clear"lt="Add New Product">
+        </button>
+      </div>
 
       <div class="contentContainer">
+
+          <center class="alignment">
+
+            <div tabindex="0" class="card tabItem profit">
+              <label class="card_lbl">Total Profit Of The Month</label>
+              <div class="card_content">Ghc 2.2M</div>
+              <label tabindex="0" class="card_lbl lbl--underline tabItem"><span>More</span></label>
+             </div>
+ 
+            <div tabindex="0" class="card tabItem product">
+              <label class="card_lbl">Product Of The Month</label>
+              <div class="card_content">Teachers NoteBook</div>
+              <label tabindex="0"  class="card_lbl lbl--underline tabItem"><span>View In Order</span></label>
+             </div>
+ 
+            <div tabindex="0" class="card tabItem tabItem growth">
+              <label class="card_lbl">Growth Rate</label>
+              <div class="card_content">Ghc 2.2M</div>
+              <label tabindex="0" class="card_lbl lbl--underline tabItem tabItem"><span>View</span></label>
+             </div>
+ 
+            <div tabindex="0" class="card tabItem brand">
+              <label class="card_lbl">Brand Of The Month</label>
+              <div class="card_content">NATARAJ</div>
+              <label tabindex="0" class="card_lbl lbl--underline tabItem"><span>View In Order</span></label>
+           </div>
+
+          </center>
    
       </div>
 
@@ -79,22 +113,22 @@
         <span class="clock_min"> 15</span>
         <span class="clock_ampm">PM</span>
       </div>
-      <div class="select">
-        <div tabindex="7" class="select_value">
+      <div tabindex="0" class="select tabItem">
+        <div tabindex="0" class="select_value tabItem">
           <center class="selectValue_center">
             <img src="../Icons/toolBar/funnel.svg" class="selectValue_icon" alt="">
-            <span class="selectValue_span">Filter By:</span>
+            <span class="selectValue_span">Show By:</span>
           </center>
           <img src="../Icons/toolBar/play_arrow-black-18dp.svg" alt="" class="selectValue_icon arrow">
         </div>
-        <div tabindex="0" class="select_dropdown">
-          <span tabindex="0" class="selectDropdown_value tip_category">
+        <div tabindex="0" class="select_dropdown tabItem">
+          <span tabindex="0" class="selectDropdown_value tip_category tabItem">
             Category
           </span>
-          <span tabindex="0" class="selectDropdown_value tip_brand">
+          <span tabindex="0" class="selectDropdown_value tip_brand tabItem">
             Brand
           </span>
-          <span tabindex="0" class="selectDropdown_value tip_default">
+          <span tabindex="0" class="selectDropdown_value tip_default tabItem">
             Default
           </span>
         </div>
@@ -109,11 +143,12 @@
 
   <div class="contentCover"></div>
 
-  <script src="../../controller/StoreController.js"></script>
+  <script src="../../controller/GeneralController.js"></script>
   <script src="../../views/js/sortTable.js"></script>
-  <script src="../../build/toolTips.js"></script>
+  <!-- <script src="../../build/toolTips.js"></script> -->
   <script src="../../views/js/clock.js"></script>
   <script src="../../controller/modals/settingsController.js"></script>
+  <script src="../../controller/AnalyticsController.js"></script>
   <!-- <script src="../../build/toolTips_Modals.js"></script> -->
 </body>
 

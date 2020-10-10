@@ -37,8 +37,14 @@
                 margin-left: .8rem;
                 border: 1px solid $primary_black;
                 border-radius: 3px;
-                outline-color: lighten($color: $primary_green, $amount: 15);
+                outline-color: lighten($color: $primary_yellow, $amount: 15);
                 text-align: center;
+                transition: outline .3s;
+
+                &:focus{
+                    outline-width: 20px;
+                    outline-offset: 3px;
+                }
             }
 
         }
@@ -52,10 +58,51 @@
             color: $primary_green;
             font-size: 1rem;
             cursor: pointer;
+            transition: .3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: .5rem;
+            position: relative;
+
+            & img{
+                width: 20%;
+            }
 
             &:hover{
                 background-color: $primary_green;
                 color: $WHITE;
+            }
+
+
+            .cartCount{
+                width: 20%;
+                position: absolute;
+                right: -.7rem;
+                top: -.7rem;
+                transform: scale(0);
+                height: 67%;
+                background-color: $secondary_red;
+                color: $WHITE;
+                font-size: .5rem;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border-radius: 100%;
+                transition: 1;
+                transition: transform .7s;
+            }
+        }
+
+        .footer_btn--disabled{
+            &:disabled{
+                color: lighten($color: $primary_green, $amount: 40);
+                border: 1.8px solid lighten($color: $primary_green, $amount: 40);
+
+                &:hover{
+                    background-color: $WHITE;
+                    // color: ;
+                }
             }
         }
 

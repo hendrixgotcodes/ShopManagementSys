@@ -2,13 +2,14 @@
  * @param {HTMLTableElement} tableEl
  */
 
-const { ipcRenderer } = require("electron");
 
 /*********************************DOM ELEMENTS********************* */
 const items_in_Categories = ["Books","Tisues"];
 const items_in_Brands = ["Ghana Schools", "N/A"];
-const userType = 'Maame Dufie'
+const cart = [];
 
+//Holds the amount of table rows selected so that disabling and enabling of elements can be done based on that amount
+let selectedRows = 0;
 
 
 
@@ -17,11 +18,17 @@ const tip_default = document.querySelector('.tip_default');
 const selectValue_span = document.querySelector('.selectValue_span');
 const toolBarTB = document.querySelector('.toolBar_tb');
 const settings = document.querySelector('#settings');
+
 const contentCover = document.querySelector('.contentCover');
-const mainBodyContent = document.querySelector('.mainBody_content')
-const goto_Store = document.querySelector('#goto_store')
-const goto_Inventory = document.querySelector('#goto_inventory');
-const goto_Analytics = document.querySelector('#goto_analytics');
+const mainBodyContent = document.querySelector('.mainBody_content');
+
+const footer_btn = document.querySelector('.footer_btn');
+const footer_btn_icon = document.querySelector('.ico_footer_btn');
+
+const tableROWS = document.querySelector('.tableBody').querySelectorAll('.bodyRow');
+
+const footer_tb = document.querySelector('.footer_tb');
+const cartCount = document.querySelector('.cartCount');
 
 
 
@@ -52,10 +59,31 @@ contentCover.addEventListener('click', ()=>{
 });
 
 
-//For "goto_Inventory"
-goto_Store.addEventListener('click',loadStore)
-goto_Inventory.addEventListener('click',loadInventory)
-goto_Analytics.addEventListener('click', loadAnalytics);
+
+//For "footer_btn"
+footer_btn.addEventListener('mouseover',toggleTBbtn_white)
+footer_btn.addEventListener('mouseleave',toggleTBbtn_default)
+
+
+//For "tableBody"
+tableROWS.forEach((row)=>{
+    row.addEventListener('click',(e)=>{
+        toggleRowCB(row);
+    })
+})
+
+
+
+//For "footer_tb"
+footer_tb.addEventListener("blur",()=>{
+    disableDropDownList()
+    footer_tb.selectedIndex = 0;
+})
+
+footer_tb.addEventListener("change",()=>{
+    cartCount.style.transform = "scale(1)"
+    cartCount.innerText = selectedRows;
+})
 
 
 
@@ -109,17 +137,66 @@ function removeSettingsModal(cover){
     cover.classList.toggle('contentCover--shown')
 }
 
-//Triggers an event to load the pages in the  ipcMain
-function loadStore(){
-    ipcRenderer.send('loadStore', userType)
+
+function toggleTBbtn_white(){
+    footer_btn_icon.setAttribute('src', '../Icons/toolBar/checkout.svg')
 }
 
-function loadInventory(){
-    ipcRenderer.send('loadInventory',userType)
+function toggleTBbtn_default(){
+    footer_btn_icon.setAttribute('src', '../Icons/toolBar/checkout--green.svg')
 }
 
-function loadAnalytics(){
-    ipcRenderer.send('loadAnalytics',userType)
+
+function toggleRowCB(row){
+    let CB = row.querySelector('.td_cb').querySelector('.selectOne');
+
+
+
+    if(CB.checked === true){
+        CB.checked = false;
+        row.style.transform = "translateX(0px)"
+        row.style.outline = "none"
+
+
+        if(selectedRows > 0){
+            selectedRows = selectedRows -1;
+        cartCount.innerText = selectedRows;
+        }
+
+        if(selectedRows === 0){
+            disableDropDownList();
+
+            cartCount.style.transform = "scale(0)"
+            cartCount.innerText = 0;
+        }
+    }
+    else{
+        CB.checked = true
+
+        selectedRows = selectedRows +1;
+
+        if(selectedRows > 0){
+            
+            enableDropDownList();
+
+            if(toolBarTB.disabled === false){
+                footer_tb.focus()
+            }
+        }
+    }
 }
+
+function disableDropDownList(){
+    footer_tb.disabled = true;
+}
+
+function enableDropDownList(){
+    footer_tb.disabled = false;
+
+}
+
+
+
+
 
 

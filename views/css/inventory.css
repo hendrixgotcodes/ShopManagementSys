@@ -412,13 +412,15 @@ body {
         width: 100%;
         overflow-y: auto;
         height: 92%;
-        padding: 0; }
+        padding: 0;
+        overflow-x: hidden; }
         .main_body .mainBody_content .contentContainer .tableBody .bodyRow {
           display: flex;
           height: 4rem;
           width: 100%;
           justify-content: center;
-          align-items: center; }
+          align-items: center;
+          transition: .3s; }
           .main_body .mainBody_content .contentContainer .tableBody .bodyRow:nth-child(even) {
             background-color: #fff; }
       .main_body .mainBody_content .contentContainer .tb_cb {
