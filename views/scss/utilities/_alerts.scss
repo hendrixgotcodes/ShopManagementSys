@@ -1,0 +1,20 @@
+.notification_banner{
+    width: 20%;
+    height: 15%;
+    background-color: rgba($color: $primary_green, $alpha: .8);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    border-top-left-radius: 4px;
+    // border-bottom-left-radius: 4px;
+    // border-left: 5px solid $primary_yellow;
+    transition: transform .3s;
+    transform: translateX(100%);
+}
+.notification_banner--shown{
+    transform: translateX(0%);
+}
