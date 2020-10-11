@@ -152,6 +152,8 @@ body {
         position: relative;
 
         @import '../scss/layout/toolBar_store';
+        overflow-x: hidden;
+
 
         .contentContainer {
             width: 100%;
@@ -159,6 +161,9 @@ body {
             // position: relative;
 
             @import '../scss/layout/tables/storeTables';
+
+            @import '../scss/utilities/alerts';
+
         }
 
         @import '../scss/utilities/modals';

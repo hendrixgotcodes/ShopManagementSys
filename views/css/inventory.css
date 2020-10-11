@@ -421,8 +421,10 @@ body {
           justify-content: center;
           align-items: center;
           transition: .3s; }
-          .main_body .mainBody_content .contentContainer .tableBody .bodyRow:nth-child(even) {
+          .main_body .mainBody_content .contentContainer .tableBody .bodyRow:nth-child(odd) {
             background-color: #fff; }
+          .main_body .mainBody_content .contentContainer .tableBody .bodyRow:nth-child(even) {
+            background-color: #F1F2F2; }
       .main_body .mainBody_content .contentContainer .tb_cb {
         width: 5%; }
       .main_body .mainBody_content .contentContainer .tb_Names,

@@ -76,8 +76,12 @@
         align-items: center;
         transition: .3s;
 
-        &:nth-child(even) {
+        &:nth-child(odd) {
             background-color: $WHITE;
+        }
+
+        &:nth-child(even){
+            background-color: $OFFWHITE;
         }
 
     }

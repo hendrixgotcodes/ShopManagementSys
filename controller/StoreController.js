@@ -3,13 +3,22 @@
  */
 
 
+/**********************************IMPORTED ***************************/
+import Notifications from '../controller/Alerts/NotificationController'
+
+
 /*********************************DOM ELEMENTS********************* */
 const items_in_Categories = ["Books","Tisues"];
 const items_in_Brands = ["Ghana Schools", "N/A"];
+
+// Array of store objects
 const cart = [];
 
 //Holds the amount of table rows selected so that disabling and enabling of elements can be done based on that amount
-let selectedRows = 0;
+let totalSelectedRows = 0;
+let selectedRows = [];
+
+let canSelectRow = true;
 
 
 
@@ -29,6 +38,19 @@ const tableROWS = document.querySelector('.tableBody').querySelectorAll('.bodyRo
 
 const footer_tb = document.querySelector('.footer_tb');
 const cartCount = document.querySelector('.cartCount');
+
+
+
+/***********************************OBJECTS**************/
+let sellingItem = {     // Represents an instance of a store item being added to cart
+}
+
+
+
+
+
+
+
 
 
 
@@ -61,14 +83,24 @@ contentCover.addEventListener('click', ()=>{
 
 
 //For "footer_btn"
-footer_btn.addEventListener('mouseover',toggleTBbtn_white)
-footer_btn.addEventListener('mouseleave',toggleTBbtn_default)
+footer_btn.addEventListener('mouseover',toggleTBbtn_white);
+footer_btn.addEventListener('mouseleave',toggleTBbtn_default);
+
+footer_btn.addEventListener("click", (e)=>{
+    e.preventDefault();
+
+    //Displays Modal to show selected Items
+    showItemsInCart();
+    // calling function to uncheck checked rows
+    uncheckMarkedRows()
+})
 
 
 //For "tableBody"
 tableROWS.forEach((row)=>{
     row.addEventListener('click',(e)=>{
         toggleRowCB(row);
+        setSellingItemProperties(row);
     })
 })
 
@@ -77,17 +109,24 @@ tableROWS.forEach((row)=>{
 //For "footer_tb"
 footer_tb.addEventListener("blur",()=>{
     disableDropDownList()
-    footer_tb.selectedIndex = 0;
+    footer_tb.selectedIndex = 0;  //Resets Default value of drop down list
+    cart.push(sellingItem)
+    sellingItem = {};
 })
 
 footer_tb.addEventListener("change",()=>{
     cartCount.style.transform = "scale(1)"
-    cartCount.innerText = selectedRows;
+    cartCount.innerText = totalSelectedRows;
+    sellingItem.amountPurchased = footer_tb.value;
 })
 
 
 
 
+/*************************************FUNCTIONS********************* */
+/*************************************FUNCTIONS********************* */
+/*************************************FUNCTIONS********************* */
+/*************************************FUNCTIONS********************* */
 /*************************************FUNCTIONS********************* */
 function wrapText(text){
 
@@ -96,7 +135,7 @@ function wrapText(text){
 }
 
 
-
+//-----------------------------------------------------------------------------------------------
 function removeTR(value){
 
     const tableEl = document.querySelector('table');
@@ -128,6 +167,8 @@ function removeTR(value){
     
 };
 
+
+//-----------------------------------------------------------------------------------------------
 //Opens Setting modal
 function removeSettingsModal(cover){
     if (mainBodyContent.querySelector('.settingsModal') !== null){
@@ -138,19 +179,30 @@ function removeSettingsModal(cover){
 }
 
 
+//-----------------------------------------------------------------------------------------------
 function toggleTBbtn_white(){
     footer_btn_icon.setAttribute('src', '../Icons/toolBar/checkout.svg')
 }
 
+
+//-----------------------------------------------------------------------------------------------
 function toggleTBbtn_default(){
     footer_btn_icon.setAttribute('src', '../Icons/toolBar/checkout--green.svg')
 }
 
-
+//-----------------------------------------------------------------------------------------------
 function toggleRowCB(row){
+    if(canSelectRow === false){
+        Notifications.showNotification('Please select the number of items to be sold first');
+
+        setTimeout(()=>{
+            Notifications.hideNotification();
+        },2000);
+        
+        return;
+    }
+    
     let CB = row.querySelector('.td_cb').querySelector('.selectOne');
-
-
 
     if(CB.checked === true){
         CB.checked = false;
@@ -158,9 +210,10 @@ function toggleRowCB(row){
         row.style.outline = "none"
 
 
-        if(selectedRows > 0){
-            selectedRows = selectedRows -1;
-        cartCount.innerText = selectedRows;
+
+        if(totalSelectedRows > 0){
+            totalSelectedRows = totalSelectedRows -1;
+            cartCount.innerText = totalSelectedRows;
         }
 
         if(selectedRows === 0){
@@ -169,13 +222,14 @@ function toggleRowCB(row){
             cartCount.style.transform = "scale(0)"
             cartCount.innerText = 0;
         }
+
     }
     else{
         CB.checked = true
 
-        selectedRows = selectedRows +1;
+        totalSelectedRows = totalSelectedRows +1;
 
-        if(selectedRows > 0){
+        if(totalSelectedRows > 0){
             
             enableDropDownList();
 
@@ -183,18 +237,62 @@ function toggleRowCB(row){
                 footer_tb.focus()
             }
         }
+
+        markSelectedRow(row);
     }
 }
 
+//-----------------------------------------------------------------------------------------------
 function disableDropDownList(){
     footer_tb.disabled = true;
 }
 
+//-----------------------------------------------------------------------------------------------
 function enableDropDownList(){
     footer_tb.disabled = false;
 
 }
 
+//-----------------------------------------------------------------------------------------------
+function setSellingItemProperties(row){
+    sellingItem.name = row.querySelector('.td_Names').innerText
+    sellingItem.brand = row.querySelector('.td_Brands').innerText
+    sellingItem.category = row.querySelector('.td_Category').innerText
+}
+
+//-----------------------------------------------------------------------------------------------
+function amtPurchased(amntPurchased){
+    sellingItem.amountPurchased = amntPurchased;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// function to show item in cart
+function showItemsInCart(){
+    cartCount.style.transform = "scale(0)"
+    cartCount.innerText = 0;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Saving checked rows in "selectedRows"
+function markSelectedRow(row){
+
+        let aRow = {}
+        aRow.key = row.querySelector('.td_Names').innerText;
+        aRow.value = row;
+        selectedRows.push(aRow);
+
+}
+
+// Uncheck checked rows. Does so by iterating through the arrray of "selectedRows" which contains all selectedRows
+function uncheckMarkedRows(){
+
+       selectedRows.forEach((row)=>{
+           row.value.querySelector('.td_cb').querySelector('.selectOne').checked = false;
+       })
+
+}
 
 
 
