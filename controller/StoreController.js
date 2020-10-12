@@ -7,9 +7,9 @@
 import Notifications from '../controller/Alerts/NotificationController'
 
 
+
 /*********************************DOM ELEMENTS********************* */
-const items_in_Categories = ["Books","Tisues"];
-const items_in_Brands = ["Ghana Schools", "N/A"];
+
 
 // Array of store objects
 const cart = [];
@@ -19,6 +19,7 @@ let totalSelectedRows = 0;
 let selectedRows = [];
 
 let canSelectRow = true;
+let footer_tbChanged = false;
 
 
 
@@ -26,6 +27,7 @@ let canSelectRow = true;
 const tip_default = document.querySelector('.tip_default');
 const selectValue_span = document.querySelector('.selectValue_span');
 const toolBarTB = document.querySelector('.toolBar_tb');
+const toolBarBtn = document.querySelector('.toolBar_btn')
 const settings = document.querySelector('#settings');
 
 const contentCover = document.querySelector('.contentCover');
@@ -50,11 +52,6 @@ let sellingItem = {     // Represents an instance of a store item being added to
 
 
 
-
-
-
-
-
 /*********************************EVent Listeners********************* */
 
 tip_default.addEventListener('click',()=>{
@@ -62,10 +59,14 @@ tip_default.addEventListener('click',()=>{
     selectValue_span.setAttribute("value", "default");
 })
 
-//For ToolBarTB
-// toolBarTB.addEventListener('keyup',(e)=>{
-//     removeTR(toolBarTB.value)
-// })
+//For ToolBarBtn
+toolBarBtn.addEventListener('click',(e)=>{
+    e.preventDefault();
+
+    seek(toolBarTB.value)
+})
+
+
 
 
 //For "settings"
@@ -108,26 +109,44 @@ tableROWS.forEach((row)=>{
 
 //For "footer_tb"
 footer_tb.addEventListener("blur",()=>{
-    disableDropDownList()
-    footer_tb.selectedIndex = 0;  //Resets Default value of drop down list
-    cart.push(sellingItem)
-    sellingItem = {};
+
+    if(sellingItem.amountPurchased !== undefined && footer_tbChanged !== true){
+
+        disableDropDownList()
+        footer_tb.selectedIndex = 0;  //Resets Default value of drop down list
+        cart.push(sellingItem)
+        sellingItem = {};
+        
+    }
+    else{
+        console.log(sellingItem);
+    }
+
 })
 
 footer_tb.addEventListener("change",()=>{
+
     cartCount.style.transform = "scale(1)"
     cartCount.innerText = totalSelectedRows;
     sellingItem.amountPurchased = footer_tb.value;
+
+    footer_tbChanged = false;
+    
+})
+
+footer_tb.addEventListener("focus",()=>{
+    footer_tbChanged = true;
+    console.log(footer_tbChanged);
 })
 
 
 
+/*************************************FUNCTIONS********************* */
+/*************************************FUNCTIONS********************* */
+/*************************************FUNCTIONS********************* */
+/*************************************FUNCTIONS********************* */
+/*************************************FUNCTIONS********************* */
 
-/*************************************FUNCTIONS********************* */
-/*************************************FUNCTIONS********************* */
-/*************************************FUNCTIONS********************* */
-/*************************************FUNCTIONS********************* */
-/*************************************FUNCTIONS********************* */
 function wrapText(text){
 
     return text.length > 5 ? text.slice(0,5) + '....' : text;
@@ -136,36 +155,36 @@ function wrapText(text){
 
 
 //-----------------------------------------------------------------------------------------------
-function removeTR(value){
+// Searchs for an element in the Table
+function seek(variable){
 
-    const tableEl = document.querySelector('table');
-    const tbody = tableEl.tBodies[0];
-    
-    const tRows = tbody.querySelectorAll('tr');
+    let notFound = true;
 
-    value = value.toLocaleLowerCase();
+    tableROWS.forEach((row)=>{
+        if(row.querySelector('.td_Names').innerText.toLowerCase() === variable.toLowerCase()){
+            row.scrollIntoView({behavior: 'smooth'});
 
-    console.log(value);
+            const initBGcolor = row.style.backgroundColor;
+            const initColor = row.style.color;
 
-    const array = [];
+            row.style.backgroundColor = 'rgba(53, 89, 75, 0.711)'
+            row.style.color = "#fff"
 
-    tRows.forEach((row)=>{
-        
+            setTimeout(()=>{
+                row.style.backgroundColor = initBGcolor;
+                row.style.color = initColor;
+            },3000)
 
-            if((row.querySelector('.td_Names').innerHTML.toLocaleLowerCase() === value)){
-                row.style.display = "none";
-            }
-            else{
-                row.style.display = "block";
-            }
-        
-        
-       
+            notFound = false;
+
+            return;
+        }
     })
 
-   
-    
-};
+    if(notFound === true){
+        Notifications.showNotification("Item not found")
+    }
+}
 
 
 //-----------------------------------------------------------------------------------------------
@@ -175,7 +194,7 @@ function removeSettingsModal(cover){
         mainBodyContent.removeChild(mainBodyContent.querySelector('.settingsModal'));
     }
 
-    cover.classList.toggle('contentCover--shown')
+    cover.classList.toggle('contentCover--shown');
 }
 
 
@@ -192,12 +211,10 @@ function toggleTBbtn_default(){
 
 //-----------------------------------------------------------------------------------------------
 function toggleRowCB(row){
-    if(canSelectRow === false){
-        Notifications.showNotification('Please select the number of items to be sold first');
+    if(sellingItem.amountPurchased === undefined && footer_tbChanged === true){
+        Notifications.showNotification('Please specify the number of items to be sold first', true);
 
-        setTimeout(()=>{
-            Notifications.hideNotification();
-        },2000);
+        footer_tb.focus();
         
         return;
     }

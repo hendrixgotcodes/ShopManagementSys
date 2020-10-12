@@ -1,3 +1,7 @@
+const items_in_Categories = ["Books","Tisues"];
+const items_in_Brands = ["Ghana Schools", "N/A"];
+
+
 import tippy, {
   roundArrow
 } from 'tippy.js';
@@ -7,6 +11,8 @@ import '../../node_modules/tippy.js/themes/material.css';
 import "../../node_modules/tippy.js/themes/light.css";
 import 'tippy.js/themes/light.css';
 import 'tippy.js/animations/perspective.css'
+
+
 
 
 let span = document.createElement('span');
@@ -119,6 +125,8 @@ items_in_Brands.forEach((item) => {
   })
 
 });
+
+
 
 
 tippy('.tip_category', {

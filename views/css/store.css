@@ -106,7 +106,8 @@ body {
   height: 100vh;
   display: flex;
   background-color: #F1F2F2;
-  position: relative; }
+  position: relative;
+  overflow: hidden; }
   body .contentCover {
     position: absolute;
     top: 0;
@@ -198,7 +199,8 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center; }
+  align-items: center;
+  overflow: hidden; }
   .main_body .titleBar {
     z-index: 1;
     justify-self: flex-start;
@@ -243,7 +245,7 @@ body {
     height: 89.5%;
     justify-self: center;
     position: relative;
-    overflow-x: hidden; }
+    overflow: hidden; }
     .main_body .mainBody_content .content_toolBar {
       width: 100%;
       height: 10%;
@@ -431,11 +433,60 @@ body {
           width: 100%;
           justify-content: center;
           align-items: center;
-          transition: .3s; }
+          transition: .3s;
+          position: relative; }
           .main_body .mainBody_content .contentContainer .tableBody .bodyRow:nth-child(odd) {
             background-color: #fff; }
           .main_body .mainBody_content .contentContainer .tableBody .bodyRow:nth-child(even) {
             background-color: #F1F2F2; }
+          .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls {
+            position: absolute;
+            width: 15%;
+            display: flex;
+            color: #fff;
+            height: 100%;
+            top: 0;
+            left: -15%;
+            flex-direction: row-reverse; }
+            .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .edit {
+              width: 50%;
+              background-color: #2A6AD4;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              cursor: pointer;
+              transition: .3s;
+              color: #2A6AD4; }
+              .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .edit:hover {
+                color: #2A6AD4; }
+            .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .del {
+              width: 50%;
+              background-color: #ce2727;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              cursor: pointer;
+              transition: .3s; }
+              .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .del:hover {
+                color: #ce2727; }
+            .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .del, .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .edit {
+              position: relative;
+              height: 100%;
+              color: #fff; }
+              .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .del span, .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .edit span {
+                z-index: 2; }
+              .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .del::after, .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .edit::after {
+                content: "";
+                position: absolute;
+                transition: .3s;
+                background-color: #fff;
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                transform: translateX(-100%); }
+              .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .del:hover::after, .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .edit:hover::after {
+                transform: translateX(0%); }
       .main_body .mainBody_content .contentContainer .tb_cb {
         width: 5%; }
       .main_body .mainBody_content .contentContainer .tb_Names,
@@ -462,22 +513,6 @@ body {
       .main_body .mainBody_content .contentContainer .td_Price {
         width: 15.5%;
         text-align: center; }
-      .main_body .mainBody_content .contentContainer .notification_banner {
-        width: 20%;
-        height: 15%;
-        background-color: rgba(53, 89, 75, 0.8);
-        color: white;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        border-top-left-radius: 4px;
-        transition: transform .3s;
-        transform: translateX(100%); }
-      .main_body .mainBody_content .contentContainer .notification_banner--shown {
-        transform: translateX(0%); }
     .main_body .mainBody_content .settingsModal {
       position: absolute;
       top: 10%;
@@ -726,6 +761,40 @@ body {
               transform: translateY(-33%); }
             .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider--onGen {
               transform: translateY(-66%); }
+  .main_body .notification_banner {
+    width: 20%;
+    height: 15%;
+    background-color: #35594B;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    bottom: 7%;
+    right: 0rem;
+    border-radius: 4px;
+    box-shadow: -3px 3px 12px rgba(0, 0, 0, 0.22);
+    transition: .3s;
+    transform: translateX(100%);
+    padding: 1rem; }
+  .main_body .notification_banner--shown {
+    transform: translateX(5rem);
+    right: 2rem; }
+  .main_body .banner_arrow {
+    width: 15%;
+    height: 21%;
+    background-color: transparent;
+    position: absolute;
+    bottom: -15%;
+    left: 40%;
+    border-radius: 3px;
+    border-top: 30px solid #35594B;
+    border-right: 25px solid transparent;
+    border-left: 25px solid transparent;
+    z-index: 20;
+    display: none; }
+  .main_body .banner_arrow--show {
+    display: block; }
   .main_body .footer {
     justify-self: flex-end;
     width: 100%;

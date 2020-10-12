@@ -8,6 +8,7 @@ body {
     display: flex;
     background-color: $OFFWHITE;
     position: relative;
+    overflow: hidden;
 
     .contentCover{
         position: absolute;
@@ -140,6 +141,8 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
+    
 
     @import '../scss/layout/titleBar';
 
@@ -150,9 +153,9 @@ body {
         height: 89.5%;
         justify-self: center;
         position: relative;
+        overflow: hidden;
 
         @import '../scss/layout/toolBar_store';
-        overflow-x: hidden;
 
 
         .contentContainer {
@@ -162,7 +165,6 @@ body {
 
             @import '../scss/layout/tables/storeTables';
 
-            @import '../scss/utilities/alerts';
 
         }
 
@@ -170,6 +172,8 @@ body {
 
        
     }
+
+    @import '../scss/utilities/alerts';
 
     @import '../scss/layout/footer_store';
 }

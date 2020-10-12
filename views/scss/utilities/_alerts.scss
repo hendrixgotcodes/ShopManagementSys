@@ -1,20 +1,44 @@
 .notification_banner{
     width: 20%;
     height: 15%;
-    background-color: rgba($color: $primary_green, $alpha: .8);
+    background-color: $primary_green;
     color: white;
     display: flex;
     justify-content: center;
     align-items: center;
     position: absolute;
-    bottom: 0;
-    right: 0;
-    border-top-left-radius: 4px;
+    bottom: 7%;
+    right: 0rem;
+    // border: 1px solid $primary_black;
+    border-radius: 4px;
+    box-shadow: -3px 3px 12px rgba($color: #000, $alpha: 0.22);
     // border-bottom-left-radius: 4px;
     // border-left: 5px solid $primary_yellow;
-    transition: transform .3s;
+    transition: .3s;
     transform: translateX(100%);
+    padding: 1rem;
 }
 .notification_banner--shown{
-    transform: translateX(0%);
+    transform: translateX(5rem);
+    right: 2rem;
+}
+
+.banner_arrow{
+    width: 15%;
+    height: 21%;
+    background-color: transparent;
+    // box-shadow: -3px 3px 12px rgba($color: #000, $alpha: 0.22);
+    position: absolute;
+    bottom: -15%;
+    left: 40%;
+    border-radius: 3px;
+    border-top: 30px solid $primary_green;
+    border-right: 25px solid transparent;
+    border-left: 25px solid transparent;
+    z-index: 20;
+    display: none;
+}
+
+.banner_arrow--show{
+    display: block;
 }

@@ -101,8 +101,10 @@ settingsModal.setAttribute("aria-placeholder", "Settings Modal");
 
 settingsModal.innerHTML = settingsModalTemplate;
 
+const mainBodyContent = document.querySelector('.mainBody_content')
 
 mainBodyContent.appendChild(settingsModal);
+
 
 
 
