@@ -1,3 +1,6 @@
+"use strict";
+
+
 const items_in_Categories = ["Books","Tisues"];
 const items_in_Brands = ["Ghana Schools", "N/A"];
 

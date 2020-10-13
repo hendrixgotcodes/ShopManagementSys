@@ -1,3 +1,5 @@
+"use strict";
+
 const { ipcRenderer } = require("electron");
 const userType = 'Maame Dufie'
 
@@ -14,6 +16,9 @@ const goto_Store = document.querySelector('#goto_store')
 const goto_Inventory = document.querySelector('#goto_inventory');
 const goto_Analytics = document.querySelector('#goto_analytics');
 
+const content_cover = document.querySelector('.contentCover')
+const mainBodyContent = document.querySelector('.mainBody_content')
+
 
 
 /****************EVENT LISTENERS ********/
@@ -27,6 +32,9 @@ controlBoxClose.addEventListener('click', sendCloseEvent)
 goto_Store.addEventListener('click',loadStore)
 goto_Inventory.addEventListener('click',loadInventory)
 goto_Analytics.addEventListener('click', loadAnalytics);
+
+//For Content
+content_cover.addEventListener("click", removeModal)
 
 
 /*****************FUNCTIONS*****************/
@@ -66,4 +74,12 @@ function loadInventory(){
 
 function loadAnalytics(){
     ipcRenderer.send('loadAnalytics',userType)
+}
+
+//Removes Modal
+function removeModal(){
+    if(mainBodyContent.querySelector('.modal') !== null){
+        mainBodyContent.querySelector('.modal').remove();
+        document.querySelector('.contentCover').classList.remove('contentCover--shown')
+    }
 }

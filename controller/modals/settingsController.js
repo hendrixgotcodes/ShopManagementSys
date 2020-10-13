@@ -1,3 +1,7 @@
+"use strict";
+
+
+
 // import tippy from 'tippy.js';
 function openSettings(){
 

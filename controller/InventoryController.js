@@ -1,5 +1,10 @@
+"use strict";
+
+
 /************IMPORT******/
 import Modal from '../controller/modals/ModalController';
+import Notifications from './Alerts/NotificationController';
+// const Modal = require('../controller/modals/ModalController')
 
 /************DOM ELEMENTS */
 const toolBar_btn = document.querySelector('.toolBar_btn--alpha');
@@ -50,14 +55,9 @@ function showRowControls(row){
         row.classList.remove("controlShown");
     }
     else{
-        // row.style.transition = ".7s"
-        // row.style.transform = "translateX(150%)"
+        
         row.style.transform = "translateX(15%)"
         row.classList.add("controlShown");
-
-        // setTimeout(()=>{
-        //     row.remove()
-        // }, 500)
 
     }   
 
@@ -65,5 +65,11 @@ function showRowControls(row){
 
 
 function deleteRow(row){
-    Modal.openConfirmationBox(row.querySelector(".td_Names").innerText, row.querySelector(".td_Stock").innerText)
+
+    const itemName = row.querySelector(".td_Names").innerText;
+    const itemQuantity = row.querySelector(".td_Stock").innerText;
+
+    Modal.openConfirmationBox(itemName, itemQuantity)
+    // .then(Notifications.showAlert("success", `${itemName} Of Quantity ${itemQuantity} Has Been Removed From Database`))
+    .then((mess)=>{console.log(mess);})
 }

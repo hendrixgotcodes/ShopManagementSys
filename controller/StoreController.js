@@ -1,3 +1,6 @@
+"use strict";
+
+
 /**
  * @param {HTMLTableElement} tableEl
  */
