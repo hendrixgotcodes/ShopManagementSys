@@ -110,10 +110,16 @@ class Modal {
             confirmationBox.innerHTML = newDialog;
     
             const mainBodyContent = document.querySelector('.mainBody_content')
+
+            mainBodyContent.appendChild(confirmationBox);
+
     
             document.querySelector('.contentCover').classList.add('contentCover--shown')
+
+            setTimeout(()=>{
+                    mainBodyContent.querySelector(".dialog--confirmationBox").classList.add("dialog--confirmationBox--shown")
+            }, 100)
     
-            mainBodyContent.appendChild(confirmationBox);
     
     
             //Event Listener
@@ -136,8 +142,9 @@ function closeConfirmationBox(resolve, reject){
 
        // document.querySelector(".dialog--confirmationBox").querySelector('.img_close').removeEventListener("click",closeConfirmationBox)
        // document.querySelector(".dialog--confirmationBox").querySelector(".dialogRevert").removeEventListener("click",closeConfirmationBox)
-
         mainBodyContent.querySelector('.modal').remove();
+
+        
         document.querySelector('.contentCover').classList.remove('contentCover--shown')
 
         resolve()
@@ -174,6 +181,7 @@ function closePromptBox(resolve, reject){
     }
 }
 
+// Validates password provided in prompt box and removes removes specified element
 function confirmRemove(itemName, resolve, reject){
 
         console.log(itemName);

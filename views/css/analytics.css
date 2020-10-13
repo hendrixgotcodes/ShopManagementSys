@@ -582,7 +582,9 @@ body {
       z-index: 11;
       border-radius: 10px;
       top: 24%;
-      left: 30%;
+      left: 26%;
+      transition: .5s;
+      transform: scale(0);
       background-color: #F1F2F2; }
       .main_body .mainBody_content .dialog--confirmationBox .dialogContainer {
         width: 100%;
@@ -646,6 +648,8 @@ body {
           transition: .3s; }
           .main_body .mainBody_content .dialog--confirmationBox .dialogFooter .dialogRevert:hover {
             background-color: #487966; }
+    .main_body .mainBody_content .dialog--confirmationBox--shown {
+      transform: scale(1); }
     .main_body .mainBody_content .dialog--promptBox {
       position: absolute;
       width: 40%;
@@ -653,7 +657,7 @@ body {
       z-index: 11;
       border-radius: 10px;
       top: 24%;
-      left: 30%;
+      left: 26%;
       background-color: #F1F2F2; }
       .main_body .mainBody_content .dialog--promptBox .dialogContainer {
         width: 100%;
@@ -692,7 +696,8 @@ body {
           height: 20%;
           border: 1px solid #646766;
           padding: 1rem;
-          border-radius: 3px; }
+          border: 2px solid #35594B;
+          border-radius: 6px; }
       .main_body .mainBody_content .dialog--promptBox .dialogFooter {
         height: 18%;
         width: 100%;

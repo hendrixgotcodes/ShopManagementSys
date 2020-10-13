@@ -375,7 +375,9 @@
     z-index: 11;
     border-radius: 10px;
     top: 24%;
-    left: 30%;
+    left: 26%;
+    transition: .5s;
+    transform: scale(0);
 
     background-color: $OFFWHITE;
 
@@ -462,6 +464,11 @@
         }
     }
 }
+.dialog--confirmationBox--shown{
+    transform: scale(1);
+}
+
+
 
 .dialog--promptBox{
     position: absolute;
@@ -470,7 +477,7 @@
     z-index: 11;
     border-radius: 10px;
     top: 24%;
-    left: 30%;
+    left: 26%;
     background-color: $OFFWHITE;
 
     & .dialogContainer{
@@ -521,7 +528,8 @@
             height: 20%;
             border: 1px solid $primary_black;
             padding: 1rem;
-            border-radius: 3px;
+            border: 2px solid $primary_green;
+            border-radius: 6px;
         }
     }
     & .dialogFooter{

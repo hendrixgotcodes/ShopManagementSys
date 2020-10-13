@@ -28,6 +28,28 @@ class Notifications{
     static hideNotification(){
         notification_banner.style.transform = "translateX(100%)"
     }
+
+    static showAlert(type, message){
+
+        type = type.toLowerCase();
+
+        let bGColor;
+
+        switch (type){
+            case 'success':
+                bGColor = "#12A89D";
+                break;
+
+            case 'warning':
+                bGColor = " #ce2727";
+                break;
+
+            default:
+                bGColor = "#12A89D"
+        }
+
+        
+    }
 }
 
 

@@ -1,0 +1,179 @@
+@import "./components/fonts";
+@import "./components/variables";
+@import "./base/reset";
+@import "./utilities/toolTips.scss";
+
+body {
+    height: 100vh;
+    display: flex;
+    background-color: $OFFWHITE;
+    position: relative;
+    overflow: hidden;
+
+    .contentCover{
+        position: absolute;
+        top: 0;
+        left: 0;
+        transition: background-color .3s;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 10;
+    }
+    .contentCover--shown{
+        background-color: rgba($color: #000000, $alpha: .4);
+        pointer-events: fill;
+    }
+
+}
+
+
+.tabItem {
+    outline-color: lighten($color: $primary_green, $amount: 15);
+
+}
+
+.main_menu {
+    width: 9%;
+    background-color: $primary_green;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.menu_a {
+    width: 100%;
+    height: 43%;
+
+    .lbl_storeName {
+        -webkit-app-region: drag;
+        width: 100%;
+        display: block;
+        text-align: center;
+        box-shadow: 0px 3px 6px rgba($color: #000000, $alpha: 0.26);
+        height: 18%;
+        padding: 5% 10%;
+        z-index: 4;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        & img {
+            width: 60%;
+            height: 85%;
+        }
+    }
+
+    .menu_iconsContainer {
+        width: 100%;
+        height: 85%;
+
+        .current {
+            background-color: darken($color: $primary_green, $amount: 5);
+        }
+
+        .menu_icons {
+            cursor: pointer;
+            width: 100%;
+            height: 33.33%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: 0.3s;
+
+            & img {
+                width: 48%;
+                height: 45%;
+            }
+
+            &:hover {
+                background-color: darken($color: $primary_green, $amount: 5);
+            }
+        }
+
+        #menuIcon_png {
+            width: 28%;
+            height: 41%;
+        }
+    }
+}
+
+.menu_b {
+    width: 100%;
+    // background-color: red;
+    height: 20%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+    & center {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+
+        & .menu_items {
+            height: 13%;
+            cursor: pointer;
+
+            &:nth-child(1) {
+                margin-right: 13%;
+            }
+        }
+    }
+
+    // .menuB_cb{
+    //     position: absolute;
+    //     top: 50%;
+    //     left: 60%;
+    // }
+}
+
+.main_body {
+    width: 91%;
+    height: 100%;
+    font-family: 'Roboto';
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    
+
+    @import '../scss/layout/titleBar_profits';
+
+
+
+    .mainBody_content {
+        width: 100%;
+        height: 89.5%;
+        justify-self: center;
+        position: relative;
+        overflow: hidden;
+
+        @import '../scss/layout/toolBar_store';
+
+
+        .contentContainer {
+            width: 100%;
+            height: 90%;
+            // position: relative;
+
+            @import '../scss/layout/tables/storeTables_profits';
+
+
+        }
+
+        @import '../scss/utilities/modals';
+
+       
+    }
+
+    @import '../scss/utilities/alerts';
+
+    @import '../scss/layout/footer_store';
+}
