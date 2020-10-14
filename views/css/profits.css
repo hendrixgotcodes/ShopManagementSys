@@ -286,7 +286,10 @@ body {
           top: 30%;
           border-top-right-radius: 3px;
           border-bottom-right-radius: 3px;
-          outline-color: #35594B; }
+          outline-color: #35594B;
+          display: flex;
+          justify-content: center;
+          align-items: center; }
       .main_body .mainBody_content .content_toolBar .toolBar_select {
         width: 13%;
         margin-left: 1rem;

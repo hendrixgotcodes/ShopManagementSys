@@ -63,10 +63,26 @@
             border-color: $secondary_red;
            background-color: $secondary_red;
            color: $WHITE;
+           display: flex;
+           justify-content: center;
+           align-items: center;
+           transition: .5s;
 
            &:hover{
                background-color: lighten($color: $secondary_red, $amount: 8);
            }
+
+           & img{
+               width: 17%;
+               margin-left: .2rem;
+           }
+
+           &:disabled{
+            background-color: lighten($color: $secondary_red, $amount: 14);
+            border-color: lighten($color: $secondary_red, $amount: 16);
+            opacity: .6;
+            cursor: default;
+        }
         }
 
         .btn_edit{
@@ -74,10 +90,27 @@
             border-color: $primary_blue;
            background-color: $primary_blue;
            color: $WHITE;
+           display: flex;
+           justify-content: center;
+           align-items: center;
+           transition: .5s;
+
 
            &:hover{
                background-color: lighten($color: $primary_blue, $amount: 8);
            }
+
+           &:disabled{
+               background-color: lighten($color: $primary_blue, $amount: 14);
+               border-color: lighten($color: $primary_blue, $amount: 16);
+               opacity: .6;
+               cursor: default;
+           }
+
+           & img{
+                width: 15%;
+                margin-left: .3rem;
+            }
         }
 
 

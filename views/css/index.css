@@ -198,26 +198,31 @@ body {
       font-weight: 600;
       font-size: 1.2rem;
       position: relative; }
+      .loginForm_center .loginForm_fields .form_lbl .tb_label {
+        background-color: #12A89D;
+        padding: .25rem;
+        border-top-left-radius: 4px;
+        border-top-right-radius: 4px; }
       .loginForm_center .loginForm_fields .form_lbl .form_tb {
         width: 100%;
         height: 85%;
-        margin-top: .3rem;
+        margin-top: .0rem;
         border: 5px solid rgba(97, 224, 174, 0.3);
         border-radius: 4px;
         padding: .5rem;
         outline: none;
         font-size: 1.2rem;
-        color: #3e4040;
+        color: #575a59;
         transition: border-color .3s; }
         .loginForm_center .loginForm_fields .form_lbl .form_tb:focus {
-          border-color: #61e0ae; }
+          border-color: #12A89D; }
       .loginForm_center .loginForm_fields .form_lbl .form_pass_visibility {
         position: absolute;
         width: 10%;
         background-color: rgba(53, 89, 75, 0.8);
         height: 73%;
         right: 1%;
-        top: 45%;
+        top: 38%;
         display: flex;
         justify-content: center;
         align-items: center;

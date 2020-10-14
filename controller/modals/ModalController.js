@@ -126,19 +126,30 @@ class Modal {
 
     }
 
-    static openItemForm(row, editForm){
+    static openItemForm(row="", editForm){
 
         return new Promise((resolve, reject)=>{
 
 
             let formTitle = editForm === true ?  "Edit Stock" : "New Stock";
 
-            const itemName = row.querySelector(".td_Names").innerText;
-            const brand  =  row.querySelector(".td_Brands").innerText;
-            const category = row.querySelector(".td_Category").innerText;
-            const itemQuantity = row.querySelector(".td_Stock").innerText;
-            const sellingPrice = row.querySelector(".td_Price").innerText;
+            let itemName = "";
+            let brand  =  ""
+            let category = ""
+            let itemQuantity = ""
+            let sellingPrice = ""
+
+           
+
+            if(row !==""){
     
+                itemName = row.querySelector(".td_Names").innerText;
+                brand  =  row.querySelector(".td_Brands").innerText;
+                category = row.querySelector(".td_Category").innerText;
+                itemQuantity = row.querySelector(".td_Stock").innerText;
+                sellingPrice = row.querySelector(".td_Price").innerText;
+            }
+            
             const boxTemplate = 
             `
                 <div class="dialogContainer fullwidth aDialog" role="container">
@@ -152,18 +163,18 @@ class Modal {
     
                     <form class="dialogBody fullwidth" role="body">
     
-                            <input type="text" class="dialogForm_tb fullwidth" value=${itemName} aria-placeholder="Item Name" placeholder="Item Name" id="name" />
+                            <input type="text" class="dialogForm_tb fullwidth" value="${itemName}" aria-placeholder="Item Name" placeholder="Item Name" id="name" />
     
                          <div class="flexContainer">   
-                            <input type="text" class="dialogForm_tb halfwidth" value=${category} aria-placeholder="Item Category" placeholder="Item Category" id="category" />
+                            <input type="text" class="dialogForm_tb halfwidth" value="${category}" aria-placeholder="Item Category" placeholder="Item Category" id="category" />
     
-                            <input type="text" class="dialogForm_tb halfwidth" value=${brand} aria-placeholder="Item Brand" placeholder="Item Brand" id="brand" />
+                            <input type="text" class="dialogForm_tb halfwidth" value="${brand}" aria-placeholder="Item Brand" placeholder="Item Brand" id="brand" />
     
-                            <input type="number" class="dialogForm_tb halfwidth" value=${itemQuantity} aria-placeholder="Total in inventory" placeholder="Total In Inventory" id="total" />
+                            <input type="number" class="dialogForm_tb halfwidth" value="${itemQuantity}" aria-placeholder="Total in inventory" placeholder="Total In Inventory" id="total" />
     
                             <input type="number" class="dialogForm_tb halfwidth" aria-placeholder="Cost Price" placeholder="Cost Price" id="costPrice" />
     
-                            <input type="number" class="dialogForm_tb halfwidth" value=${sellingPrice} aria-placeholder="Unit Cost" placeholder="Selling Price" id="sellingPrice" />
+                            <input type="number" class="dialogForm_tb halfwidth" value="${sellingPrice}" aria-placeholder="Unit Cost" placeholder="Selling Price" id="sellingPrice" />
     
                          </div>
     
@@ -198,7 +209,7 @@ class Modal {
                 }, 100)
     
     
-                itemForm.querySelector('.img_close').addEventListener("click",()=>closeConfirmationBox(resolve, reject))
+                itemForm.querySelector('.img_close').addEventListener("click",()=>closeConfirmationBox(resolve, reject, true))
             
 
 
@@ -213,7 +224,7 @@ class Modal {
 }
 
 ///Event Listener Functions
-function closeConfirmationBox(resolve, reject){
+function closeConfirmationBox(resolve, reject, retu){
     if(mainBodyContent.querySelector('.modal') !== null){
 
        // document.querySelector(".dialog--confirmationBox").querySelector('.img_close').removeEventListener("click",closeConfirmationBox)
@@ -223,7 +234,14 @@ function closeConfirmationBox(resolve, reject){
         
         document.querySelector('.contentCover').classList.remove('contentCover--shown')
 
-        resolve()
+        if(retu === true){
+            resolve("edited")
+        }
+        else{
+            resolve()
+        }
+
+        
     }
         
 }
