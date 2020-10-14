@@ -42,3 +42,37 @@
 .banner_arrow--show{
     display: block;
 }
+
+
+.alertBanner{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 10%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    color: $WHITE;
+    background-color: $secondary_red;
+    transition: .5s;
+    transform: translateY(-100%);
+
+    & img{
+        width: 2%;
+        position: absolute;
+        top: 25%;
+        left: 2%;
+        border-radius: 4px;
+        transition: .3s;
+
+            &:hover{
+                box-shadow: -1px 2px 6px rgba($color: #000000, $alpha: 0.16);
+            }
+    }
+}
+
+.alertBanner--shown{
+    transform: translateY(0%);
+}

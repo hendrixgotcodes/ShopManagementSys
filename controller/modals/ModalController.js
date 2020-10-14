@@ -9,10 +9,8 @@ class Modal {
 
         console.log(resolve, reject);
 
-        // return new Promise((resolve,reject)=>{
 
-
-                    const newDialog = 
+                    const boxTemplate = 
                 `
                     <div class="dialogContainer fullwidth aDialog" role="container">
                         <div class="dialogHeader" role="header">
@@ -44,7 +42,7 @@ class Modal {
                 promptBox.className = "modal dialog--promptBox";
                 promptBox.setAttribute("aria-placeholder", "Prompt Box");
 
-                promptBox.innerHTML = newDialog;
+                promptBox.innerHTML = boxTemplate;
 
                 const mainBodyContent = document.querySelector('.mainBody_content')
 
@@ -60,10 +58,6 @@ class Modal {
                 })
 
 
-
-            
-        // })
-
         
 
 
@@ -75,7 +69,7 @@ class Modal {
     static openConfirmationBox(itemName, itemCount){
 
         return new Promise((resolve, reject)=>{
-            const newDialog = 
+            const boxTemplate = 
             `
                 <div class="dialogContainer fullwidth aDialog" role="container">
                     <div class="dialogHeader" role="header">
@@ -107,7 +101,7 @@ class Modal {
             confirmationBox.className = "modal dialog--confirmationBox";
             confirmationBox.setAttribute("aria-placeholder", "Confirm Box");
     
-            confirmationBox.innerHTML = newDialog;
+            confirmationBox.innerHTML = boxTemplate;
     
             const mainBodyContent = document.querySelector('.mainBody_content')
 
@@ -129,7 +123,89 @@ class Modal {
                 openPrompt(itemName, resolve, reject)
             })
         })
-       
+
+    }
+
+    static openItemForm(row, editForm){
+
+        return new Promise((resolve, reject)=>{
+
+
+            let formTitle = editForm === true ?  "Edit Stock" : "New Stock";
+
+            const itemName = row.querySelector(".td_Names").innerText;
+            const brand  =  row.querySelector(".td_Brands").innerText;
+            const category = row.querySelector(".td_Category").innerText;
+            const itemQuantity = row.querySelector(".td_Stock").innerText;
+            const sellingPrice = row.querySelector(".td_Price").innerText;
+    
+            const boxTemplate = 
+            `
+                <div class="dialogContainer fullwidth aDialog" role="container">
+                    <div class="dialogHeader" role="header">
+    
+                        ${formTitle}    
+    
+                        <img class="img_close" src="../Icons/Modals/close.svg" alt="Close Modal" />
+    
+                    </div>
+    
+                    <form class="dialogBody fullwidth" role="body">
+    
+                            <input type="text" class="dialogForm_tb fullwidth" value=${itemName} aria-placeholder="Item Name" placeholder="Item Name" id="name" />
+    
+                         <div class="flexContainer">   
+                            <input type="text" class="dialogForm_tb halfwidth" value=${category} aria-placeholder="Item Category" placeholder="Item Category" id="category" />
+    
+                            <input type="text" class="dialogForm_tb halfwidth" value=${brand} aria-placeholder="Item Brand" placeholder="Item Brand" id="brand" />
+    
+                            <input type="number" class="dialogForm_tb halfwidth" value=${itemQuantity} aria-placeholder="Total in inventory" placeholder="Total In Inventory" id="total" />
+    
+                            <input type="number" class="dialogForm_tb halfwidth" aria-placeholder="Cost Price" placeholder="Cost Price" id="costPrice" />
+    
+                            <input type="number" class="dialogForm_tb halfwidth" value=${sellingPrice} aria-placeholder="Unit Cost" placeholder="Selling Price" id="sellingPrice" />
+    
+                         </div>
+    
+                    </form>
+    
+                    <div class="dialogFooter fullwidth" role="footer" aria-placeholder="Confirm here">
+                        <div class="dialogConfirm">
+                            Save
+                            <img src="../Icons/Modals/add.svg" alt="Confirmation Message" />
+                        </div>
+                    </div>
+    
+                </div>
+            `
+    
+            const itemForm = document.createElement('div');
+                itemForm.className = "modal dialog--itemFormBox";
+                itemForm.classList.add("dialog--promptBox")
+                itemForm.setAttribute("aria-placeholder", "Confirm Box");
+        
+                itemForm.innerHTML = boxTemplate;
+        
+                const mainBodyContent = document.querySelector('.mainBody_content');
+    
+                mainBodyContent.appendChild(itemForm);
+    
+        
+                document.querySelector('.contentCover').classList.add('contentCover--shown')
+    
+                setTimeout(()=>{
+                        mainBodyContent.querySelector(".dialog--itemFormBox").classList.add("dialog--shown")
+                }, 100)
+    
+    
+                itemForm.querySelector('.img_close').addEventListener("click",()=>closeConfirmationBox(resolve, reject))
+            
+
+
+        })
+
+        
+
     }
 
     
@@ -195,7 +271,10 @@ function confirmRemove(itemName, resolve, reject){
 
             TableController.removeItem(itemName)
 
-            resolve()
+            resolve("removed")
+        }
+        else{
+            reject(new Error("wrongPassword"))
         }
 
 }

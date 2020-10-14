@@ -31,6 +31,8 @@ class Notifications{
 
     static showAlert(type, message){
 
+        const mainBodyContent = document.querySelector(".mainBody_content");
+
         type = type.toLowerCase();
 
         let bGColor;
@@ -41,6 +43,10 @@ class Notifications{
                 break;
 
             case 'warning':
+                bGColor = "#E17C38";
+                break;
+
+            case 'error':
                 bGColor = " #ce2727";
                 break;
 
@@ -48,7 +54,66 @@ class Notifications{
                 bGColor = "#12A89D"
         }
 
+        let alertTemplate = 
+        `
+            <img class="img_close" src="../Icons/Modals/closeWhite.svg" alt="Close Modal" />
+            <div class="alertContent">
+                ${message}
+            </div>
+        `
+
+        let alert = document.createElement("div");
+        alert.innerHTML = alertTemplate;
+        alert.className = "alertBanner";
+        alert.style.backgroundColor = bGColor;
+
+
+       (function Animate(){
+           return new Promise((resolve, reject)=>{
+                    mainBodyContent.appendChild(alert);
+                    resolve();
+           })
+       })().then(()=>{
+
+            setTimeout(() => {
+
+                mainBodyContent.querySelector(".alertBanner").classList.add("alertBanner--shown")
+                
+            }, 300)
+
+            //Automatically remove after three seconds
+            setTimeout(()=>{
+
+                (
+                    function Animate(){
+                        return new Promise((resolve, reject)=>{
+
+                            mainBodyContent.querySelector(".alertBanner").classList.remove("alertBanner--shown")
+                            
+                            // function will resolve after animation is document (animation takes .5s, function resolves after .6s)
+                            setTimeout(() => {
+                                resolve()
+                            }, 600);
+                        })
+                    }
+                )()
+                .then(
+                    ()=>{
+
+                        //Removing alertbanner from DOM to increase performance
+                        mainBodyContent.querySelector(".alertBanner").remove();
+                        
+                    }
+                )
+
+            }, 5000)   
+
+
+       })
+
         
+
+
     }
 }
 

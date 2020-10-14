@@ -452,13 +452,13 @@ body {
             flex-direction: row-reverse; }
             .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .edit {
               width: 50%;
-              background-color: #EFB526;
+              background-color: #35594B;
               display: flex;
               justify-content: center;
               align-items: center;
               cursor: pointer;
               transition: .3s;
-              color: #EFB526; }
+              color: #35594B; }
             .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .del {
               width: 50%;
               background-color: #ce2727;
@@ -771,6 +771,8 @@ body {
       left: 26%;
       transition: .5s;
       transform: scale(0);
+      color: #646766;
+      font-size: 1.2rem;
       background-color: #F1F2F2; }
       .main_body .mainBody_content .dialog--confirmationBox .dialogContainer {
         width: 100%;
@@ -781,12 +783,16 @@ body {
         flex-direction: column; }
       .main_body .mainBody_content .dialog--confirmationBox .dialogHeader {
         height: 15%;
+        font-size: 1.4rem;
         box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
         padding: .8rem 1rem;
         width: 100%;
         display: flex;
         justify-content: space-between;
-        align-items: center; }
+        align-items: center;
+        background-color: #fff;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px; }
         .main_body .mainBody_content .dialog--confirmationBox .dialogHeader img {
           transition: .3s;
           width: 5%; }
@@ -837,6 +843,8 @@ body {
     .main_body .mainBody_content .dialog--confirmationBox--shown {
       transform: scale(1); }
     .main_body .mainBody_content .dialog--promptBox {
+      color: #646766;
+      font-size: 1.2rem;
       position: absolute;
       width: 40%;
       height: 55%;
@@ -853,13 +861,20 @@ body {
         align-items: center;
         flex-direction: column; }
       .main_body .mainBody_content .dialog--promptBox .dialogHeader {
+        font-size: 1.4rem;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
         height: 15%;
         box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
         padding: .8rem 1rem;
         width: 100%;
         display: flex;
         justify-content: space-between;
-        align-items: center; }
+        align-items: center;
+        background-color: #fff;
+        color: #35594B;
+        font-size: 1.4rem;
+        z-index: 1; }
         .main_body .mainBody_content .dialog--promptBox .dialogHeader img {
           transition: .3s;
           width: 5%; }
@@ -904,8 +919,85 @@ body {
           transition: .3s; }
           .main_body .mainBody_content .dialog--promptBox .dialogFooter .dialogConfirm:hover {
             background-color: #dd4b4b; }
+    .main_body .mainBody_content .dialog--itemFormBox {
+      font-size: 1.2rem;
+      width: 45%;
+      height: 65%;
+      top: 20%;
+      left: 25%;
+      transform: scale(0);
+      transition: .5s;
+      color: #646766; }
+      .main_body .mainBody_content .dialog--itemFormBox .dialogHeader {
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        height: 15%;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+        padding: .8rem 1rem;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #fff;
+        color: #35594B;
+        font-size: 1.4rem;
+        z-index: 1; }
+      .main_body .mainBody_content .dialog--itemFormBox .dialogContainer {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between; }
+        .main_body .mainBody_content .dialog--itemFormBox .dialogContainer form {
+          height: 70%;
+          width: 100%;
+          display: inline-block; }
+          .main_body .mainBody_content .dialog--itemFormBox .dialogContainer form input {
+            margin-bottom: .8rem;
+            font-size: 1rem;
+            color: #646766; }
+          .main_body .mainBody_content .dialog--itemFormBox .dialogContainer form .flexContainer {
+            height: 80%;
+            display: flex;
+            justify-content: space-between;
+            flex-direction: row;
+            align-items: center;
+            width: 100%;
+            flex-wrap: wrap; }
+            .main_body .mainBody_content .dialog--itemFormBox .dialogContainer form .flexContainer .halfwidth {
+              display: block;
+              height: 25%;
+              width: 48%;
+              margin-right: 2%; }
+      .main_body .mainBody_content .dialog--itemFormBox .dialogFooter {
+        justify-self: flex-end;
+        height: 15%;
+        width: 100%;
+        display: flex;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px; }
+        .main_body .mainBody_content .dialog--itemFormBox .dialogFooter .dialogConfirm {
+          height: 100%;
+          width: 100%;
+          font-size: 1.4rem;
+          background-color: #35594B;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          color: #fff;
+          border-bottom-right-radius: 10px;
+          border-bottom-left-radius: 10px;
+          cursor: pointer;
+          transition: .3s; }
+          .main_body .mainBody_content .dialog--itemFormBox .dialogFooter .dialogConfirm:hover {
+            background-color: #487966; }
+          .main_body .mainBody_content .dialog--itemFormBox .dialogFooter .dialogConfirm img {
+            width: 4%;
+            margin-left: .5rem; }
+    .main_body .mainBody_content .dialog--shown {
+      transform: scale(1); }
     .main_body .mainBody_content .fullwidth {
       width: 100%; }
+    .main_body .mainBody_content .halfwidth {
+      width: 50%; }
   .main_body .notification_banner {
     width: 20%;
     height: 15%;
@@ -940,6 +1032,31 @@ body {
     display: none; }
   .main_body .banner_arrow--show {
     display: block; }
+  .main_body .alertBanner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 10%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    color: #fff;
+    background-color: #ce2727;
+    transition: .5s;
+    transform: translateY(-100%); }
+    .main_body .alertBanner img {
+      width: 2%;
+      position: absolute;
+      top: 25%;
+      left: 2%;
+      border-radius: 4px;
+      transition: .3s; }
+      .main_body .alertBanner img:hover {
+        box-shadow: -1px 2px 6px rgba(0, 0, 0, 0.16); }
+  .main_body .alertBanner--shown {
+    transform: translateY(0%); }
   .main_body .footer {
     justify-self: flex-end;
     width: 100%;

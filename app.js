@@ -70,12 +70,15 @@ ipcMain.on('loadStore', (e, userType) => {
 ipcMain.on('loadInventory',(e, userType)=>{
     mainWindow.loadFile('./views/html/inventory.html');
     mainWindow.userType = userType;
-    console.log(mainWindow.userType);
 });
 
 ipcMain.on('loadAnalytics',(e, userType)=>{
     mainWindow.loadFile('./views/html/analytics.html');
     mainWindow.userType = userType;
-    console.log(mainWindow.userType);
+});
+
+ipcMain.on('loadProfits',(e, userType)=>{
+    mainWindow.loadFile('./views/html/profits.html');
+    mainWindow.userType = userType;
 });
 
