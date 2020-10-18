@@ -5,7 +5,7 @@ const TableController = require("../utilities/TableController");
 
 class Modal {
 
-    static openPrompt(itemName, resolve, reject, item=""){
+    static openPrompt(itemName, resolve, reject, justVerify=""){
 
         console.log(resolve, reject);
 
@@ -54,7 +54,7 @@ class Modal {
                 promptBox.querySelector('.img_close').addEventListener("click",()=>{closePromptBox(resolve, reject)})
 
                 promptBox.querySelector('.dialogConfirm').addEventListener("click", ()=>{
-                    confirmRemove(itemName, resolve, reject, item)      //ItemName and Item are basically the same but kinda acts as flags to polymorphism of this function
+                    confirmRemove(itemName, resolve, reject, justVerify)      //ItemName and Item are basically the same but kinda acts as flags to polymorphism of this function
                 });
 
 
@@ -230,11 +230,8 @@ class Modal {
 
                         closeModal(itemForm);
 
-                        let relsolved = openPrompt("",resolve,reject, name)
+                        openPrompt("",resolve,reject, [true, name])
 
-                        
-
-                        relsolved(["edited", name])
 
                         // closeConfirmationBox(resolve, reject, true, name)                        
 
@@ -285,7 +282,7 @@ function closeConfirmationBox(resolve, reject, edited="", name=""){
 }
 
 //For Confirmation Box
-function openPrompt(itemName, resolve, reject, item=""){
+function openPrompt(itemName, resolve, reject, justVerify){
 
     if(mainBodyContent.querySelector('.modal') !== null){
 
@@ -296,12 +293,7 @@ function openPrompt(itemName, resolve, reject, item=""){
     }
 
 
-    Modal.openPrompt(itemName, resolve, reject, item)
-    .then(
-        ()=>{
-            resolve();
-        }
-    );
+    Modal.openPrompt(itemName, resolve, reject, justVerify)
 }
 
 
@@ -319,7 +311,7 @@ function closePromptBox(resolve, reject){
 }
 
 // Validates password provided in prompt box and removes removes specified element
-function confirmRemove(itemName, resolve, reject, name=""){
+function confirmRemove(itemName, resolve, reject, justVerify=""){
 
         const modal =  mainBodyContent.querySelector('.modal');
 
@@ -333,8 +325,11 @@ function confirmRemove(itemName, resolve, reject, name=""){
 
             document.querySelector('.contentCover').classList.remove('contentCover--shown')
 
+            if(justVerify[0] === true){
 
-            resolve ()
+                resolve (["edited", justVerify[1]])
+                return;
+            }
 
             TableController.removeItem(itemName)
 
