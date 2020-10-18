@@ -13,6 +13,12 @@
 //     }
 
 // }
+
+.modal_hide{
+    transition: .3s;
+    transform: scale(0);
+}
+
 .settingsModal {
     position: absolute;
     top: 10%;

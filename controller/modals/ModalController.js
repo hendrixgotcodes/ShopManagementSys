@@ -5,7 +5,7 @@ const TableController = require("../utilities/TableController");
 
 class Modal {
 
-    static openPrompt(itemName, resolve, reject){
+    static openPrompt(itemName, resolve, reject, item=""){
 
         console.log(resolve, reject);
 
@@ -54,8 +54,8 @@ class Modal {
                 promptBox.querySelector('.img_close').addEventListener("click",()=>{closePromptBox(resolve, reject)})
 
                 promptBox.querySelector('.dialogConfirm').addEventListener("click", ()=>{
-                    confirmRemove(itemName, resolve, reject)
-                })
+                    confirmRemove(itemName, resolve, reject, item)      //ItemName and Item are basically the same but kinda acts as flags to polymorphism of this function
+                });
 
 
         
@@ -207,9 +207,44 @@ class Modal {
                 setTimeout(()=>{
                         mainBodyContent.querySelector(".dialog--itemFormBox").classList.add("dialog--shown")
                 }, 100)
+                
     
-    
-                itemForm.querySelector('.img_close').addEventListener("click",()=>closeConfirmationBox(resolve, reject, true))
+                
+                //Event Listeners
+                itemForm.querySelector('.img_close').addEventListener("click",exitBox);
+
+                itemForm.querySelector('.dialogConfirm').addEventListener("click", saveFormData);
+
+                function saveFormData(){
+
+                    //Form Data
+                    const name = itemForm.querySelector('#name').value;
+                    const category = itemForm.querySelector('#category').value;
+                    const brand = itemForm.querySelector('#brand').value;
+                    const stock = itemForm.querySelector('#total').value;
+                    const price = itemForm.querySelector('#sellingPrice').value;
+
+                    if(name !== "" || category !== "" || brand !== "" || stock !== "" || price !== ""){
+
+                        TableController.editItem(row, name, brand, category, stock, price);
+
+                        closeModal(itemForm);
+
+                        let relsolved = openPrompt("",resolve,reject, name)
+
+                        
+
+                        relsolved(["edited", name])
+
+                        // closeConfirmationBox(resolve, reject, true, name)                        
+
+                    }
+                  
+                }
+
+                function exitBox(){
+                    closeConfirmationBox(resolve, reject)
+                }
             
 
 
@@ -224,7 +259,7 @@ class Modal {
 }
 
 ///Event Listener Functions
-function closeConfirmationBox(resolve, reject, retu){
+function closeConfirmationBox(resolve, reject, edited="", name=""){
     if(mainBodyContent.querySelector('.modal') !== null){
 
        // document.querySelector(".dialog--confirmationBox").querySelector('.img_close').removeEventListener("click",closeConfirmationBox)
@@ -234,8 +269,8 @@ function closeConfirmationBox(resolve, reject, retu){
         
         document.querySelector('.contentCover').classList.remove('contentCover--shown')
 
-        if(retu === true){
-            resolve("edited")
+        if(edited === true){
+            resolve(["edited", name])
         }
         else{
             resolve()
@@ -243,11 +278,14 @@ function closeConfirmationBox(resolve, reject, retu){
 
         
     }
+    else{
+        reject(new Error("Sorry, an error occured"))
+    }
         
 }
 
 //For Confirmation Box
-function openPrompt(itemName, resolve, reject){
+function openPrompt(itemName, resolve, reject, item=""){
 
     if(mainBodyContent.querySelector('.modal') !== null){
 
@@ -258,7 +296,12 @@ function openPrompt(itemName, resolve, reject){
     }
 
 
-    Modal.openPrompt(itemName, resolve, reject);
+    Modal.openPrompt(itemName, resolve, reject, item)
+    .then(
+        ()=>{
+            resolve();
+        }
+    );
 }
 
 
@@ -276,16 +319,22 @@ function closePromptBox(resolve, reject){
 }
 
 // Validates password provided in prompt box and removes removes specified element
-function confirmRemove(itemName, resolve, reject){
+function confirmRemove(itemName, resolve, reject, name=""){
 
-        console.log(itemName);
+        const modal =  mainBodyContent.querySelector('.modal');
+
 
         const Password = document.querySelector('.dialog--promptBox').querySelector(".modal_pass").value;
 
         if(Password === "Samuel"){
-            mainBodyContent.querySelector('.modal').remove();
+
+            closeModal(modal);
+           
 
             document.querySelector('.contentCover').classList.remove('contentCover--shown')
+
+
+            resolve ()
 
             TableController.removeItem(itemName)
 
@@ -293,8 +342,22 @@ function confirmRemove(itemName, resolve, reject){
         }
         else{
             reject(new Error("wrongPassword"))
+
+            closeModal(modal)
+
+            document.querySelector('.contentCover').classList.remove('contentCover--shown')
+            
         }
 
+}
+
+
+function closeModal(modal){
+    modal.classList.add('modal_hide');
+
+    setTimeout(()=>{
+        modal.remove();
+    },400);
 }
 
 export default Modal;

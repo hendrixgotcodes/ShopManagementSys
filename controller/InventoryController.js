@@ -178,8 +178,8 @@ function editItem(row){
     Modal.openItemForm(row, true)
     .then((result)=>{
 
-        if(result === "edited"){
-            Notifications.showAlert("success", `${itemName} Has Been Edited Successfully`);
+        if(result[0] === "edited"){
+            Notifications.showAlert("success", `${itemName} Has Been Successfully Changed To ${result[1]}`);
         }
 
     });
@@ -251,11 +251,15 @@ function editMultiple(){
     Modal.openItemForm(row, true)
     .then((result)=>{
 
-        if(result === "edited"){
+        if(result[0] === "edited"){
 
-            TableController.removeItem(itemName);
+            // TableController.removeItem(itemName);
 
-            Notifications.showAlert("success", `${itemName} Has Been Edited Successfully`);
+            // TableController.
+
+            Notifications.showAlert("success", `${itemName} Has Been Successfully Changed To ${result[1]}`);
+
+            row.querySelector(".td_cb").querySelector(".selectOne").checked = false;
 
             if(rowBucket.length === 0 ){
 
@@ -270,7 +274,9 @@ function editMultiple(){
 
      
 
-    });
+    }).catch((error)=>{
+        Notifications.showAlert("error", error)
+    })
 
   
 

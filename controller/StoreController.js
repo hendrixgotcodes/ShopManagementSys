@@ -226,8 +226,8 @@ function toggleRowCB(row){
 
     if(CB.checked === true){
         CB.checked = false;
-        row.style.transform = "translateX(0px)"
-        row.style.outline = "none"
+        // row.style.transform = "translateX(0px)"
+        // row.style.outline = "none"
 
 
 
@@ -239,6 +239,7 @@ function toggleRowCB(row){
         if(selectedRows === 0){
             disableDropDownList();
 
+            // cartCount.style.transform = "scale(0)"
             cartCount.style.transform = "scale(0)"
             cartCount.innerText = 0;
         }

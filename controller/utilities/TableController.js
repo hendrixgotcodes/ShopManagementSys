@@ -25,6 +25,14 @@ class TableController{
         })
             
     }
+
+    static editItem(row, name, brand, category, stock, price){
+        row.querySelector('.td_Names').innerText =  name;
+        row.querySelector('.td_Brands').innerText = brand;
+        row.querySelector('.td_Category').innerText = category;
+        row.querySelector('.td_Stock').innerText = stock;
+        row.querySelector('.td_Price').innerText = price;
+    }
    
 }
 

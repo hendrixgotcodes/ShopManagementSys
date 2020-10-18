@@ -6,8 +6,10 @@ let now, hrs, mins, amPm;
 
 let blinkerOn = true;
 
+//Initially gets and sets the time
 getTime();
 
+//Repeatedly gets and sets time
 setInterval(()=>{
     blinkerOn === true ? blinker.style.display = 'none' : blinker.style.display = 'inline';
     blinkerOn === true ? blinkerOn = false : blinkerOn = true;
@@ -17,17 +19,25 @@ setInterval(()=>{
 
 }, 1000)
 
+
+//Function called to get and set time
 function getTime(){
     now = new Date();
 
     hrs = now.getHours();
     let originalHrs =hrs;
 
+    amPm = hrs >= 12 ? amPm = 'PM' : amPm= 'AM';
+
     hrs = hrs === 0 ? hrs = 12 : hrs= hrs;
     hrs = hrs > 12 ? hrs = hrs -12 : hrs = hrs;
 
-    amPm = hrs >= 12 ? amPm = 'PM' : amPm= 'AM';
+
+
     // amPm = originalHrs === 0 ? amPm = 'AM' : amPm= 'PM';
+
+    
+
 
     hour.innerHTML = hrs;
 
