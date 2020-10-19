@@ -32,6 +32,8 @@ class TableController{
         row.querySelector('.td_Category').innerText = category;
         row.querySelector('.td_Stock').innerText = stock;
         row.querySelector('.td_Price').innerText = price;
+
+        return true;
     }
    
 }

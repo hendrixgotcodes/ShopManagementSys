@@ -244,22 +244,51 @@ function editMultiple(){
 
     // const itemName = row.querySelector(".td_Names").innerText;
 
-    let row = rowBucket.pop();
+    let currentRow = rowBucket.pop();
 
-    let itemName = row.querySelector(".td_Names").innerText;
+    let itemName = currentRow.querySelector(".td_Names").innerText;
 
-    Modal.openItemForm(row, true)
+    Modal.openItemForm(currentRow, true)
     .then((result)=>{
 
         if(result[0] === "edited"){
 
-            // TableController.removeItem(itemName);
+           
+            let row, name, brand, category, stock, price;
 
-            // TableController.
+            let promisedRow = result[1];
 
-            Notifications.showAlert("success", `${itemName} Has Been Successfully Changed To ${result[1]}`);
 
-            row.querySelector(".td_cb").querySelector(".selectOne").checked = false;
+            [,row, name, brand, category, category, stock, price] = promisedRow;
+
+            console.log(row, name, brand, category, stock, price);
+
+            let editedInventory = new Promise(
+                (resolve, reject)=>{
+                   let done =  TableController.editItem(row, name, brand, category, stock, price);
+
+                   if(done){
+                       resolve(name);
+                   }
+                   else{
+                       reject(new Error("Sorry, An Error Occured"));
+                   }
+                }
+            );
+
+            editedInventory.then(
+                (name)=>{
+                         Notifications.showAlert("success", `${itemName} Has Been Successfully Changed To ${name}`);
+                }
+            )
+            // .catch(
+            //     (error)=>{
+            //         Notifications.showAlert("error", error);
+            //     }
+            // );
+
+
+            currentRow.querySelector(".td_cb").querySelector(".selectOne").checked = false;
 
             if(rowBucket.length === 0 ){
 

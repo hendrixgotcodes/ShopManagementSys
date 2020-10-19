@@ -224,13 +224,13 @@ class Modal {
                     const stock = itemForm.querySelector('#total').value;
                     const price = itemForm.querySelector('#sellingPrice').value;
 
-                    if(name !== "" || category !== "" || brand !== "" || stock !== "" || price !== ""){
+                    if(name !== "" && category !== "" && brand !== "" && stock !== "" && price !== ""){
 
-                        TableController.editItem(row, name, brand, category, stock, price);
+                        // TableController.editItem(row, name, brand, category, stock, price);
 
                         closeModal(itemForm);
 
-                        openPrompt("",resolve,reject, [true, name])
+                        openPrompt("",resolve,reject, [true, row, name, brand, category, stock, price])
 
 
                         // closeConfirmationBox(resolve, reject, true, name)                        
@@ -282,7 +282,7 @@ function closeConfirmationBox(resolve, reject, edited="", name=""){
 }
 
 //For Confirmation Box
-function openPrompt(itemName, resolve, reject, justVerify){
+function openPrompt(itemName, resolve, reject, justVerify=""){
 
     if(mainBodyContent.querySelector('.modal') !== null){
 
@@ -327,7 +327,7 @@ function confirmRemove(itemName, resolve, reject, justVerify=""){
 
             if(justVerify[0] === true){
 
-                resolve (["edited", justVerify[1]])
+                resolve (["edited", justVerify])
                 return;
             }
 
