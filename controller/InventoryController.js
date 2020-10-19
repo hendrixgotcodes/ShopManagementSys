@@ -39,7 +39,11 @@ tableROWS.forEach((row)=>{
 
 //.del button in "Control" box of every row
 tableROWS.forEach((row)=>{
-    row.querySelector(".controls").querySelector(".del").addEventListener("click",()=>{
+    row.querySelector(".controls").querySelector(".del").addEventListener("click",(e)=>{
+
+        //Prevents selection of row
+        e.stopPropagation();
+
         deleteItem(row);
     });
 })
@@ -47,7 +51,11 @@ tableROWS.forEach((row)=>{
 
 //.edit button in "Control" box of every row
 tableROWS.forEach((row)=>{
-    row.querySelector(".controls").querySelector(".edit").addEventListener("click",()=>{
+    row.querySelector(".controls").querySelector(".edit").addEventListener("click",(e)=>{
+
+        //Prevents selection of row
+        e.stopPropagation();
+
         editItem(row);
     });
 })
@@ -179,24 +187,117 @@ function editItem(row){
     .then((result)=>{
 
         if(result[0] === "edited"){
-            Notifications.showAlert("success", `${itemName} Has Been Successfully Changed To ${result[1]}`);
+
+           
+            let row, name, brand, category, stock, price;
+
+            let promisedRow = result[1];
+
+
+            [,row, name, brand, category, stock, price] = promisedRow;
+
+            console.log(row, name, brand, category, stock, price);
+
+            let editedInventory = new Promise(
+                (resolve, reject)=>{
+                   let done =  TableController.editItem(row, name, brand, category, stock, price);
+
+                   if(done){
+                       resolve(name);
+                   }
+                   else{
+                       reject(new Error("Sorry, An Error Occured"));
+                   }
+                }
+            );
+
+            editedInventory.then(
+                (name)=>{
+                         Notifications.showAlert("success", `${itemName} Has Been Successfully Changed To ${name}`);
+                }
+            )
+            // .catch(
+            //     (error)=>{
+            //         Notifications.showAlert("error", error);
+            //     }
+            // );
+
+
+            currentRow.querySelector(".td_cb").querySelector(".selectOne").checked = false;
+
+            if(rowBucket.length === 0 ){
+
+                btnEdit.disabled = true;
+                btnDelete.disabled = true  
+        
+              }
+              else{
+                  editMultiple();
+              }
         }
 
-    });
+     
+
+    }).catch((error)=>{
+        Notifications.showAlert("error", error)
+    })
+
+    
 
 }
 
 
 function addItem(){
+
+
     Modal.openItemForm("", false)
     .then((result)=>{
 
-        if(result === "edited"){
-            Notifications.showAlert("success", `${itemName} Has Been Edited Successfully`);
+        if(result[0] === "edited"){
+
+           
+            let row, name, brand, category, stock, price;
+
+            let promisedRow = result[1];
+
+
+            [,row, name, brand, category, stock, price] = promisedRow;
+
+
+            let editedInventory = new Promise(
+                (resolve, reject)=>{
+                   let done =  TableController.createItem(name, brand, category, stock, price, [checkCB,  editItem, deleteItem, showRowControls]);
+
+                   if(done){
+                       resolve(name);
+                   }
+                   else{
+                       reject(new Error("Sorry, An Error Occured"));
+                   }
+                }
+            );
+
+            editedInventory.then(
+                (name)=>{
+
+                    
+                         Notifications.showAlert("success", `${name} Has Been Successfully Changed To Inventory`);
+                }
+            )
+            // .catch(
+            //     (error)=>{
+            //         Notifications.showAlert("error", error);
+            //     }
+            // );
+
         }
 
-    });
+     
+
+    })
+
 }
+
 
 
 //---------------------------------------------------------------------------------------------------------------
@@ -242,7 +343,6 @@ function checkCB(row){
 
 function editMultiple(){
 
-    // const itemName = row.querySelector(".td_Names").innerText;
 
     let currentRow = rowBucket.pop();
 
@@ -254,18 +354,18 @@ function editMultiple(){
         if(result[0] === "edited"){
 
            
-            let row, name, brand, category, stock, price;
+            // let row, name, brand, category, stock, price;
 
             let promisedRow = result[1];
 
 
-            [,row, name, brand, category, category, stock, price] = promisedRow;
+           let [,row, name, brand, category, stock, price] = promisedRow;
 
             console.log(row, name, brand, category, stock, price);
 
             let editedInventory = new Promise(
                 (resolve, reject)=>{
-                   let done =  TableController.editItem(row, name, brand, category, stock, price);
+                   let done =  TableController.editItem(row, name, brand, category, stock, Number.parseFloat(price));
 
                    if(done){
                        resolve(name);

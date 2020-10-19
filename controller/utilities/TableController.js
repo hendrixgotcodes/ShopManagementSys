@@ -2,6 +2,90 @@
 
 class TableController{
 
+    static createItem(name, brand, category, stock, sellingPrice, functions, costPrice="", purchased=""){
+
+        //Destructing functions
+        let checkCB= functions[0];
+        let editItem = functions[1];
+        let deleteItem = functions[2];
+        let showRowControls = functions[3];
+
+
+        const row =  document.createElement("tr");
+        
+        const rowContent = 
+        `
+        <td class="controls">
+            <div class="edit"><span>Edit</span></div>
+            <div class="del"><span>Delete</span></div>
+        </td>
+        <td class="td_cb">
+            <input disabled type="checkbox" class="selectOne" aria-placeholder="select one">
+        </td>
+        <td class="td_Names">${name}</td>
+        <td class="td_Brands">${brand}</td>
+        <td class="td_Category">${category}</td>
+        <td class="td_Stock">${stock}</td>
+        <td class="td_Price">${sellingPrice}</td>
+        `;
+
+        row.innerHTML = rowContent;
+        row.className = "bodyRow";
+
+        document.querySelector(".tableBody").appendChild(row);
+
+        row.scrollIntoView(
+            {behavior: 'smooth'}
+        )
+
+
+
+        /******************************Adding Event Listeners************************************************/        
+        row.addEventListener("click", ()=>{
+            checkCB(row);
+
+        });
+
+        row.querySelector(".controls").querySelector(".edit").addEventListener("click",(e)=>{
+
+            //Prevents selection of row
+            e.stopPropagation();
+    
+            editItem(row);
+        });
+
+        row.querySelector(".controls").querySelector(".del").addEventListener("click",(e)=>{
+
+            //Prevents selection of row
+            e.stopPropagation();
+    
+            deleteItem(row);
+        });
+
+        row.addEventListener("contextmenu",(e)=>{
+
+      
+            showRowControls(row)
+        })
+
+        /***************************************************************************************************/        
+
+
+        const initBGcolor = row.style.backgroundColor;
+        const initColor = row.style.color;
+
+        row.style.backgroundColor = 'rgba(53, 89, 75, 0.711)'
+        row.style.color = "#fff"
+
+        setTimeout(()=>{
+            row.style.backgroundColor = initBGcolor;
+            row.style.color = initColor;
+        },3000)
+
+        return true;
+
+    }
+
     static removeItem (itemName){
 
 

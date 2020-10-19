@@ -270,3 +270,7 @@ body {
       z-index: 2; }
     .loginForm_center .form_btn:focus {
       outline-color: #EFB526; }
+    .loginForm_center .form_btn .img_shown {
+      width: 20%;
+      z-index: 1;
+      margin-left: 5px; }

@@ -14,6 +14,7 @@ const formBtn = document.querySelector('.form_btn');
 const formCheck = document.querySelector('.form_check');
 const password = document.querySelector('#password');
 const visIcon = document.querySelector('.vis_icon');
+const btnLoader = document.querySelector(".form_btn > img")
 
 //Program Variables
 let isFullScreen = false;
@@ -62,7 +63,14 @@ function sendCloseEvent() {
 }
 
 function loadStore(e) {
+
+    btnLoader.setAttribute("src", "../../utils/media/animations/loaders/Infinity-1s-200px.svg")
+    btnLoader.classList.add("img_shown")
+
+    setTimeout(()=>{
     ipcRenderer.send('loadStore', userType);
+    }, 3000)
+
 }
 
 //Function to toggle password visibility
