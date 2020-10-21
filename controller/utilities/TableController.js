@@ -4,6 +4,14 @@ class TableController{
 
     static createItem(name, brand, category, stock, sellingPrice, functions, costPrice="", purchased=""){
 
+
+        //Removing Empty Banner Before Addition of new row
+        const emptyBanner = document.querySelector('.contentContainer').querySelector('.emptyBanner');
+
+        if(emptyBanner !== null){
+            emptyBanner.remove();
+        }
+
         //Destructing functions
         let checkCB= functions[0];
         let editItem = functions[1];
@@ -120,6 +128,29 @@ class TableController{
         return true;
     }
    
+   static showIsEmpty(){
+       const contentContainer = document.querySelector(".contentContainer");
+
+       const template = 
+       `
+            <center>
+
+                <img src="../img/empty.svg" />
+                <span id="info">
+                    Inventory Is Empty. Add New Items
+                    <img src="../Icons/toolBar/btnAdd--green.svg" />
+                </span>
+
+            </center>
+            
+        
+       `
+       let emptyBanner = document.createElement('div');
+       emptyBanner.className = "emptyBanner";
+       emptyBanner.innerHTML = template;
+
+       contentContainer.appendChild(emptyBanner);
+   }
 }
 
 

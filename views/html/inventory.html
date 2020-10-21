@@ -98,7 +98,18 @@
         <button class="toolBar_btn--alpha btn_add">
             Add 
             <img src="../Icons/toolBar/btnAdd--green.svg" class="ico_btn_add"lt="Add New Product">
+
         </button>
+
+        <div role="menu" tabindex="-1" hidden class="btn_dropDown">
+
+          <div role="menuitem" class="dd_listItem dd_listItem--form">Form</div>
+          <div role="menuitem" class="dd_listItem dd_listItem--excel">Import Excel File</div>
+
+        </div>
+
+        <input type="checkbox" tabindex="0" name="" id="" class="checkBtn">
+
       </div>
 
       <div class="contentContainer">
@@ -106,7 +117,7 @@
           <thead class="tableHeader">
             <tr class="tableHead">
               <th class="tableHead_items tb_Cb">
-                <input hidden type="checkbox" name="" id="">
+                <input hidden type="checkbox" name="" id="hiddenCb">
               </th>
               <th class="tableHead_items th_sort tb_Names">
                 <img src="../Icons/table/header/sort.png" alt="" class="sortIcon items_pad">
@@ -134,260 +145,7 @@
           </thead>
 
           <tbody class="tableBody">
-            <tr class="bodyRow">
-              <td class="controls">
-                <div class="edit"><span>Edit</span></div>
-                <div class="del"><span>Delete</span></div>
-              </td>
-              <td class="td_cb">
-                <input disabled type="checkbox" class="selectOne" aria-placeholder="select one">
-              </td>
-              <td class="td_Names">Push Pins</td>
-              <td class="td_Brands">N/A</td>
-              <td class="td_Category">Pins</td>
-              <td class="td_Stock">20</td>
-              <td class="td_Price">0.5</td>
-            </tr>
-
-            <tr class="bodyRow">
-              <td class="controls">
-                <div class="edit"><span>Edit</span></div>
-                <div class="del"><span>Delete</span></div>
-              </td>
-              <td class="td_cb">
-                <input disabled type="checkbox" class="selectOne" aria-placeholder="select one">
-              </td>
-              <td class="td_Names">Papyrus</td>
-              <td class="td_Brands">N/A</td>
-              <td class="td_Category">Tissues</td>
-              <td class="td_Stock">100</td>
-              <td class="td_Price">1</td>
-            </tr>
-
-            <tr class="bodyRow">
-              <td class="controls">
-                <div class="edit"><span>Edit</span></div>
-                <div class="del"><span>Delete</span></div>
-              </td>
-              <td class="td_cb">
-                <input disabled type="checkbox" class="selectOne" aria-placeholder="select one">
-              </td>
-              <td class="td_Names">Colored Eraser</td>
-              <td class="td_Brands">N/A</td>
-              <td class="td_Category">Eraser</td>
-              <td class="td_Stock">30</td>
-              <td class="td_Price">0.3</td>
-            </tr>
-
-            <tr class="bodyRow">
-              <td class="controls">
-                <div class="edit"><span>Edit</span></div>
-                <div class="del"><span>Delete</span></div>
-              </td>
-              <td class="td_cb">
-                <input disabled type="checkbox" class="selectOne" aria-placeholder="select one">
-              </td>
-              <td class="td_Names">Teachers Notebook</td>
-              <td class="td_Brands">Ghana Schools</td>
-              <td class="td_Category">Books</td>
-              <td class="td_Stock">20</td>
-              <td class="td_Price">3.5</td>
-            </tr>
-
-            <tr class="bodyRow">
-              <td class="controls">
-                <div class="edit"><span>Edit</span></div>
-                <div class="del"><span>Delete</span></div>
-              </td>
-              <td class="td_cb">
-                <input disabled type="checkbox" class="selectOne" aria-placeholder="select one">
-              </td>
-              <td class="td_Names">Papyrus</td>
-              <td class="td_Brands">N/A</td>
-              <td class="td_Category">Tissues</td>
-              <td class="td_Stock">100</td>
-              <td class="td_Price">1</td>
-            </tr>
-
-            <tr class="bodyRow">
-              <td class="controls">
-                <div class="edit"><span>Edit</span></div>
-                <div class="del"><span>Delete</span></div>
-              </td>
-              <td class="td_cb">
-                <input disabled type="checkbox" class="selectOne" aria-placeholder="select one">
-              </td>
-              <td class="td_Names">Teachers Notebook</td>
-              <td class="td_Brands">Ghana Schools</td>
-              <td class="td_Category">Books</td>
-              <td class="td_Stock">20</td>
-              <td class="td_Price">3.5</td>
-            </tr>
-
-            <tr class="bodyRow">
-              <td class="controls">
-                <div class="edit"><span>Edit</span></div>
-                <div class="del"><span>Delete</span></div>
-              </td>
-              <td class="td_cb">
-                <input disabled type="checkbox" class="selectOne" aria-placeholder="select one">
-              </td>
-              <td class="td_Names">Papyrus</td>
-              <td class="td_Brands">N/A</td>
-              <td class="td_Category">Tissues</td>
-              <td class="td_Stock">100</td>
-              <td class="td_Price">1</td>
-            </tr>
-
-            <tr class="bodyRow">
-              <td class="controls">
-                <div class="edit"><span>Edit</span></div>
-                <div class="del"><span>Delete</span></div>
-              </td>
-              <td class="td_cb">
-                <input disabled type="checkbox" class="selectOne" aria-placeholder="select one">
-              </td>
-              <td class="td_Names">Teachers Notebook</td>
-              <td class="td_Brands">Ghana Schools</td>
-              <td class="td_Category">Books</td>
-              <td class="td_Stock">20</td>
-              <td class="td_Price">3.5</td>
-            </tr>
-
-            <tr class="bodyRow">
-              <td class="controls">
-                <div class="edit"><span>Edit</span></div>
-                <div class="del"><span>Delete</span></div>
-              </td>
-              <td class="td_cb">
-                <input disabled type="checkbox" class="selectOne" aria-placeholder="select one">
-              </td>
-              <td class="td_Names">Papyrus</td>
-              <td class="td_Brands">N/A</td>
-              <td class="td_Category">Tissues</td>
-              <td class="td_Stock">100</td>
-              <td class="td_Price">1</td>
-            </tr>
-
-            <tr class="bodyRow">
-              <td class="controls">
-                <div class="edit"><span>Edit</span></div>
-                <div class="del"><span>Delete</span></div>
-              </td>
-              <td class="td_cb">
-                <input disabled type="checkbox" class="selectOne" aria-placeholder="select one">
-              </td>
-              <td class="td_Names">Teachers Notebook</td>
-              <td class="td_Brands">Ghana Schools</td>
-              <td class="td_Category">Books</td>
-              <td class="td_Stock">20</td>
-              <td class="td_Price">3.5</td>
-            </tr>
-
-            <tr class="bodyRow">
-              <td class="controls">
-                <div class="edit"><span>Edit</span></div>
-                <div class="del"><span>Delete</span></div>
-              </td>
-              <td class="td_cb">
-                <input disabled type="checkbox" class="selectOne" aria-placeholder="select one">
-              </td>
-              <td class="td_Names">Papyrus</td>
-              <td class="td_Brands">N/A</td>
-              <td class="td_Category">Tissues</td>
-              <td class="td_Stock">100</td>
-              <td class="td_Price">1</td>
-            </tr>
-
-            <tr class="bodyRow">
-              <td class="controls">
-                <div class="edit"><span>Edit</span></div>
-                <div class="del"><span>Delete</span></div>
-              </td>
-              <td class="td_cb">
-                <input disabled type="checkbox" class="selectOne" aria-placeholder="select one">
-              </td>
-              <td class="td_Names">Teachers Notebook</td>
-              <td class="td_Brands">Ghana Schools</td>
-              <td class="td_Category">Books</td>
-              <td class="td_Stock">20</td>
-              <td class="td_Price">3.5</td>
-            </tr>
-
-            <tr class="bodyRow">
-              <td class="controls">
-                <div class="edit"><span>Edit</span></div>
-                <div class="del"><span>Delete</span></div>
-              </td>
-              <td class="td_cb">
-                <input disabled type="checkbox" class="selectOne" aria-placeholder="select one">
-              </td>
-              <td class="td_Names">Papyrus</td>
-              <td class="td_Brands">N/A</td>
-              <td class="td_Category">Tissues</td>
-              <td class="td_Stock">100</td>
-              <td class="td_Price">1</td>
-            </tr>
-
-            <tr class="bodyRow">
-              <td class="controls">
-                <div class="edit"><span>Edit</span></div>
-                <div class="del"><span>Delete</span></div>
-              </td>
-              <td class="td_cb">
-                <input disabled type="checkbox" class="selectOne" aria-placeholder="select one">
-              </td>
-              <td class="td_Names">Teachers Notebook</td>
-              <td class="td_Brands">Ghana Schools</td>
-              <td class="td_Category">Books</td>
-              <td class="td_Stock">20</td>
-              <td class="td_Price">3.5</td>
-            </tr>
-
-            <tr class="bodyRow">
-              <td class="controls">
-                <div class="edit"><span>Edit</span></div>
-                <div class="del"><span>Delete</span></div>
-              </td>
-              <td class="td_cb">
-                <input disabled type="checkbox" class="selectOne" aria-placeholder="select one">
-              </td>
-              <td class="td_Names">Papyrus</td>
-              <td class="td_Brands">N/A</td>
-              <td class="td_Category">Tissues</td>
-              <td class="td_Stock">100</td>
-              <td class="td_Price">1</td>
-            </tr>
-
-            <tr class="bodyRow">
-              <td class="controls">
-                <div class="edit"><span>Edit</span></div>
-                <div class="del"><span>Delete</span></div>
-              </td>
-              <td class="td_cb">
-                <input disabled type="checkbox" class="selectOne" aria-placeholder="select one">
-              </td>
-              <td class="td_Names">Teachers Notebook</td>
-              <td class="td_Brands">Ghana Schools</td>
-              <td class="td_Category">Books</td>
-              <td class="td_Stock">20</td>
-              <td class="td_Price">3.5</td>
-            </tr>
-
-            <tr class="bodyRow">
-              <td class="controls">
-                <div class="edit"><span>Edit</span></div>
-                <div class="del"><span>Delete</span></div>
-              </td>
-              <td class="td_cb">
-                <input disabled type="checkbox" class="selectOne" aria-placeholder="select one">
-              </td>
-              <td class="td_Names">Papyrus</td>
-              <td class="td_Brands">N/A</td>
-              <td class="td_Category">Tissues</td>
-              <td class="td_Stock">100</td>
-              <td class="td_Price">1</td>
-            </tr>
+            
           </tbody>
         </table>
 
@@ -432,6 +190,7 @@
   <script src="../../controller/modals/settingsController.js"></script>
   <!-- <script src="../../controller/InventoryController.js"></script> -->
   <script src="../../build/InventoryController.js"></script>
+  <script src="../../controller/utilities/others.js"></script>
   <!-- <script src="../../build/toolTips_Modals.js"></script> -->
 </body>
 

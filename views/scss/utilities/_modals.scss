@@ -493,6 +493,8 @@
     top: 24%;
     left: 26%;
     background-color: $OFFWHITE;
+    transform: scale(0);
+    transition: .5s;
 
     & .dialogContainer{
         width: 100%;
@@ -579,7 +581,6 @@
         }
     }
 }
-
 
 
 
@@ -697,6 +698,7 @@
 
 
 .dialog--shown{
+    transition: .5s;
     transform: scale(1);
 }
 

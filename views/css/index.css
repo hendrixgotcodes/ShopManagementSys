@@ -107,7 +107,8 @@
 body {
   height: 100vh;
   background-color: #35594B;
-  overflow-y: hidden; }
+  overflow-y: hidden;
+  user-select: none; }
 
 .loginNav {
   width: 100%;

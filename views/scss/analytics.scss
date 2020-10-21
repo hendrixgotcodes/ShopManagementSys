@@ -8,6 +8,7 @@ body {
     display: flex;
     background-color: $OFFWHITE;
     position: relative;
+    user-select: none;
 
     .contentCover{
         position: absolute;

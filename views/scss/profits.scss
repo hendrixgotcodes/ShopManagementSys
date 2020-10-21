@@ -9,6 +9,7 @@ body {
     background-color: $OFFWHITE;
     position: relative;
     overflow: hidden;
+    user-select: none;
 
     .contentCover{
         position: absolute;

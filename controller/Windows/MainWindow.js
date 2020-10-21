@@ -1,8 +1,10 @@
 const {
     BrowserWindow,
     globalShortcut,
-    dialog
+    dialog,
+    ipcMain
 } = require('electron');
+const { remote } = require('electron/renderer');
 
 //Loading directory which contains static files
 
@@ -38,6 +40,25 @@ class MainWWindow extends BrowserWindow {
         globalShortcut.register('ctrl+r', () => {
             that.reload();
         })
+
+
+        /*********************OPENS FILE EXPLORER*******************/
+            ipcMain.on("openFileExplorer",(e)=>{
+
+                dialog.showOpenDialog({
+                    title: 'Select File',
+                    filters: [
+                        { name: 'Excel Files', extensions: ['xlsx'] },
+                    ],
+                    properties: [
+                        "openFile",
+                        "multiSelections"
+                    ],
+                    message: 'Choose an excel file containing data of your shop items'
+                }).then((result)=>{
+                    this.webContents.send("serveFilePath",result.filePaths)
+                })
+            })
 
 
     }

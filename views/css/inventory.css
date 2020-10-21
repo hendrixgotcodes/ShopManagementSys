@@ -105,6 +105,7 @@
     padding: 0; }
 
 body {
+  user-select: none;
   height: 100vh;
   display: flex;
   background-color: #F1F2F2;
@@ -117,7 +118,8 @@ body {
     width: 100%;
     height: 100%;
     pointer-events: none;
-    z-index: 10; }
+    z-index: 10;
+    user-select: none; }
   body .contentCover--shown {
     background-color: rgba(0, 0, 0, 0.4);
     pointer-events: fill; }
@@ -132,7 +134,8 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  align-items: center; }
+  align-items: center;
+  user-select: none; }
 
 .menu_a {
   width: 100%;
@@ -214,7 +217,8 @@ body {
     background-color: #fff;
     font-weight: 400;
     font-size: .8rem;
-    color: #204B40; }
+    color: #204B40;
+    user-select: none; }
     .main_body .titleBar .titleBar_location {
       margin-left: 2%;
       font-weight: 500; }
@@ -252,7 +256,8 @@ body {
       display: flex;
       align-items: center;
       padding: 0 1rem;
-      position: relative; }
+      position: relative;
+      user-select: none; }
       .main_body .mainBody_content .content_toolBar .toolBar_lbl {
         position: relative;
         width: 25%;
@@ -286,7 +291,8 @@ body {
           outline-color: #35594B;
           display: flex;
           justify-content: center;
-          align-items: center; }
+          align-items: center;
+          cursor: pointer; }
       .main_body .mainBody_content .content_toolBar .toolBar_select {
         width: 13%;
         margin-left: 1rem;
@@ -371,9 +377,63 @@ body {
         .main_body .mainBody_content .content_toolBar .btn_add:hover {
           background-color: #35594B;
           color: #fff; }
+        .main_body .mainBody_content .content_toolBar .btn_add:focus {
+          outline: none; }
+      .main_body .mainBody_content .content_toolBar .btn_dropDown {
+        position: absolute;
+        width: 11%;
+        height: 95%;
+        bottom: -3.2rem;
+        border-radius: 3px;
+        right: 2.5%;
+        background-color: #fff;
+        box-shadow: -3px -1px 6px rgba(0, 0, 0, 0.16);
+        text-align: left;
+        z-index: 1;
+        transition: .3s; }
+        .main_body .mainBody_content .content_toolBar .btn_dropDown .dd_listItem {
+          width: 100%;
+          height: 50%;
+          padding: .3rem;
+          color: #646766;
+          transition: .3s; }
+          .main_body .mainBody_content .content_toolBar .btn_dropDown .dd_listItem:hover {
+            background-color: rgba(100, 103, 102, 0.1);
+            cursor: pointer;
+            transition: .3s; }
+        .main_body .mainBody_content .content_toolBar .btn_dropDown:focus {
+          outline: none; }
+      .main_body .mainBody_content .content_toolBar .checkBtn {
+        width: 8%;
+        height: 48%;
+        position: absolute;
+        right: 2.5%;
+        top: 27%;
+        opacity: 0;
+        cursor: pointer; }
     .main_body .mainBody_content .contentContainer {
       width: 100%;
-      height: 90%; }
+      height: 90%;
+      position: relative; }
+      .main_body .mainBody_content .contentContainer .emptyBanner {
+        width: 100%;
+        height: 92%;
+        position: absolute;
+        bottom: 0%;
+        left: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center; }
+        .main_body .mainBody_content .contentContainer .emptyBanner img {
+          width: 30%;
+          height: 40%; }
+        .main_body .mainBody_content .contentContainer .emptyBanner span {
+          display: block;
+          margin-top: 1rem;
+          color: #35594B; }
+          .main_body .mainBody_content .contentContainer .emptyBanner span img {
+            width: 1.5%;
+            cursor: pointer; }
       .main_body .mainBody_content .contentContainer .contentTable {
         width: 100%;
         border-collapse: collapse;
@@ -385,7 +445,8 @@ body {
           background-color: #35594B;
           text-align: center;
           height: 8%;
-          display: block; }
+          display: block;
+          user-select: none; }
           .main_body .mainBody_content .contentContainer .contentTable .tableHeader .tableHead {
             display: flex;
             justify-content: center;
@@ -873,7 +934,9 @@ body {
       border-radius: 10px;
       top: 24%;
       left: 26%;
-      background-color: #F1F2F2; }
+      background-color: #F1F2F2;
+      transform: scale(0);
+      transition: .5s; }
       .main_body .mainBody_content .dialog--promptBox .dialogContainer {
         width: 100%;
         height: 100%;
@@ -1014,6 +1077,7 @@ body {
             width: 4%;
             margin-left: .5rem; }
     .main_body .mainBody_content .dialog--shown {
+      transition: .5s;
       transform: scale(1); }
     .main_body .mainBody_content .fullwidth {
       width: 100%; }

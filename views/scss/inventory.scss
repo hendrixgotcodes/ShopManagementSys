@@ -4,6 +4,7 @@
 @import "./utilities/toolTips.scss";
 
 body {
+    user-select: none;
     height: 100vh;
     display: flex;
     background-color: $OFFWHITE;
@@ -18,6 +19,7 @@ body {
         height: 100%;
         pointer-events: none;
         z-index: 10;
+        user-select: none;
     }
     .contentCover--shown{
         background-color: rgba($color: #000000, $alpha: .4);
@@ -40,6 +42,7 @@ body {
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
+    user-select: none;
 }
 
 .menu_a {
@@ -156,7 +159,34 @@ body {
         .contentContainer {
             width: 100%;
             height: 90%;
-            // position: relative;
+            position: relative;
+
+            .emptyBanner{
+                width: 100%;
+                height: 92%;
+                position: absolute;
+                bottom: 0%;
+                left: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+                img{
+                    width: 30%;
+                    height: 40%;
+                }
+                span{
+                    display: block;
+                    margin-top: 1rem;
+                    color: $primary_green;
+
+                    img{
+                        width: 1.5%;
+                        cursor: pointer;
+                    }
+                }
+
+            }
 
             @import '../scss/layout/tables/storeTables';
         }

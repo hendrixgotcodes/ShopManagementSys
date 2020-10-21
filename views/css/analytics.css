@@ -108,7 +108,8 @@ body {
   height: 100vh;
   display: flex;
   background-color: #F1F2F2;
-  position: relative; }
+  position: relative;
+  user-select: none; }
   body .contentCover {
     position: absolute;
     top: 0;
@@ -214,7 +215,8 @@ body {
     background-color: #fff;
     font-weight: 400;
     font-size: .8rem;
-    color: #204B40; }
+    color: #204B40;
+    user-select: none; }
     .main_body .titleBar .titleBar_location {
       margin-left: 2%;
       font-weight: 500; }
@@ -671,7 +673,9 @@ body {
       border-radius: 10px;
       top: 24%;
       left: 26%;
-      background-color: #F1F2F2; }
+      background-color: #F1F2F2;
+      transform: scale(0);
+      transition: .5s; }
       .main_body .mainBody_content .dialog--promptBox .dialogContainer {
         width: 100%;
         height: 100%;
@@ -812,6 +816,7 @@ body {
             width: 4%;
             margin-left: .5rem; }
     .main_body .mainBody_content .dialog--shown {
+      transition: .5s;
       transform: scale(1); }
     .main_body .mainBody_content .fullwidth {
       width: 100%; }

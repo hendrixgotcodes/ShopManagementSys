@@ -5,6 +5,7 @@
 import Modal from '../controller/modals/ModalController';
 import Notifications from './Alerts/NotificationController';
 import TableController from './utilities/TableController';
+import UnitConverter from './utilities/UnitConverter';
 // const Modal = require('../controller/modals/ModalController')
 
 /************DOM ELEMENTS */
@@ -16,16 +17,25 @@ const tableROWS = document.querySelector('.tableBody').querySelectorAll('.bodyRo
 const btnAdd = document.querySelector(".btn_add");
 const btnEdit =  document.querySelector(".btn_edit");
 const btnDelete =  document.querySelector(".btn_delete");
+const checkBtn = document.querySelector(".checkBtn");
+const btnDropDown = document.querySelector(".btn_dropDown");
+const tableHeaderCB = document.querySelector('table').querySelector('thead').querySelector('.tb_Cb').querySelector('#hiddenCb')
 
-const rowBucket = [];
+const listItemForm = document.querySelector(".dd_listItem--form");
+
+let rowBucket = [];
 
 
 
 
 
 /**********************EVENT LISTENERS *************************/
-toolBar_btn.addEventListener('mouseover',toggleTBbtn_white)
-toolBar_btn.addEventListener('mouseleave',toggleTBbtn_default)
+checkBtn.addEventListener('mouseover',toggleTBbtn_white)
+checkBtn.addEventListener('mouseleave',toggleTBbtn_default)
+checkBtn.addEventListener("click", toggleDropDown)
+
+btnDropDown.addEventListener("blur", hideDropDown)
+
 
 //Right Click event lister for each row
 tableROWS.forEach((row)=>{
@@ -65,48 +75,30 @@ tableROWS.forEach((row)=>{
 //
 tableROWS.forEach((row)=>{
 
-    // row.querySelector(".td_cb").querySelector(".selectOne").addEventListener("click", ()=>{
-    //     checkCB(row);
-    // });
-
     row.addEventListener("click", ()=>{
         checkCB(row);
     });
-
-    // row.querySelector(".td_Names").addEventListener("click", ()=>{
-    //     checkCB(row);
-    // });
-
-    // row.querySelector(".td_Brands").addEventListener("click", ()=>{
-    //     checkCB(row);
-    // });
-
-    // row.querySelector(".td_Category").addEventListener("click", ()=>{
-    //     checkCB(row);
-    // });
-
-    // row.querySelector(".td_Stock").addEventListener("click", ()=>{
-    //     checkCB(row);
-    // });
-
-    // row.querySelector(".td_Price").addEventListener("click", ()=>{
-    //     checkCB(row);
-    // });
 })
 
 
 //For btnAdd(Add button in Inventory toolbar)
-btnAdd.addEventListener("click",addItem)
+listItemForm.addEventListener("click",addItem)
+
 
 //For btnEdit (Edit button in Inventory )
 btnEdit.addEventListener("click", editMultiple)
 
+//For btnDelete (Delete button in Inventory)
+btnDelete.addEventListener("click", deleteMultiple)
+
+tableHeaderCB.addEventListener('click', renderXLFile)
 
 
 
 
 
-
+/************************* */
+TableController.showIsEmpty();
 
 
 
@@ -123,12 +115,42 @@ btnEdit.addEventListener("click", editMultiple)
 //---------------------------------------------------------------------------------------------------------------
 // Two functions responsible for changing the icon in the "Add button" in the Inventory toolbar
 function toggleTBbtn_white(){
+    toolBar_btn.style.backgroundColor = ' #35594B';
+    toolBar_btn.style.color = '#fff';
     toolBar_btn_icon.setAttribute('src', '../Icons/toolBar/btnAdd.svg')
 }
 
 function toggleTBbtn_default(){
+    toolBar_btn.style.backgroundColor = ' #fff';
+    toolBar_btn.style.color = '#35594B';
     toolBar_btn_icon.setAttribute('src', '../Icons/toolBar/btnAdd--green.svg')
 }
+
+
+function toggleDropDown(){
+    if(checkBtn.checked === true){
+        btnDropDown.hidden = false;
+        btnDropDown.focus();
+    }
+    else if(checkBtn.checked === false){
+        btnDropDown.hidden = true;
+
+    }
+}
+
+function hideDropDown(){
+
+    // if(!checkBtn.hasFocus()){
+    //     btnDropDown.hidden = true;
+    //     checkBtn.checked = false;
+    // }
+
+}
+
+function renderXLFile(path){
+    console.log(filePath);
+}
+
 
 
 //---------------------------------------------------------------------------------------------------------------
@@ -159,7 +181,9 @@ function deleteItem(row){
     Modal.openConfirmationBox(itemName, itemQuantity)
     .then((result)=>{
 
-        if(result === "removed"){
+        if(result === "verified"){
+
+            TableController.removeItem(itemName)
 
             Notifications.showAlert("warning", `${itemName} Of Quantity ${itemQuantity} Has Been Removed From Database`)
 
@@ -168,7 +192,7 @@ function deleteItem(row){
     })
     .catch((error)=>
     {
-        if(error === "wrongPassword"){
+        if(error.message === "wrongPassword"){
             Notifications.showAlert("error", `Incorrect Password, ${itemName} Not Deleted`);
         }
     })
@@ -196,7 +220,7 @@ function editItem(row){
 
             [,row, name, brand, category, stock, price] = promisedRow;
 
-            console.log(row, name, brand, category, stock, price);
+            price = UnitConverter.convert(price);
 
             let editedInventory = new Promise(
                 (resolve, reject)=>{
@@ -239,7 +263,8 @@ function editItem(row){
      
 
     }).catch((error)=>{
-        Notifications.showAlert("error", error)
+        if(error.message === "wrongPassword")
+        Notifications.showAlert("error", "Sorry, Incorrect Password!")
     })
 
     
@@ -272,7 +297,7 @@ function addItem(){
                        resolve(name);
                    }
                    else{
-                       reject(new Error("Sorry, An Error Occured"));
+                       reject(new Error("error"));
                    }
                 }
             );
@@ -281,20 +306,29 @@ function addItem(){
                 (name)=>{
 
                     
-                         Notifications.showAlert("success", `${name} Has Been Successfully Changed To Inventory`);
+                         Notifications.showAlert("success", `${name} Has Been Successfully Added To Inventory`);
                 }
             )
-            // .catch(
-            //     (error)=>{
-            //         Notifications.showAlert("error", error);
-            //     }
-            // );
+            .catch((error)=>{
+                if(error.message === "error"){
+                    Notifications.showAlert("error", "Sorry, An Error Occured!")
+                }
+            })
 
         }
 
      
 
     })
+    .catch(
+        (error)=>{
+
+            if(error.message === "wrongPassword"){
+                    Notifications.showAlert("error", "Sorry, Incorrect Password");    
+            }
+
+        }
+    );
 
 }
 
@@ -404,10 +438,52 @@ function editMultiple(){
      
 
     }).catch((error)=>{
-        Notifications.showAlert("error", error)
+
+        if(error.message=== "wrongPassword"){
+            Notifications.showAlert("error", "Sorry, Incorrect Password!")
+        }
+        else{
+            console.log(error);
+        }
     })
 
   
 
 
 }
+
+
+//Function called on btnDelete Event
+function deleteMultiple(){
+
+    const returnedPromise = new Promise(
+
+        (resolve, reject)=>{
+            Modal.openPrompt("", resolve, reject, true, `You Are About To Delete ${rowBucket.length} Items From Inventory.
+            Enter Password To Confirm.`)
+        }
+
+    )
+    .then(
+        (result)=>{
+
+            let totalSelectedItems = rowBucket.length;
+            
+            if(result === "verified"){
+                rowBucket.forEach((item)=>{
+
+
+                    TableController.removeItem(item.querySelector(".td_Names").innerText)
+
+                })
+
+                rowBucket = [];
+
+                Notifications.showAlert("warning", `[${totalSelectedItems}] Items Have Been Removed From Inventory`)
+
+            }
+        }
+    )
+
+}
+

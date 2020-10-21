@@ -1,13 +1,19 @@
 "use strict";
 
+import { showAlert } from "../Alerts/NotificationController";
+
 const TableController = require("../utilities/TableController");
 
 
 class Modal {
 
-    static openPrompt(itemName, resolve, reject, justVerify=""){
+    static openPrompt(itemName="", resolve, reject, justVerify="", customMessage=""){
 
-        console.log(resolve, reject);
+        let defaultMessage = "Please Enter Your Password To Continue";
+
+        if(customMessage !== ""){
+                defaultMessage = customMessage;
+        }
 
 
                     const boxTemplate = 
@@ -22,7 +28,7 @@ class Modal {
 
                         <div class="dialogBody fullwidth" role="body">
                         <span>
-                                Please Enter Your Password To Continue
+                                ${defaultMessage}
                             </span>
 
                             <input type="password" class="modal_pass" aria-placeholder="enter password here" placeholder="Enter Your Password Here" />
@@ -44,14 +50,13 @@ class Modal {
 
                 promptBox.innerHTML = boxTemplate;
 
-                const mainBodyContent = document.querySelector('.mainBody_content')
-
-
-                mainBodyContent.appendChild(promptBox);
+               
+                openModal(promptBox);
+                
 
 
                 //Event Listener
-                promptBox.querySelector('.img_close').addEventListener("click",()=>{closePromptBox(resolve, reject)})
+                promptBox.querySelector('.img_close').addEventListener("click",()=>{closePromptBox(promptBox, resolve, reject)})
 
                 promptBox.querySelector('.dialogConfirm').addEventListener("click", ()=>{
                     confirmRemove(itemName, resolve, reject, justVerify)      //ItemName and Item are basically the same but kinda acts as flags to polymorphism of this function
@@ -297,10 +302,11 @@ function openPrompt(itemName, resolve, reject, justVerify=""){
 
 
 //For Prompt bOX
-function closePromptBox(resolve, reject){
+function closePromptBox(modal, resolve, reject){
     if(mainBodyContent.querySelector('.modal') !== null){
 
-        mainBodyContent.querySelector('.modal').remove();
+        // mainBodyContent.querySelector('.modal').remove();
+        closeModal(modal);
 
         document.querySelector('.contentCover').classList.remove('contentCover--shown')
 
@@ -317,7 +323,7 @@ function confirmRemove(itemName, resolve, reject, justVerify=""){
 
         const Password = document.querySelector('.dialog--promptBox').querySelector(".modal_pass").value;
 
-        if(Password === "Samuel"){
+        if(Password === "Duffy"){
 
             closeModal(modal);
            
@@ -330,9 +336,9 @@ function confirmRemove(itemName, resolve, reject, justVerify=""){
                 return;
             }
 
-            TableController.removeItem(itemName)
 
-            resolve("removed")
+            resolve("verified")
+            console.log("removed");
         }
         else{
             reject(new Error("wrongPassword"))
@@ -347,11 +353,44 @@ function confirmRemove(itemName, resolve, reject, justVerify=""){
 
 
 function closeModal(modal){
-    modal.classList.add('modal_hide');
+
+    if(!modal.classList.contains("dialog--shown")){
+         modal.classList.add('modal_hide');
+
+    }
+
+    modal.classList.remove('dialog--shown');
+
+
 
     setTimeout(()=>{
         modal.remove();
     },400);
+}
+
+function openModal(modal){
+
+    // let mainBodyContent= document.querySelector(".main")
+
+    if(!document.querySelector(".contentCover").classList.contains("contentCover--shown")){
+
+        document.querySelector(".contentCover").classList.add("contentCover--shown");
+
+    };
+
+    const mainBodyContent = document.querySelector('.mainBody_content')
+    mainBodyContent.appendChild(modal);
+
+    setTimeout(()=>{
+        modal.classList.add("dialog--shown");
+    },100)
+
+
+    mainBodyContent.appendChild(modal);
+
+
+    
+
 }
 
 export default Modal;

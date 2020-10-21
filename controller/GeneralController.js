@@ -1,12 +1,19 @@
 "use strict";
 
 const { ipcRenderer } = require("electron");
-const userType = 'Maame Dufie'
 
+//Program Variables
+const userType = 'Maame Dufie'
 let isFullScreen = false;
+let logOutTimeOut = 30000;
+let timeOutValue;
+let searchtimeOutValue;
+
+timeOutValue =(loadLoginPage, logOutTimeOut)
 
 
 /*****************DOM ELEMENTS*****/
+const mainBody = document.querySelector('body');
 const controlBoxMinimize = document.querySelector('.controlBox_minimize');
 const controlBoxMaximize = document.querySelector('.controlBox_maximize');
 const controlBoxClose = document.querySelector('.controlBox_close');
@@ -18,6 +25,10 @@ const goto_Analytics = document.querySelector('#goto_analytics');
 
 const content_cover = document.querySelector('.contentCover')
 const mainBodyContent = document.querySelector('.mainBody_content')
+const toolBar_tb = document.querySelector('.toolBar_tb');
+const toolBar_btn = document.querySelector('.toolBar_btn');
+
+
 
 
 
@@ -35,6 +46,21 @@ goto_Analytics.addEventListener('click', loadAnalytics);
 
 //For Content
 content_cover.addEventListener("click", removeModal)
+
+// toolBar_btn.addEventListener("click", seekItem)
+toolBar_tb.addEventListener("keyup", seekItem)
+
+
+mainBody.addEventListener('click', (e)=>{
+    modifySectionTime(e)
+});
+mainBody.addEventListener('mouseover', (e)=>{
+    modifySectionTime(e)
+});
+mainBody.addEventListener('keypress', (e)=>{
+    modifySectionTime(e)
+});
+
 
 
 /*****************FUNCTIONS*****************/
@@ -76,10 +102,80 @@ function loadAnalytics(){
     ipcRenderer.send('loadAnalytics',userType)
 }
 
+function loadLoginPage(){
+    ipcRenderer.send('loadLogin')
+}
+
 //Removes Modal
 function removeModal(){
     if(mainBodyContent.querySelector('.modal') !== null){
         mainBodyContent.querySelector('.modal').remove();
         document.querySelector('.contentCover').classList.remove('contentCover--shown')
     }
+}
+
+function seekItem(){
+
+
+    if(searchtimeOutValue !== 0){
+
+        clearTimeout(searchtimeOutValue)
+
+    }
+
+    searchtimeOutValue = setTimeout(()=>{
+
+        let itemName = toolBar_tb.value;
+
+        if(itemName === "" || itemName === " "){
+            return;
+        }
+
+        itemName = itemName.toLowerCase();
+
+        
+
+
+
+
+
+        const tableROWS = document.querySelector('.tableBody').querySelectorAll('.bodyRow');
+
+        tableROWS.forEach((row)=>{
+
+            let initBGcolor = row.style.backgroundColor;
+            let initColor = row.style.color;
+
+            const currentItem =   row.querySelector(".td_Names").innerText.toLowerCase();
+
+            if(currentItem.includes(itemName)){
+
+                row.style.backgroundColor = 'rgba(53, 89, 75, 0.711)'
+                row.style.color = "#fff"
+
+            
+                row.scrollIntoView({behavior: 'smooth'})
+
+                setTimeout(()=>{
+                    row.style.backgroundColor = initBGcolor;
+                    row.style.color = initColor;
+                },5000)
+            
+            }
+        })
+
+    } ,1500)
+  
+
+
+}
+
+function modifySectionTime(e){
+
+    
+    e.stopPropagation();
+
+    clearTimeout(timeOutValue)
+
+    timeOutValue = setTimeout(loadLoginPage, logOutTimeOut)
 }
