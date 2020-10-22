@@ -2,7 +2,8 @@ const {
     BrowserWindow,
     globalShortcut,
     dialog,
-    ipcMain
+    ipcMain,
+    ipcRenderer
 } = require('electron');
 const { remote } = require('electron/renderer');
 
@@ -59,6 +60,13 @@ class MainWWindow extends BrowserWindow {
                     this.webContents.send("serveFilePath",result.filePaths)
                 })
             })
+
+
+        
+        /*********************RESPONDS TO AN EVENT TO SEND AN EVENT TO POPULATE TABLE ROWS*******************/
+        ipcMain.on('populateTable', (e, Items)=>{
+                this.webContents.send('populateTable', Items);
+        })
 
 
     }

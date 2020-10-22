@@ -1,7 +1,14 @@
+// const { ipcRenderer } = require('electron');
 const xlsx = require('xlsx');
+// const TableController = require('./TableController');
 
 
+/*********DOM ELEMENTS*********/
 const listItemExcel = document.querySelector(".dd_listItem--excel");
+const checkBtn = document.querySelector(".checkBtn");
+const btnDropDown = document.querySelector(".btn_dropDown");
+
+
 
 
 
@@ -9,6 +16,12 @@ listItemExcel.addEventListener("click", openFileExplorer)
 
 
 function openFileExplorer(){
+
+    if(checkBtn.checked === true){
+        btnDropDown.hidden = true;
+        checkBtn.checked === false;
+    }
+
     ipcRenderer.send("openFileExplorer")
 
 }
@@ -127,9 +140,11 @@ function parseExcelOutput(formTitle, JSON){
 
             JSON.forEach((item)=>{
 
-                // if(isNaN(item.QUANTITY) || isNaN(item.CB) || isNaN(item.SP)){
-                //     Notifications.showAlert('error', 'Letters Entered In Place Of Numbers. Exiting...')
-                // }
+                if(isNaN(parseInt(item.QUANTITY)) || isNaN(parseInt(item.CP)) || isNaN(parseInt(item.SP))){
+                    showAlert('error', 'Letters Entered In Place Of Numbers. Please Correct Your Excel Sheet And Try Again')
+
+                    closeConfirmationBox();
+                }
 
                 let itemTemplate = 
                 `
@@ -180,6 +195,10 @@ function parseExcelOutput(formTitle, JSON){
 
             function saveFormData(){
 
+               ipcRenderer.send('populateTable', JSON)
+
+               exitBox()
+
             }
 
             function exitBox(){
@@ -191,6 +210,7 @@ function parseExcelOutput(formTitle, JSON){
 
 }
 
+/************************************************CALLED TO CLOSE EXCEL MODAL*********************************************/
 function closeConfirmationBox(){
     if(mainBodyContent.querySelector('.modal') !== null){
 
@@ -204,4 +224,94 @@ function closeConfirmationBox(){
         
     }
         
+}
+
+
+
+/************************************************CALLED TO SHOW NOTIFICATION*********************************************/
+function showAlert(errorType, message){
+
+    const mainBodyContent = document.querySelector(".mainBody_content");
+
+    errorType = errorType.toLowerCase();
+
+    let bGColor;
+
+    switch (errorType){
+        case 'success':
+            bGColor = "#12A89D";
+            break;
+
+        case 'warning':
+            bGColor = "#E17C38";
+            break;
+
+        case 'error':
+            bGColor = " #ce2727";
+            break;
+
+        default:
+            bGColor = "#12A89D"
+    }
+
+    let alertTemplate = 
+    `
+        <img class="img_close" src="../Icons/Modals/closeWhite.svg" alt="Close Modal" />
+        <div class="alertContent">
+            ${message}
+        </div>
+    `
+
+    let alert = document.createElement("div");
+    alert.innerHTML = alertTemplate;
+    alert.className = "alertBanner";
+    alert.style.backgroundColor = bGColor;
+
+
+   (function Animate(){
+       return new Promise((resolve, reject)=>{
+                mainBodyContent.appendChild(alert);
+                resolve();
+       })
+   })().then(()=>{
+
+        setTimeout(() => {
+
+            mainBodyContent.querySelector(".alertBanner").classList.add("alertBanner--shown")
+            
+        }, 300)
+
+        //Automatically remove after three seconds
+        setTimeout(()=>{
+
+            (
+                function Animate(){
+                    return new Promise((resolve, reject)=>{
+
+                        mainBodyContent.querySelector(".alertBanner").classList.remove("alertBanner--shown")
+                        
+                        // function will resolve after animation is document (animation takes .5s, function resolves after .6s)
+                        setTimeout(() => {
+                            resolve()
+                        }, 600);
+                    })
+                }
+            )()
+            .then(
+                ()=>{
+
+                    //Removing alertbanner from DOM to increase performance
+                    mainBodyContent.querySelector(".alertBanner").remove();
+                    
+                }
+            )
+
+        }, 7000)   
+
+
+   })
+
+    
+
+
 }

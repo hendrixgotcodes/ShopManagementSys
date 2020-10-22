@@ -1,6 +1,7 @@
 "use strict";
 
 
+import { ipcRenderer } from 'electron';
 /************IMPORT******/
 import Modal from '../controller/modals/ModalController';
 import Notifications from './Alerts/NotificationController';
@@ -33,7 +34,6 @@ checkBtn.addEventListener('mouseover',toggleTBbtn_white)
 checkBtn.addEventListener('mouseleave',toggleTBbtn_default)
 checkBtn.addEventListener("click", toggleDropDown)
 
-btnDropDown.addEventListener("blur", hideDropDown)
 
 
 //Right Click event lister for each row
@@ -126,6 +126,7 @@ function toggleTBbtn_default(){
 
 
 function toggleDropDown(){
+    
     if(checkBtn.checked === true){
         btnDropDown.hidden = false;
         btnDropDown.focus();
@@ -135,16 +136,6 @@ function toggleDropDown(){
 
     }
 }
-
-function hideDropDown(){
-
-    // if(!checkBtn.hasFocus()){
-    //     btnDropDown.hidden = true;
-    //     checkBtn.checked = false;
-    // }
-
-}
-
 
 
 //---------------------------------------------------------------------------------------------------------------
@@ -267,6 +258,11 @@ function editItem(row){
 
 
 function addItem(){
+
+    if(checkBtn.checked === true){
+        btnDropDown.hidden = true;
+        checkBtn.checked === false;
+    }
 
 
     Modal.openItemForm("", false)
@@ -481,3 +477,42 @@ function deleteMultiple(){
 
 }
 
+
+
+
+
+/*********************EVENT LISTENERS FROM MAIN*******************/
+ipcRenderer.on('populateTable',(e, Items)=>{
+
+        console.log('responded inventory');
+
+
+        let editedInventory = new Promise(
+            (resolve, reject)=>{
+
+                Items.forEach((item)=>{
+
+                    TableController.createItem(item.NAMES, item.BRAND, item.CATEGORY, item.QUANTITY, item.SP, [checkCB,  editItem, deleteItem, showRowControls]);
+
+                })
+
+                resolve(name);
+    
+            }
+        );
+
+        editedInventory.then(
+            (name)=>{
+
+                
+                     Notifications.showAlert("success", `${Items.length} Items Has Been Successfully Added To Inventory`);
+            }
+        )
+        .catch((error)=>{
+            if(error.message === "error"){
+                Notifications.showAlert("error", "Sorry, An Error Occured!")
+            }
+        })
+
+
+})

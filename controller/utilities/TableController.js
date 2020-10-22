@@ -94,6 +94,7 @@ class TableController{
 
     }
 
+    /******REMOVING ITEM FROM INVENTORY*****/
     static removeItem (itemName){
 
 
