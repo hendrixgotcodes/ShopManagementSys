@@ -19,7 +19,6 @@ const btnEdit =  document.querySelector(".btn_edit");
 const btnDelete =  document.querySelector(".btn_delete");
 const checkBtn = document.querySelector(".checkBtn");
 const btnDropDown = document.querySelector(".btn_dropDown");
-const tableHeaderCB = document.querySelector('table').querySelector('thead').querySelector('.tb_Cb').querySelector('#hiddenCb')
 
 const listItemForm = document.querySelector(".dd_listItem--form");
 
@@ -91,7 +90,6 @@ btnEdit.addEventListener("click", editMultiple)
 //For btnDelete (Delete button in Inventory)
 btnDelete.addEventListener("click", deleteMultiple)
 
-tableHeaderCB.addEventListener('click', renderXLFile)
 
 
 
@@ -145,10 +143,6 @@ function hideDropDown(){
     //     checkBtn.checked = false;
     // }
 
-}
-
-function renderXLFile(path){
-    console.log(filePath);
 }
 
 

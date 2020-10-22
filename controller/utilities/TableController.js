@@ -129,6 +129,13 @@ class TableController{
     }
    
    static showIsEmpty(){
+
+        const tBody = document.querySelector('tbody');
+
+        if(tBody.rows.length !== 0){
+            return
+        }
+
        const contentContainer = document.querySelector(".contentContainer");
 
        const template = 

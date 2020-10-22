@@ -27,7 +27,8 @@
     "react-native-a-beep": "^1.0.6",
     "tippy.js": "^6.2.6",
     "webpack": "^4.44.2",
-    "webpack-dev-server": "^3.11.0"
+    "webpack-dev-server": "^3.11.0",
+    "xlsx": "^0.16.8"
   },
   "parserOptions": {
     "sourceType": "module"

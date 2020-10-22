@@ -48,7 +48,7 @@ class MainWWindow extends BrowserWindow {
                 dialog.showOpenDialog({
                     title: 'Select File',
                     filters: [
-                        { name: 'Excel Files', extensions: ['xlsx'] },
+                        { name: 'Excel Files', extensions: ['xlsx', 'xls'] },
                     ],
                     properties: [
                         "openFile",

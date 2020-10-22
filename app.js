@@ -1,7 +1,9 @@
 const {
     app,
     ipcMain,
-    ipcRenderer
+    ipcRenderer,
+    dialog,
+    remote
 } = require('electron');
 const MainWWindow = require('./controller/Windows/MainWindow');
 let mainWindow;
@@ -81,4 +83,13 @@ ipcMain.on('loadProfits',(e, userType)=>{
     mainWindow.loadFile('./views/html/profits.html');
     mainWindow.userType = userType;
 });
+
+ipcMain.on('loadLogin',()=>{
+    mainWindow.loadFile('./views/html/index.html')
+})
+
+
+
+
+
 
