@@ -710,6 +710,42 @@
             }
         }
 
+        //Only used in checkout form
+        & .scrollBox{
+
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            padding: 2rem;
+            background-color: $WHITE;
+
+            .modalItem{
+                width: 100%;
+                height: 4rem;
+                box-shadow: 0 3px 20px rgba($color: #000000, $alpha: .160);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                position: relative;
+                margin-bottom: 1rem;
+                border-radius: 4px;
+
+                .delItem{
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    width: 5%;
+                    height: 30%;
+                    background-color: $WHITE;
+
+                    .img{
+                        width: 8%;
+                    }
+                }
+            }
+
+        }
+
     }
 
     // &.dialogBody{
@@ -755,6 +791,133 @@
         }
     }
 }
+
+
+.dialog--cartForm{
+    font-size: 1.2rem;
+    width: 40%;
+    height: 75%;
+    top: 10%;
+    left: 27%;
+    transform: scale(0);
+    transition: .5s;
+    color: $primary_black;
+
+    .dialogHeader{
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        height: 15%;
+        box-shadow: 0 3px 6px rgba($color: #000000, $alpha: 0.16);
+        padding: .8rem 1rem;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: $WHITE;
+        color: $primary_green;
+        font-size: 1.4rem;
+        z-index: 1;
+    }
+   
+    & .dialogContainer{
+        display: flex;
+        flex-direction: column;    
+        justify-content: space-between;        
+
+
+
+        //Only used in checkout form
+        & .scrollBox{
+
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            padding: 1rem;
+            background-color: $WHITE;
+
+            .modalItem{
+                width: 100%;
+                height: 4rem;
+                box-shadow: 0 3px 20px rgba($color: #000000, $alpha: .160);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                position: relative;
+                margin-bottom: 1rem;
+                padding: 1rem;
+                font-size: 1rem;
+                border-radius: 2px solid $OFFWHITE;
+                border-radius: 6px;
+
+                &:hover > .delItem{
+                    transform: scale(1);
+                }
+
+                .delItem{
+                    position: absolute;
+                    top: -10px;
+                    right: -5px;
+                    width: 4%;
+                    height: 30%;
+                    background-color: $secondary_red;
+                    border: 2px solid $OFFWHITE;
+                    border-radius: 100%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    transform: scale(0);
+                    transition: .3s;
+
+
+
+                    img{
+                        width: 80%;
+                        height: 80%;
+                    }
+
+                   
+                }
+            }
+
+        }
+
+    }
+
+
+    & .dialogFooter{
+        justify-self: flex-end;
+        height: 18%;
+        width: 100%;
+        display: flex;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+
+        & .dialogConfirm{
+            height: 100%;
+            width: 100%;
+            font-size: 1.4rem;
+            background-color: $primary_green;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: $WHITE;
+            border-bottom-right-radius: 10px;
+            border-bottom-left-radius: 10px;
+            cursor: pointer;
+            transition: .3s;
+
+            &:hover{
+                background-color: lighten($color: $primary_green, $amount: 10);
+            }
+
+            & img{
+                width: 4%;
+                margin-left: .5rem;
+            }
+        }
+    }
+}
+
 
 
 

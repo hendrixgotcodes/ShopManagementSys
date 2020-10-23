@@ -8,6 +8,7 @@
 
 /**********************************IMPORTED ***************************/
 import Notifications from '../controller/Alerts/NotificationController'
+import Modal from './modals/ModalController';
 import TableController from './utilities/TableController';
 
 
@@ -121,10 +122,13 @@ footer_tb.addEventListener("blur",()=>{
         sellingItem = {};
         
     }
-    else{
-        console.log(sellingItem);
-    }
 
+})
+
+mainBodyContent.addEventListener('click', (e)=>{
+    if(!(e.target.classList.contains('footer_tb') || e.target.classList.contains('footer_btn'))){
+          
+    }
 })
 
 footer_tb.addEventListener("change",()=>{
@@ -274,6 +278,7 @@ function setSellingItemProperties(row){
     sellingItem.name = row.querySelector('.td_Names').innerText
     sellingItem.brand = row.querySelector('.td_Brands').innerText
     sellingItem.category = row.querySelector('.td_Category').innerText
+    sellingItem.price = row.querySelector('.td_Price').innerText;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -287,6 +292,10 @@ function amtPurchased(amntPurchased){
 function showItemsInCart(){
     cartCount.style.transform = "scale(0)"
     cartCount.innerText = 0;
+
+    console.log(cart);
+
+    Modal.createCheckout(cart);
 }
 
 
