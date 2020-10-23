@@ -14,6 +14,7 @@ import '../../node_modules/tippy.js/themes/material.css';
 import "../../node_modules/tippy.js/themes/light.css";
 import 'tippy.js/themes/light.css';
 import 'tippy.js/animations/perspective.css'
+import TableController from './TableController';
 
 
 
@@ -33,6 +34,7 @@ tippy.setDefaultProps({
 tippy(`.form_check`, {
   content: span,
 })
+
 
 
 // SHOP PAGE TOOLTIP
@@ -113,7 +115,7 @@ items_in_Categories.forEach((item) => {
 items_in_Brands.forEach((item) => {
 
   let newItem = document.createElement('li');
-  newItem.innerHTML = item;
+  newItem.innerText = item;
   newItem.className = "selectDropdown_value";
   newItem.setAttribute("tabIndex", "0");
 
@@ -121,10 +123,13 @@ items_in_Brands.forEach((item) => {
   ul_brands.appendChild(newItem);
 
   newItem.addEventListener("click", () => {
-    const wrapped =  wrapText(newItem.innerHTML)
 
-    selectValue_span.innerHTML = wrapped;
-    selectValue_span.setAttribute("value", wrapped)
+    TableController.filterItems("Brand", newItem.innerText)
+
+    // const wrapped =  wrapText(newItem.innerHTML)
+
+    // selectValue_span.innerHTML = wrapped;
+    // selectValue_span.setAttribute("value", wrapped)
   })
 
 });
@@ -148,3 +153,7 @@ tippy('.tip_brand', {
   arrow: false,
   offset: [0, 0]
 })
+
+
+
+/*******************************************FUNCTIONS**********************************/

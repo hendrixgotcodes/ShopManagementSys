@@ -170,6 +170,8 @@ body {
                 display: flex;
                 justify-content: center;
                 align-items: center;
+                z-index: 2;
+                background-color: $OFFWHITE;
 
                 img{
                     width: 30%;

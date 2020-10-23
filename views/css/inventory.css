@@ -423,7 +423,9 @@ body {
         left: 0;
         display: flex;
         justify-content: center;
-        align-items: center; }
+        align-items: center;
+        z-index: 2;
+        background-color: #F1F2F2; }
         .main_body .mainBody_content .contentContainer .emptyBanner img {
           width: 30%;
           height: 40%; }

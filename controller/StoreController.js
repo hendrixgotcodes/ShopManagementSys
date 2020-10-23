@@ -8,6 +8,7 @@
 
 /**********************************IMPORTED ***************************/
 import Notifications from '../controller/Alerts/NotificationController'
+import TableController from './utilities/TableController';
 
 
 
@@ -60,6 +61,8 @@ let sellingItem = {     // Represents an instance of a store item being added to
 tip_default.addEventListener('click',()=>{
     selectValue_span.innerHTML = "Filter By:"
     selectValue_span.setAttribute("value", "default");
+
+    TableController.resetTable();
 })
 
 //For ToolBarBtn

@@ -85,7 +85,7 @@ class TableController{
 
 
 
-        /******************************Adding Event Listeners************************************************/        
+        /******************************Adding Event Listeners***************************************/        
         row.addEventListener("click", ()=>{
             checkCB(row);
 
@@ -113,9 +113,7 @@ class TableController{
             showRowControls(row)
         })
 
-        /***************************************************************************************************/        
-
-
+                
         const initBGcolor = row.style.backgroundColor;
         const initColor = row.style.color;
 
@@ -132,6 +130,9 @@ class TableController{
 
     }
 
+    
+    
+/***********************************************************************************************************************************/
     /******REMOVING ITEM FROM INVENTORY*****/
     static removeItem (itemName){
 
@@ -166,7 +167,10 @@ class TableController{
 
         return true;
     }
-   
+
+
+    
+/***********************************************************************************************************************************/
    static showIsEmpty(){
 
         const tBody = document.querySelector('tbody');
@@ -196,6 +200,146 @@ class TableController{
        emptyBanner.innerHTML = template;
 
        contentContainer.appendChild(emptyBanner);
+   }
+
+
+
+/***********************************************************************************************************************************/
+//    FilterS Items Table Based On Their Category Or Brand      FilterBy = either category or brand, Key =  the Classification type
+   static filterItems(filterBy, Key){
+
+        const doneLoading = new Promise((resolve, reject)=>{
+
+            filterBy = filterBy.toLowerCase();
+            Key = Key.toLowerCase();
+
+            switch (filterBy){
+                case 'category':
+                    filterBy = '.td_Category';
+                    break;
+                
+                case 'brand':
+                    filterBy = '.td_Brands';
+                    break;
+                
+                default:
+                    break;
+            }
+
+            const tableRows = document.querySelector('table').querySelector('tbody').querySelectorAll('tr');
+
+
+            tableRows.forEach((tableRow)=>{
+
+
+                    if(tableRow.querySelector(filterBy).innerText.toLowerCase() !== Key){
+
+                        tableRow.style.display = 'none';
+
+                        if(tableRow.classList.contains('sorted')){
+                            tableRow.classList.remove('sorted');
+                        }
+                        
+                    }
+                    else{
+                        tableRow.style.display = 'flex';
+                        tableRow.classList.add('sorted');
+                    }
+
+            })
+
+            resolve();
+
+        })
+
+        doneLoading.then(()=>{
+            this.removeOldBanners();
+        })
+
+        this.showLoadingBanner("Loading Please Wait");
+
+
+   }
+
+
+
+   
+
+   static resetTable(){
+
+        const doneLoading = new Promise((resolve, reject)=>{
+
+            const tableRows = document.querySelector('table').querySelector('tbody').querySelectorAll('tr');
+
+
+            tableRows.forEach((tableRow)=>{
+
+
+                    tableRow.style.display = 'flex';
+
+            })
+
+            resolve();
+
+        })
+
+        doneLoading.then(()=>{
+            this.removeOldBanners();
+        })
+
+        this.showLoadingBanner("Loading Please Wait");
+
+
+   }
+
+
+
+
+
+/***********************************************************************************************************************************/
+
+
+
+   static showLoadingBanner(loadinInfo){
+
+       this.removeOldBanners();
+
+
+
+        const tBody = document.querySelector('tbody');
+
+        const template = 
+        `
+                <center>
+
+                    <img src="../../utils/media/animations/loaders/Spin-1s-200px.svg" alt="Loading.." />
+                    <span id="info">
+                        ${loadinInfo}
+                    </span>
+
+                </center>
+                
+            
+        `
+        let emptyBanner = document.createElement('div');
+        emptyBanner.className = "emptyBanner";
+        emptyBanner.innerHTML = template;
+
+        const contentContainer = document.querySelector(".contentContainer");
+
+        contentContainer.appendChild(emptyBanner);
+
+   }
+
+   static removeOldBanners(){
+
+        const contentContainer = document.querySelector(".contentContainer");
+        const oldBanner = contentContainer.querySelector('.emptyBanner')
+
+        if(oldBanner !== null){
+            oldBanner.remove();
+        }
+
    }
 }
 
