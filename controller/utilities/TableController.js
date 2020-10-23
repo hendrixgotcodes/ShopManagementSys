@@ -2,12 +2,17 @@
 
 class TableController{
 
-    static createItem(name, brand, category, stock, sellingPrice, functions, costPrice="", purchased=""){
+    static createItem(name, brand, category, stock, sellingPrice, functions, hasItems,costPrice="", purchased=""){
+
+        const tableROWS = document.querySelector('tbody').querySelectorAll('tr');
 
 
         //Removing Empty Banner Before Addition of new row
         const emptyBanner = document.querySelector('.contentContainer').querySelector('.emptyBanner');
 
+        let returnedValue = true;
+
+        //Check if Default Banner is attached to the contentContainer
         if(emptyBanner !== null){
             emptyBanner.remove();
         }
@@ -19,6 +24,8 @@ class TableController{
         let showRowControls = functions[3];
 
 
+
+        // creating new row element
         const row =  document.createElement("tr");
         
         const rowContent = 
@@ -40,7 +47,37 @@ class TableController{
         row.innerHTML = rowContent;
         row.className = "bodyRow";
 
-        document.querySelector(".tableBody").appendChild(row);
+        if(hasItems === true){
+
+            tableROWS.forEach((tableRow)=>{
+
+    
+                if(tableRow.querySelector('.td_Names').innerText === row.querySelector('.td_Names').innerText){
+                    document.querySelector('.tableBody').replaceChild(row, tableRow);
+
+                    console.log('matched');
+
+                    returnedValue = 1;
+
+                }
+                else{
+                    document.querySelector(".tableBody").appendChild(row);
+
+                    console.log('not matched');
+
+                }
+            })
+
+        }
+        else if(hasItems !== true) {
+
+            document.querySelector(".tableBody").appendChild(row);
+            returnedValue = true;
+        }
+
+        
+
+
 
         row.scrollIntoView(
             {behavior: 'smooth'}
@@ -90,7 +127,8 @@ class TableController{
             row.style.color = initColor;
         },3000)
 
-        return true;
+        console.log(returnedValue, " tbC");
+        return returnedValue;
 
     }
 

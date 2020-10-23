@@ -484,28 +484,66 @@ function deleteMultiple(){
 /*********************EVENT LISTENERS FROM MAIN*******************/
 ipcRenderer.on('populateTable',(e, Items)=>{
 
-        console.log('responded inventory');
+         
+        let hasItems = false;
+        // if table has items
+        if(document.querySelector('.tableBody').querySelectorAll('.bodyRow').length > 0){
+            // set hasItems to true
+            hasItems = true;
+
+        }
 
 
         let editedInventory = new Promise(
             (resolve, reject)=>{
 
+                let returnedValue;
+
+                //New items that matched old items in table
+                let totalMatchedItems = 0;
+               
+
                 Items.forEach((item)=>{
 
-                    TableController.createItem(item.NAMES, item.BRAND, item.CATEGORY, item.QUANTITY, item.SP, [checkCB,  editItem, deleteItem, showRowControls]);
+                    returnedValue = TableController.createItem(item.NAMES, item.BRAND, item.CATEGORY, item.QUANTITY, item.SP, [checkCB,  editItem, deleteItem, showRowControls], hasItems);
 
+                    if(returnedValue !== true){
+                        totalMatchedItems =  totalMatchedItems + returnedValue
+                    }
+            
                 })
 
-                resolve(name);
+                if(totalMatchedItems > 0)
+                {
+                    console.log(totalMatchedItems);
+                    // else whatever value is in  the returned value
+                    resolve(totalMatchedItems)
+                }
+                else{
+                    resolve(returnedValue)
+                }
+
     
             }
         );
 
         editedInventory.then(
-            (name)=>{
+            (returnedValue)=>{
+
+                console.log(returnedValue, " inv");
+
+                if(isNaN(parseInt(returnedValue))){
+
+                    Notifications.showAlert("success", `${Items.length} Items Has Been Successfully Added To Inventory`);
+
+                }
+                else{
+                    Notifications.showAlert("success", `${returnedValue} Items Matched Old Items In Inventory. ${Items.length - returnedValue} New Items Added To Inventory`);
+                }
+
+
 
                 
-                     Notifications.showAlert("success", `${Items.length} Items Has Been Successfully Added To Inventory`);
             }
         )
         .catch((error)=>{
