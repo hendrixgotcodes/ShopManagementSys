@@ -53,9 +53,6 @@ let sellingItem = {     // Represents an instance of a store item being added to
 
 
 
-
-
-
 /*********************************EVent Listeners********************* */
 
 tip_default.addEventListener('click',()=>{
@@ -153,11 +150,6 @@ footer_tb.addEventListener("focus",()=>{
 /*************************************FUNCTIONS********************* */
 /*************************************FUNCTIONS********************* */
 
-function wrapText(text){
-
-    return text.length > 5 ? text.slice(0,5) + '....' : text;
-   
-}
 
 
 //-----------------------------------------------------------------------------------------------

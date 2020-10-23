@@ -1,8 +1,11 @@
 "use strict";
 
 
-const items_in_Categories = ["Books","Tisues"];
+const items_in_Categories = ["Books","Tissues"];
 const items_in_Brands = ["Ghana Schools", "N/A"];
+
+
+const selectValue_span = document.querySelector('.selectValue_span');
 
 
 import tippy, {
@@ -102,6 +105,9 @@ items_in_Categories.forEach((item) => {
   newItem.setAttribute("tabIndex", "0");
 
   newItem.addEventListener("click", () => {
+
+    TableController.filterItems("Category", newItem.innerText)
+
     const wrapped =  wrapText(newItem.innerHTML)
 
     selectValue_span.innerHTML = wrapped;
@@ -126,10 +132,10 @@ items_in_Brands.forEach((item) => {
 
     TableController.filterItems("Brand", newItem.innerText)
 
-    // const wrapped =  wrapText(newItem.innerHTML)
+    const wrapped =  wrapText(newItem.innerHTML)
 
-    // selectValue_span.innerHTML = wrapped;
-    // selectValue_span.setAttribute("value", wrapped)
+    selectValue_span.innerHTML = wrapped;
+    selectValue_span.setAttribute("value", wrapped)
   })
 
 });
@@ -157,3 +163,8 @@ tippy('.tip_brand', {
 
 
 /*******************************************FUNCTIONS**********************************/
+function wrapText(text){
+
+  return text.length > 5 ? text.slice(0,5) + '....' : text;
+ 
+}
