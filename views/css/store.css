@@ -1360,11 +1360,17 @@ body {
         align-items: center;
         padding: .5rem;
         position: relative; }
-        .main_body .footer .footer_actions .footer_btn img {
-          width: 20%; }
         .main_body .footer .footer_actions .footer_btn:hover {
           background-color: #35594B;
           color: #fff; }
+        .main_body .footer .footer_actions .footer_btn:disabled {
+          opacity: .4; }
+          .main_body .footer .footer_actions .footer_btn:disabled:hover {
+            background-color: #fff;
+            color: #646766;
+            cursor: default; }
+        .main_body .footer .footer_actions .footer_btn img {
+          width: 20%; }
         .main_body .footer .footer_actions .footer_btn .cartCount {
           width: 20%;
           position: absolute;
@@ -1381,11 +1387,6 @@ body {
           border-radius: 100%;
           transition: 1;
           transition: transform .7s; }
-      .main_body .footer .footer_actions .footer_btn--disabled:disabled {
-        color: #98c2b2;
-        border: 1.8px solid #98c2b2; }
-        .main_body .footer .footer_actions .footer_btn--disabled:disabled:hover {
-          background-color: #fff; }
     .main_body .footer .footer_clock #clock_blinker {
       position: absolute; }
     .main_body .footer .footer_clock .clock_min {

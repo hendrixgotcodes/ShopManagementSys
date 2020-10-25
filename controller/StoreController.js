@@ -138,6 +138,10 @@ footer_tb.addEventListener("change",()=>{
     sellingItem.amountPurchased = footer_tb.value;
 
     footer_tbChanged = false;
+
+    if(footer_tb.selectedIndex > 0){
+        footer_btn.disabled = false;
+    }
     
 })
 
