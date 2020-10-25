@@ -341,6 +341,32 @@ class TableController{
         }
 
    }
+
+
+   static uncheckRows(name, brand){
+
+        const tRows = document.querySelector('tbody').querySelectorAll('tr');
+
+        console.log(name, brand);
+
+        tRows.forEach((row)=>{
+
+            let rowName = row.querySelector('.td_Names').innerText;
+            let rowBrand = row.querySelector('.td_Brands').innerText
+            let checkbox = row.querySelector('.td_cb').querySelector('.selectOne')
+
+            if(rowName === name && rowBrand === brand ){
+                    checkbox.checked = false;
+                    console.log('checked');
+            }
+            else{
+                console.log('not cheked');
+            }
+
+        })
+
+
+   }
 }
 
 

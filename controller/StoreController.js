@@ -10,20 +10,20 @@
 import Notifications from '../controller/Alerts/NotificationController'
 import Modal from './modals/ModalController';
 import TableController from './utilities/TableController';
+import UnitConverter from './utilities/UnitConverter';
 
 
 
 /*********************************DOM ELEMENTS********************* */
 
 
-// Array of store objects
-const cart = [];
+
+const cart = [];     // Array of store objects
+let salesMade = 0;       //Total sold Items
 
 //Holds the amount of table rows selected so that disabling and enabling of elements can be done based on that amount
 let totalSelectedRows = 0;
-let selectedRows = [];
 
-let canSelectRow = true;
 let footer_tbChanged = false;
 
 
@@ -97,7 +97,7 @@ footer_btn.addEventListener("click", (e)=>{
     //Displays Modal to show selected Items
     showItemsInCart();
     // calling function to uncheck checked rows
-    uncheckMarkedRows()
+    // uncheckMarkedRows()
 })
 
 
@@ -213,6 +213,7 @@ function toggleTBbtn_default(){
 
 //-----------------------------------------------------------------------------------------------
 function toggleRowCB(row){
+
     if(sellingItem.amountPurchased === undefined && footer_tbChanged === true){
         Notifications.showNotification('Please specify the number of items to be sold first', true);
 
@@ -221,7 +222,12 @@ function toggleRowCB(row){
         return;
     }
     
+    //Checkbox
     let CB = row.querySelector('.td_cb').querySelector('.selectOne');
+
+    //Item
+    let itemName =row.querySelector('.td_Names');
+    let itemBrand = row.querySelector('.td_Brands');
 
     if(CB.checked === true){
         CB.checked = false;
@@ -235,7 +241,7 @@ function toggleRowCB(row){
             cartCount.innerText = totalSelectedRows;
         }
 
-        if(selectedRows === 0){
+        if(totalSelectedRows === 0){
             disableDropDownList();
 
             // cartCount.style.transform = "scale(0)"
@@ -258,7 +264,6 @@ function toggleRowCB(row){
             }
         }
 
-        markSelectedRow(row);
     }
 }
 
@@ -290,34 +295,29 @@ function amtPurchased(amntPurchased){
 //-----------------------------------------------------------------------------------------------
 // function to show item in cart
 function showItemsInCart(){
-    cartCount.style.transform = "scale(0)"
-    cartCount.innerText = 0;
+
 
     console.log(cart);
 
-    Modal.createCheckout(cart);
+    Modal.createCheckout(cart, totalSelectedRows,cartCount)
+    .then((returned)=>{
+
+
+         salesMade = salesMade + returned;
+
+
+         //Parsing it through a converter
+          let forSpan = UnitConverter.convert(salesMade);
+
+         document.querySelector('#salesMade_amount').innerText = forSpan;
+
+    })
 }
 
 
 //-----------------------------------------------------------------------------------------------
-// Saving checked rows in "selectedRows"
-function markSelectedRow(row){
 
-        let aRow = {}
-        aRow.key = row.querySelector('.td_Names').innerText;
-        aRow.value = row;
-        selectedRows.push(aRow);
 
-}
-
-// Uncheck checked rows. Does so by iterating through the arrray of "selectedRows" which contains all selectedRows
-function uncheckMarkedRows(){
-
-       selectedRows.forEach((row)=>{
-           row.value.querySelector('.td_cb').querySelector('.selectOne').checked = false;
-       })
-
-}
 
 
 

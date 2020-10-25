@@ -1,6 +1,7 @@
 "use strict";
 
 import { showAlert } from "../Alerts/NotificationController";
+import UnitConverter from "../utilities/UnitConverter";
 
 const TableController = require("../utilities/TableController");
 
@@ -68,7 +69,7 @@ class Modal {
 
     }
 
-   
+/************************************************************************************************************************************************************************/  
 
     //Confirmation DialogBox
     static openConfirmationBox(itemName, itemCount){
@@ -130,6 +131,10 @@ class Modal {
         })
 
     }
+
+
+/************************************************************************************************************************************************************************/  
+ 
 
     static openItemForm(row="", editForm){
 
@@ -256,105 +261,162 @@ class Modal {
     }
 
 
-    static createCheckout(array){
-
-        let totalPrice = 0;
-
-        array.forEach((item)=>{
-               totalPrice +=  parseFloat(item.price * item.amountPurchased)
-        })
-
-        totalPrice = parseFloat(totalPrice).toFixed(2)
-
-      const formTemplate = 
-       `
-        <div class="dialogContainer fullwidth aDialog" role="container">
-            <div class="dialogHeader" role="header">
-
-                <span>In Cart</span>
-
-                <span id="lblPrice"> <b>Gh¢ ${totalPrice} </b></span>
-                
-            </div>
-
-            <div class="scrollBox">
-
-            </div>
-
-           
-            <div class="dialogFooter fullwidth" role="footer" aria-placeholder="Confirm here">
-                <div class="dialogConfirm">
-                    Sell
-                    <img src="../Icons/Modals/add.svg" alt="Confirmation Message" />
-                </div>
-            </div>
-
-        </div>
-            
-    `
-
-    const itemForm = document.createElement('div');
-            itemForm.className = "modal dialog--cartForm";
-            itemForm.classList.add("dialog--promptBox")
-            itemForm.setAttribute("aria-placeholder", "Confirm Box");
-    
-            itemForm.innerHTML = formTemplate;
-    
-            const mainBodyContent = document.querySelector('.mainBody_content');
-
-            mainBodyContent.appendChild(itemForm);
-
-    
-            document.querySelector('.contentCover').classList.add('contentCover--shown')
-
-            setTimeout(()=>{
-                    mainBodyContent.querySelector(".dialog--cartForm").classList.add("dialog--shown")
-            }, 100)
+/************************************************************************************************************************************************************************/ 
 
 
-            //Adding Items to List
+    static createCheckout(cart, totalSelectedRows, cartCount){
 
-            let scrollBox = itemForm.querySelector('.scrollBox');
+        return new Promise((resolve, reject)=>{
 
-            array.forEach((item)=>{
+            let totalPrice = 0;
 
-                let itemTemplate = 
-                `
-                    <div class="itemInfo" id="name">${item.name}</div>
-                    <div class="itemInfo" id="brand">${item.brand}</div>
-                    <div class="itemInfo" id="amount">x ${item.amountPurchased}</div>
-                    <div class="itemInfo" id="cost">Gh¢ ${parseFloat(item.amountPurchased * item.price).toFixed(2)}</div>
-                    <div class="delItem"> <img src="../Icons/Modals/closeWhite.svg" alt="delete" /> </div>
-                `
-                let newRow = document.createElement('div');
-                newRow.className = "modalItem";
-                newRow.innerHTML = itemTemplate;
-
-                scrollBox.appendChild(newRow);
-
+                        
+            cart.forEach((item)=>{
+                totalPrice +=  parseFloat(item.price * item.amountPurchased)
             })
+
+            totalPrice = parseFloat(totalPrice).toFixed(2)
+
+            const formTemplate = 
+            `
+                <div class="dialogContainer fullwidth aDialog" role="container">
+                    <div class="dialogHeader" role="header">
+
+                        <span>In Cart</span>
+
+                        <span id="lblPrice"> <b>Gh¢ ${UnitConverter.convert(totalPrice)} </b></span>
+                        
+                    </div>
+
+                    <div class="scrollBox">
+
+                    </div>
+
+                
+                    <div class="dialogFooter fullwidth" role="footer" aria-placeholder="Confirm here">
+                        <div class="dialogConfirm">
+                            Sell
+                            <img src="../Icons/Modals/add.svg" alt="Confirmation Message" />
+                        </div>
+                    </div>
+
+                </div>
+                    
+            `
+
+            const itemForm = document.createElement('div');
+                    itemForm.className = "modal dialog--cartForm";
+                    itemForm.classList.add("dialog--promptBox")
+                    itemForm.setAttribute("aria-placeholder", "Confirm Box");
+                    itemForm.setAttribute('tabindex', '1');
             
+                    itemForm.innerHTML = formTemplate;
+            
+                    const mainBodyContent = document.querySelector('.mainBody_content');
+
+                    // mainBodyContent.appendChild(itemForm);
+
+                    openModal(itemForm)
+
+                    //Giving focus to form immediately after its added to the DOM
+                    itemForm.focus();
 
             
-            //Event Listeners
-            // itemForm.querySelector('.img_close').addEventListener("click",exitBox);
+                    document.querySelector('.contentCover').classList.add('contentCover--shown')
 
-            itemForm.querySelector('.dialogConfirm').addEventListener("click", sellItems);
-
-            //Sell button function
-            function sellItems(){
+                    setTimeout(()=>{
+                            mainBodyContent.querySelector(".dialog--cartForm").classList.add("dialog--shown")
+                    }, 100)
 
 
-               exitBox()
+                    //Adding Items to List
 
-            }
+                    let scrollBox = itemForm.querySelector('.scrollBox');
 
-            function exitBox(){
-                closeConfirmationBox()
-            }
-        
+                    cart.forEach((item)=>{
+
+                        let itemTemplate = 
+                        `
+                            <div class="itemInfo" id="name"><span>${item.name}</span></div>
+                            <div class="itemInfo" id="brand"><span>${item.brand}</span></div>
+                            <div class="itemInfo" id="amount"><span>x${item.amountPurchased}</span></div>
+                            <div class="itemInfo" id="cost"><span>Gh¢ ${parseFloat(item.amountPurchased * item.price).toFixed(2)}</span></div>
+                            <div class="delItem"> <img src="../Icons/Modals/closeWhite.svg" alt="delete" /> </div>
+                        `
+                        let newRow = document.createElement('div');
+                        newRow.className = "modalItem";
+                        newRow.innerHTML = itemTemplate;
+
+                        newRow.querySelector('.delItem').addEventListener('click',(e)=>{
+                            removeItem(e)
+                        })
+
+                        scrollBox.appendChild(newRow);
+
+                    })
+                    
+
+                    
+                    /***************************EVENT LISTENERS*****************************/
+
+                    itemForm.querySelector('.dialogConfirm').addEventListener("click", sellItems);
+
+                    itemForm.addEventListener('blur', exitBox)
 
 
+
+                    /***************************FUNCTIONS*****************************/
+
+                    //Sell button function
+                    function sellItems(){
+
+
+                        exitBox()
+
+                        resolve(totalPrice);
+
+                    }
+
+                    //Function called to close modal
+                    function exitBox(){
+
+                        closeModal(itemForm)
+
+                        document.querySelector('.contentCover').classList.remove('contentCover--shown')
+
+                    }
+
+                    // Function called to remove items (divs) in cart
+                    function removeItem(e){
+
+
+                        e.target.parentElement.parentElement.style.transform = 'translateX(100%)'
+                        
+
+
+                        //Remove element after animation has been done
+                        setTimeout(()=>{
+
+                            e.target.parentElement.parentElement.remove();
+
+                            let name = e.target.parentElement.parentElement.querySelector('#name').innerText;
+                            let brand = e.target.parentElement.parentElement.querySelector('#brand').innerText;
+
+                            totalSelectedRows = totalSelectedRows -1;
+
+                            cartCount.innerText = totalSelectedRows;
+
+                            //Uncheking Corresponding row in table
+                            TableController.uncheckRows(name, brand)
+
+                        },400)
+
+                    }
+                
+
+
+
+        })
     }
 
     
