@@ -409,13 +409,36 @@ class Modal {
                             //Uncheking Corresponding row in table
                             TableController.uncheckRows(name, brand)
 
+                            
+                            //Subtracting prices of removed items from main total cost
                             let itemPrice = e.target.parentElement.parentElement.querySelector('#costSection').querySelector('#cost').innerText;
 
-                            itemPrice = parseFloat(totalPrice);
+                            itemPrice = parseFloat(itemPrice);
 
                             totalPrice = totalPrice - itemPrice;
 
+                            console.log(totalPrice, " ", itemPrice);
+
                             itemForm.querySelector('#lblPrice').innerHTML = `<b>Gh¢ ${UnitConverter.convert(totalPrice)} </b>`;
+
+
+                            //Removing item from cart array
+                            cart.forEach((item)=>{
+
+
+                                let currentItemIndex;
+                    
+                                if(item.name === name && item.brand === brand){
+                    
+                    
+                                    currentItemIndex = cart.indexOf(item);
+                    
+                                    cart.splice(currentItemIndex, 1)
+                    
+                    
+                    
+                                }
+                            })
                             
 
                         },400)

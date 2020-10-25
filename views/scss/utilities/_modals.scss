@@ -818,6 +818,10 @@
         color: $primary_green;
         font-size: 1.4rem;
         z-index: 1;
+
+        & #lblPrice{
+            color: $primary_black;
+        }
     }
    
     & .dialogContainer{
@@ -863,6 +867,11 @@
                     overflow: hidden;
                     white-space: nowrap;
                     text-overflow: ellipsis;
+                    margin-right: .2rem;
+
+                    &:last-child{
+                        margin-right: 0;
+                    }
                 }
 
                 #name{

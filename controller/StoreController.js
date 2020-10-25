@@ -139,7 +139,7 @@ footer_tb.addEventListener("change",()=>{
 
     footer_tbChanged = false;
 
-    if(footer_tb.selectedIndex > 0){
+    if(footer_tb.selectedIndex > 1){
         footer_btn.disabled = false;
     }
     
