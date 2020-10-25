@@ -225,14 +225,35 @@ function toggleRowCB(row){
     //Checkbox
     let CB = row.querySelector('.td_cb').querySelector('.selectOne');
 
-    //Item
-    let itemName =row.querySelector('.td_Names');
-    let itemBrand = row.querySelector('.td_Brands');
+
 
     if(CB.checked === true){
+
+        //Unchecking checkbox in clicked
         CB.checked = false;
-        // row.style.transform = "translateX(0px)"
-        // row.style.outline = "none"
+
+        //Item being unchecked
+        let itemName =row.querySelector('.td_Names').innerText;
+        let itemBrand = row.querySelector('.td_Brands').innerText;
+        
+        cart.forEach((item)=>{
+
+
+            let currentItemIndex;
+
+            if(item.name === itemName && item.brand === itemBrand){
+
+
+                currentItemIndex = cart.indexOf(item);
+
+                cart.splice(currentItemIndex, 1)
+
+
+
+            }
+        })
+
+
 
 
 
