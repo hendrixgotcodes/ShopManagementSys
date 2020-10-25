@@ -340,7 +340,7 @@ class Modal {
                             <div class="itemInfo" id="name"><span>${item.name}</span></div>
                             <div class="itemInfo" id="brand"><span>${item.brand}</span></div>
                             <div class="itemInfo" id="amount"><span>x${item.amountPurchased}</span></div>
-                            <div class="itemInfo" id="cost"><span>Gh¢ ${parseFloat(item.amountPurchased * item.price).toFixed(2)}</span></div>
+                            <div class="itemInfo" id="costSection"><span>Gh¢ <span id="cost"> ${parseFloat(item.amountPurchased * item.price).toFixed(2)}</span></span></div>
                             <div class="delItem"> <img src="../Icons/Modals/closeWhite.svg" alt="delete" /> </div>
                         `
                         let newRow = document.createElement('div');
@@ -408,6 +408,15 @@ class Modal {
 
                             //Uncheking Corresponding row in table
                             TableController.uncheckRows(name, brand)
+
+                            let itemPrice = e.target.parentElement.parentElement.querySelector('#costSection').querySelector('#cost').innerText;
+
+                            itemPrice = parseFloat(totalPrice);
+
+                            totalPrice = totalPrice - itemPrice;
+
+                            itemForm.querySelector('#lblPrice').innerHTML = `<b>Gh¢ ${UnitConverter.convert(totalPrice)} </b>`;
+                            
 
                         },400)
 
