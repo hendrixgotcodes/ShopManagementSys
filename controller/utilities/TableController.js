@@ -32,7 +32,7 @@ class TableController{
         `
         <td class="controls">
             <div class="edit"><span>Edit</span></div>
-            <div class="del"><span>Delete</span></div>
+            <div class="del"><span>Soft Delete</span></div>
         </td>
         <td class="td_cb">
             <input disabled type="checkbox" class="selectOne" aria-placeholder="select one">
@@ -134,17 +134,20 @@ class TableController{
     
 /***********************************************************************************************************************************/
     /******REMOVING ITEM FROM INVENTORY*****/
-    static removeItem (itemName){
+    static removeItem (itemName, itemBrand){
 
 
         itemName = itemName.toLowerCase();
+        itemBrand = itemBrand.toLowerCase();
 
 
         const tableROWS = document.querySelector('.tableBody').querySelectorAll('.bodyRow');
 
         tableROWS.forEach((row)=>{
-              const item =   row.querySelector(".td_Names");
-              if(item !== null && item.innerText.toLowerCase() === itemName){
+              const name =   row.querySelector(".td_Names").innerText.toLowerCase();
+              const brand = row.querySelector(".td_Brands").innerText.toLowerCase();
+
+              if(row !== null && name === itemName && brand === itemBrand){
 
                 row.style.transition = ".7s"
                 row.style.transform = "translateX(150%)"

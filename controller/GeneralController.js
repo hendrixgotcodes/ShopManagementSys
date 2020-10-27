@@ -26,7 +26,6 @@ const goto_Analytics = document.querySelector('#goto_analytics');
 const content_cover = document.querySelector('.contentCover')
 const mainBodyContent = document.querySelector('.mainBody_content')
 const toolBar_tb = document.querySelector('.toolBar_tb');
-const toolBar_btn = document.querySelector('.toolBar_btn');
 
 
 
@@ -48,7 +47,12 @@ goto_Analytics.addEventListener('click', loadAnalytics);
 content_cover.addEventListener("click", removeModal)
 
 // toolBar_btn.addEventListener("click", seekItem)
-toolBar_tb.addEventListener("keyup", seekItem)
+if(toolBar_tb !== null){
+
+    toolBar_tb.addEventListener("keyup", seekItem)
+
+
+}
 
 
 mainBody.addEventListener('click', (e)=>{

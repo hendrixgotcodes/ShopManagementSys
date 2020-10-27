@@ -325,16 +325,28 @@ function showItemsInCart(){
     console.log(cart);
 
     Modal.createCheckout(cart, totalSelectedRows,cartCount)
-    .then((returned)=>{
+    .then((totalCost)=>{
+
+        if(totalCost >= 0){
+
+            salesMade = salesMade + totalCost;
 
 
-         salesMade = salesMade + returned;
+            //Parsing it through a converter
+            let forSpan = UnitConverter.convert(salesMade);
+
+            document.querySelector('#salesMade_amount').innerText = forSpan;
+
+            Notifications.showAlert("success", "Sales Made Successfully")
+
+            cart = [];
+            totalSelectedRows = 0;
 
 
-         //Parsing it through a converter
-          let forSpan = UnitConverter.convert(salesMade);
+        }
 
-         document.querySelector('#salesMade_amount').innerText = forSpan;
+
+         
 
     })
 }

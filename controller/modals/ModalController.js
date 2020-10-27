@@ -389,7 +389,7 @@ class Modal {
                     // Function called to remove items (divs) in cart
                     function removeItem(e){
 
-
+                        // Animating item (sliding left)
                         e.target.parentElement.parentElement.style.transform = 'translateX(100%)'
                         
 
@@ -404,7 +404,12 @@ class Modal {
 
                             totalSelectedRows = totalSelectedRows -1;
 
+                            //Modifying span on checkout box
                             cartCount.innerText = totalSelectedRows;
+
+                            if(totalSelectedRows === 0){
+                                cartCount.style.transform = "scale(0)"
+                            }
 
                             //Uncheking Corresponding row in table
                             TableController.uncheckRows(name, brand)
@@ -436,9 +441,14 @@ class Modal {
                                     cart.splice(currentItemIndex, 1)
                     
                     
-                    
                                 }
                             })
+
+                            if(cart.length === 0){
+                                closeModal(itemForm)
+                            }
+
+                            resolve();
                             
 
                         },400)

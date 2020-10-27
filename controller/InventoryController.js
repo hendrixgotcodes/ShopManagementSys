@@ -160,15 +160,16 @@ function showRowControls(row){
 function deleteItem(row){
 
     const itemName = row.querySelector(".td_Names").innerText;
+    const itemBrand = row.querySelector(".td_Brands").innerText
     const itemQuantity = row.querySelector(".td_Stock").innerText;
 
     // Opens a confirmation dialog box which returns a promise
-    Modal.openConfirmationBox(itemName, itemQuantity)
+    Modal.openConfirmationBox(itemName, itemBrand, itemQuantity)
     .then((result)=>{
 
         if(result === "verified"){
 
-            TableController.removeItem(itemName)
+            TableController.removeItem(itemName, itemBrand)
 
             Notifications.showAlert("warning", `${itemName} Of Quantity ${itemQuantity} Has Been Removed From Database`)
 
@@ -462,8 +463,11 @@ function deleteMultiple(){
             if(result === "verified"){
                 rowBucket.forEach((item)=>{
 
+                    const itemName = item.querySelector(".td_Names").innerText;
+                    const itemBrand = item.querySelector(".td_Brands").innerText;
 
-                    TableController.removeItem(item.querySelector(".td_Names").innerText)
+
+                    TableController.removeItem(itemName, itemBrand)
 
                 })
 
