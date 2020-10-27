@@ -13,7 +13,6 @@ class STORE{
 
         this.data = parseDataFile(this.path, data.defaults);
 
-        console.log(this.path);
 
     }
 

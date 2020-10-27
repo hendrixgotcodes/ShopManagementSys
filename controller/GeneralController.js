@@ -12,7 +12,7 @@ let logOutTimeOut = 30000;
 let timeOutValue;
 let searchtimeOutValue;
 
-timeOutValue =(loadLoginPage, logOutTimeOut)
+
 
 
 /*****************DOM ELEMENTS*****/
@@ -38,8 +38,6 @@ const toolBar_tb = document.querySelector('.toolBar_tb');
 ipcRenderer.on("loadUserInfo", (e, array)=>{
     [userName, userType] = array;
 
-    console.log(userName, userType);
-
 
     if(userType === 'Admin'){
 
@@ -52,7 +50,8 @@ ipcRenderer.on("loadUserInfo", (e, array)=>{
         });
 
         logOutTimeOut = 60000 * parseInt(store.get("timeOutPref"));
-        console.log(logOutTimeOut);
+
+        startTimeOutCounter();
         
     }
 })
@@ -204,6 +203,12 @@ function seekItem(){
     } ,1500)
   
 
+
+}
+
+function startTimeOutCounter(){
+
+    timeOutValue = timeOutValue = setTimeout(loadLoginPage, logOutTimeOut)
 
 }
 
