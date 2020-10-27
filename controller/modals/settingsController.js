@@ -255,8 +255,8 @@ function saveGenSettings(){
 
     // showSettingSaved();
 
-    let toolTipsPref = toolTipPref.selectedIndex;
-    let timeOut = timeOutPref.selectedIndex
+    let toolTipsPref = toolTipPref.value;
+    let timeOut = timeOutPref.value
 
     store.set("toolTipsPref", toolTipsPref)
     .then(()=>{

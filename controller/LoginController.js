@@ -18,7 +18,8 @@ const btnLoader = document.querySelector(".form_btn > img")
 
 //Program Variables
 let isFullScreen = false;
-const userType = 'Maame Dufie'
+const userName = 'Maame Dufie'
+const userType = 'Admin'
 
 
 
@@ -68,7 +69,7 @@ function loadStore(e) {
     btnLoader.classList.add("img_shown")
 
     setTimeout(()=>{
-    ipcRenderer.send('loadStore', userType);
+        ipcRenderer.send('loadStore', [userName, userType]);
     }, 3000)
 
 }

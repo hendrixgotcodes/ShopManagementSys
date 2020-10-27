@@ -1,9 +1,12 @@
 "use strict";
 
 const { ipcRenderer } = require("electron");
+import STORE from '../model/STORE';
+
 
 //Program Variables
-const userType = 'Maame Dufie'
+let userName;
+let userType;
 let isFullScreen = false;
 let logOutTimeOut = 30000;
 let timeOutValue;
@@ -32,6 +35,36 @@ const toolBar_tb = document.querySelector('.toolBar_tb');
 
 
 /****************EVENT LISTENERS ********/
+ipcRenderer.on("loadUserInfo", (e, array)=>{
+    [userName, userType] = array;
+
+    console.log(userName, userType);
+
+
+    if(userType === 'Admin'){
+
+        const store = new STORE({
+            configName: 'userPrefs',
+            defaults: {
+                toolTipsPref: 'show',
+                timeOutPref: '1',
+            }
+        });
+
+        logOutTimeOut = 60000 * parseInt(store.get("timeOutPref"));
+        console.log(logOutTimeOut);
+        
+    }
+})
+
+/**ON LOAD */
+window.addEventListener("load", ()=>{
+
+    //Alert ipcMain of readiness
+    ipcRenderer.send("ready");
+})
+
+
 controlBoxMinimize.addEventListener('click', sendMinimizeEvent)
 controlBoxMaximize.addEventListener('click', sendMaximizeEvent)
 controlBoxClose.addEventListener('click', sendCloseEvent)
@@ -95,15 +128,15 @@ function sendCloseEvent() {
 
 //Triggers an event to load the pages in the  ipcMain
 function loadStore(){
-    ipcRenderer.send('loadStore', userType)
+    ipcRenderer.send('loadStore', [userName, userType])
 }
 
 function loadInventory(){
-    ipcRenderer.send('loadInventory',userType)
+    ipcRenderer.send('loadInventory', [userName, userType])
 }
 
 function loadAnalytics(){
-    ipcRenderer.send('loadAnalytics',userType)
+    ipcRenderer.send('loadAnalytics', [userName, userType])
 }
 
 function loadLoginPage(){

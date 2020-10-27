@@ -27,7 +27,8 @@ class MainWWindow extends BrowserWindow {
         })
 
         //Program Variables
-        let userType = null;
+        this.userType = null;
+        this.userName = null;
 
         //Loading file to window and pointing to static directory
 
@@ -35,6 +36,7 @@ class MainWWindow extends BrowserWindow {
         this.loadFile(indexFile);
 
         const that = this;
+        
         globalShortcut.register('cmdorctrl+d', () => {
             that.webContents.toggleDevTools();
         })
@@ -42,6 +44,42 @@ class MainWWindow extends BrowserWindow {
         globalShortcut.register('ctrl+r', () => {
             that.reload();
         })
+
+
+/****************************************EVENT LISTENERS************************************/
+
+            /***************Loads Program Pages */
+            ipcMain.on('loadStore', (e, [userName, userType]) => {
+                this.loadFile('./views/html/Store.html');
+
+                this.userName = userName;
+                this.userType = userType;
+            });
+
+            ipcMain.on('loadInventory',(e, [userName, userType])=>{
+                this.loadFile('./views/html/inventory.html');
+
+                this.userName = userName;
+                this.userType = userType;
+            });
+
+            ipcMain.on('loadAnalytics',(e, [userName, userType])=>{
+                this.loadFile('./views/html/analytics.html');  
+                
+                this.userName = userName;
+                this.userType = userType;
+            });
+
+            ipcMain.on('loadProfits',(e, [userName, userType])=>{
+                this.loadFile('./views/html/profits.html');    
+                
+                this.userName = userName;
+                this.userType = userType;
+            });
+
+            ipcMain.on('loadLogin',()=>{
+                this.loadFile('./views/html/index.html')
+            })
 
 
         /*********************OPENS FILE EXPLORER*******************/
@@ -67,6 +105,14 @@ class MainWWindow extends BrowserWindow {
         /*********************RESPONDS TO AN EVENT TO SEND AN EVENT TO POPULATE TABLE ROWS*******************/
         ipcMain.on('populateTable', (e, Items)=>{
                 this.webContents.send('populateTable', Items);
+        })
+
+
+        /*********************RESPONDS TO READINESS************/
+
+        ipcMain.on("ready", ()=>{
+
+            this.webContents.send("loadUserInfo", [this.userName, this.userType])
         })
 
 

@@ -25,5 +25,5 @@ function toggleTBbtn_default(){
 }
 
 function loadProfits(){
-    ipcRenderer.send('loadProfits', userType)
+    ipcRenderer.send('loadProfits', [userName, userType])
 }

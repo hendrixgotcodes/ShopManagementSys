@@ -63,30 +63,6 @@ ipcMain.on('close', () => {
 })
 
 
-/***************Loads Program Pages */
-ipcMain.on('loadStore', (e, userType) => {
-    mainWindow.loadFile('./views/html/Store.html');
-    mainWindow.userType = userType;
-});
-
-ipcMain.on('loadInventory',(e, userType)=>{
-    mainWindow.loadFile('./views/html/inventory.html');
-    mainWindow.userType = userType;
-});
-
-ipcMain.on('loadAnalytics',(e, userType)=>{
-    mainWindow.loadFile('./views/html/analytics.html');
-    mainWindow.userType = userType;
-});
-
-ipcMain.on('loadProfits',(e, userType)=>{
-    mainWindow.loadFile('./views/html/profits.html');
-    mainWindow.userType = userType;
-});
-
-ipcMain.on('loadLogin',()=>{
-    mainWindow.loadFile('./views/html/index.html')
-})
 
 
 
