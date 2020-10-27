@@ -1,5 +1,14 @@
 "use strict";
 
+const STORE = require("../../model/STORE");
+
+const store = new STORE({
+    configName: 'userPrefs',
+    defaults: {
+        toolTipsPref: 'show',
+        timeOutPref: '1',
+    }
+});
 
 
 // import tippy from 'tippy.js';
@@ -80,12 +89,23 @@ const settingsModalTemplate =
 
                             <label class="settingsLabel">
                                 ToolTips Options
-                                <select class="modal_ddMenu">
+                                <select id="toolTipPref" class="modal_ddMenu">
                                     <option value="show">Show Tooltips</option>
                                     <option value="hide">Hide Tooltips</option>
                                 </select>
                             </label>
-                            <button class="modal_btn_submit">Change</button>
+                            <label class="settingsLabel">
+                                Timeout After Inactivity
+                                <select id="timeOutPref" class="modal_ddMenu">
+                                    <option value="1">One Minute</option>
+                                    <option value="3">Three Minutes</option>
+                                    <option value="5">Five Minutes</option>
+                                    <option value="10">Ten Minutes</option>
+                                    <option value="15">15 Minutes</option>
+                                    <option value="30">30 Minutes</option>
+                                </select>
+                            </label>
+                            <button id="btn_genSettings" class="modal_btn_submit">Change</button>
 
                         </div>
                     </div>
@@ -112,22 +132,163 @@ mainBodyContent.appendChild(settingsModal);
 
 
 
-/*****************************METHODS******************* */
-// tippy('#settings',{
-//     content: settingsModal,
-//     trigger: "click",
-//     hideOnClick: true,
-//     offset: [300, 250],
-//     interactive: true,
-//     arrow: false,
-//     theme: 'white',
-// })
-
+/***********************************DOM ELEMENTS**************************************** */
 
 const modalMenu_adminSettings = document.querySelector('.modalMenu_adminSettings');
 const modalMenu_accSettings = document.querySelector('.modalMenu_accSettings');
 const modalMenu_genSettings = document.querySelector('.modalMenu_genSettings');
 const modal_slider = document.querySelector('.slider');
+
+const toolTipPref = settingsModal.querySelector('.genSettings').querySelector('#toolTipPref');
+const timeOutPref = settingsModal.querySelector('.genSettings').querySelector('#timeOutPref');
+const btnGenSettings = settingsModal.querySelector('.genSettings').querySelector('#btn_genSettings');
+
+
+/***********************************DEFAULT SETTERS**************************************** */
+toolTipPref.selectedIndex = parseInt(store.get("toolTipsPref"))
+timeOutPref.selectedIndex = parseInt(store.get("timeOutPref"))
+
+
+
+
+/***********************************FUNCTIONS**************************************** */
+//Notification/Alert
+function alertSaved(settingType, action){
+
+        return new Promise((resolve, reject)=>{
+
+            let settingContainer =  settingsModal.querySelector(`.${settingType}`);
+
+            let alertTemplate = 
+            `   <center>${action} setting saved successfully.
+            `
+            const alert = document.createElement('div');
+            alert.className = "settingsAlert settingsAlert--success";
+        
+            alert.innerHTML = alertTemplate;
+            
+            settingContainer.appendChild(alert);
+        
+        
+            (function showAlert(){
+                return new Promise((resolve, reject)=>{
+        
+                    setTimeout(()=>{
+                        alert.classList.add('settingsAlert--shown')
+                    }, 100);
+        
+                    setTimeout(()=>{
+                        alert.classList.remove('settingsAlert--shown');
+                    }, 3000);
+
+                    resolve();
+        
+                })
+            })()
+            .then(()=>{
+        
+                setTimeout(()=>{
+                    alert.remove();
+
+                    resolve()
+                }, 3000);
+
+                
+        
+            })
+
+
+            
+        
+
+        })
+   
+
+}
+function alertUnsaved(settingType, action){
+
+    let settingContainer =  settingsModal.querySelector(`.${settingType}`);
+
+    let alertTemplate = 
+    `   <center>${action} setting failed to save.
+    `
+    const alert = document.createElement('div');
+    alert.className = "settingsAlert settingsAlert--fail";
+
+    alert.innerHTML = alertTemplate;
+    
+    settingContainer.appendChild(alert);
+
+
+    (function showAlert(){
+        return new Promise((resolve, reject)=>{
+
+            setTimeout(()=>{
+                alert.classList.add('settingsAlert--shown')
+            }, 100);
+
+            setTimeout(()=>{
+                alert.classList.remove('settingsAlert--shown');
+            }, 3000);
+
+        })
+    })()
+    .then(()=>{
+
+        setTimeout(()=>{
+            alert.remove();
+        }, 3000);
+
+    })
+    
+
+}
+
+function setSliderClass(className){
+    modal_slider.classList = null;
+    modal_slider.classList.add('slider')
+    modal_slider.classList.add(className)
+}
+
+//Executed when btn_genSettings (Button in General Settings) is clicked
+function saveGenSettings(){
+
+    // showSettingSaved();
+
+    let toolTipsPref = toolTipPref.selectedIndex;
+    let timeOut = timeOutPref.selectedIndex
+
+    store.set("toolTipsPref", toolTipsPref)
+    .then(()=>{
+        alertSaved("genSettings","ToolTips")
+        .then(()=>{
+
+            store.set("timeOutPref", timeOut)
+            .then(()=>{
+                alertSaved("genSettings","TimeOut")
+            })
+            .catch(()=>{
+                alertUnsaved("genSettings","TimeOut")
+            })
+
+        })
+
+        
+
+    })
+    .catch(()=>{
+        alertUnsaved("genSettings","ToolTips")
+    })
+
+
+    
+
+} 
+
+
+
+/***********************************EVENT LISTENERS**************************************** */
+btnGenSettings.addEventListener("click", saveGenSettings)
 
 modalMenu_adminSettings.addEventListener('click', ()=>{
     setSliderClass('slider--onAdmin')
@@ -172,13 +333,11 @@ modalMenu_genSettings.addEventListener('click', ()=>{
     }
 })
 
-function setSliderClass(className){
-    modal_slider.classList = null;
-    modal_slider.classList.add('slider')
-    modal_slider.classList.add(className)
-}
 
 }
+
+
+
 
 /**********************TIPPJS**************** */
 

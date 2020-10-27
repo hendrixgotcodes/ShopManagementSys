@@ -14,9 +14,7 @@ import UnitConverter from './utilities/UnitConverter';
 
 
 
-/*********************************DOM ELEMENTS********************* */
-
-
+/*********************************PROGRAM CONSTANTS********************* */
 
 const cart = [];     // Array of store objects
 let salesMade = 0;       //Total sold Items
@@ -25,6 +23,7 @@ let salesMade = 0;       //Total sold Items
 let totalSelectedRows = 0;
 
 let footer_tbChanged = false;
+
 
 
 
@@ -330,7 +329,6 @@ function showItemsInCart(){
         if(totalCost >= 0){
 
             salesMade = salesMade + totalCost;
-
 
             //Parsing it through a converter
             let forSpan = UnitConverter.convert(salesMade);

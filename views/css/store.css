@@ -656,8 +656,28 @@ body {
               align-items: center;
               flex-direction: column; }
               .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .modalContent_settings {
+                position: relative;
                 width: 100%;
-                height: 31%; }
+                height: 31%;
+                overflow-y: hidden; }
+                .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .modalContent_settings .settingsAlert {
+                  width: 100%;
+                  height: 8%;
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  transform: translateY(-100%);
+                  transition: .3s;
+                  color: #fff;
+                  display: flex;
+                  justify-content: center;
+                  align-items: center; }
+                .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .modalContent_settings .settingsAlert--shown {
+                  transform: translateY(0%); }
+                .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .modalContent_settings .settingsAlert--success {
+                  background-color: #12A89D; }
+                .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .modalContent_settings .settingsAlert--fail {
+                  background-color: #ce2727; }
               .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings {
                 margin-top: 8%;
                 position: relative; }
@@ -792,7 +812,10 @@ body {
                   background-color: #d7d9d9;
                   padding: 1rem;
                   border-radius: 4px;
-                  color: #35594B; }
+                  color: #35594B;
+                  margin-top: 1.5rem; }
+                  .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .genSettings .settingsLabel:first-child {
+                    margin-top: 0; }
                   .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .genSettings .settingsLabel .modal_ddMenu {
                     display: block;
                     width: 100%;

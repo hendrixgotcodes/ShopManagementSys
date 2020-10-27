@@ -18,6 +18,7 @@ class MainWWindow extends BrowserWindow {
             height: 800,
             webPreferences: {
                 nodeIntegration: true,
+                enableRemoteModule: true
 
             },
             center: true,
