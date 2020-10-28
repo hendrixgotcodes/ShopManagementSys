@@ -87,13 +87,13 @@ if(toolBar_tb !== null){
 }
 
 
-mainBody.addEventListener('click', (e)=>{
+window.addEventListener('click', (e)=>{
     modifySectionTime(e)
 });
-mainBody.addEventListener('mouseover', (e)=>{
+window.addEventListener('mouseover', (e)=>{
     modifySectionTime(e)
 });
-mainBody.addEventListener('keypress', (e)=>{
+window.addEventListener('keypress', (e)=>{
     modifySectionTime(e)
 });
 
@@ -220,4 +220,5 @@ function modifySectionTime(e){
     clearTimeout(timeOutValue)
 
     timeOutValue = setTimeout(loadLoginPage, logOutTimeOut)
+
 }

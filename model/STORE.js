@@ -34,7 +34,7 @@ class STORE{
             } catch (error) {
 
                 this.data[key] = null;
-                reject()
+                reject(error)
                 
             }
 

@@ -1,5 +1,6 @@
 "use strict";
 
+const { ipcRenderer } = require("electron");
 const STORE = require("../../model/STORE");
 
 const store = new STORE({
@@ -9,6 +10,10 @@ const store = new STORE({
         timeOutPref: '1',
     }
 });
+
+const settings = document.querySelector('#settings');
+const contentCover = document.querySelector('.contentCover');
+const mainBodyContent = document.querySelector('.mainBody_content');
 
 
 // import tippy from 'tippy.js';
@@ -145,8 +150,44 @@ const btnGenSettings = settingsModal.querySelector('.genSettings').querySelector
 
 
 /***********************************DEFAULT SETTERS**************************************** */
-toolTipPref.selectedIndex = parseInt(store.get("toolTipsPref"))
-timeOutPref.selectedIndex = parseInt(store.get("timeOutPref"))
+
+let userPref1 = store.get("toolTipsPref")
+let userPref2 = parseInt(store.get("timeOutPref"))
+
+if(userPref1 === "show"){
+    toolTipPref.selectedIndex = "0";
+}
+else if(userPref1 === "hide"){
+    toolTipPref.selectedIndex = "1";
+}
+
+switch(userPref2){
+
+    case 1:
+        timeOutPref.selectedIndex = "0";
+        console.log("0");
+        break;
+    case 3:
+        timeOutPref.selectedIndex = "1";
+        break;
+    case 5:
+        timeOutPref.selectedIndex = "2";
+        break;
+    case 10:
+        timeOutPref.selectedIndex = "3";
+        break;
+    case 15:
+        timeOutPref.selectedIndex = "4";
+        break;
+    case 30:
+        timeOutPref.selectedIndex = "5";
+        break;
+
+    default:
+        timeOutPref.selectedIndex = "0";    
+
+
+}
 
 
 
@@ -159,8 +200,14 @@ function alertSaved(settingType, action){
 
             let settingContainer =  settingsModal.querySelector(`.${settingType}`);
 
+            let message = `${action} setting saved successfully`;
+
+            if(action === "Tooltips"){
+                message = `${action} setting saved successfully. Effect will take place on next start up.`;
+            }
+
             let alertTemplate = 
-            `   <center>${action} setting saved successfully.
+            `   <center></center>.
             `
             const alert = document.createElement('div');
             alert.className = "settingsAlert settingsAlert--success";
@@ -235,9 +282,10 @@ function alertUnsaved(settingType, action){
     })()
     .then(()=>{
 
+        //remove alert banner after 
         setTimeout(()=>{
             alert.remove();
-        }, 3000);
+        }, 300);
 
     })
     
@@ -256,10 +304,13 @@ function saveGenSettings(){
     // showSettingSaved();
 
     let toolTipsPref = toolTipPref.value;
-    let timeOut = timeOutPref.value
+    let timeOut = parseInt(timeOutPref.value)
 
     store.set("toolTipsPref", toolTipsPref)
     .then(()=>{
+
+        ipcRenderer.send("ready");
+
         alertSaved("genSettings","ToolTips")
         .then(()=>{
 
@@ -267,8 +318,10 @@ function saveGenSettings(){
             .then(()=>{
                 alertSaved("genSettings","TimeOut")
             })
-            .catch(()=>{
+            .catch((error)=>{
                 alertUnsaved("genSettings","TimeOut")
+
+                console.log(error);
             })
 
         })
@@ -337,6 +390,31 @@ modalMenu_genSettings.addEventListener('click', ()=>{
 }
 
 
+//For "settings"
+settings.addEventListener("click",(e)=>{
+    contentCover.classList.toggle('contentCover--shown');
+    openSettings();
+})
+
+//For "contentCover" To Close Modal Settings
+contentCover.addEventListener('click', ()=>{
+    removeSettingsModal(contentCover)
+
+});
+
+mainBodyContent.addEventListener('click', (e)=>{
+    if(!(e.target.classList.contains('footer_tb') || e.target.classList.contains('footer_btn'))){
+          
+    }
+})
+
+function removeSettingsModal(cover){
+    if (mainBodyContent.querySelector('.settingsModal') !== null){
+        mainBodyContent.removeChild(mainBodyContent.querySelector('.settingsModal'));
+    }
+
+    cover.classList.toggle('contentCover--shown');
+}
 
 
 /**********************TIPPJS**************** */
@@ -375,3 +453,5 @@ modalMenu_genSettings.addEventListener('click', ()=>{
 //     theme: 'tomato',
 //     arrow: true
 // });
+
+exports = openSettings;

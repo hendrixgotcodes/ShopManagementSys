@@ -32,9 +32,7 @@ const tip_default = document.querySelector('.tip_default');
 const selectValue_span = document.querySelector('.selectValue_span');
 const toolBarTB = document.querySelector('.toolBar_tb');
 const toolBarBtn = document.querySelector('.toolBar_btn')
-const settings = document.querySelector('#settings');
 
-const contentCover = document.querySelector('.contentCover');
 const mainBodyContent = document.querySelector('.mainBody_content');
 
 const footer_btn = document.querySelector('.footer_btn');
@@ -72,17 +70,6 @@ toolBarBtn.addEventListener('click',(e)=>{
 
 
 
-//For "settings"
-settings.addEventListener("click",(e)=>{
-    contentCover.classList.toggle('contentCover--shown');
-    openSettings();
-})
-
-//For "contentCover" To Close Modal Settings
-contentCover.addEventListener('click', ()=>{
-    removeSettingsModal(contentCover)
-
-});
 
 
 
@@ -110,6 +97,7 @@ tableROWS.forEach((row)=>{
 
 
 
+
 //For "footer_tb"
 footer_tb.addEventListener("blur",()=>{
 
@@ -124,11 +112,7 @@ footer_tb.addEventListener("blur",()=>{
 
 })
 
-mainBodyContent.addEventListener('click', (e)=>{
-    if(!(e.target.classList.contains('footer_tb') || e.target.classList.contains('footer_btn'))){
-          
-    }
-})
+
 
 footer_tb.addEventListener("change",()=>{
 
