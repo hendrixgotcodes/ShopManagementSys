@@ -1,6 +1,7 @@
 "use strict";
 
 const { ipcRenderer } = require("electron");
+const DATA = require("../../model/DATA");
 const STORE = require("../../model/STORE");
 
 const store = new STORE({
@@ -27,14 +28,17 @@ const settingsModalTemplate =
                 <div class="modal_menu">
                     <div class="modalMenu_adminSettings modalMenu_item currentPage">
                         <img src="../Icons/settings/employees.svg" />
+                        <div>My Employees</div>
                     </div>
 
                     <div class="modalMenu_accSettings modalMenu_item">
                         <img src="../Icons/menuIcons/Tray/account.svg" />
+                        <div>My Account</div>
                     </div>
 
                     <div class="modalMenu_genSettings modalMenu_item">
                         <img src="../Icons/settings/settings.svg" />
+                        <div>General Settings</div>
                     </div>
 
                 </div>
@@ -150,44 +154,57 @@ const btnGenSettings = settingsModal.querySelector('.genSettings').querySelector
 
 
 /***********************************DEFAULT SETTERS**************************************** */
+store.get("toolTipsPref")
+.then((userPref)=>{
 
-let userPref1 = store.get("toolTipsPref")
-let userPref2 = parseInt(store.get("timeOutPref"))
+    userPref = toolTipPref;
 
-if(userPref1 === "show"){
-    toolTipPref.selectedIndex = "0";
-}
-else if(userPref1 === "hide"){
-    toolTipPref.selectedIndex = "1";
-}
+    if(userPref === "show"){
+        toolTipPref.selectedIndex = "0";
+    }
+    else if(userPref === "hide"){
+        toolTipPref.selectedIndex = "1";
+    }
 
-switch(userPref2){
+})
 
-    case 1:
-        timeOutPref.selectedIndex = "0";
-        console.log("0");
-        break;
-    case 3:
-        timeOutPref.selectedIndex = "1";
-        break;
-    case 5:
-        timeOutPref.selectedIndex = "2";
-        break;
-    case 10:
-        timeOutPref.selectedIndex = "3";
-        break;
-    case 15:
-        timeOutPref.selectedIndex = "4";
-        break;
-    case 30:
-        timeOutPref.selectedIndex = "5";
-        break;
+store.get("timeOutPref")
+.then((userPref)=>{
 
-    default:
-        timeOutPref.selectedIndex = "0";    
+    userPref = parseInt(userPref)
 
+    console.log(userPref, "lk");
 
-}
+    switch(userPref){
+
+        case 1:
+            timeOutPref.selectedIndex = "0";
+            console.log("0");
+            break;
+        case 3:
+            timeOutPref.selectedIndex = "1";
+            break;
+        case 5:
+            timeOutPref.selectedIndex = "2";
+            break;
+        case 10:
+            timeOutPref.selectedIndex = "3";
+            break;
+        case 15:
+            timeOutPref.selectedIndex = "4";
+            break;
+        case 30:
+            timeOutPref.selectedIndex = "5";
+            break;
+    
+        default:
+            timeOutPref.selectedIndex = "0";    
+    
+    
+    }   
+
+})
+
 
 
 
@@ -301,6 +318,7 @@ function setSliderClass(className){
 //Executed when btn_genSettings (Button in General Settings) is clicked
 function saveGenSettings(){
 
+
     // showSettingSaved();
 
     let toolTipsPref = toolTipPref.value;
@@ -310,6 +328,10 @@ function saveGenSettings(){
     .then(()=>{
 
         ipcRenderer.send("ready");
+
+        let date = new Date();
+
+        console.log("alerted ", date.getSeconds(), date.getMilliseconds());
 
         alertSaved("genSettings","ToolTips")
         .then(()=>{

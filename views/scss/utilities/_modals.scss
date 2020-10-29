@@ -65,10 +65,18 @@
                     width: 100%;
                     height: 33.4%;
                     display: flex;
+                    flex-direction: column;
                     justify-content: center;
                     align-items: center;
                     transition: 0.3s;
                     cursor: pointer;
+                    color: $WHITE;
+                    font-size: .8rem;
+                    font-weight: 600;
+                    
+                    img{
+                        margin-bottom: .5rem;
+                    }
 
                     &:first-child {
                         border-top-left-radius: 10px;

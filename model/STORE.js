@@ -1,6 +1,10 @@
 const electron = require('electron');
 const path = require('path');
 const fs =  require('fs');
+const { promisify } = require('util');
+const { fips } = require('crypto');
+const { finished } = require('stream');
+
 
 
 class STORE{
@@ -17,26 +21,40 @@ class STORE{
     }
 
     get(key){
-        return this.data[key];
+
+        return new Promise((resolve, reject)=>{
+
+                resolve(this.data[key]);
+
+        })
+
     }
 
     set(key, val){
 
         return new Promise((resolve, reject)=>{
 
+            console.log("initiated");
+
             this.data[key] = val;
 
-            try {
 
-                fs.writeFileSync(this.path, JSON.stringify(this.data));
+                //  const writeFileSync = promisify(fs.writeFileSync);
+
+            fs.writeFileSync(this.path, JSON.stringify(this.data));
+
+            const writeFile = promisify(fs.writeFile);
+
+            writeFile(this.path, JSON.stringify(this.data))
+            .then(()=>{
+
+                let date = new Date();
+
+                console.log("finished ", date.getSeconds(), date.getMilliseconds());
+
                 resolve();
-                
-            } catch (error) {
 
-                this.data[key] = null;
-                reject(error)
-                
-            }
+            })
 
 
         })

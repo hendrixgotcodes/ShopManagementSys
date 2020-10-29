@@ -1,5 +1,7 @@
+const { shell } = require("electron");
+
 /***********AUDIO FILES*********/
-const winAlert = new Audio('../../utils/media/syssounds/win10.mp3')
+// const winAlert = new Audio('../../utils/media/syssounds/win10.mp3')
 
 /**********DOM ELEMENTS*********/
 const notification_banner = document.querySelector('.notification_banner');
@@ -15,7 +17,7 @@ class Notifications{
         }
 
 
-        winAlert.play();
+        shell.beep();
 
         setTimeout(()=>{
             Notifications.hideNotification();

@@ -252,6 +252,9 @@ function toggleRowCB(row){
         if(totalSelectedRows === 0){
             disableDropDownList();
 
+            //Disabling footer_btn (checkout btn)
+            footer_btn.disabled = true;
+
             // cartCount.style.transform = "scale(0)"
             cartCount.style.transform = "scale(0)"
             cartCount.innerText = 0;

@@ -34,16 +34,19 @@ ipcRenderer.on("loadUserInfo", (e, array)=>{
               }
           });
         
-          let userPrefered = store.get("toolTipsPref").toString();
+          store.get("toolTipsPref")
+          .then((userPrefered)=>{
+
+              if(userPrefered === "show"){
+                  showToolTips = true;
+              }
+              else if(userPrefered === "hide"){
+                showToolTips = false;
+            
+              }
+
+          })
         
-        
-          if(userPrefered === "show"){
-              showToolTips = true;
-          }
-          else if(userPrefered === "hide"){
-            showToolTips = false;
-        
-          }
           
         }
 

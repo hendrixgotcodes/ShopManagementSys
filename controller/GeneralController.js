@@ -49,9 +49,27 @@ ipcRenderer.on("loadUserInfo", (e, array)=>{
             }
         });
 
-        logOutTimeOut = 60000 * parseInt(store.get("timeOutPref"));
+        let timeOutPref;
 
-        startTimeOutCounter();
+        store.get("timeOutPref")
+        .then((userPref)=>{
+            
+            timeOutPref = parseInt(userPref)
+
+            console.log(timeOutPref);
+
+            logOutTimeOut = 60000 * timeOutPref;
+
+            startTimeOutCounter();
+
+            let date = new Date();
+
+            console.log("implemented ", date.getSeconds(), date.getMilliseconds());
+
+
+        })
+        
+
         
     }
 })
@@ -208,7 +226,12 @@ function seekItem(){
 
 function startTimeOutCounter(){
 
-    timeOutValue = timeOutValue = setTimeout(loadLoginPage, logOutTimeOut)
+    if(timeOutValue !== null || timeOutValue !== undefined){
+            clearTimeout(timeOutValue)
+    }
+
+
+     timeOutValue = setTimeout(loadLoginPage, logOutTimeOut)
 
 }
 
