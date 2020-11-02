@@ -20,6 +20,8 @@ class SHOPITEMS{
 
     }
 
+
+/*************************SINGLE ITEMS OPERATIONS******************************/
     addNewItem(shopItem){
 
         
@@ -29,8 +31,6 @@ class SHOPITEMS{
 
             // let array = shopItem.toArray();
             const array = Object.values(shopItem)
-
-            console.log("in addnew: ", array);
 
             let name, brand, category, stock, sellingPrice, costPrice;
 
@@ -79,8 +79,8 @@ class SHOPITEMS{
                 Brand: brand,
                 Category: category,
                 Stock: stock,
+                CostPrice: costPrice,
                 SellingPrice: sellingPrice,
-                CostPrice: costPrice
             }
 
             this.db.items.where({Name: name, Brand: brand, Category: Category})
@@ -98,7 +98,6 @@ class SHOPITEMS{
 
     softDeleteItem(shopItem){
 
-        console.log("in soft delete", shopItem);
 
        return new Promise((resolve, reject)=>{
 
@@ -131,6 +130,8 @@ class SHOPITEMS{
 
     }
 
+/*****************************MULTIPLE ITEMS OPERATIONS****************/
+
     fetchItems(){
         
 
@@ -149,6 +150,26 @@ class SHOPITEMS{
             .catch(()=>{
                 resolve(false)
             })
+
+        })
+
+    }
+
+    addItemsBulk(itemArray){
+
+        return new Promise((resolve, reject)=>{
+
+            this.db.items.bulkAdd(itemArray)
+            .then(()=>{
+
+                resolve(true)
+
+            })
+            .catch(()=>[
+
+                reject(false)
+
+            ])
 
         })
 

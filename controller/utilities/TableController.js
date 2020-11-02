@@ -123,7 +123,8 @@ class TableController{
                 if(deleted){
 
                     setTimeout(()=>{
-                        row.style.color = "#ce2727";
+                        row.style.opacity = ".6"
+                        // row.style.color = "#ce2727";
                     },3000)
 
                 }

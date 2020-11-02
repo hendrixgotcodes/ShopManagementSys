@@ -3,9 +3,8 @@ const {
     globalShortcut,
     dialog,
     ipcMain,
-    ipcRenderer
+    remote
 } = require('electron');
-const { remote } = require('electron/renderer');
 
 //Loading directory which contains static files
 
@@ -85,10 +84,11 @@ class MainWWindow extends BrowserWindow {
         /*********************OPENS FILE EXPLORER*******************/
             ipcMain.on("openFileExplorer",(e)=>{
 
-                dialog.showOpenDialog({
+                dialog.showOpenDialog(
+                    {
                     title: 'Select File',
                     filters: [
-                        { name: 'Excel Files', extensions: ['xlsx', 'xls'] },
+                        { name: 'Excel Files (.xls, .xlsx)', extensions: ['xlsx', 'xls'] },
                     ],
                     properties: [
                         "openFile",

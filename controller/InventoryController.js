@@ -216,10 +216,6 @@ function deleteItem(row){
     .then((result)=>{
 
         if(result === "verified"){
-
-            console.log("Name: ", itemName);
-            console.log("Brand: ", itemBrand);
-            console.log("Quantity: ", itemCategory);
            
 
             shopItem.softDeleteItem( {
@@ -555,73 +551,112 @@ function deleteMultiple(){
 //Responds to event triggered by the main process when store items are added by excel sheet
 ipcRenderer.on('populateTable',(e, Items)=>{
 
+        const itemsArray = [];
+        //Renaming Object Keys
+        Items.forEach((item)=>{
+
+            let newArray = Object.values(item);
+
+            let [name, brand, category, stock, sellingPrice, costPrice] = newArray;
+
+            itemsArray.push({
+                Name: name,
+                Brand: brand,
+                Category: category,
+                Stock: stock,
+                SellingPrice: sellingPrice,
+                CostPrice: costPrice,
+                Deleted : "false"
+            })
+
+        })
+
+        shopItem.addItemsBulk(itemsArray)
+        .then(()=>{
+
+            Items.forEach((item)=>{
+
+                TableController.createItem(item.NAMES, item.BRAND, item.CATEGORY, item.QUANTITY, item.SELLINGPRICE, [checkCB, editItem, deleteItem, showRowControls], "", item.COSTPRICE, "", false, false)
+                .then(()=>{
+
+                    Notifications.showAlert("success", `${Items.length} Items Have Been Successfully Added.`)
+
+                })
+                
+
+            })
+                
          
-        let hasItems = false;
-        // if table has items
-        if(document.querySelector('.tableBody').querySelectorAll('.bodyRow').length > 0){
-            // set hasItems to true
-            hasItems = true;
+        // let hasItems = false;
+        // // if table has items
+        // if(document.querySelector('.tableBody').querySelectorAll('.bodyRow').length > 0){
+        //     // set hasItems to true
+        //     hasItems = true;
 
-        }
+        // }
 
 
-        let editedInventory = new Promise(
-            (resolve, reject)=>{
+        // let editedInventory = new Promise(
+        //     (resolve, reject)=>{
 
-                let returnedValue;
+        //         let returnedValue;
 
-                //New items that matched old items in table
-                let totalMatchedItems = 0;
+        //         //New items that matched old items in table
+        //         let totalMatchedItems = 0;
                
 
-                Items.forEach((item)=>{
+        //         Items.forEach((item)=>{
 
-                    returnedValue = TableController.createItem(item.NAMES, item.BRAND, item.CATEGORY, item.QUANTITY, item.SP, [checkCB,  editItem, deleteItem, showRowControls], hasItems);
+        //             returnedValue = TableController.createItem(item.NAMES, item.BRAND, item.CATEGORY, item.QUANTITY, item.SELLINGPRICE, [checkCB,  editItem, deleteItem, showRowControls], hasItems);
 
-                    if(returnedValue !== true){
-                        totalMatchedItems =  totalMatchedItems + returnedValue
-                    }
+        //             if(returnedValue !== true){
+        //                 totalMatchedItems =  totalMatchedItems + returnedValue
+        //             }
             
-                })
+        //         })
 
-                if(totalMatchedItems > 0)
-                {
-                    console.log(totalMatchedItems);
-                    // else whatever value is in  the returned value
-                    resolve(totalMatchedItems)
-                }
-                else{
-                    resolve(returnedValue)
-                }
+        //         if(totalMatchedItems > 0)
+        //         {
+        //             console.log(totalMatchedItems);
+        //             // else whatever value is in  the returned value
+        //             resolve(totalMatchedItems)
+        //         }
+        //         else{
+        //             resolve(returnedValue)
+        //         }
 
     
-            }
-        );
+        //     }
+        // );
 
-        editedInventory.then(
-            (returnedValue)=>{
+        // editedInventory.then(
+        //     (returnedValue)=>{
 
-                console.log(returnedValue, " inv");
+        //         console.log(returnedValue, " inv");
 
-                if(isNaN(parseInt(returnedValue))){
+        //         if(isNaN(parseInt(returnedValue))){
 
-                    Notifications.showAlert("success", `${Items.length} Items Has Been Successfully Added To Inventory`);
+        //             Notifications.showAlert("success", `${Items.length} Items Has Been Successfully Added To Inventory`);
 
-                }
-                else{
-                    Notifications.showAlert("success", `${returnedValue} Items Matched Old Items In Inventory. ${Items.length - returnedValue} New Items Added To Inventory`);
-                }
+        //         }
+        //         else{
+        //             Notifications.showAlert("success", `${returnedValue} Items Matched Old Items In Inventory. ${Items.length - returnedValue} New Items Added To Inventory`);
+        //         }
 
 
 
                 
-            }
-        )
-        .catch((error)=>{
-            if(error.message === "error"){
-                Notifications.showAlert("error", "Sorry, An Error Occured!")
-            }
-        })
+        //     }
+        // )
+        // .catch((error)=>{
+        //     if(error.message === "error"){
+        //         Notifications.showAlert("error", "Sorry, An Error Occured!")
+        //     }
+        // })
 
+
+
+
+        })
 
 })

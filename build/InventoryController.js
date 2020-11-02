@@ -354,9 +354,6 @@ function deleteItem(row) {
 
   _controller_modals_ModalController__WEBPACK_IMPORTED_MODULE_1__["default"].openConfirmationBox(itemName, itemBrand, itemQuantity).then(result => {
     if (result === "verified") {
-      console.log("Name: ", itemName);
-      console.log("Brand: ", itemBrand);
-      console.log("Quantity: ", itemCategory);
       shopItem.softDeleteItem({
         Name: itemName,
         Brand: itemBrand,
@@ -547,45 +544,70 @@ function deleteMultiple() {
 
 
 electron__WEBPACK_IMPORTED_MODULE_0__["ipcRenderer"].on('populateTable', (e, Items) => {
-  let hasItems = false; // if table has items
+  const itemsArray = []; //Renaming Object Keys
 
-  if (document.querySelector('.tableBody').querySelectorAll('.bodyRow').length > 0) {
-    // set hasItems to true
-    hasItems = true;
-  }
-
-  let editedInventory = new Promise((resolve, reject) => {
-    let returnedValue; //New items that matched old items in table
-
-    let totalMatchedItems = 0;
-    Items.forEach(item => {
-      returnedValue = _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(item.NAMES, item.BRAND, item.CATEGORY, item.QUANTITY, item.SP, [checkCB, editItem, deleteItem, showRowControls], hasItems);
-
-      if (returnedValue !== true) {
-        totalMatchedItems = totalMatchedItems + returnedValue;
-      }
+  Items.forEach(item => {
+    let newArray = Object.values(item);
+    let [name, brand, category, stock, sellingPrice, costPrice] = newArray;
+    itemsArray.push({
+      Name: name,
+      Brand: brand,
+      Category: category,
+      Stock: stock,
+      SellingPrice: sellingPrice,
+      CostPrice: costPrice,
+      Deleted: "false"
     });
-
-    if (totalMatchedItems > 0) {
-      console.log(totalMatchedItems); // else whatever value is in  the returned value
-
-      resolve(totalMatchedItems);
-    } else {
-      resolve(returnedValue);
-    }
   });
-  editedInventory.then(returnedValue => {
-    console.log(returnedValue, " inv");
-
-    if (isNaN(parseInt(returnedValue))) {
-      _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", `${Items.length} Items Has Been Successfully Added To Inventory`);
-    } else {
-      _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", `${returnedValue} Items Matched Old Items In Inventory. ${Items.length - returnedValue} New Items Added To Inventory`);
-    }
-  }).catch(error => {
-    if (error.message === "error") {
-      _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("error", "Sorry, An Error Occured!");
-    }
+  shopItem.addItemsBulk(itemsArray).then(() => {
+    Items.forEach(item => {
+      _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(item.NAMES, item.BRAND, item.CATEGORY, item.QUANTITY, item.SELLINGPRICE, [checkCB, editItem, deleteItem, showRowControls], "", item.COSTPRICE, "", false, false).then(() => {
+        _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", `${Items.length} Items Have Been Successfully Added.`);
+      });
+    }); // let hasItems = false;
+    // // if table has items
+    // if(document.querySelector('.tableBody').querySelectorAll('.bodyRow').length > 0){
+    //     // set hasItems to true
+    //     hasItems = true;
+    // }
+    // let editedInventory = new Promise(
+    //     (resolve, reject)=>{
+    //         let returnedValue;
+    //         //New items that matched old items in table
+    //         let totalMatchedItems = 0;
+    //         Items.forEach((item)=>{
+    //             returnedValue = TableController.createItem(item.NAMES, item.BRAND, item.CATEGORY, item.QUANTITY, item.SELLINGPRICE, [checkCB,  editItem, deleteItem, showRowControls], hasItems);
+    //             if(returnedValue !== true){
+    //                 totalMatchedItems =  totalMatchedItems + returnedValue
+    //             }
+    //         })
+    //         if(totalMatchedItems > 0)
+    //         {
+    //             console.log(totalMatchedItems);
+    //             // else whatever value is in  the returned value
+    //             resolve(totalMatchedItems)
+    //         }
+    //         else{
+    //             resolve(returnedValue)
+    //         }
+    //     }
+    // );
+    // editedInventory.then(
+    //     (returnedValue)=>{
+    //         console.log(returnedValue, " inv");
+    //         if(isNaN(parseInt(returnedValue))){
+    //             Notifications.showAlert("success", `${Items.length} Items Has Been Successfully Added To Inventory`);
+    //         }
+    //         else{
+    //             Notifications.showAlert("success", `${returnedValue} Items Matched Old Items In Inventory. ${Items.length - returnedValue} New Items Added To Inventory`);
+    //         }
+    //     }
+    // )
+    // .catch((error)=>{
+    //     if(error.message === "error"){
+    //         Notifications.showAlert("error", "Sorry, An Error Occured!")
+    //     }
+    // })
   });
 });
 
@@ -1120,7 +1142,7 @@ class TableController {
 
       if (deleted) {
         setTimeout(() => {
-          row.style.color = "#ce2727";
+          row.style.opacity = ".6"; // row.style.color = "#ce2727";
         }, 3000);
       }
 
@@ -1367,12 +1389,13 @@ class SHOPITEMS {
       console.log("Db failed to create");
     });
   }
+  /*************************SINGLE ITEMS OPERATIONS******************************/
+
 
   addNewItem(shopItem) {
     return new Promise((resolve, reject) => {
       // let array = shopItem.toArray();
       const array = Object.values(shopItem);
-      console.log("in addnew: ", array);
       let name, brand, category, stock, sellingPrice, costPrice;
       [name, brand, category, stock, sellingPrice, costPrice] = array;
       shopItem = {
@@ -1405,8 +1428,8 @@ class SHOPITEMS {
         Brand: brand,
         Category: category,
         Stock: stock,
-        SellingPrice: sellingPrice,
-        CostPrice: costPrice
+        CostPrice: costPrice,
+        SellingPrice: sellingPrice
       };
       this.db.items.where({
         Name: name,
@@ -1421,7 +1444,6 @@ class SHOPITEMS {
   }
 
   softDeleteItem(shopItem) {
-    console.log("in soft delete", shopItem);
     return new Promise((resolve, reject) => {
       let matchedItem;
       this.db.items.where(shopItem).each(item => {
@@ -1437,6 +1459,8 @@ class SHOPITEMS {
       });
     });
   }
+  /*****************************MULTIPLE ITEMS OPERATIONS****************/
+
 
   fetchItems() {
     return new Promise((resolve, reject) => {
@@ -1448,6 +1472,14 @@ class SHOPITEMS {
       }).catch(() => {
         resolve(false);
       });
+    });
+  }
+
+  addItemsBulk(itemArray) {
+    return new Promise((resolve, reject) => {
+      this.db.items.bulkAdd(itemArray).then(() => {
+        resolve(true);
+      }).catch(() => [reject(false)]);
     });
   }
 

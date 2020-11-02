@@ -41,8 +41,6 @@ function renderXLFile(path){
 
     let firstPageJSON = xlsx.utils.sheet_to_json(firstPage)
 
-    console.log(firstPageJSON);
-
     parseExcelOutput("From Excel",firstPageJSON)
 
 
@@ -140,7 +138,7 @@ function parseExcelOutput(formTitle, JSON){
 
             JSON.forEach((item)=>{
 
-                if(isNaN(parseInt(item.QUANTITY)) || isNaN(parseInt(item.CP)) || isNaN(parseInt(item.SP))){
+                if(isNaN(parseInt(item.QUANTITY)) || isNaN(parseInt(item.COSTPRICE)) || isNaN(parseInt(item.SELLINGPRICE))){
                     showAlert('error', 'Letters Entered In Place Of Numbers. Please Correct Your Excel Sheet And Try Again')
 
                     closeConfirmationBox();
@@ -168,11 +166,11 @@ function parseExcelOutput(formTitle, JSON){
                         </div>
 
                         <div class="Short td" id="cp">
-                            ${item.CP}
+                            ${item.COSTPRICE}
                         </div>
 
                         <div class="Short td" id="sp">
-                            ${item.SP}
+                            ${item.SELLINGPRICE}
                         </div>
 
 
