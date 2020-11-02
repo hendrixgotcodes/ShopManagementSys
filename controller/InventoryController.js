@@ -35,8 +35,9 @@ const shopItem = new SHOPITEMS()
 
 
 
-
 /**********************EVENT LISTENERS *************************/
+window.addEventListener("load", initialzeStoreItems)
+
 checkBtn.addEventListener('mouseover',toggleTBbtn_white)
 checkBtn.addEventListener('mouseleave',toggleTBbtn_default)
 checkBtn.addEventListener("click", toggleDropDown)
@@ -102,19 +103,41 @@ btnDelete.addEventListener("click", deleteMultiple)
 
 
 
-/************************* */
-TableController.showIsEmpty();
-
-
-
-
-
-
-
-
 /*****************************************************FUNCTIONS***************************************************/
 
+//Function to load store items
+function initialzeStoreItems(){
 
+    shopItem.fetchItems()
+    .then((fetchedItems)=>{
+
+        console.log(fetchedItems);
+
+        //If returned array contains any store item
+        if(fetchedItems.length > 0){
+            
+            //then add each item to the table in the DOM
+            fetchedItems.forEach((fetchedItem)=>{
+
+                TableController.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.Stock, fetchedItem.SellingPrice, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "")
+
+            })
+            
+
+        }
+        else{
+
+                /************************* */
+                TableController.showIsEmpty();
+
+        }
+
+    })
+    .catch((e)=>{
+        console.log(e);
+    })
+
+}
 
 
 //---------------------------------------------------------------------------------------------------------------

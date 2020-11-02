@@ -128,7 +128,7 @@ class SHOPITEMS{
 
     }
 
-    readItems(){
+    fetchItems(){
         
 
         return new Promise((resolve, reject)=>{

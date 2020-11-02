@@ -241,6 +241,7 @@ let rowBucket = []; //Initializing Database
 const shopItem = new _model_SHOPITEMS_js__WEBPACK_IMPORTED_MODULE_5___default.a();
 /**********************EVENT LISTENERS *************************/
 
+window.addEventListener("load", initialzeStoreItems);
 checkBtn.addEventListener('mouseover', toggleTBbtn_white);
 checkBtn.addEventListener('mouseleave', toggleTBbtn_default);
 checkBtn.addEventListener("click", toggleDropDown); //Right Click event lister for each row
@@ -278,12 +279,28 @@ listItemForm.addEventListener("click", addItem); //For btnEdit (Edit button in I
 btnEdit.addEventListener("click", editMultiple); //For btnDelete (Delete button in Inventory)
 
 btnDelete.addEventListener("click", deleteMultiple);
-/************************* */
-
-_utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.showIsEmpty();
 /*****************************************************FUNCTIONS***************************************************/
-//---------------------------------------------------------------------------------------------------------------
+//Function to load store items
+
+function initialzeStoreItems() {
+  shopItem.fetchItems().then(fetchedItems => {
+    console.log(fetchedItems); //If returned array contains any store item
+
+    if (fetchedItems.length > 0) {
+      //then add each item to the table in the DOM
+      fetchedItems.forEach(fetchedItem => {
+        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.Stock, fetchedItem.SellingPrice, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "");
+      });
+    } else {
+      /************************* */
+      _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.showIsEmpty();
+    }
+  }).catch(e => {
+    console.log(e);
+  });
+} //---------------------------------------------------------------------------------------------------------------
 // Two functions responsible for changing the icon in the "Add button" in the Inventory toolbar
+
 
 function toggleTBbtn_white() {
   toolBar_btn.style.backgroundColor = ' #35594B';
@@ -1344,37 +1361,41 @@ class SHOPITEMS {
   }
 
   updateItem(change) {
-    let array = change.toArray();
-    let name, brand, category, stock, sellingPrice, costPrice;
-    [name, brand, category, stock, sellingPrice, costPrice] = array;
-    change = {
-      Name: name,
-      Brand: brand,
-      Category: category,
-      Stock: stock,
-      SellingPrice: sellingPrice,
-      CostPrice: costPrice
-    };
     return new Promise((resolve, reject) => {
+      let array = change.toArray();
+      let name, brand, category, stock, sellingPrice, costPrice;
+      [name, brand, category, stock, sellingPrice, costPrice] = array;
+      change = {
+        Name: name,
+        Brand: brand,
+        Category: category,
+        Stock: stock,
+        SellingPrice: sellingPrice,
+        CostPrice: costPrice
+      };
       this.db.items.where({
         Name: name,
         Brand: brand,
         Category: Category
-      }).modify(change);
+      }).modify(change).then(() => {
+        resolve(true);
+      }).catch(() => {
+        reject(false);
+      });
     });
   }
 
   softDeleteItem(shopItem) {
-    let array = shopItem.toArray();
-    let name, brand, category;
-    [name, brand, category] = array;
-    shopItem = {
-      Name: name,
-      Brand: brand,
-      Category: category,
-      Deleted: true
-    };
     return new Promise((resolve, reject) => {
+      let array = shopItem.toArray();
+      let name, brand, category;
+      [name, brand, category] = array;
+      shopItem = {
+        Name: name,
+        Brand: brand,
+        Category: category,
+        Deleted: true
+      };
       this.db.items.where({
         Name: name,
         Brand: brand,
@@ -1383,6 +1404,19 @@ class SHOPITEMS {
         resolve(true);
       }).catch(() => {
         reject(false);
+      });
+    });
+  }
+
+  fetchItems() {
+    return new Promise((resolve, reject) => {
+      let dbItems = [];
+      this.db.items.each(item => {
+        dbItems.push(item);
+      }).then(() => {
+        resolve(dbItems);
+      }).catch(() => {
+        resolve(false);
       });
     });
   }
