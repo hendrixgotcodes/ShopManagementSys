@@ -283,16 +283,24 @@ btnDelete.addEventListener("click", deleteMultiple);
 //Function to load store items
 
 function initialzeStoreItems() {
+  _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.showLoadingBanner("Please wait. Attempting to load store items...");
   shopItem.fetchItems().then(fetchedItems => {
-    console.log(fetchedItems); //If returned array contains any store item
-
+    //If returned array contains any store item
     if (fetchedItems.length > 0) {
-      //then add each item to the table in the DOM
+      //Remove loading banner
+      _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.removeOldBanners(); //then add each item to the table in the DOM
+
       fetchedItems.forEach(fetchedItem => {
-        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.Stock, fetchedItem.SellingPrice, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true);
+        if (fetchedItem.Deleted === "true") {
+          _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.Stock, fetchedItem.SellingPrice, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, true);
+        } else {
+          _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.Stock, fetchedItem.SellingPrice, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true);
+        }
       });
     } else {
-      /************************* */
+      //Remove loading banner
+      _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.removeOldBanners(); // Show isEmpty banner
+
       _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.showIsEmpty();
     }
   }).catch(e => {
@@ -341,12 +349,22 @@ function showRowControls(row) {
 function deleteItem(row) {
   const itemName = row.querySelector(".td_Names").innerText;
   const itemBrand = row.querySelector(".td_Brands").innerText;
-  const itemQuantity = row.querySelector(".td_Stock").innerText; // Opens a confirmation dialog box which returns a promise
+  const itemQuantity = row.querySelector(".td_Stock").innerText;
+  const itemCategory = row.querySelector(".td_Category").innerText; // Opens a confirmation dialog box which returns a promise
 
   _controller_modals_ModalController__WEBPACK_IMPORTED_MODULE_1__["default"].openConfirmationBox(itemName, itemBrand, itemQuantity).then(result => {
     if (result === "verified") {
-      _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.removeItem(itemName, itemBrand);
-      _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("warning", `${itemName} Of Quantity ${itemQuantity} Has Been Removed From Database`);
+      console.log("Name: ", itemName);
+      console.log("Brand: ", itemBrand);
+      console.log("Quantity: ", itemCategory);
+      shopItem.softDeleteItem({
+        Name: itemName,
+        Brand: itemBrand,
+        Category: itemCategory
+      }).then(() => {
+        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.removeItem(itemName, itemBrand);
+        _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("warning", `${itemName} Of Quantity ${itemQuantity} Has Been Removed From Database`);
+      });
     }
   }).catch(error => {
     if (error.message === "wrongPassword") {
@@ -525,6 +543,7 @@ function deleteMultiple() {
   });
 }
 /*********************EVENT LISTENERS FROM MAIN*******************/
+//Responds to event triggered by the main process when store items are added by excel sheet
 
 
 electron__WEBPACK_IMPORTED_MODULE_0__["ipcRenderer"].on('populateTable', (e, Items) => {
@@ -1025,7 +1044,7 @@ function openModal(modal) {
 
 
 class TableController {
-  static createItem(name, brand, category, stock, sellingPrice, functions, hasItems, costPrice = "", purchased = "", dontHighlightAfterCreate = false) {
+  static createItem(name, brand, category, stock, sellingPrice, functions, hasItems, costPrice = "", purchased = "", dontHighlightAfterCreate = false, deleted = false) {
     return new Promise((resolve, reject) => {
       const tableROWS = document.querySelector('tbody').querySelectorAll('tr'); //Removing Empty Banner Before Addition of new row
 
@@ -1097,7 +1116,13 @@ class TableController {
       });
       row.addEventListener("contextmenu", e => {
         showRowControls(row);
-      });
+      }); // if item is marked as deleted
+
+      if (deleted) {
+        setTimeout(() => {
+          row.style.color = "#ce2727";
+        }, 3000);
+      }
 
       if (dontHighlightAfterCreate === true) {
         resolve();
@@ -1396,21 +1421,16 @@ class SHOPITEMS {
   }
 
   softDeleteItem(shopItem) {
+    console.log("in soft delete", shopItem);
     return new Promise((resolve, reject) => {
-      let array = shopItem.toArray();
-      let name, brand, category;
-      [name, brand, category] = array;
-      shopItem = {
-        Name: name,
-        Brand: brand,
-        Category: category,
-        Deleted: true
-      };
-      this.db.items.where({
-        Name: name,
-        Brand: brand,
-        Category: category
-      }).modify(shopItem).then(() => {
+      let matchedItem;
+      this.db.items.where(shopItem).each(item => {
+        // item.Deleted = "true";
+        // this.db.items.put(item);
+        matchedItem = item;
+      }).then(() => {
+        matchedItem.Deleted = "true";
+        this.db.items.put(matchedItem);
         resolve(true);
       }).catch(() => {
         reject(false);

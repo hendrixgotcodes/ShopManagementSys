@@ -2,7 +2,7 @@
 
 class TableController{
 
-    static createItem(name, brand, category, stock, sellingPrice, functions, hasItems,costPrice="", purchased="", dontHighlightAfterCreate = false){
+    static createItem(name, brand, category, stock, sellingPrice, functions, hasItems,costPrice="", purchased="", dontHighlightAfterCreate = false, deleted=false){
 
 
             return new Promise((resolve, reject)=>{
@@ -118,6 +118,15 @@ class TableController{
             
                     showRowControls(row)
                 })
+
+                // if item is marked as deleted
+                if(deleted){
+
+                    setTimeout(()=>{
+                        row.style.color = "#ce2727";
+                    },3000)
+
+                }
 
                 if(dontHighlightAfterCreate === true){
 

@@ -108,18 +108,32 @@ btnDelete.addEventListener("click", deleteMultiple)
 //Function to load store items
 function initialzeStoreItems(){
 
+    TableController.showLoadingBanner("Please wait. Attempting to load store items...")
+
     shopItem.fetchItems()
     .then((fetchedItems)=>{
 
-        console.log(fetchedItems);
+
 
         //If returned array contains any store item
         if(fetchedItems.length > 0){
+
+            //Remove loading banner
+            TableController.removeOldBanners();
             
             //then add each item to the table in the DOM
             fetchedItems.forEach((fetchedItem)=>{
 
-                TableController.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.Stock, fetchedItem.SellingPrice, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true)
+                if(fetchedItem.Deleted === "true"){
+
+                    TableController.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.Stock, fetchedItem.SellingPrice, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, true)
+
+                }
+                else{
+
+                    TableController.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.Stock, fetchedItem.SellingPrice, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true)
+
+                }
 
             })
             
@@ -127,7 +141,10 @@ function initialzeStoreItems(){
         }
         else{
 
-                /************************* */
+                //Remove loading banner
+                TableController.removeOldBanners();
+
+                // Show isEmpty banner
                 TableController.showIsEmpty();
 
         }
@@ -192,6 +209,7 @@ function deleteItem(row){
     const itemName = row.querySelector(".td_Names").innerText;
     const itemBrand = row.querySelector(".td_Brands").innerText
     const itemQuantity = row.querySelector(".td_Stock").innerText;
+    const itemCategory = row.querySelector(".td_Category").innerText;
 
     // Opens a confirmation dialog box which returns a promise
     Modal.openConfirmationBox(itemName, itemBrand, itemQuantity)
@@ -199,9 +217,25 @@ function deleteItem(row){
 
         if(result === "verified"){
 
-            TableController.removeItem(itemName, itemBrand)
+            console.log("Name: ", itemName);
+            console.log("Brand: ", itemBrand);
+            console.log("Quantity: ", itemCategory);
+           
 
-            Notifications.showAlert("warning", `${itemName} Of Quantity ${itemQuantity} Has Been Removed From Database`)
+            shopItem.softDeleteItem( {
+                Name: itemName,
+                Brand: itemBrand,
+                Category: itemCategory,
+            })
+            .then(()=>{
+
+                TableController.removeItem(itemName, itemBrand)
+
+                Notifications.showAlert("warning", `${itemName} Of Quantity ${itemQuantity} Has Been Removed From Database`)
+
+            })
+
+           
 
         }
 
@@ -517,6 +551,8 @@ function deleteMultiple(){
 
 
 /*********************EVENT LISTENERS FROM MAIN*******************/
+
+//Responds to event triggered by the main process when store items are added by excel sheet
 ipcRenderer.on('populateTable',(e, Items)=>{
 
          

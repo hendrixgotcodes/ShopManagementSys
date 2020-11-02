@@ -98,23 +98,26 @@ class SHOPITEMS{
 
     softDeleteItem(shopItem){
 
+        console.log("in soft delete", shopItem);
+
        return new Promise((resolve, reject)=>{
 
-            let array = shopItem.toArray();
+            let matchedItem;
+            
 
-            let name, brand, category;
+            this.db.items.where(shopItem).each((item)=>{
 
-            [name, brand, category] = array;
+                // item.Deleted = "true";
 
-            shopItem = {
-                Name: name,
-                Brand: brand,
-                Category: category,
-                Deleted: true
-            }
+                // this.db.items.put(item);
+                matchedItem = item;
 
-            this.db.items.where({Name: name, Brand: brand, Category: category}).modify(shopItem)
+            })
             .then(()=>{
+
+                matchedItem.Deleted = "true"
+                this.db.items.put(matchedItem)
+
                 resolve(true)
             })
             .catch(()=>{

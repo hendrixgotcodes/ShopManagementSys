@@ -902,7 +902,7 @@ function openModal(modal) {
 
 
 class TableController {
-  static createItem(name, brand, category, stock, sellingPrice, functions, hasItems, costPrice = "", purchased = "", dontHighlightAfterCreate = false) {
+  static createItem(name, brand, category, stock, sellingPrice, functions, hasItems, costPrice = "", purchased = "", dontHighlightAfterCreate = false, deleted = false) {
     return new Promise((resolve, reject) => {
       const tableROWS = document.querySelector('tbody').querySelectorAll('tr'); //Removing Empty Banner Before Addition of new row
 
@@ -974,7 +974,13 @@ class TableController {
       });
       row.addEventListener("contextmenu", e => {
         showRowControls(row);
-      });
+      }); // if item is marked as deleted
+
+      if (deleted) {
+        setTimeout(() => {
+          row.style.color = "#ce2727";
+        }, 3000);
+      }
 
       if (dontHighlightAfterCreate === true) {
         resolve();
