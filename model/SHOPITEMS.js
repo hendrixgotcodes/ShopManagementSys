@@ -159,17 +159,40 @@ class SHOPITEMS{
 
         return new Promise((resolve, reject)=>{
 
-            this.db.items.bulkAdd(itemArray)
-            .then(()=>{
+                const alreadyInDB = [];
 
-                resolve(true)
+                
+                itemArray.forEach((item)=>{
 
-            })
-            .catch(()=>[
+                    //Look through Database with the following keys
+                    this.db.items.where({Name: item.Name, Brand: item.Brand})
+                    .each((item)=>{
+    
+                        // If a match is found, remove from array
+                        let itemIndex =  itemArray.indexOf(item);
+                        itemArray.splice(itemIndex, 1);
+    
+                        //add those items to alreadyInDB array
+                        alreadyInDB.push(item)
+    
+                    })
+                    .then(()=>{
+                        
+                         //then add the rest in itemArray to the database
+                         this.db.items.bulkPut(itemArray)
+                         .then(()=>{
+                             resolve([alreadyInDB, itemArray])
+                         })
+     
+                    })
+                    .catch(()=>{
+    
+                        reject(false);
+    
+                    })
 
-                reject(false)
+                })
 
-            ])
 
         })
 

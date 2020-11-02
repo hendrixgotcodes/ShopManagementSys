@@ -572,89 +572,17 @@ ipcRenderer.on('populateTable',(e, Items)=>{
         })
 
         shopItem.addItemsBulk(itemsArray)
-        .then(()=>{
+        .then((resolved)=>{
 
-            Items.forEach((item)=>{
+            resolved[1].forEach((item)=>{
+
+
 
                 TableController.createItem(item.NAMES, item.BRAND, item.CATEGORY, item.QUANTITY, item.SELLINGPRICE, [checkCB, editItem, deleteItem, showRowControls], "", item.COSTPRICE, "", false, false)
-                .then(()=>{
-
-                    Notifications.showAlert("success", `${Items.length} Items Have Been Successfully Added.`)
-
-                })
-                
 
             })
-                
-         
-        // let hasItems = false;
-        // // if table has items
-        // if(document.querySelector('.tableBody').querySelectorAll('.bodyRow').length > 0){
-        //     // set hasItems to true
-        //     hasItems = true;
 
-        // }
-
-
-        // let editedInventory = new Promise(
-        //     (resolve, reject)=>{
-
-        //         let returnedValue;
-
-        //         //New items that matched old items in table
-        //         let totalMatchedItems = 0;
-               
-
-        //         Items.forEach((item)=>{
-
-        //             returnedValue = TableController.createItem(item.NAMES, item.BRAND, item.CATEGORY, item.QUANTITY, item.SELLINGPRICE, [checkCB,  editItem, deleteItem, showRowControls], hasItems);
-
-        //             if(returnedValue !== true){
-        //                 totalMatchedItems =  totalMatchedItems + returnedValue
-        //             }
-            
-        //         })
-
-        //         if(totalMatchedItems > 0)
-        //         {
-        //             console.log(totalMatchedItems);
-        //             // else whatever value is in  the returned value
-        //             resolve(totalMatchedItems)
-        //         }
-        //         else{
-        //             resolve(returnedValue)
-        //         }
-
-    
-        //     }
-        // );
-
-        // editedInventory.then(
-        //     (returnedValue)=>{
-
-        //         console.log(returnedValue, " inv");
-
-        //         if(isNaN(parseInt(returnedValue))){
-
-        //             Notifications.showAlert("success", `${Items.length} Items Has Been Successfully Added To Inventory`);
-
-        //         }
-        //         else{
-        //             Notifications.showAlert("success", `${returnedValue} Items Matched Old Items In Inventory. ${Items.length - returnedValue} New Items Added To Inventory`);
-        //         }
-
-
-
-                
-        //     }
-        // )
-        // .catch((error)=>{
-        //     if(error.message === "error"){
-        //         Notifications.showAlert("error", "Sorry, An Error Occured!")
-        //     }
-        // })
-
-
+            Notifications.showAlert("success", `${resolved[1].length} Items Have Been Successfully Added. ${resolved[0].length} Items Already Existed In Database`)
 
 
         })
