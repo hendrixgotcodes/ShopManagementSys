@@ -94,7 +94,183 @@
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _model_STORE__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../model/STORE */ \"./model/STORE.js\");\n/* harmony import */ var _model_STORE__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_model_STORE__WEBPACK_IMPORTED_MODULE_0__);\n\n\nconst {\n  ipcRenderer\n} = __webpack_require__(/*! electron */ \"electron\");\n\n //Program Variables\n\nlet userName;\nlet userType;\nlet isFullScreen = false;\nlet logOutTimeOut = 30000;\nlet timeOutValue;\nlet searchtimeOutValue;\n/*****************DOM ELEMENTS*****/\n\nconst mainBody = document.querySelector('body');\nconst controlBoxMinimize = document.querySelector('.controlBox_minimize');\nconst controlBoxMaximize = document.querySelector('.controlBox_maximize');\nconst controlBoxClose = document.querySelector('.controlBox_close');\nconst restoreMaxi = document.getElementById('restore_maxi');\nconst goto_Store = document.querySelector('#goto_store');\nconst goto_Inventory = document.querySelector('#goto_inventory');\nconst goto_Analytics = document.querySelector('#goto_analytics');\nconst content_cover = document.querySelector('.contentCover');\nconst mainBodyContent = document.querySelector('.mainBody_content');\nconst toolBar_tb = document.querySelector('.toolBar_tb');\n/****************EVENT LISTENERS ********/\n\nipcRenderer.on(\"loadUserInfo\", (e, array) => {\n  [userName, userType] = array;\n\n  if (userType === 'Admin') {\n    const store = new _model_STORE__WEBPACK_IMPORTED_MODULE_0___default.a({\n      configName: 'userPrefs',\n      defaults: {\n        toolTipsPref: 'show',\n        timeOutPref: '1'\n      }\n    });\n    let timeOutPref;\n    store.get(\"timeOutPref\").then(userPref => {\n      timeOutPref = parseInt(userPref);\n      console.log(timeOutPref);\n      logOutTimeOut = 60000 * timeOutPref;\n      startTimeOutCounter();\n      let date = new Date();\n      console.log(\"implemented \", date.getSeconds(), date.getMilliseconds());\n    });\n  }\n});\n/**ON LOAD */\n\nwindow.addEventListener(\"load\", () => {\n  //Alert ipcMain of readiness\n  ipcRenderer.send(\"ready\");\n});\ncontrolBoxMinimize.addEventListener('click', sendMinimizeEvent);\ncontrolBoxMaximize.addEventListener('click', sendMaximizeEvent);\ncontrolBoxClose.addEventListener('click', sendCloseEvent); //For \"goto_Inventory\"\n\ngoto_Store.addEventListener('click', loadStore);\ngoto_Inventory.addEventListener('click', loadInventory);\ngoto_Analytics.addEventListener('click', loadAnalytics); //For Content\n\ncontent_cover.addEventListener(\"click\", removeModal); // toolBar_btn.addEventListener(\"click\", seekItem)\n\nif (toolBar_tb !== null) {\n  toolBar_tb.addEventListener(\"keyup\", seekItem);\n}\n\nwindow.addEventListener('click', e => {\n  modifySectionTime(e);\n});\nwindow.addEventListener('mouseover', e => {\n  modifySectionTime(e);\n});\nwindow.addEventListener('keypress', e => {\n  modifySectionTime(e);\n});\n/*****************FUNCTIONS*****************/\n\nfunction sendMinimizeEvent() {\n  ipcRenderer.send('minimize');\n}\n\nfunction sendMaximizeEvent() {\n  if (isFullScreen === true) {\n    ipcRenderer.send(\"restore\");\n    restoreMaxi.setAttribute('src', \"../Icons/Control_Box/Maximize.png\");\n    isFullScreen = false;\n  } else {\n    restoreMaxi.setAttribute('src', \"../Icons/Control_Box/Restore.png\");\n    isFullScreen = true;\n    ipcRenderer.send('maximize');\n  }\n}\n\nfunction sendCloseEvent() {\n  ipcRenderer.send('close');\n} //Triggers an event to load the pages in the  ipcMain\n\n\nfunction loadStore() {\n  ipcRenderer.send('loadStore', [userName, userType]);\n}\n\nfunction loadInventory() {\n  ipcRenderer.send('loadInventory', [userName, userType]);\n}\n\nfunction loadAnalytics() {\n  ipcRenderer.send('loadAnalytics', [userName, userType]);\n}\n\nfunction loadLoginPage() {\n  ipcRenderer.send('loadLogin');\n} //Removes Modal\n\n\nfunction removeModal() {\n  if (mainBodyContent.querySelector('.modal') !== null) {\n    mainBodyContent.querySelector('.modal').remove();\n    document.querySelector('.contentCover').classList.remove('contentCover--shown');\n  }\n}\n\nfunction seekItem() {\n  if (searchtimeOutValue !== 0) {\n    clearTimeout(searchtimeOutValue);\n  }\n\n  searchtimeOutValue = setTimeout(() => {\n    let itemName = toolBar_tb.value;\n\n    if (itemName === \"\" || itemName === \" \") {\n      return;\n    }\n\n    itemName = itemName.toLowerCase();\n    const tableROWS = document.querySelector('.tableBody').querySelectorAll('.bodyRow');\n    tableROWS.forEach(row => {\n      let initBGcolor = row.style.backgroundColor;\n      let initColor = row.style.color;\n      const currentItem = row.querySelector(\".td_Names\").innerText.toLowerCase();\n\n      if (currentItem.includes(itemName)) {\n        row.style.backgroundColor = 'rgba(53, 89, 75, 0.711)';\n        row.style.color = \"#fff\";\n        row.scrollIntoView({\n          behavior: 'smooth'\n        });\n        setTimeout(() => {\n          row.style.backgroundColor = initBGcolor;\n          row.style.color = initColor;\n        }, 5000);\n      }\n    });\n  }, 1500);\n}\n\nfunction startTimeOutCounter() {\n  if (timeOutValue !== null || timeOutValue !== undefined) {\n    clearTimeout(timeOutValue);\n  }\n\n  timeOutValue = setTimeout(loadLoginPage, logOutTimeOut);\n}\n\nfunction modifySectionTime(e) {\n  e.stopPropagation();\n  clearTimeout(timeOutValue);\n  timeOutValue = setTimeout(loadLoginPage, logOutTimeOut);\n}\n\n//# sourceURL=webpack:///./controller/GeneralController.js?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _model_STORE__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../model/STORE */ "./model/STORE.js");
+/* harmony import */ var _model_STORE__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_model_STORE__WEBPACK_IMPORTED_MODULE_0__);
+
+
+const {
+  ipcRenderer
+} = __webpack_require__(/*! electron */ "electron");
+
+ //Program Variables
+
+let userName;
+let userType;
+let isFullScreen = false;
+let logOutTimeOut = 30000;
+let timeOutValue;
+let searchtimeOutValue;
+/*****************DOM ELEMENTS*****/
+
+const mainBody = document.querySelector('body');
+const controlBoxMinimize = document.querySelector('.controlBox_minimize');
+const controlBoxMaximize = document.querySelector('.controlBox_maximize');
+const controlBoxClose = document.querySelector('.controlBox_close');
+const restoreMaxi = document.getElementById('restore_maxi');
+const goto_Store = document.querySelector('#goto_store');
+const goto_Inventory = document.querySelector('#goto_inventory');
+const goto_Analytics = document.querySelector('#goto_analytics');
+const content_cover = document.querySelector('.contentCover');
+const mainBodyContent = document.querySelector('.mainBody_content');
+const toolBar_tb = document.querySelector('.toolBar_tb');
+/****************EVENT LISTENERS ********/
+
+ipcRenderer.on("loadUserInfo", (e, array) => {
+  [userName, userType] = array;
+
+  if (userType === 'Admin') {
+    const store = new _model_STORE__WEBPACK_IMPORTED_MODULE_0___default.a({
+      configName: 'userPrefs',
+      defaults: {
+        toolTipsPref: 'show',
+        timeOutPref: '1'
+      }
+    });
+    let timeOutPref;
+    store.get("timeOutPref").then(userPref => {
+      timeOutPref = parseInt(userPref);
+      console.log(timeOutPref);
+      logOutTimeOut = 60000 * timeOutPref;
+      startTimeOutCounter();
+      let date = new Date();
+      console.log("implemented ", date.getSeconds(), date.getMilliseconds());
+    });
+  }
+});
+/**ON LOAD */
+
+window.addEventListener("load", () => {
+  //Alert ipcMain of readiness
+  ipcRenderer.send("ready");
+});
+controlBoxMinimize.addEventListener('click', sendMinimizeEvent);
+controlBoxMaximize.addEventListener('click', sendMaximizeEvent);
+controlBoxClose.addEventListener('click', sendCloseEvent); //For "goto_Inventory"
+
+goto_Store.addEventListener('click', loadStore);
+goto_Inventory.addEventListener('click', loadInventory);
+goto_Analytics.addEventListener('click', loadAnalytics); //For Content
+
+content_cover.addEventListener("click", removeModal); // toolBar_btn.addEventListener("click", seekItem)
+
+if (toolBar_tb !== null) {
+  toolBar_tb.addEventListener("keyup", seekItem);
+}
+
+window.addEventListener('click', e => {
+  modifySectionTime(e);
+});
+window.addEventListener('mouseover', e => {
+  modifySectionTime(e);
+});
+window.addEventListener('keypress', e => {
+  modifySectionTime(e);
+});
+/*****************FUNCTIONS*****************/
+
+function sendMinimizeEvent() {
+  ipcRenderer.send('minimize');
+}
+
+function sendMaximizeEvent() {
+  if (isFullScreen === true) {
+    ipcRenderer.send("restore");
+    restoreMaxi.setAttribute('src', "../Icons/Control_Box/Maximize.png");
+    isFullScreen = false;
+  } else {
+    restoreMaxi.setAttribute('src', "../Icons/Control_Box/Restore.png");
+    isFullScreen = true;
+    ipcRenderer.send('maximize');
+  }
+}
+
+function sendCloseEvent() {
+  ipcRenderer.send('close');
+} //Triggers an event to load the pages in the  ipcMain
+
+
+function loadStore() {
+  ipcRenderer.send('loadStore', [userName, userType]);
+}
+
+function loadInventory() {
+  ipcRenderer.send('loadInventory', [userName, userType]);
+}
+
+function loadAnalytics() {
+  ipcRenderer.send('loadAnalytics', [userName, userType]);
+}
+
+function loadLoginPage() {
+  ipcRenderer.send('loadLogin');
+} //Removes Modal
+
+
+function removeModal() {
+  if (mainBodyContent.querySelector('.modal') !== null) {
+    mainBodyContent.querySelector('.modal').remove();
+    document.querySelector('.contentCover').classList.remove('contentCover--shown');
+  }
+}
+
+function seekItem() {
+  if (searchtimeOutValue !== 0) {
+    clearTimeout(searchtimeOutValue);
+  }
+
+  searchtimeOutValue = setTimeout(() => {
+    let itemName = toolBar_tb.value;
+
+    if (itemName === "" || itemName === " ") {
+      return;
+    }
+
+    itemName = itemName.toLowerCase();
+    const tableROWS = document.querySelector('.tableBody').querySelectorAll('.bodyRow');
+    tableROWS.forEach(row => {
+      let initBGcolor = row.style.backgroundColor;
+      let initColor = row.style.color;
+      const currentItem = row.querySelector(".td_Names").innerText.toLowerCase();
+
+      if (currentItem.includes(itemName)) {
+        row.style.backgroundColor = 'rgba(53, 89, 75, 0.711)';
+        row.style.color = "#fff";
+        row.scrollIntoView({
+          behavior: 'smooth'
+        });
+        setTimeout(() => {
+          row.style.backgroundColor = initBGcolor;
+          row.style.color = initColor;
+        }, 5000);
+      }
+    });
+  }, 1500);
+}
+
+function startTimeOutCounter() {
+  if (timeOutValue !== null || timeOutValue !== undefined) {
+    clearTimeout(timeOutValue);
+  }
+
+  timeOutValue = setTimeout(loadLoginPage, logOutTimeOut);
+}
+
+function modifySectionTime(e) {
+  e.stopPropagation();
+  clearTimeout(timeOutValue);
+  timeOutValue = setTimeout(loadLoginPage, logOutTimeOut);
+}
 
 /***/ }),
 
@@ -105,18 +281,56 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _mod
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("const electron = __webpack_require__(/*! electron */ \"electron\");\n\nconst path = __webpack_require__(/*! path */ \"path\");\n\nconst fs = __webpack_require__(/*! fs */ \"fs\");\n\nconst {\n  promisify\n} = __webpack_require__(/*! util */ \"util\");\n\nconst {\n  fips\n} = __webpack_require__(/*! crypto */ \"crypto\");\n\nconst {\n  finished\n} = __webpack_require__(/*! stream */ \"stream\");\n\nclass STORE {\n  constructor(data) {\n    const userDataPath = (electron.app || electron.remote.app).getPath('userData');\n    this.path = path.join(userDataPath, data.configName + '.json');\n    this.data = parseDataFile(this.path, data.defaults);\n  }\n\n  get(key) {\n    return new Promise((resolve, reject) => {\n      resolve(this.data[key]);\n    });\n  }\n\n  set(key, val) {\n    return new Promise((resolve, reject) => {\n      console.log(\"initiated\");\n      this.data[key] = val; //  const writeFileSync = promisify(fs.writeFileSync);\n\n      fs.writeFileSync(this.path, JSON.stringify(this.data));\n      const writeFile = promisify(fs.writeFile);\n      writeFile(this.path, JSON.stringify(this.data)).then(() => {\n        let date = new Date();\n        console.log(\"finished \", date.getSeconds(), date.getMilliseconds());\n        resolve();\n      });\n    });\n  }\n\n}\n\nfunction parseDataFile(filePath, defaults) {\n  try {\n    return JSON.parse(fs.readFileSync(filePath));\n  } catch (error) {\n    console.log(error);\n    return defaults;\n  }\n}\n\nmodule.exports = STORE;\n\n//# sourceURL=webpack:///./model/STORE.js?");
+const electron = __webpack_require__(/*! electron */ "electron");
 
-/***/ }),
+const path = __webpack_require__(/*! path */ "path");
 
-/***/ "crypto":
-/*!*************************!*\
-  !*** external "crypto" ***!
-  \*************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+const fs = __webpack_require__(/*! fs */ "fs");
 
-eval("module.exports = require(\"crypto\");\n\n//# sourceURL=webpack:///external_%22crypto%22?");
+const {
+  promisify
+} = __webpack_require__(/*! util */ "util");
+
+class STORE {
+  constructor(data) {
+    const userDataPath = (electron.app || electron.remote.app).getPath('userData');
+    this.path = path.join(userDataPath, data.configName + '.json');
+    this.data = parseDataFile(this.path, data.defaults);
+  }
+
+  get(key) {
+    return new Promise((resolve, reject) => {
+      resolve(this.data[key]);
+    });
+  }
+
+  set(key, val) {
+    return new Promise((resolve, reject) => {
+      console.log("initiated");
+      this.data[key] = val; //  const writeFileSync = promisify(fs.writeFileSync);
+
+      fs.writeFileSync(this.path, JSON.stringify(this.data));
+      const writeFile = promisify(fs.writeFile);
+      writeFile(this.path, JSON.stringify(this.data)).then(() => {
+        let date = new Date();
+        console.log("finished ", date.getSeconds(), date.getMilliseconds());
+        resolve();
+      });
+    });
+  }
+
+}
+
+function parseDataFile(filePath, defaults) {
+  try {
+    return JSON.parse(fs.readFileSync(filePath));
+  } catch (error) {
+    console.log(error);
+    return defaults;
+  }
+}
+
+module.exports = STORE;
 
 /***/ }),
 
@@ -127,7 +341,7 @@ eval("module.exports = require(\"crypto\");\n\n//# sourceURL=webpack:///external
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-eval("module.exports = require(\"electron\");\n\n//# sourceURL=webpack:///external_%22electron%22?");
+module.exports = require("electron");
 
 /***/ }),
 
@@ -138,7 +352,7 @@ eval("module.exports = require(\"electron\");\n\n//# sourceURL=webpack:///extern
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-eval("module.exports = require(\"fs\");\n\n//# sourceURL=webpack:///external_%22fs%22?");
+module.exports = require("fs");
 
 /***/ }),
 
@@ -149,18 +363,7 @@ eval("module.exports = require(\"fs\");\n\n//# sourceURL=webpack:///external_%22
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-eval("module.exports = require(\"path\");\n\n//# sourceURL=webpack:///external_%22path%22?");
-
-/***/ }),
-
-/***/ "stream":
-/*!*************************!*\
-  !*** external "stream" ***!
-  \*************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-eval("module.exports = require(\"stream\");\n\n//# sourceURL=webpack:///external_%22stream%22?");
+module.exports = require("path");
 
 /***/ }),
 
@@ -171,8 +374,9 @@ eval("module.exports = require(\"stream\");\n\n//# sourceURL=webpack:///external
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-eval("module.exports = require(\"util\");\n\n//# sourceURL=webpack:///external_%22util%22?");
+module.exports = require("util");
 
 /***/ })
 
 /******/ });
+//# sourceMappingURL=GeneralController.js.map

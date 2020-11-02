@@ -7,6 +7,10 @@ import Modal from '../controller/modals/ModalController';
 import Notifications from './Alerts/NotificationController';
 import TableController from './utilities/TableController';
 import UnitConverter from './utilities/UnitConverter';
+
+//Importing ItemDB operations
+import SHOPITEMS from '../model/SHOPITEMS.js';
+
 // const Modal = require('../controller/modals/ModalController')
 
 /************DOM ELEMENTS */
@@ -24,6 +28,9 @@ const btnDropDown = document.querySelector(".btn_dropDown");
 const listItemForm = document.querySelector(".dd_listItem--form");
 
 let rowBucket = [];
+
+//Initializing Database
+const shopItem = new SHOPITEMS()
 
 
 
@@ -269,46 +276,39 @@ function addItem(){
     Modal.openItemForm("", false)
     .then((result)=>{
 
-        if(result[0] === "edited"){
-
            
-            let row, name, brand, category, stock, price;
+            let row, name, brand, category, stock, sellingPrice, costPrice;
 
-            let promisedRow = result[1];
-
-
-            [,row, name, brand, category, stock, price] = promisedRow;
+            let promisedRow = result;
 
 
-            let editedInventory = new Promise(
-                (resolve, reject)=>{
-                   let done =  TableController.createItem(name, brand, category, stock, price, [checkCB,  editItem, deleteItem, showRowControls]);
+            [,row, name, brand, category, stock, sellingPrice, costPrice] = promisedRow;
 
-                   if(done){
-                       resolve(name);
-                   }
-                   else{
-                       reject(new Error("error"));
-                   }
-                }
-            );
+            //Creating a store object to be added to database
+            const storeObject = new Object();
+            storeObject.Name = name;
+            storeObject.Brand = brand;
+            storeObject.Category = category;
+            storeObject.Stock = stock;
+            storeObject.SellingPrice = sellingPrice;
+            storeObject.CostPrice = costPrice;
 
-            editedInventory.then(
-                (name)=>{
+            // console.log([row, name, brand, category, stock, sellingPrice, costPrice]);
 
-                    
-                         Notifications.showAlert("success", `${name} Has Been Successfully Added To Inventory`);
-                }
-            )
-            .catch((error)=>{
-                if(error.message === "error"){
-                    Notifications.showAlert("error", "Sorry, An Error Occured!")
+            console.log("storeObject: ", storeObject);
+
+            shopItem.addNewItem(storeObject)
+            .then((result)=>{
+
+                console.log(result);
+                if(result===true){
+                    Notifications.showNotification("success", "Successfuly added to inventory")
                 }
             })
+            .catch((error)=>{
+                console.log(error);
+            })
 
-        }
-
-     
 
     })
     .catch(

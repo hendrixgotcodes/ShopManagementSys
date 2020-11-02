@@ -94,18 +94,375 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("\n\nconst {\n  ipcRenderer\n} = __webpack_require__(/*! electron */ \"electron\");\n\nconst DATA = __webpack_require__(/*! ../../model/DATA */ \"./model/DATA.js\");\n\nconst STORE = __webpack_require__(/*! ../../model/STORE */ \"./model/STORE.js\");\n\nconst store = new STORE({\n  configName: 'userPrefs',\n  defaults: {\n    toolTipsPref: 'show',\n    timeOutPref: '1'\n  }\n});\nconst settings = document.querySelector('#settings');\nconst contentCover = document.querySelector('.contentCover');\nconst mainBodyContent = document.querySelector('.mainBody_content'); // import tippy from 'tippy.js';\n\nfunction openSettings() {\n  const settingsModalTemplate = `\n    <div class=\"settingsContainer\" aria-placeholder=\"Container\">\n\n            <div class=\"account modalPage\" aria-placeholder=\"Account Settings\">\n                <div class=\"modal_menu\">\n                    <div class=\"modalMenu_adminSettings modalMenu_item currentPage\">\n                        <img src=\"../Icons/settings/employees.svg\" />\n                        <div>My Employees</div>\n                    </div>\n\n                    <div class=\"modalMenu_accSettings modalMenu_item\">\n                        <img src=\"../Icons/menuIcons/Tray/account.svg\" />\n                        <div>My Account</div>\n                    </div>\n\n                    <div class=\"modalMenu_genSettings modalMenu_item\">\n                        <img src=\"../Icons/settings/settings.svg\" />\n                        <div>General Settings</div>\n                    </div>\n\n                </div>\n\n                <div class=\"modal_content\">\n\n                    <header class=\"modalHeader\">\n                        <h1 class=\"modalTitle\"> <img src=\"../Icons/settings/adminSettings.png\" />\n                            Admin Settings\n                        </h1>\n                    </header>\n                    <div class=\"modalContent_body slider slider--onAdmin\">\n                        <div class=\"modalContent_settings adminSettings\">\n\n                            <table class=\"contentTable modal_table\">\n                                <thead class=\"tableHeader\">\n                                    <tr class=\"modal_tHead\">\n                                        <th class=\"tableHead_items\">Name</th>\n                                        <th class=\"tableHead_items\">DOB</th>\n                                        <th class=\"tableHead_items\">Date Registered</th>\n                                    </tr>\n                                </thead>\n                                <tbody class=\"modal_tBody\">\n\n\n                                </tbody>\n                            </table>\n\n                            <div class=\"modal_btn_add\" aria-placeholder=\"Add User\">\n                                <img src=\"../Icons/settings/addUser.svg\" />\n                            </div>\n\n                        </div>\n                        <div class=\"modalContent_settings accSettings\">\n                            <center>\n                                <label class=\"settingsLabel\">\n                                    UserName\n                                    <input type=\"text\" placeholder=\"Leave blank to maintain current name\"\n                                        class=\"modal_textB\">\n                                </label>\n                                <label class=\"settingsLabel\">\n                                    New Password\n                                    <input type=\"password\" placeholder=\"New Password\" class=\"New Password\">\n                                </label>\n                                <label class=\"settingsLabel\">\n                                    Confirm Pasword\n                                    <input type=\"password\" placeholder=\"Confirm Password\" class=\"Confirm New Password\">\n                                </label>\n                                <label class=\"settingsLabel\">\n                                    Current Password\n                                    <input type=\"password\" placeholder=\"Current Password\" class=\"Old Password Password\">\n                                </label>\n                            </center>\n                            <button class=\"modal_btn_submit\">Change</button>\n                        </div>\n                        <div class=\"modalContent_settings genSettings\">\n\n                            <label class=\"settingsLabel\">\n                                ToolTips Options\n                                <select id=\"toolTipPref\" class=\"modal_ddMenu\">\n                                    <option value=\"show\">Show Tooltips</option>\n                                    <option value=\"hide\">Hide Tooltips</option>\n                                </select>\n                            </label>\n                            <label class=\"settingsLabel\">\n                                Timeout After Inactivity\n                                <select id=\"timeOutPref\" class=\"modal_ddMenu\">\n                                    <option value=\"1\">One Minute</option>\n                                    <option value=\"3\">Three Minutes</option>\n                                    <option value=\"5\">Five Minutes</option>\n                                    <option value=\"10\">Ten Minutes</option>\n                                    <option value=\"15\">15 Minutes</option>\n                                    <option value=\"30\">30 Minutes</option>\n                                </select>\n                            </label>\n                            <button id=\"btn_genSettings\" class=\"modal_btn_submit\">Change</button>\n\n                        </div>\n                    </div>\n\n                </div>\n\n            </div>\n\n\n        </div>\n   \n`;\n  const settingsModal = document.createElement('div');\n  settingsModal.className = \"settingsModal\";\n  settingsModal.setAttribute(\"aria-placeholder\", \"Settings Modal\");\n  settingsModal.innerHTML = settingsModalTemplate;\n  const mainBodyContent = document.querySelector('.mainBody_content');\n  mainBodyContent.appendChild(settingsModal);\n  /***********************************DOM ELEMENTS**************************************** */\n\n  const modalMenu_adminSettings = document.querySelector('.modalMenu_adminSettings');\n  const modalMenu_accSettings = document.querySelector('.modalMenu_accSettings');\n  const modalMenu_genSettings = document.querySelector('.modalMenu_genSettings');\n  const modal_slider = document.querySelector('.slider');\n  const toolTipPref = settingsModal.querySelector('.genSettings').querySelector('#toolTipPref');\n  const timeOutPref = settingsModal.querySelector('.genSettings').querySelector('#timeOutPref');\n  const btnGenSettings = settingsModal.querySelector('.genSettings').querySelector('#btn_genSettings');\n  /***********************************DEFAULT SETTERS**************************************** */\n\n  store.get(\"toolTipsPref\").then(userPref => {\n    userPref = toolTipPref;\n\n    if (userPref === \"show\") {\n      toolTipPref.selectedIndex = \"0\";\n    } else if (userPref === \"hide\") {\n      toolTipPref.selectedIndex = \"1\";\n    }\n  });\n  store.get(\"timeOutPref\").then(userPref => {\n    userPref = parseInt(userPref);\n    console.log(userPref, \"lk\");\n\n    switch (userPref) {\n      case 1:\n        timeOutPref.selectedIndex = \"0\";\n        console.log(\"0\");\n        break;\n\n      case 3:\n        timeOutPref.selectedIndex = \"1\";\n        break;\n\n      case 5:\n        timeOutPref.selectedIndex = \"2\";\n        break;\n\n      case 10:\n        timeOutPref.selectedIndex = \"3\";\n        break;\n\n      case 15:\n        timeOutPref.selectedIndex = \"4\";\n        break;\n\n      case 30:\n        timeOutPref.selectedIndex = \"5\";\n        break;\n\n      default:\n        timeOutPref.selectedIndex = \"0\";\n    }\n  });\n  /***********************************FUNCTIONS**************************************** */\n  //Notification/Alert\n\n  function alertSaved(settingType, action) {\n    return new Promise((resolve, reject) => {\n      let settingContainer = settingsModal.querySelector(`.${settingType}`);\n      let message = `${action} setting saved successfully`;\n\n      if (action === \"Tooltips\") {\n        message = `${action} setting saved successfully. Effect will take place on next start up.`;\n      }\n\n      let alertTemplate = `   <center></center>.\n            `;\n      const alert = document.createElement('div');\n      alert.className = \"settingsAlert settingsAlert--success\";\n      alert.innerHTML = alertTemplate;\n      settingContainer.appendChild(alert);\n      (function showAlert() {\n        return new Promise((resolve, reject) => {\n          setTimeout(() => {\n            alert.classList.add('settingsAlert--shown');\n          }, 100);\n          setTimeout(() => {\n            alert.classList.remove('settingsAlert--shown');\n          }, 3000);\n          resolve();\n        });\n      })().then(() => {\n        setTimeout(() => {\n          alert.remove();\n          resolve();\n        }, 3000);\n      });\n    });\n  }\n\n  function alertUnsaved(settingType, action) {\n    let settingContainer = settingsModal.querySelector(`.${settingType}`);\n    let alertTemplate = `   <center>${action} setting failed to save.\n    `;\n    const alert = document.createElement('div');\n    alert.className = \"settingsAlert settingsAlert--fail\";\n    alert.innerHTML = alertTemplate;\n    settingContainer.appendChild(alert);\n    (function showAlert() {\n      return new Promise((resolve, reject) => {\n        setTimeout(() => {\n          alert.classList.add('settingsAlert--shown');\n        }, 100);\n        setTimeout(() => {\n          alert.classList.remove('settingsAlert--shown');\n        }, 3000);\n      });\n    })().then(() => {\n      //remove alert banner after \n      setTimeout(() => {\n        alert.remove();\n      }, 300);\n    });\n  }\n\n  function setSliderClass(className) {\n    modal_slider.classList = null;\n    modal_slider.classList.add('slider');\n    modal_slider.classList.add(className);\n  } //Executed when btn_genSettings (Button in General Settings) is clicked\n\n\n  function saveGenSettings() {\n    // showSettingSaved();\n    let toolTipsPref = toolTipPref.value;\n    let timeOut = parseInt(timeOutPref.value);\n    store.set(\"toolTipsPref\", toolTipsPref).then(() => {\n      ipcRenderer.send(\"ready\");\n      let date = new Date();\n      console.log(\"alerted \", date.getSeconds(), date.getMilliseconds());\n      alertSaved(\"genSettings\", \"ToolTips\").then(() => {\n        store.set(\"timeOutPref\", timeOut).then(() => {\n          alertSaved(\"genSettings\", \"TimeOut\");\n        }).catch(error => {\n          alertUnsaved(\"genSettings\", \"TimeOut\");\n          console.log(error);\n        });\n      });\n    }).catch(() => {\n      alertUnsaved(\"genSettings\", \"ToolTips\");\n    });\n  }\n  /***********************************EVENT LISTENERS**************************************** */\n\n\n  btnGenSettings.addEventListener(\"click\", saveGenSettings);\n  modalMenu_adminSettings.addEventListener('click', () => {\n    setSliderClass('slider--onAdmin');\n    modalMenu_adminSettings.classList.add('currentPage');\n\n    if (modalMenu_genSettings.classList.contains(\"currentPage\")) {\n      modalMenu_genSettings.classList.remove('currentPage');\n    }\n\n    if (modalMenu_accSettings.classList.contains(\"currentPage\")) {\n      modalMenu_accSettings.classList.remove('currentPage');\n    }\n  });\n  modalMenu_accSettings.addEventListener('click', () => {\n    setSliderClass('slider--onAcc');\n    modalMenu_accSettings.classList.add('currentPage');\n\n    if (modalMenu_genSettings.classList.contains(\"currentPage\")) {\n      modalMenu_genSettings.classList.remove('currentPage');\n    }\n\n    if (modalMenu_adminSettings.classList.contains(\"currentPage\")) {\n      modalMenu_adminSettings.classList.remove('currentPage');\n    }\n  });\n  modalMenu_genSettings.addEventListener('click', () => {\n    setSliderClass('slider--onGen');\n    modalMenu_genSettings.classList.add('currentPage');\n\n    if (modalMenu_adminSettings.classList.contains(\"currentPage\")) {\n      modalMenu_adminSettings.classList.remove('currentPage');\n    }\n\n    if (modalMenu_accSettings.classList.contains(\"currentPage\")) {\n      modalMenu_accSettings.classList.remove('currentPage');\n    }\n  });\n} //For \"settings\"\n\n\nsettings.addEventListener(\"click\", e => {\n  contentCover.classList.toggle('contentCover--shown');\n  openSettings();\n}); //For \"contentCover\" To Close Modal Settings\n\ncontentCover.addEventListener('click', () => {\n  removeSettingsModal(contentCover);\n});\nmainBodyContent.addEventListener('click', e => {\n  if (!(e.target.classList.contains('footer_tb') || e.target.classList.contains('footer_btn'))) {}\n});\n\nfunction removeSettingsModal(cover) {\n  if (mainBodyContent.querySelector('.settingsModal') !== null) {\n    mainBodyContent.removeChild(mainBodyContent.querySelector('.settingsModal'));\n  }\n\n  cover.classList.toggle('contentCover--shown');\n}\n/**********************TIPPJS**************** */\n// import tippy from 'tippy.js'\n// import '../../node_modules/tippy.js/dist/tippy-bundle.umd';\n// import tippyBundleUmd from '../../node_modules/tippy.js/dist/tippy-bundle.umd';\n// import '../../node_modules/tippy.js/themes/material.css';\n// import \"../../node_modules/tippy.js/themes/light.css\";\n// import 'tippy.js/themes/light.css';\n// import 'tippy.js/animations/perspective.css'\n// //For admin settings tab\n// tippy(modalMenu_adminSettings,{\n//     content: 'Admin Settings',\n//     placement: 'bottom-right',\n//     interactive: true,\n//     theme: 'tomato',\n//     arrow: true\n// });\n// //For account settings tab\n// tippy(modalMenu_accSettings,{\n//     content: 'Account Settings',\n//     placement: 'bottom-right',\n//     interactive: true,\n//     theme: 'tomato',\n//     arrow: true\n// });\n// //For general settings tab\n// tippy(modalMenu_genSettings,{\n//     content: 'General Settings',\n//     placement: 'bottom-right',\n//     interactive: true,\n//     theme: 'tomato',\n//     arrow: true\n// });\n\n\nexports = openSettings;\n\n//# sourceURL=webpack:///./controller/modals/settingsController.js?");
 
-/***/ }),
 
-/***/ "./model/DATA.js":
-/*!***********************!*\
-  !*** ./model/DATA.js ***!
-  \***********************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+const {
+  ipcRenderer
+} = __webpack_require__(/*! electron */ "electron");
 
-eval("const electron = __webpack_require__(/*! electron */ \"electron\");\n\nconst fs = __webpack_require__(/*! fs */ \"fs\");\n\nconst path = __webpack_require__(/*! path */ \"path\");\n\nclass DATA {\n  constructor() {\n    const dbPath = (electron.app || electron.remote.app).getPath('appData');\n    console.log(dbPath);\n  }\n\n}\n\nmodule.exports = DATA;\n\n//# sourceURL=webpack:///./model/DATA.js?");
+const STORE = __webpack_require__(/*! ../../model/STORE */ "./model/STORE.js");
+
+const store = new STORE({
+  configName: 'userPrefs',
+  defaults: {
+    toolTipsPref: 'show',
+    timeOutPref: '1'
+  }
+});
+const settings = document.querySelector('#settings');
+const contentCover = document.querySelector('.contentCover');
+const mainBodyContent = document.querySelector('.mainBody_content'); // import tippy from 'tippy.js';
+
+function openSettings() {
+  const settingsModalTemplate = `
+    <div class="settingsContainer" aria-placeholder="Container">
+
+            <div class="account modalPage" aria-placeholder="Account Settings">
+                <div class="modal_menu">
+                    <div class="modalMenu_adminSettings modalMenu_item currentPage">
+                        <img src="../Icons/settings/employees.svg" />
+                        <div>My Employees</div>
+                    </div>
+
+                    <div class="modalMenu_accSettings modalMenu_item">
+                        <img src="../Icons/menuIcons/Tray/account.svg" />
+                        <div>My Account</div>
+                    </div>
+
+                    <div class="modalMenu_genSettings modalMenu_item">
+                        <img src="../Icons/settings/settings.svg" />
+                        <div>General Settings</div>
+                    </div>
+
+                </div>
+
+                <div class="modal_content">
+
+                    <header class="modalHeader">
+                        <h1 class="modalTitle"> <img src="../Icons/settings/adminSettings.png" />
+                            Admin Settings
+                        </h1>
+                    </header>
+                    <div class="modalContent_body slider slider--onAdmin">
+                        <div class="modalContent_settings adminSettings">
+
+                            <table class="contentTable modal_table">
+                                <thead class="tableHeader">
+                                    <tr class="modal_tHead">
+                                        <th class="tableHead_items">Name</th>
+                                        <th class="tableHead_items">DOB</th>
+                                        <th class="tableHead_items">Date Registered</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="modal_tBody">
+
+
+                                </tbody>
+                            </table>
+
+                            <div class="modal_btn_add" aria-placeholder="Add User">
+                                <img src="../Icons/settings/addUser.svg" />
+                            </div>
+
+                        </div>
+                        <div class="modalContent_settings accSettings">
+                            <center>
+                                <label class="settingsLabel">
+                                    UserName
+                                    <input type="text" placeholder="Leave blank to maintain current name"
+                                        class="modal_textB">
+                                </label>
+                                <label class="settingsLabel">
+                                    New Password
+                                    <input type="password" placeholder="New Password" class="New Password">
+                                </label>
+                                <label class="settingsLabel">
+                                    Confirm Pasword
+                                    <input type="password" placeholder="Confirm Password" class="Confirm New Password">
+                                </label>
+                                <label class="settingsLabel">
+                                    Current Password
+                                    <input type="password" placeholder="Current Password" class="Old Password Password">
+                                </label>
+                            </center>
+                            <button class="modal_btn_submit">Change</button>
+                        </div>
+                        <div class="modalContent_settings genSettings">
+
+                            <label class="settingsLabel">
+                                ToolTips Options
+                                <select id="toolTipPref" class="modal_ddMenu">
+                                    <option value="show">Show Tooltips</option>
+                                    <option value="hide">Hide Tooltips</option>
+                                </select>
+                            </label>
+                            <label class="settingsLabel">
+                                Timeout After Inactivity
+                                <select id="timeOutPref" class="modal_ddMenu">
+                                    <option value="1">One Minute</option>
+                                    <option value="3">Three Minutes</option>
+                                    <option value="5">Five Minutes</option>
+                                    <option value="10">Ten Minutes</option>
+                                    <option value="15">15 Minutes</option>
+                                    <option value="30">30 Minutes</option>
+                                </select>
+                            </label>
+                            <button id="btn_genSettings" class="modal_btn_submit">Change</button>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </div>
+   
+`;
+  const settingsModal = document.createElement('div');
+  settingsModal.className = "settingsModal";
+  settingsModal.setAttribute("aria-placeholder", "Settings Modal");
+  settingsModal.innerHTML = settingsModalTemplate;
+  const mainBodyContent = document.querySelector('.mainBody_content');
+  mainBodyContent.appendChild(settingsModal);
+  /***********************************DOM ELEMENTS**************************************** */
+
+  const modalMenu_adminSettings = document.querySelector('.modalMenu_adminSettings');
+  const modalMenu_accSettings = document.querySelector('.modalMenu_accSettings');
+  const modalMenu_genSettings = document.querySelector('.modalMenu_genSettings');
+  const modal_slider = document.querySelector('.slider');
+  const toolTipPref = settingsModal.querySelector('.genSettings').querySelector('#toolTipPref');
+  const timeOutPref = settingsModal.querySelector('.genSettings').querySelector('#timeOutPref');
+  const btnGenSettings = settingsModal.querySelector('.genSettings').querySelector('#btn_genSettings');
+  /***********************************DEFAULT SETTERS**************************************** */
+
+  store.get("toolTipsPref").then(userPref => {
+    userPref = toolTipPref;
+
+    if (userPref === "show") {
+      toolTipPref.selectedIndex = "0";
+    } else if (userPref === "hide") {
+      toolTipPref.selectedIndex = "1";
+    }
+  });
+  store.get("timeOutPref").then(userPref => {
+    userPref = parseInt(userPref);
+    console.log(userPref, "lk");
+
+    switch (userPref) {
+      case 1:
+        timeOutPref.selectedIndex = "0";
+        console.log("0");
+        break;
+
+      case 3:
+        timeOutPref.selectedIndex = "1";
+        break;
+
+      case 5:
+        timeOutPref.selectedIndex = "2";
+        break;
+
+      case 10:
+        timeOutPref.selectedIndex = "3";
+        break;
+
+      case 15:
+        timeOutPref.selectedIndex = "4";
+        break;
+
+      case 30:
+        timeOutPref.selectedIndex = "5";
+        break;
+
+      default:
+        timeOutPref.selectedIndex = "0";
+    }
+  });
+  /***********************************FUNCTIONS**************************************** */
+  //Notification/Alert
+
+  function alertSaved(settingType, action) {
+    return new Promise((resolve, reject) => {
+      let settingContainer = settingsModal.querySelector(`.${settingType}`);
+      let message = `${action} setting saved successfully`;
+
+      if (action === "Tooltips") {
+        message = `${action} setting saved successfully. Effect will take place on next start up.`;
+      }
+
+      let alertTemplate = `   <center></center>.
+            `;
+      const alert = document.createElement('div');
+      alert.className = "settingsAlert settingsAlert--success";
+      alert.innerHTML = alertTemplate;
+      settingContainer.appendChild(alert);
+      (function showAlert() {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            alert.classList.add('settingsAlert--shown');
+          }, 100);
+          setTimeout(() => {
+            alert.classList.remove('settingsAlert--shown');
+          }, 3000);
+          resolve();
+        });
+      })().then(() => {
+        setTimeout(() => {
+          alert.remove();
+          resolve();
+        }, 3000);
+      });
+    });
+  }
+
+  function alertUnsaved(settingType, action) {
+    let settingContainer = settingsModal.querySelector(`.${settingType}`);
+    let alertTemplate = `   <center>${action} setting failed to save.
+    `;
+    const alert = document.createElement('div');
+    alert.className = "settingsAlert settingsAlert--fail";
+    alert.innerHTML = alertTemplate;
+    settingContainer.appendChild(alert);
+    (function showAlert() {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          alert.classList.add('settingsAlert--shown');
+        }, 100);
+        setTimeout(() => {
+          alert.classList.remove('settingsAlert--shown');
+        }, 3000);
+      });
+    })().then(() => {
+      //remove alert banner after 
+      setTimeout(() => {
+        alert.remove();
+      }, 300);
+    });
+  }
+
+  function setSliderClass(className) {
+    modal_slider.classList = null;
+    modal_slider.classList.add('slider');
+    modal_slider.classList.add(className);
+  } //Executed when btn_genSettings (Button in General Settings) is clicked
+
+
+  function saveGenSettings() {
+    // showSettingSaved();
+    let toolTipsPref = toolTipPref.value;
+    let timeOut = parseInt(timeOutPref.value);
+    store.set("toolTipsPref", toolTipsPref).then(() => {
+      ipcRenderer.send("ready");
+      let date = new Date();
+      console.log("alerted ", date.getSeconds(), date.getMilliseconds());
+      alertSaved("genSettings", "ToolTips").then(() => {
+        store.set("timeOutPref", timeOut).then(() => {
+          alertSaved("genSettings", "TimeOut");
+        }).catch(error => {
+          alertUnsaved("genSettings", "TimeOut");
+          console.log(error);
+        });
+      });
+    }).catch(() => {
+      alertUnsaved("genSettings", "ToolTips");
+    });
+  }
+  /***********************************EVENT LISTENERS**************************************** */
+
+
+  btnGenSettings.addEventListener("click", saveGenSettings);
+  modalMenu_adminSettings.addEventListener('click', () => {
+    setSliderClass('slider--onAdmin');
+    modalMenu_adminSettings.classList.add('currentPage');
+
+    if (modalMenu_genSettings.classList.contains("currentPage")) {
+      modalMenu_genSettings.classList.remove('currentPage');
+    }
+
+    if (modalMenu_accSettings.classList.contains("currentPage")) {
+      modalMenu_accSettings.classList.remove('currentPage');
+    }
+  });
+  modalMenu_accSettings.addEventListener('click', () => {
+    setSliderClass('slider--onAcc');
+    modalMenu_accSettings.classList.add('currentPage');
+
+    if (modalMenu_genSettings.classList.contains("currentPage")) {
+      modalMenu_genSettings.classList.remove('currentPage');
+    }
+
+    if (modalMenu_adminSettings.classList.contains("currentPage")) {
+      modalMenu_adminSettings.classList.remove('currentPage');
+    }
+  });
+  modalMenu_genSettings.addEventListener('click', () => {
+    setSliderClass('slider--onGen');
+    modalMenu_genSettings.classList.add('currentPage');
+
+    if (modalMenu_adminSettings.classList.contains("currentPage")) {
+      modalMenu_adminSettings.classList.remove('currentPage');
+    }
+
+    if (modalMenu_accSettings.classList.contains("currentPage")) {
+      modalMenu_accSettings.classList.remove('currentPage');
+    }
+  });
+} //For "settings"
+
+
+settings.addEventListener("click", e => {
+  contentCover.classList.toggle('contentCover--shown');
+  openSettings();
+}); //For "contentCover" To Close Modal Settings
+
+contentCover.addEventListener('click', () => {
+  removeSettingsModal(contentCover);
+});
+mainBodyContent.addEventListener('click', e => {
+  if (!(e.target.classList.contains('footer_tb') || e.target.classList.contains('footer_btn'))) {}
+});
+
+function removeSettingsModal(cover) {
+  if (mainBodyContent.querySelector('.settingsModal') !== null) {
+    mainBodyContent.removeChild(mainBodyContent.querySelector('.settingsModal'));
+  }
+
+  cover.classList.toggle('contentCover--shown');
+}
+/**********************TIPPJS**************** */
+// import tippy from 'tippy.js'
+// import '../../node_modules/tippy.js/dist/tippy-bundle.umd';
+// import tippyBundleUmd from '../../node_modules/tippy.js/dist/tippy-bundle.umd';
+// import '../../node_modules/tippy.js/themes/material.css';
+// import "../../node_modules/tippy.js/themes/light.css";
+// import 'tippy.js/themes/light.css';
+// import 'tippy.js/animations/perspective.css'
+// //For admin settings tab
+// tippy(modalMenu_adminSettings,{
+//     content: 'Admin Settings',
+//     placement: 'bottom-right',
+//     interactive: true,
+//     theme: 'tomato',
+//     arrow: true
+// });
+// //For account settings tab
+// tippy(modalMenu_accSettings,{
+//     content: 'Account Settings',
+//     placement: 'bottom-right',
+//     interactive: true,
+//     theme: 'tomato',
+//     arrow: true
+// });
+// //For general settings tab
+// tippy(modalMenu_genSettings,{
+//     content: 'General Settings',
+//     placement: 'bottom-right',
+//     interactive: true,
+//     theme: 'tomato',
+//     arrow: true
+// });
 
 /***/ }),
 
@@ -116,18 +473,56 @@ eval("const electron = __webpack_require__(/*! electron */ \"electron\");\n\ncon
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("const electron = __webpack_require__(/*! electron */ \"electron\");\n\nconst path = __webpack_require__(/*! path */ \"path\");\n\nconst fs = __webpack_require__(/*! fs */ \"fs\");\n\nconst {\n  promisify\n} = __webpack_require__(/*! util */ \"util\");\n\nconst {\n  fips\n} = __webpack_require__(/*! crypto */ \"crypto\");\n\nconst {\n  finished\n} = __webpack_require__(/*! stream */ \"stream\");\n\nclass STORE {\n  constructor(data) {\n    const userDataPath = (electron.app || electron.remote.app).getPath('userData');\n    this.path = path.join(userDataPath, data.configName + '.json');\n    this.data = parseDataFile(this.path, data.defaults);\n  }\n\n  get(key) {\n    return new Promise((resolve, reject) => {\n      resolve(this.data[key]);\n    });\n  }\n\n  set(key, val) {\n    return new Promise((resolve, reject) => {\n      console.log(\"initiated\");\n      this.data[key] = val; //  const writeFileSync = promisify(fs.writeFileSync);\n\n      fs.writeFileSync(this.path, JSON.stringify(this.data));\n      const writeFile = promisify(fs.writeFile);\n      writeFile(this.path, JSON.stringify(this.data)).then(() => {\n        let date = new Date();\n        console.log(\"finished \", date.getSeconds(), date.getMilliseconds());\n        resolve();\n      });\n    });\n  }\n\n}\n\nfunction parseDataFile(filePath, defaults) {\n  try {\n    return JSON.parse(fs.readFileSync(filePath));\n  } catch (error) {\n    console.log(error);\n    return defaults;\n  }\n}\n\nmodule.exports = STORE;\n\n//# sourceURL=webpack:///./model/STORE.js?");
+const electron = __webpack_require__(/*! electron */ "electron");
 
-/***/ }),
+const path = __webpack_require__(/*! path */ "path");
 
-/***/ "crypto":
-/*!*************************!*\
-  !*** external "crypto" ***!
-  \*************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+const fs = __webpack_require__(/*! fs */ "fs");
 
-eval("module.exports = require(\"crypto\");\n\n//# sourceURL=webpack:///external_%22crypto%22?");
+const {
+  promisify
+} = __webpack_require__(/*! util */ "util");
+
+class STORE {
+  constructor(data) {
+    const userDataPath = (electron.app || electron.remote.app).getPath('userData');
+    this.path = path.join(userDataPath, data.configName + '.json');
+    this.data = parseDataFile(this.path, data.defaults);
+  }
+
+  get(key) {
+    return new Promise((resolve, reject) => {
+      resolve(this.data[key]);
+    });
+  }
+
+  set(key, val) {
+    return new Promise((resolve, reject) => {
+      console.log("initiated");
+      this.data[key] = val; //  const writeFileSync = promisify(fs.writeFileSync);
+
+      fs.writeFileSync(this.path, JSON.stringify(this.data));
+      const writeFile = promisify(fs.writeFile);
+      writeFile(this.path, JSON.stringify(this.data)).then(() => {
+        let date = new Date();
+        console.log("finished ", date.getSeconds(), date.getMilliseconds());
+        resolve();
+      });
+    });
+  }
+
+}
+
+function parseDataFile(filePath, defaults) {
+  try {
+    return JSON.parse(fs.readFileSync(filePath));
+  } catch (error) {
+    console.log(error);
+    return defaults;
+  }
+}
+
+module.exports = STORE;
 
 /***/ }),
 
@@ -138,7 +533,7 @@ eval("module.exports = require(\"crypto\");\n\n//# sourceURL=webpack:///external
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-eval("module.exports = require(\"electron\");\n\n//# sourceURL=webpack:///external_%22electron%22?");
+module.exports = require("electron");
 
 /***/ }),
 
@@ -149,7 +544,7 @@ eval("module.exports = require(\"electron\");\n\n//# sourceURL=webpack:///extern
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-eval("module.exports = require(\"fs\");\n\n//# sourceURL=webpack:///external_%22fs%22?");
+module.exports = require("fs");
 
 /***/ }),
 
@@ -160,18 +555,7 @@ eval("module.exports = require(\"fs\");\n\n//# sourceURL=webpack:///external_%22
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-eval("module.exports = require(\"path\");\n\n//# sourceURL=webpack:///external_%22path%22?");
-
-/***/ }),
-
-/***/ "stream":
-/*!*************************!*\
-  !*** external "stream" ***!
-  \*************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-eval("module.exports = require(\"stream\");\n\n//# sourceURL=webpack:///external_%22stream%22?");
+module.exports = require("path");
 
 /***/ }),
 
@@ -182,8 +566,9 @@ eval("module.exports = require(\"stream\");\n\n//# sourceURL=webpack:///external
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-eval("module.exports = require(\"util\");\n\n//# sourceURL=webpack:///external_%22util%22?");
+module.exports = require("util");
 
 /***/ })
 
 /******/ });
+//# sourceMappingURL=settingsController.js.map

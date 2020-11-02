@@ -232,16 +232,19 @@ class Modal {
                     const category = itemForm.querySelector('#category').value;
                     const brand = itemForm.querySelector('#brand').value;
                     const stock = itemForm.querySelector('#total').value;
-                    const price = itemForm.querySelector('#sellingPrice').value;
+                    const sellingPrice = itemForm.querySelector('#sellingPrice').value;
+                    const costPrice = itemForm.querySelector("#costPrice").value;
 
-                    console.log(name, category, brand, stock, price);
+                    // console.log(name, category, brand, stock, price);
 
-                    if(name !== "" && category !== "" && brand !== "" && stock !== "" && price !== ""){
+                    if(name !== "" && category !== "" && brand !== "" && stock !== "" && sellingPrice !== ""){
 
 
                         closeModal(itemForm);
 
-                        openPrompt("",resolve,reject, [true, row, name, brand, category, stock, price])
+                        // openPrompt("",resolve,reject, [true, row, name, brand, category, stock, sellingPrice])
+
+                        resolve([true, row, name, brand, category, stock, sellingPrice, costPrice]);
 
 
                     }
@@ -389,12 +392,12 @@ class Modal {
                     // Function called to remove items (divs) in cart
                     function removeItem(e){
 
-                        // Animating item (sliding left)
+                        // Animating item (slide right)
                         e.target.parentElement.parentElement.style.transform = 'translateX(100%)'
                         
 
 
-                        //Remove element after animation has been done
+                        //Remove element after animation
                         setTimeout(()=>{
 
                             e.target.parentElement.parentElement.remove();
@@ -427,14 +430,15 @@ class Modal {
                             itemForm.querySelector('#lblPrice').innerHTML = `<b>Gh¢ ${UnitConverter.convert(totalPrice)} </b>`;
 
 
-                            //Removing item from cart array
+                            /****Removing item from cart array****/
+                            // For each item in cart array
                             cart.forEach((item)=>{
 
 
                                 let currentItemIndex;
                     
+                                //If 
                                 if(item.name === name && item.brand === brand){
-                    
                     
                                     currentItemIndex = cart.indexOf(item);
                     

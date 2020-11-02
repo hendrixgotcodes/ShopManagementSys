@@ -2,8 +2,6 @@ const electron = require('electron');
 const path = require('path');
 const fs =  require('fs');
 const { promisify } = require('util');
-const { fips } = require('crypto');
-const { finished } = require('stream');
 
 
 

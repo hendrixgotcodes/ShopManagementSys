@@ -1,7 +1,6 @@
 "use strict";
 
 const { ipcRenderer } = require("electron");
-const DATA = require("../../model/DATA");
 const STORE = require("../../model/STORE");
 
 const store = new STORE({
@@ -475,5 +474,3 @@ function removeSettingsModal(cover){
 //     theme: 'tomato',
 //     arrow: true
 // });
-
-exports = openSettings;
