@@ -148,6 +148,7 @@ class Modal {
             let category = ""
             let itemQuantity = ""
             let sellingPrice = ""
+            let costPrice = ""
 
            
 
@@ -158,6 +159,7 @@ class Modal {
                 category = row.querySelector(".td_Category").innerText;
                 itemQuantity = row.querySelector(".td_Stock").innerText;
                 sellingPrice = row.querySelector(".td_Price").innerText;
+                costPrice = row.querySelector(".td_costPrice").innerText
             }
             
             const boxTemplate = 
@@ -182,9 +184,9 @@ class Modal {
     
                             <input type="number" class="dialogForm_tb halfwidth" value="${itemQuantity}" aria-placeholder="Total in inventory" placeholder="Total In Inventory" id="total" />
     
-                            <input type="number" class="dialogForm_tb halfwidth" aria-placeholder="Cost Price" placeholder="Cost Price" id="costPrice" />
+                            <input type="number" class="dialogForm_tb halfwidth" value="${costPrice}" aria-placeholder="Cost Price" placeholder="Cost Price (GH₵)" id="costPrice" />
     
-                            <input type="number" class="dialogForm_tb halfwidth" value="${sellingPrice}" aria-placeholder="Unit Cost" placeholder="Selling Price" id="sellingPrice" />
+                            <input type="number" class="dialogForm_tb halfwidth" value="${sellingPrice}" aria-placeholder="Unit Cost" placeholder="Selling Price (GH₵)" id="sellingPrice" />
     
                          </div>
     

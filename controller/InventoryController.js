@@ -119,7 +119,7 @@ function initialzeStoreItems(){
             //then add each item to the table in the DOM
             fetchedItems.forEach((fetchedItem)=>{
 
-                TableController.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.Stock, fetchedItem.SellingPrice, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "")
+                TableController.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.Stock, fetchedItem.SellingPrice, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true)
 
             })
             
@@ -323,10 +323,18 @@ function addItem(){
             shopItem.addNewItem(storeObject)
             .then((result)=>{
 
-                console.log(result);
-                if(result===true){
-                    Notifications.showNotification("success", "Successfuly added to inventory")
+                if(result === true){
+
+                    TableController.createItem(storeObject.Name, storeObject.Brand, storeObject.Category, storeObject.Stock, storeObject.sellingPrice, [checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "")
+                    .then(()=>{
+    
+                        Notifications.showAlert("success", "Successfuly added to inventory")
+    
+                    })
+
                 }
+
+              
             })
             .catch((error)=>{
                 console.log(error);
