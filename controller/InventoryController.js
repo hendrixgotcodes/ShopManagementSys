@@ -9,7 +9,7 @@ import TableController from './utilities/TableController';
 import UnitConverter from './utilities/UnitConverter';
 
 //Importing ItemDB operations
-import SHOPITEMS from '../model/SHOPITEMS.js';
+import DATABASE from '../model/DATABASE.js';
 
 // const Modal = require('../controller/modals/ModalController')
 
@@ -30,7 +30,7 @@ const listItemForm = document.querySelector(".dd_listItem--form");
 let rowBucket = [];
 
 //Initializing Database
-const shopItem = new SHOPITEMS()
+const database = new DATABASE()
 
 
 
@@ -110,9 +110,8 @@ function initialzeStoreItems(){
 
     TableController.showLoadingBanner("Please wait. Attempting to load store items...")
 
-    shopItem.fetchItems()
+    database.fetchItems()
     .then((fetchedItems)=>{
-
 
 
         //If returned array contains any store item
@@ -218,7 +217,7 @@ function deleteItem(row){
         if(result === "verified"){
            
 
-            shopItem.softDeleteItem( {
+            database.softDeleteItem( {
                 Name: itemName,
                 Brand: itemBrand,
                 Category: itemCategory,
@@ -350,12 +349,12 @@ function addItem(){
 
             console.log("storeObject: ", storeObject);
 
-            shopItem.addNewItem(storeObject)
+            database.addNewItem(storeObject)
             .then((result)=>{
 
                 if(result === true){
 
-                    TableController.createItem(storeObject.Name, storeObject.Brand, storeObject.Category, storeObject.Stock, storeObject.sellingPrice, [checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "")
+                    TableController.createItem(storeObject.Name, storeObject.Brand, storeObject.Category, storeObject.Stock, storeObject.SellingPrice, [checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "")
                     .then(()=>{
     
                         Notifications.showAlert("success", "Successfuly added to inventory")
@@ -571,14 +570,12 @@ ipcRenderer.on('populateTable',(e, Items)=>{
 
         })
 
-        shopItem.addItemsBulk(itemsArray)
+        database.addItemsBulk(itemsArray)
         .then((resolved)=>{
 
             resolved[1].forEach((item)=>{
 
-
-
-                TableController.createItem(item.NAMES, item.BRAND, item.CATEGORY, item.QUANTITY, item.SELLINGPRICE, [checkCB, editItem, deleteItem, showRowControls], "", item.COSTPRICE, "", false, false)
+                TableController.createItem(item.Name, item.Brand, item.Category, item.Stock, item.SellingPrice, [checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false)
 
             })
 

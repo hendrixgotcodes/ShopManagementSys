@@ -211,8 +211,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_utilities_TableController__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var _utilities_UnitConverter__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./utilities/UnitConverter */ "./controller/utilities/UnitConverter.js");
 /* harmony import */ var _utilities_UnitConverter__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_utilities_UnitConverter__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _model_SHOPITEMS_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../model/SHOPITEMS.js */ "./model/SHOPITEMS.js");
-/* harmony import */ var _model_SHOPITEMS_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_model_SHOPITEMS_js__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _model_DATABASE_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../model/DATABASE.js */ "./model/DATABASE.js");
+/* harmony import */ var _model_DATABASE_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_model_DATABASE_js__WEBPACK_IMPORTED_MODULE_5__);
 
 
 
@@ -238,7 +238,7 @@ const btnDropDown = document.querySelector(".btn_dropDown");
 const listItemForm = document.querySelector(".dd_listItem--form");
 let rowBucket = []; //Initializing Database
 
-const shopItem = new _model_SHOPITEMS_js__WEBPACK_IMPORTED_MODULE_5___default.a();
+const database = new _model_DATABASE_js__WEBPACK_IMPORTED_MODULE_5___default.a();
 /**********************EVENT LISTENERS *************************/
 
 window.addEventListener("load", initialzeStoreItems);
@@ -284,7 +284,7 @@ btnDelete.addEventListener("click", deleteMultiple);
 
 function initialzeStoreItems() {
   _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.showLoadingBanner("Please wait. Attempting to load store items...");
-  shopItem.fetchItems().then(fetchedItems => {
+  database.fetchItems().then(fetchedItems => {
     //If returned array contains any store item
     if (fetchedItems.length > 0) {
       //Remove loading banner
@@ -354,7 +354,7 @@ function deleteItem(row) {
 
   _controller_modals_ModalController__WEBPACK_IMPORTED_MODULE_1__["default"].openConfirmationBox(itemName, itemBrand, itemQuantity).then(result => {
     if (result === "verified") {
-      shopItem.softDeleteItem({
+      database.softDeleteItem({
         Name: itemName,
         Brand: itemBrand,
         Category: itemCategory
@@ -432,9 +432,9 @@ function addItem() {
     storeObject.CostPrice = costPrice; // console.log([row, name, brand, category, stock, sellingPrice, costPrice]);
 
     console.log("storeObject: ", storeObject);
-    shopItem.addNewItem(storeObject).then(result => {
+    database.addNewItem(storeObject).then(result => {
       if (result === true) {
-        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(storeObject.Name, storeObject.Brand, storeObject.Category, storeObject.Stock, storeObject.sellingPrice, [checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "").then(() => {
+        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(storeObject.Name, storeObject.Brand, storeObject.Category, storeObject.Stock, storeObject.SellingPrice, [checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "").then(() => {
           _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", "Successfuly added to inventory");
         });
       }
@@ -559,9 +559,9 @@ electron__WEBPACK_IMPORTED_MODULE_0__["ipcRenderer"].on('populateTable', (e, Ite
       Deleted: "false"
     });
   });
-  shopItem.addItemsBulk(itemsArray).then(resolved => {
+  database.addItemsBulk(itemsArray).then(resolved => {
     resolved[1].forEach(item => {
-      _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(item.NAMES, item.BRAND, item.CATEGORY, item.QUANTITY, item.SELLINGPRICE, [checkCB, editItem, deleteItem, showRowControls], "", item.COSTPRICE, "", false, false);
+      _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(item.Name, item.Brand, item.Category, item.Stock, item.SellingPrice, [checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false);
     });
     _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", `${resolved[1].length} Items Have Been Successfully Added. ${resolved[0].length} Items Already Existed In Database`);
   });
@@ -1324,20 +1324,21 @@ module.exports = UnitConverter;
 
 /***/ }),
 
-/***/ "./model/SHOPITEMS.js":
-/*!****************************!*\
-  !*** ./model/SHOPITEMS.js ***!
-  \****************************/
+/***/ "./model/DATABASE.js":
+/*!***************************!*\
+  !*** ./model/DATABASE.js ***!
+  \***************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 const Dexie = __webpack_require__(/*! dexie */ "./node_modules/dexie/dist/dexie.mjs").default;
 
-class SHOPITEMS {
+class DATABASE {
   constructor() {
-    this.db = new Dexie('ShopItems');
+    this.db = new Dexie('DUFFYKIDS');
     this.db.version(1).stores({
-      items: "++id, Name, Brand, Category, Deleted"
+      items: "++id, Name, Brand, Category, Deleted",
+      users: "++id, FirstName, LastName, Status, Password"
     });
     this.db.open().then(() => {
       console.log("Db created successfully...");
@@ -1345,7 +1346,7 @@ class SHOPITEMS {
       console.log("Db failed to create");
     });
   }
-  /*************************SINGLE ITEMS OPERATIONS******************************/
+  /*************************SINGLE OBJECT OPERATIONS******************************/
 
 
   addNewItem(shopItem) {
@@ -1374,6 +1375,16 @@ class SHOPITEMS {
     });
   }
 
+  addNewUser(userInfo) {
+    return new Promise((resolve, reject) => {
+      this.db.users(userInfo).then(() => {
+        resolve(true);
+      }).catch(() => {
+        reject(false);
+      });
+    });
+  }
+
   updateItem(change) {
     return new Promise((resolve, reject) => {
       let array = change.toArray();
@@ -1397,6 +1408,10 @@ class SHOPITEMS {
         reject(false);
       });
     });
+  }
+
+  updateUserInfo(userInfo) {
+    return new Promise((resolve, reject) => {});
   }
 
   softDeleteItem(shopItem) {
@@ -1447,6 +1462,8 @@ class SHOPITEMS {
           alreadyInDB.push(item);
         }).then(() => {
           //then add the rest in itemArray to the database
+          console.log("Item Array: ", itemArray);
+          console.log("Already in DB: ", alreadyInDB);
           this.db.items.bulkPut(itemArray).then(() => {
             resolve([alreadyInDB, itemArray]);
           });
@@ -1459,7 +1476,7 @@ class SHOPITEMS {
 
 }
 
-module.exports = SHOPITEMS;
+module.exports = DATABASE;
 
 /***/ }),
 

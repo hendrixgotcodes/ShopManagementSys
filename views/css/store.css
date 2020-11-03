@@ -63,7 +63,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: Roboto, sans-serif; }
+  font-family: "Roboto", "sans-serif"; }
 
 .tooltip_cb {
   color: white;
@@ -579,7 +579,7 @@ body {
       width: 65%;
       height: 85%;
       background-color: #fff;
-      border-radius: 10px;
+      border-radius: 8px;
       z-index: 11;
       overflow: hidden;
       background-color: #35594B;
