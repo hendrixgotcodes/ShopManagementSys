@@ -42,7 +42,6 @@ const mainBodyContent = document.querySelector('.mainBody_content');
 const footer_btn = document.querySelector('.footer_btn');
 const footer_btn_icon = document.querySelector('.ico_footer_btn');
 
-const tableROWS = document.querySelector('.tableBody').querySelectorAll('.bodyRow');
 
 const footer_tb = document.querySelector('.footer_tb');
 const cartCount = document.querySelector('.cartCount');
@@ -92,14 +91,6 @@ footer_btn.addEventListener("click", (e)=>{
     // uncheckMarkedRows()
 })
 
-
-//For "tableBody"
-tableROWS.forEach((row)=>{
-    row.addEventListener('click',(e)=>{
-        toggleRowCB(row);
-        setSellingItemProperties(row);
-    })
-})
 
 
 
@@ -183,6 +174,21 @@ function initialzeStoreItems(){
                 TableController.showIsEmpty();
 
         }
+
+    })
+    .then(()=>{
+
+        const tableROWS = document.querySelector('.tableBody').querySelectorAll('.bodyRow');
+
+
+        //For "tableBody"
+        tableROWS.forEach((row)=>{
+            row.addEventListener('click',(e)=>{
+                toggleRowCB(row);
+                setSellingItemProperties(row);
+            })
+        
+        })
 
     })
     .catch((e)=>{

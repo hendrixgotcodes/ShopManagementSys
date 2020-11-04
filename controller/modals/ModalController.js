@@ -352,6 +352,7 @@ class Modal {
                         newRow.className = "modalItem";
                         newRow.innerHTML = itemTemplate;
 
+                        //Delete Event Listener
                         newRow.querySelector('.delItem').addEventListener('click',(e)=>{
                             removeItem(e)
                         })
@@ -452,6 +453,9 @@ class Modal {
 
                             if(cart.length === 0){
                                 closeModal(itemForm)
+
+                                const footer_btn = document.querySelector('.footer_btn');
+                                footer_btn.disabled = true
                             }
 
                             resolve();
