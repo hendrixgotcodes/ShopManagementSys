@@ -454,6 +454,7 @@ class Modal {
                             if(cart.length === 0){
                                 closeModal(itemForm)
 
+                                //Disabling submit button when cart is empty
                                 const footer_btn = document.querySelector('.footer_btn');
                                 footer_btn.disabled = true
                             }
