@@ -2,7 +2,7 @@
 
 class TableController{
 
-    static createItem(name, brand, category, stock, sellingPrice, functions, hasItems,costPrice="", purchased="", dontHighlightAfterCreate = false, deleted=false){
+    static createItem(name, brand, category, stock, sellingPrice, functions, hasItems,costPrice="", purchased="", dontHighlightAfterCreate = false, isdeletedItem=false, destinationPage=""){
 
 
             return new Promise((resolve, reject)=>{
@@ -21,12 +21,6 @@ class TableController{
                 if(emptyBanner !== null){
                     emptyBanner.remove();
                 }
-
-                //Destructing functions
-                let checkCB= functions[0];
-                let editItem = functions[1];
-                let deleteItem = functions[2];
-                let showRowControls = functions[3];
 
 
 
@@ -89,43 +83,16 @@ class TableController{
                     {behavior: 'smooth'}
                 )
 
+                
+                
+                
+                /********************************CONDTIONS***************************************/
 
-
-                /******************************Adding Event Listeners***************************************/        
-                row.addEventListener("click", ()=>{
-                    checkCB(row);
-
-                });
-
-                row.querySelector(".controls").querySelector(".edit").addEventListener("click",(e)=>{
-
-                    //Prevents selection of row
-                    e.stopPropagation();
-            
-                    editItem(row);
-                });
-
-                row.querySelector(".controls").querySelector(".del").addEventListener("click",(e)=>{
-
-                    //Prevents selection of row
-                    e.stopPropagation();
-            
-                    deleteItem(row);
-                });
-
-                row.addEventListener("contextmenu",(e)=>{
-
-            
-                    showRowControls(row)
-                })
-
+/**_____________________________________________________________________________________________________________________________________________ */
                 // if item is marked as deleted
-                if(deleted){
-
-                    setTimeout(()=>{
+                if(isdeletedItem === true){
+                   
                         row.style.opacity = ".6"
-                        // row.style.color = "#ce2727";
-                    },3000)
 
                 }
 
@@ -151,6 +118,72 @@ class TableController{
                 },3000)
 
                 resolve()
+
+
+/**_____________________________________________________________________________________________________________________________________________ */
+
+                /**
+                     * Destination Page determines which page is requesting for a table row to be created
+                    */
+                if(destinationPage === "Inventory"){
+
+                    //Destructing functions
+                    let checkCB= functions[0];
+                    let editItem = functions[1];
+                    let deleteItem = functions[2];
+                    let showRowControls = functions[3];
+
+                    row.addEventListener("click", toggleCB);
+
+                    row.querySelector(".controls").querySelector(".edit").addEventListener("click",editRow);
+    
+                    row.querySelector(".controls").querySelector(".del").addEventListener("click",deleteRow);
+    
+                    row.addEventListener("contextmenu",toggleRowControls);    
+
+                    /**************FUNCTIONS**********************************/
+
+                    function toggleCB(){
+                        checkCB(row)
+                    }
+
+                    function deleteRow(){
+                    
+                        //Prevents selection of row
+                        e.stopPropagation();
+                
+                        deleteItem(row);
+                    }
+
+                    function editRow(){
+                        
+                        //Prevents selection of row
+                        e.stopPropagation();
+                
+                        editItem(row);
+                    }
+
+                    function toggleRowControls(){
+
+                            showRowControls(row)
+
+                    }
+
+
+                }
+
+                if(destinationPage === "Store"){
+                    
+                    if(isdeletedItem){
+                        row.remove();
+                    }
+
+                }
+
+
+                
+
+                /******************************************* */
 
 
             })

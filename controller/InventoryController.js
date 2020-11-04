@@ -108,7 +108,7 @@ btnDelete.addEventListener("click", deleteMultiple)
 //Function to load store items
 function initialzeStoreItems(){
 
-    TableController.showLoadingBanner("Please wait. Attempting to load store items...")
+    TableController.showLoadingBanner("Please wait. Attempting to load items in inventory...")
 
     database.fetchItems()
     .then((fetchedItems)=>{
@@ -125,12 +125,12 @@ function initialzeStoreItems(){
 
                 if(fetchedItem.Deleted === "true"){
 
-                    TableController.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.Stock, fetchedItem.SellingPrice, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, true)
+                    TableController.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.Stock, fetchedItem.SellingPrice, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory")
 
                 }
                 else{
 
-                    TableController.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.Stock, fetchedItem.SellingPrice, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true)
+                    TableController.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.Stock, fetchedItem.SellingPrice, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true,false , "Inventory")
 
                 }
 

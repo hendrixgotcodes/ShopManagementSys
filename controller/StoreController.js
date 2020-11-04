@@ -8,6 +8,7 @@
 
 /**********************************IMPORTED ***************************/
 import Notifications from '../controller/Alerts/NotificationController'
+import DATABASE from '../model/DATABASE';
 import Modal from './modals/ModalController';
 import TableController from './utilities/TableController';
 import UnitConverter from './utilities/UnitConverter';
@@ -23,6 +24,9 @@ let salesMade = 0;       //Total sold Items
 let totalSelectedRows = 0;
 
 let footer_tbChanged = false;
+
+//Intitalizing DB
+const database = new DATABASE();
 
 
 
@@ -52,6 +56,8 @@ let sellingItem = {     // Represents an instance of a store item being added to
 
 
 /*********************************EVent Listeners********************* */
+window.addEventListener("load", initialzeStoreItems)
+
 
 tip_default.addEventListener('click',()=>{
     selectValue_span.innerHTML = "Filter By:"
@@ -140,6 +146,50 @@ footer_tb.addEventListener("focus",()=>{
 /*************************************FUNCTIONS********************* */
 /*************************************FUNCTIONS********************* */
 /*************************************FUNCTIONS********************* */
+
+//-----------------------------------------------------------------------------------------------
+//Function to load store items
+function initialzeStoreItems(){
+
+    TableController.showLoadingBanner("Please wait. Attempting to items in store...")
+
+    database.fetchItems()
+    .then((fetchedItems)=>{
+
+
+        //If returned array contains any store item
+        if(fetchedItems.length > 0){
+
+            //Remove loading banner
+            TableController.removeOldBanners();
+            
+            //then add each item to the table in the DOM
+            fetchedItems.forEach((fetchedItem)=>{
+
+               
+                    TableController.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.Stock, fetchedItem.SellingPrice, "", false, fetchedItem.CostPrice, "", true, false,"Store")
+
+
+            })
+            
+
+        }
+        else{
+
+                //Remove loading banner
+                TableController.removeOldBanners();
+
+                // Show isEmpty banner
+                TableController.showIsEmpty();
+
+        }
+
+    })
+    .catch((e)=>{
+        console.log(e);
+    })
+
+}
 
 
 
