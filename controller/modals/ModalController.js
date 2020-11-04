@@ -451,10 +451,12 @@ class Modal {
                                 }
                             })
 
+                            // If cart is empty
                             if(cart.length === 0){
+                                //Close modal
                                 closeModal(itemForm)
 
-                                //Disabling submit button when cart is empty
+                                // Disable Submit Button
                                 const footer_btn = document.querySelector('.footer_btn');
                                 footer_btn.disabled = true
                             }
@@ -579,7 +581,7 @@ function confirmRemove(itemName, resolve, reject, justVerify=""){
 
 }
 
-
+//Function called to reomve modal
 function closeModal(modal){
 
     if(!modal.classList.contains("dialog--shown")){
@@ -590,7 +592,7 @@ function closeModal(modal){
     modal.classList.remove('dialog--shown');
 
 
-
+    //Remove modal from DOM after animation
     setTimeout(()=>{
         modal.remove();
     },400);

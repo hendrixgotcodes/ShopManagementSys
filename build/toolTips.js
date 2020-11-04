@@ -150,27 +150,6 @@ class TableController {
       /********************************CONDTIONS***************************************/
 
       /**_____________________________________________________________________________________________________________________________________________ */
-      // if item is marked as deleted
-
-      if (isdeletedItem === true) {
-        row.style.opacity = ".6";
-      }
-
-      if (dontHighlightAfterCreate === true) {
-        resolve();
-        return;
-      }
-
-      const initBGcolor = row.style.backgroundColor;
-      const initColor = row.style.color;
-      row.style.backgroundColor = 'rgba(53, 89, 75, 0.711)';
-      row.style.color = "#fff";
-      setTimeout(() => {
-        row.style.backgroundColor = initBGcolor;
-        row.style.color = initColor;
-      }, 3000);
-      resolve();
-      /**_____________________________________________________________________________________________________________________________________________ */
 
       /**
            * Destination Page determines which page is requesting for a table row to be created
@@ -207,15 +186,34 @@ class TableController {
         function toggleRowControls() {
           showRowControls(row);
         }
-      }
-
-      if (destinationPage === "Store") {
+      } else if (destinationPage === "Store") {
         if (isdeletedItem) {
           row.remove();
         }
       }
-      /******************************************* */
+      /**_____________________________________________________________________________________________________________________________________________ */
+      // if item is marked as deleted
 
+
+      if (isdeletedItem === true) {
+        row.style.opacity = ".6";
+      }
+
+      if (dontHighlightAfterCreate === true) {
+        resolve();
+        return;
+      }
+
+      const initBGcolor = row.style.backgroundColor;
+      const initColor = row.style.color;
+      row.style.backgroundColor = 'rgba(53, 89, 75, 0.711)';
+      row.style.color = "#fff";
+      setTimeout(() => {
+        row.style.backgroundColor = initBGcolor;
+        row.style.color = initColor;
+      }, 3000);
+      resolve();
+      /******************************************* */
     });
   }
   /***********************************************************************************************************************************/

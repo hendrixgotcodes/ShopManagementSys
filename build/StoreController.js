@@ -815,10 +815,12 @@ class Modal {
               currentItemIndex = cart.indexOf(item);
               cart.splice(currentItemIndex, 1);
             }
-          });
+          }); // If cart is empty
 
           if (cart.length === 0) {
-            closeModal(itemForm);
+            //Close modal
+            closeModal(itemForm); // Disable Submit Button
+
             const footer_btn = document.querySelector('.footer_btn');
             footer_btn.disabled = true;
           }
@@ -893,14 +895,16 @@ function confirmRemove(itemName, resolve, reject, justVerify = "") {
     closeModal(modal);
     document.querySelector('.contentCover').classList.remove('contentCover--shown');
   }
-}
+} //Function called to reomve modal
+
 
 function closeModal(modal) {
   if (!modal.classList.contains("dialog--shown")) {
     modal.classList.add('modal_hide');
   }
 
-  modal.classList.remove('dialog--shown');
+  modal.classList.remove('dialog--shown'); //Remove modal from DOM after animation
+
   setTimeout(() => {
     modal.remove();
   }, 400);
@@ -989,27 +993,6 @@ class TableController {
       /********************************CONDTIONS***************************************/
 
       /**_____________________________________________________________________________________________________________________________________________ */
-      // if item is marked as deleted
-
-      if (isdeletedItem === true) {
-        row.style.opacity = ".6";
-      }
-
-      if (dontHighlightAfterCreate === true) {
-        resolve();
-        return;
-      }
-
-      const initBGcolor = row.style.backgroundColor;
-      const initColor = row.style.color;
-      row.style.backgroundColor = 'rgba(53, 89, 75, 0.711)';
-      row.style.color = "#fff";
-      setTimeout(() => {
-        row.style.backgroundColor = initBGcolor;
-        row.style.color = initColor;
-      }, 3000);
-      resolve();
-      /**_____________________________________________________________________________________________________________________________________________ */
 
       /**
            * Destination Page determines which page is requesting for a table row to be created
@@ -1046,15 +1029,34 @@ class TableController {
         function toggleRowControls() {
           showRowControls(row);
         }
-      }
-
-      if (destinationPage === "Store") {
+      } else if (destinationPage === "Store") {
         if (isdeletedItem) {
           row.remove();
         }
       }
-      /******************************************* */
+      /**_____________________________________________________________________________________________________________________________________________ */
+      // if item is marked as deleted
 
+
+      if (isdeletedItem === true) {
+        row.style.opacity = ".6";
+      }
+
+      if (dontHighlightAfterCreate === true) {
+        resolve();
+        return;
+      }
+
+      const initBGcolor = row.style.backgroundColor;
+      const initColor = row.style.color;
+      row.style.backgroundColor = 'rgba(53, 89, 75, 0.711)';
+      row.style.color = "#fff";
+      setTimeout(() => {
+        row.style.backgroundColor = initBGcolor;
+        row.style.color = initColor;
+      }, 3000);
+      resolve();
+      /******************************************* */
     });
   }
   /***********************************************************************************************************************************/
