@@ -352,17 +352,17 @@ function deleteItem(row) {
   const itemQuantity = row.querySelector(".td_Stock").innerText;
   const itemCategory = row.querySelector(".td_Category").innerText; // Opens a confirmation dialog box which returns a promise
 
-  _controller_modals_ModalController__WEBPACK_IMPORTED_MODULE_1__["default"].openConfirmationBox(itemName, itemBrand, itemQuantity).then(result => {
-    if (result === "verified") {
-      database.softDeleteItem({
-        Name: itemName,
-        Brand: itemBrand,
-        Category: itemCategory
-      }).then(() => {
-        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.removeItem(itemName, itemBrand);
-        _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("warning", `${itemName} Of Quantity ${itemQuantity} Has Been Removed From Database`);
-      });
-    }
+  _controller_modals_ModalController__WEBPACK_IMPORTED_MODULE_1__["default"].openConfirmationBox(itemName, itemBrand, itemQuantity).then(() => {
+    database.softDeleteItem({
+      Name: itemName,
+      Brand: itemBrand,
+      Category: itemCategory
+    }).then(() => {
+      _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.removeItem(itemName, itemBrand);
+      _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("warning", `${itemName} Of Quantity ${itemQuantity} Has Been Marked As Deleted.`);
+    }).catch(e => {
+      _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("error", `Sorry, Failed To Mark ${itemName} Of Quantity ${itemQuantity} As Deleted.`);
+    });
   }).catch(error => {
     if (error.message === "wrongPassword") {
       _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("error", `Incorrect Password, ${itemName} Not Deleted`);
@@ -682,7 +682,9 @@ class Modal {
       confirmationBox.querySelector('.img_close').addEventListener("click", () => closeConfirmationBox(resolve, reject));
       confirmationBox.querySelector(".dialogRevert").addEventListener("click", () => closeConfirmationBox(resolve, reject));
       confirmationBox.querySelector(".dialogConfirm").addEventListener("click", () => {
-        openPrompt(itemName, resolve, reject);
+        closeModal(confirmationBox).then(() => {
+          resolve();
+        });
       });
     });
   }
@@ -988,15 +990,19 @@ function confirmRemove(itemName, resolve, reject, justVerify = "") {
 
 
 function closeModal(modal) {
-  if (!modal.classList.contains("dialog--shown")) {
-    modal.classList.add('modal_hide');
-  }
+  return new Promise((resolve, reject) => {
+    if (!modal.classList.contains("dialog--shown")) {
+      modal.classList.add('modal_hide');
+    }
 
-  modal.classList.remove('dialog--shown'); //Remove modal from DOM after animation
+    modal.classList.remove('dialog--shown');
+    document.querySelector(".contentCover").classList.remove("contentCover--shown"); //Remove modal from DOM after animation
 
-  setTimeout(() => {
-    modal.remove();
-  }, 400);
+    setTimeout(() => {
+      modal.remove();
+    }, 400);
+    resolve();
+  });
 }
 
 function openModal(modal) {
@@ -1095,7 +1101,9 @@ class TableController {
         let showRowControls = functions[3];
         row.addEventListener("click", toggleCB);
         row.querySelector(".controls").querySelector(".edit").addEventListener("click", editRow);
-        row.querySelector(".controls").querySelector(".del").addEventListener("click", deleteRow);
+        row.querySelector(".controls").querySelector(".del").addEventListener("click", e => {
+          deleteRow(e);
+        });
         row.addEventListener("contextmenu", toggleRowControls);
         /**************FUNCTIONS**********************************/
 
@@ -1103,7 +1111,7 @@ class TableController {
           checkCB(row);
         }
 
-        function deleteRow() {
+        function deleteRow(e) {
           //Prevents selection of row
           e.stopPropagation();
           deleteItem(row);

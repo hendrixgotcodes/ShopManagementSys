@@ -126,7 +126,12 @@ class Modal {
             confirmationBox.querySelector('.img_close').addEventListener("click",()=>closeConfirmationBox(resolve, reject))
             confirmationBox.querySelector(".dialogRevert").addEventListener("click", ()=>closeConfirmationBox(resolve, reject))
             confirmationBox.querySelector(".dialogConfirm").addEventListener("click", ()=>{
-                openPrompt(itemName, resolve, reject)
+                closeModal(confirmationBox)
+                .then(()=>{
+
+                    resolve()
+
+                })
             })
         })
 
@@ -584,18 +589,26 @@ function confirmRemove(itemName, resolve, reject, justVerify=""){
 //Function called to reomve modal
 function closeModal(modal){
 
-    if(!modal.classList.contains("dialog--shown")){
-         modal.classList.add('modal_hide');
+    return new Promise((resolve, reject)=>{
 
-    }
+        if(!modal.classList.contains("dialog--shown")){
+            modal.classList.add('modal_hide');
+   
+       }
+   
+       modal.classList.remove('dialog--shown');
+       document.querySelector(".contentCover").classList.remove("contentCover--shown")
 
-    modal.classList.remove('dialog--shown');
+   
+       //Remove modal from DOM after animation
+       setTimeout(()=>{
+           modal.remove();
+       },400);
 
+       resolve()
 
-    //Remove modal from DOM after animation
-    setTimeout(()=>{
-        modal.remove();
-    },400);
+    })
+
 }
 
 function openModal(modal){

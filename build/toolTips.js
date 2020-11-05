@@ -163,7 +163,9 @@ class TableController {
         let showRowControls = functions[3];
         row.addEventListener("click", toggleCB);
         row.querySelector(".controls").querySelector(".edit").addEventListener("click", editRow);
-        row.querySelector(".controls").querySelector(".del").addEventListener("click", deleteRow);
+        row.querySelector(".controls").querySelector(".del").addEventListener("click", e => {
+          deleteRow(e);
+        });
         row.addEventListener("contextmenu", toggleRowControls);
         /**************FUNCTIONS**********************************/
 
@@ -171,7 +173,7 @@ class TableController {
           checkCB(row);
         }
 
-        function deleteRow() {
+        function deleteRow(e) {
           //Prevents selection of row
           e.stopPropagation();
           deleteItem(row);

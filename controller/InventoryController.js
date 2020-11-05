@@ -212,10 +212,7 @@ function deleteItem(row){
 
     // Opens a confirmation dialog box which returns a promise
     Modal.openConfirmationBox(itemName, itemBrand, itemQuantity)
-    .then((result)=>{
-
-        if(result === "verified"){
-           
+    .then(()=>{           
 
             database.softDeleteItem( {
                 Name: itemName,
@@ -226,14 +223,14 @@ function deleteItem(row){
 
                 TableController.removeItem(itemName, itemBrand)
 
-                Notifications.showAlert("warning", `${itemName} Of Quantity ${itemQuantity} Has Been Removed From Database`)
+                Notifications.showAlert("warning", `${itemName} Of Quantity ${itemQuantity} Has Been Marked As Deleted.`)
 
             })
+            .catch((e)=>{
+                Notifications.showAlert("error", `Sorry, Failed To Mark ${itemName} Of Quantity ${itemQuantity} As Deleted.` )
+            })
 
-           
-
-        }
-
+        
     })
     .catch((error)=>
     {
