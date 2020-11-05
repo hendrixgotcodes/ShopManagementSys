@@ -439,6 +439,7 @@ function addItem() {
         });
       }
     }).catch(error => {
+      _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("error", `Sorry, Failed To Add ${storeObject.Name} Of Brand ${storeObject.Brand} To Inventory. Try Again Later`);
       console.log(error);
     });
   }).catch(error => {
@@ -561,7 +562,7 @@ electron__WEBPACK_IMPORTED_MODULE_0__["ipcRenderer"].on('populateTable', (e, Ite
   });
   database.addItemsBulk(itemsArray).then(resolved => {
     resolved[1].forEach(item => {
-      _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(item.Name, item.Brand, item.Category, item.Stock, item.SellingPrice, [checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false);
+      _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(item.Name, item.Brand, item.Category, item.Stock, item.SellingPrice, [checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory");
     });
     _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", `${resolved[1].length} Items Have Been Successfully Added. ${resolved[0].length} Items Already Existed In Database`);
   });
@@ -1393,7 +1394,7 @@ class DATABASE {
       const array = Object.values(shopItem);
       let name, brand, category, stock, sellingPrice, costPrice;
       [name, brand, category, stock, sellingPrice, costPrice] = array;
-      shopItem = {
+      let newShopItem = {
         Name: name,
         Brand: brand,
         Category: category,
@@ -1402,9 +1403,8 @@ class DATABASE {
         CostPrice: costPrice,
         Deleted: "false"
       };
-      this.db.items.add(shopItem).then(() => {
+      this.db.items.add(newShopItem).then(() => {
         resolve(true);
-        console.log("Item added to database successfully...");
       }).catch(() => {
         reject(() => {
           reject(false);
@@ -1491,28 +1491,49 @@ class DATABASE {
 
   addItemsBulk(itemArray) {
     return new Promise((resolve, reject) => {
-      const alreadyInDB = [];
-      itemArray.forEach(item => {
-        //Look through Database with the following keys
-        this.db.items.where({
-          Name: item.Name,
-          Brand: item.Brand
-        }).each(item => {
-          // If a match is found, remove from array
-          let itemIndex = itemArray.indexOf(item);
-          itemArray.splice(itemIndex, 1); //add those items to alreadyInDB array
+      const promises = []; //We need to check if the item we are trying to add to the database does not already exist, to prevent hidden issues and modifications
 
-          alreadyInDB.push(item);
-        }).then(() => {
-          //then add the rest in itemArray to the database
-          console.log("Item Array: ", itemArray);
-          console.log("Already in DB: ", alreadyInDB);
-          this.db.items.bulkPut(itemArray).then(() => {
+      const alreadyInDB = []; //So for each item we are trying to addd
+
+      itemArray.forEach(item => {
+        promises.push(new Promise((resolve, reject) => {
+          //We check if it already exists in DB
+          this.db.items.get({
+            Name: item.Name,
+            Brand: item.Brand,
+            Category: item.Category
+          }, result => {
+            //the get method resolves with undefined if it does not exist
+            // if it exists
+            if (result !== undefined) {
+              console.log(result); //Add to array of items which already exists in DB
+
+              alreadyInDB.push(item); //Also remove it from original array
+
+              let itemIndex = itemArray.indexOf(item);
+              itemArray.splice(itemIndex, 1);
+            }
+
+            resolve(itemArray);
+          });
+        }));
+      });
+      Promise.all(promises).then(() => {
+        if (itemArray.length !== 0) {
+          const DBOperations = [];
+          itemArray.forEach(item => {
+            DBOperations.push(new Promise((resolve, reject) => {
+              this.db.items.put(item).then(() => {
+                resolve();
+              });
+            }));
+          });
+          Promise.all(DBOperations).then(() => {
             resolve([alreadyInDB, itemArray]);
           });
-        }).catch(() => {
-          reject(false);
-        });
+        } else {
+          resolve([alreadyInDB, itemArray]);
+        }
       });
     });
   }

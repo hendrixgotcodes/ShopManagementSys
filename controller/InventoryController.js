@@ -363,6 +363,7 @@ function addItem(){
               
             })
             .catch((error)=>{
+                Notifications.showAlert("error", `Sorry, Failed To Add ${storeObject.Name} Of Brand ${storeObject.Brand} To Inventory. Try Again Later`)
                 console.log(error);
             })
 
@@ -572,7 +573,7 @@ ipcRenderer.on('populateTable',(e, Items)=>{
 
             resolved[1].forEach((item)=>{
 
-                TableController.createItem(item.Name, item.Brand, item.Category, item.Stock, item.SellingPrice, [checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false)
+                TableController.createItem(item.Name, item.Brand, item.Category, item.Stock, item.SellingPrice, [checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory")
 
             })
 

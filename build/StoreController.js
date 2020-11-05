@@ -1304,7 +1304,7 @@ class DATABASE {
       const array = Object.values(shopItem);
       let name, brand, category, stock, sellingPrice, costPrice;
       [name, brand, category, stock, sellingPrice, costPrice] = array;
-      shopItem = {
+      let newShopItem = {
         Name: name,
         Brand: brand,
         Category: category,
@@ -1313,9 +1313,8 @@ class DATABASE {
         CostPrice: costPrice,
         Deleted: "false"
       };
-      this.db.items.add(shopItem).then(() => {
+      this.db.items.add(newShopItem).then(() => {
         resolve(true);
-        console.log("Item added to database successfully...");
       }).catch(() => {
         reject(() => {
           reject(false);
@@ -1402,28 +1401,49 @@ class DATABASE {
 
   addItemsBulk(itemArray) {
     return new Promise((resolve, reject) => {
-      const alreadyInDB = [];
-      itemArray.forEach(item => {
-        //Look through Database with the following keys
-        this.db.items.where({
-          Name: item.Name,
-          Brand: item.Brand
-        }).each(item => {
-          // If a match is found, remove from array
-          let itemIndex = itemArray.indexOf(item);
-          itemArray.splice(itemIndex, 1); //add those items to alreadyInDB array
+      const promises = []; //We need to check if the item we are trying to add to the database does not already exist, to prevent hidden issues and modifications
 
-          alreadyInDB.push(item);
-        }).then(() => {
-          //then add the rest in itemArray to the database
-          console.log("Item Array: ", itemArray);
-          console.log("Already in DB: ", alreadyInDB);
-          this.db.items.bulkPut(itemArray).then(() => {
+      const alreadyInDB = []; //So for each item we are trying to addd
+
+      itemArray.forEach(item => {
+        promises.push(new Promise((resolve, reject) => {
+          //We check if it already exists in DB
+          this.db.items.get({
+            Name: item.Name,
+            Brand: item.Brand,
+            Category: item.Category
+          }, result => {
+            //the get method resolves with undefined if it does not exist
+            // if it exists
+            if (result !== undefined) {
+              console.log(result); //Add to array of items which already exists in DB
+
+              alreadyInDB.push(item); //Also remove it from original array
+
+              let itemIndex = itemArray.indexOf(item);
+              itemArray.splice(itemIndex, 1);
+            }
+
+            resolve(itemArray);
+          });
+        }));
+      });
+      Promise.all(promises).then(() => {
+        if (itemArray.length !== 0) {
+          const DBOperations = [];
+          itemArray.forEach(item => {
+            DBOperations.push(new Promise((resolve, reject) => {
+              this.db.items.put(item).then(() => {
+                resolve();
+              });
+            }));
+          });
+          Promise.all(DBOperations).then(() => {
             resolve([alreadyInDB, itemArray]);
           });
-        }).catch(() => {
-          reject(false);
-        });
+        } else {
+          resolve([alreadyInDB, itemArray]);
+        }
       });
     });
   }

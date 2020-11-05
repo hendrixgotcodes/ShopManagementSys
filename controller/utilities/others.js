@@ -22,10 +22,11 @@ function openFileExplorer(){
         checkBtn.checked === false;
     }
 
+    //Will cause ipcMain to trigger serveFilePath event
     ipcRenderer.send("openFileExplorer")
 
 }
-
+// Listens to serveFilePath event
 ipcRenderer.on("serveFilePath",(e, path)=>{
     renderXLFile(path);
 })
@@ -41,6 +42,7 @@ function renderXLFile(path){
 
     let firstPageJSON = xlsx.utils.sheet_to_json(firstPage)
 
+    //Opens Modal and displays items in open 
     parseExcelOutput("From Excel",firstPageJSON)
 
 
