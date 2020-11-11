@@ -498,14 +498,12 @@ class STORE {
 
   set(key, val) {
     return new Promise((resolve, reject) => {
-      console.log("initiated");
       this.data[key] = val; //  const writeFileSync = promisify(fs.writeFileSync);
 
       fs.writeFileSync(this.path, JSON.stringify(this.data));
       const writeFile = promisify(fs.writeFile);
       writeFile(this.path, JSON.stringify(this.data)).then(() => {
         let date = new Date();
-        console.log("finished ", date.getSeconds(), date.getMilliseconds());
         resolve();
       });
     });

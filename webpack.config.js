@@ -28,7 +28,7 @@ const electron ={
 
 // const regular = {
 //     entry: {
-//         StoreController: './controller/StoreController.js',
+//         utilTooltip: './views/js/ToolTip.js',
 //     },
 //     output: {
 //         path: path.resolve(__dirname, 'build'),

@@ -124,6 +124,7 @@ class TableController {
                 <td class="td_Stock">${stock}</td>
                 <td class="td_Price">${sellingPrice}</td>
                 <td hidden class="td_costPrice">${costPrice}</td>
+                <td hidden class="state">visible</td>
                 `;
       row.innerHTML = rowContent;
       row.className = "bodyRow";
@@ -132,7 +133,6 @@ class TableController {
         tableROWS.forEach(tableRow => {
           if (tableRow.querySelector('.td_Names').innerText === row.querySelector('.td_Names').innerText) {
             document.querySelector('.tableBody').replaceChild(row, tableRow);
-            console.log('matched');
             returnedValue = 1;
           } else {
             document.querySelector(".tableBody").appendChild(row);
@@ -155,16 +155,28 @@ class TableController {
            * Destination Page determines which page is requesting for a table row to be created
           */
 
-      if (destinationPage === "Inventory") {
+      if (destinationPage.toLocaleLowerCase() === "inventory") {
         //Destructing functions
         let checkCB = functions[0];
         let editItem = functions[1];
         let deleteItem = functions[2];
         let showRowControls = functions[3];
         row.addEventListener("click", toggleCB);
-        row.querySelector(".controls").querySelector(".edit").addEventListener("click", editRow);
-        row.querySelector(".controls").querySelector(".del").addEventListener("click", e => {
-          deleteRow(e);
+        row.querySelector(".controls").querySelector(".edit").addEventListener("click", function editRow(e) {
+          //Prevents selection of row
+          e.stopPropagation();
+          editItem(row);
+        });
+        row.querySelector(".controls").querySelector(".del").addEventListener("click", function deleteRow(e) {
+          //Prevents selection of row
+          e.stopPropagation();
+          const rowState = row.querySelector(".state").innerText;
+
+          if (rowState === "visible") {
+            deleteItem(row);
+          } else if (rowState === "deleted") {
+            deleteItem(row, "recover");
+          }
         });
         row.addEventListener("contextmenu", toggleRowControls);
         /**************FUNCTIONS**********************************/
@@ -173,33 +185,30 @@ class TableController {
           checkCB(row);
         }
 
-        function deleteRow(e) {
-          //Prevents selection of row
-          e.stopPropagation();
-          deleteItem(row);
-        }
-
-        function editRow() {
-          //Prevents selection of row
-          e.stopPropagation();
-          editItem(row);
-        }
-
         function toggleRowControls() {
           showRowControls(row);
+        } // if item is marked as deleted
+
+
+        if (isdeletedItem === true) {
+          row.style.opacity = ".55";
+          row.querySelector('.state').innerText = "deleted";
+        } else {
+          row.querySelector('.state').innerText = "visible";
         }
-      } else if (destinationPage === "Store") {
-        if (isdeletedItem) {
+      } else if (destinationPage.toLocaleLowerCase() === "store") {
+        if (isdeletedItem === true) {
           row.remove();
+        }
+
+        let rowCount = document.querySelector("tbody").querySelectorAll("tr").length;
+
+        if (rowCount === 0) {
+          this.showIsEmpty();
         }
       }
       /**_____________________________________________________________________________________________________________________________________________ */
-      // if item is marked as deleted
 
-
-      if (isdeletedItem === true) {
-        row.style.opacity = ".6";
-      }
 
       if (dontHighlightAfterCreate === true) {
         resolve();
@@ -223,7 +232,7 @@ class TableController {
   /******REMOVING ITEM FROM INVENTORY*****/
 
 
-  static removeItem(itemName, itemBrand) {
+  static markAsRemove(itemName, itemBrand) {
     itemName = itemName.toLowerCase();
     itemBrand = itemBrand.toLowerCase();
     const tableROWS = document.querySelector('.tableBody').querySelectorAll('.bodyRow');
@@ -232,11 +241,25 @@ class TableController {
       const brand = row.querySelector(".td_Brands").innerText.toLowerCase();
 
       if (row !== null && name === itemName && brand === itemBrand) {
-        row.style.transition = ".7s";
-        row.style.transform = "translateX(150%)";
-        setTimeout(() => {
-          row.remove();
-        }, 500);
+        row.style.opacity = '0.55'; //Set item state to deleted
+
+        row.querySelector(".state").innerText = "deleted";
+      }
+    });
+  }
+
+  static markAsVisible(itemName, itemBrand) {
+    itemName = itemName.toLowerCase();
+    itemBrand = itemBrand.toLowerCase();
+    const tableROWS = document.querySelector('.tableBody').querySelectorAll('.bodyRow');
+    tableROWS.forEach(row => {
+      const name = row.querySelector(".td_Names").innerText.toLowerCase();
+      const brand = row.querySelector(".td_Brands").innerText.toLowerCase();
+
+      if (row !== null && name === itemName && brand === itemBrand) {
+        row.style.opacity = '1'; //Set item state to deleted
+
+        row.querySelector(".state").innerText = "recovered";
       }
     });
   }
@@ -265,8 +288,7 @@ class TableController {
 
                 <img src="../img/empty.svg" />
                 <span id="info">
-                    Inventory Is Empty. Add New Items
-                    <img src="../Icons/toolBar/btnAdd--green.svg" />
+                    Inventory Is Empty!
                 </span>
 
             </center>
@@ -599,14 +621,12 @@ class STORE {
 
   set(key, val) {
     return new Promise((resolve, reject) => {
-      console.log("initiated");
       this.data[key] = val; //  const writeFileSync = promisify(fs.writeFileSync);
 
       fs.writeFileSync(this.path, JSON.stringify(this.data));
       const writeFile = promisify(fs.writeFile);
       writeFile(this.path, JSON.stringify(this.data)).then(() => {
         let date = new Date();
-        console.log("finished ", date.getSeconds(), date.getMilliseconds());
         resolve();
       });
     });

@@ -69,11 +69,13 @@
     padding: 0;
     overflow-x: hidden;
 
+
     & .bodyRow {
         display: flex;
         height: 4rem;
         width: 100%;
-        justify-content: center;
+        justify-content: space-between;
+        padding: 0 .5rem;
         align-items: center;
         transition: .3s;
         position: relative;
@@ -227,7 +229,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-
+    overflow: hidden;
 }
 
 .tb_Stock,
@@ -243,11 +245,12 @@
 .td_Names,
 .td_Brands,
 .td_Category {
-    width: 22%;
+    width: 21.5%;
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
+    overflow: hidden;
 
 }
 

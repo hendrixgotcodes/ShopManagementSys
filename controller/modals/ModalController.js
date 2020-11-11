@@ -1,5 +1,6 @@
 "use strict";
 
+import DATABASE from "../../model/DATABASE";
 import { showAlert } from "../Alerts/NotificationController";
 import UnitConverter from "../utilities/UnitConverter";
 
@@ -72,9 +73,23 @@ class Modal {
 /************************************************************************************************************************************************************************/  
 
     //Confirmation DialogBox
-    static openConfirmationBox(itemName, itemCount){
+    static openConfirmationBox(itemName, itemCount, action, customMessage=""){
 
         return new Promise((resolve, reject)=>{
+
+            let Message;
+
+            if(action === "delete"){
+                Message = `This action will cause ${itemName} of quantity ${itemCount} to be removed from the shop front. Do you wish to continue?`
+            }
+            else if(action === "recover"){
+                Message = `This action will cause ${itemName} of quantity ${itemCount} to be recovered to the shop front. Do you wish to continue?`
+            }
+
+            if(customMessage !== ""){
+                Message = customMessage
+            }
+
             const boxTemplate = 
             `
                 <div class="dialogContainer fullwidth aDialog" role="container">
@@ -85,18 +100,17 @@ class Modal {
     
                     <div class="dialogBody fullwidth" role="body">
                        <span>
-                                Are You Sure You Want To Delete ${itemName} which has 
-                                a quantity of (${itemCount}) from the Inventory.
+                                ${Message}
                         </span>
     
                     </div>
     
                     <div class="dialogFooter fullwidth" role="footer" aria-placeholder="Confirm here">
                         <div class="dialogConfirm">
-                            Yes, Delete
+                            Yes, Continue
                         </div>
                         <div class="dialogRevert">
-                            Review Selection
+                            No, Review Selection
                         </div>
                     </div>
     
@@ -127,11 +141,10 @@ class Modal {
             confirmationBox.querySelector(".dialogRevert").addEventListener("click", ()=>closeConfirmationBox(resolve, reject))
             confirmationBox.querySelector(".dialogConfirm").addEventListener("click", ()=>{
                 closeModal(confirmationBox)
-                .then(()=>{
+               
 
-                    resolve()
+                    resolve("confirmed")
 
-                })
             })
         })
 
@@ -146,7 +159,18 @@ class Modal {
         return new Promise((resolve, reject)=>{
 
 
-            let formTitle = editForm === true ?  "Edit Stock" : "New Stock";
+            let formTitle;
+            let disableField
+
+            if(editForm === true){
+                formTitle = "Edit Stock"
+                disableField = "disabled";
+                
+            }
+            else{
+                formTitle = "New Stock"
+                disableField = "";
+            }
 
             let itemName = "";
             let brand  =  ""
@@ -180,12 +204,12 @@ class Modal {
     
                     <form class="dialogBody fullwidth" role="body">
     
-                            <input type="text" class="dialogForm_tb fullwidth" value="${itemName}" aria-placeholder="Item Name" placeholder="Item Name" id="name" />
+                            <input type="text" class="dialogForm_tb fullwidth" ${disableField} value="${itemName}" aria-placeholder="Item Name" placeholder="Item Name" id="name" />
     
                          <div class="flexContainer">   
-                            <input type="text" class="dialogForm_tb halfwidth" value="${category}" aria-placeholder="Item Category" placeholder="Item Category" id="category" />
+                            <input type="text" class="dialogForm_tb halfwidth" ${disableField} value="${category}" aria-placeholder="Item Category" placeholder="Item Category" id="category" list="categoryList" />
     
-                            <input type="text" class="dialogForm_tb halfwidth" value="${brand}" aria-placeholder="Item Brand" placeholder="Item Brand" id="brand" />
+                            <input type="text" class="dialogForm_tb halfwidth" ${disableField} value="${brand}" aria-placeholder="Item Brand" placeholder="Item Brand" id="brand" list="brandList" />
     
                             <input type="number" class="dialogForm_tb halfwidth" value="${itemQuantity}" aria-placeholder="Total in inventory" placeholder="Total In Inventory" id="total" />
     
@@ -194,6 +218,14 @@ class Modal {
                             <input type="number" class="dialogForm_tb halfwidth" value="${sellingPrice}" aria-placeholder="Unit Cost" placeholder="Selling Price (GH₵)" id="sellingPrice" />
     
                          </div>
+
+                         <datalist id="categoryList">
+                          
+                         </datalist>
+
+                         <datalist id="brandList">
+                          
+                         </datalist>
     
                     </form>
     
@@ -225,6 +257,45 @@ class Modal {
                         mainBodyContent.querySelector(".dialog--itemFormBox").classList.add("dialog--shown")
                 }, 100)
                 
+
+                 //Intializing DataLists
+
+                 const db = new DATABASE();
+                
+                 //Category
+                 db.getAllItemCategories()
+                 .then((categories)=>{
+ 
+                    categories.forEach((item)=>{
+    
+                        let newOption = document.createElement("option");
+                        newOption.value = item;
+    
+                        itemForm.querySelector("#categoryList").appendChild(newOption);
+                        
+    
+                    })
+
+
+                 })
+
+                 
+                 //Brands
+                 db.getAllItemBrands()
+                 .then((brands)=>{
+
+                    brands.forEach((item)=>{
+    
+                        let newOption = document.createElement("option");
+                        newOption.value = item;
+    
+                        itemForm.querySelector("#brandList").appendChild(newOption);
+                        
+    
+                    })
+
+                 })
+ 
     
                 
                 //Event Listeners
@@ -381,10 +452,56 @@ class Modal {
                     //Sell button function
                     function sellItems(){
 
+                        const sellBtnIco =  itemForm.querySelector(".dialogConfirm").querySelector('img')
+                        sellBtnIco.setAttribute("src", "../../utils/media/animations/loaders/Rolling-1s-200px.svg")
 
-                        exitBox()
+                        const db = new DATABASE();
 
-                        resolve(totalPrice);
+                        let promises = [];
+
+                        cart.forEach((item)=>{
+
+                            promises.push(
+
+                                new Promise((resolve, reject)=>{
+
+                                    db.getItemStock({Name: item.name, Brand: item.brand})
+                                    .then((totalStock)=>{
+
+                                        totalStock = totalStock - parseInt(item.amountPurchased);
+
+                                        db.updateItemStock({Name: item.name, Brand: item.brand}, totalStock.toString())
+                                        .then(()=>{
+                                            resolve()
+                                        })
+
+                                    })
+
+
+                                })
+
+                            )
+
+                        })
+
+                        Promise.all(promises)
+                        .then(()=>{
+
+                            cartCount.innerText = '0'
+                            cartCount.style.transform = "scale(0)"
+                            
+                            cart.forEach((item)=>{
+
+                                TableController.uncheckRows(item.name, item.brand)
+
+                            })
+
+                            exitBox()
+
+                            resolve(totalPrice);
+
+                        })
+
 
                     }
 

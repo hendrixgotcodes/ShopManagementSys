@@ -68,6 +68,7 @@
             cursor: pointer;
             outline-color: lighten($color: $primary_green, $amount: 15);
 
+
             .selectValue_center {
                 height: 100%;
                 width: 60%;
@@ -110,7 +111,7 @@
             background-color: $WHITE;
             color: $primary_black;
             display: none;
-            z-index: 1;
+            z-index: 5;
             border-radius: 4px;
 
 

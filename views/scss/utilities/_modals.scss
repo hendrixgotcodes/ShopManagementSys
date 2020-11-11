@@ -730,6 +730,10 @@
                 margin-bottom: .8rem;
                 font-size: 1rem;
                 color: $primary_black;
+
+                &:disabled{
+                    opacity: .5;
+                }
             }
 
            

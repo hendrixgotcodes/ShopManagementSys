@@ -9,6 +9,7 @@
 /**********************************IMPORTED ***************************/
 import Notifications from '../controller/Alerts/NotificationController'
 import DATABASE from '../model/DATABASE';
+import STORE from '../model/STORE';
 import Modal from './modals/ModalController';
 import TableController from './utilities/TableController';
 import UnitConverter from './utilities/UnitConverter';
@@ -17,7 +18,7 @@ import UnitConverter from './utilities/UnitConverter';
 
 /*********************************PROGRAM CONSTANTS********************* */
 
-const cart = [];     // Array of store objects
+let cart = [];     // Array of store objects
 let salesMade = 0;       //Total sold Items
 
 //Holds the amount of table rows selected so that disabling and enabling of elements can be done based on that amount
@@ -27,6 +28,7 @@ let footer_tbChanged = false;
 
 //Intitalizing DB
 const database = new DATABASE();
+
 
 
 
@@ -142,7 +144,7 @@ footer_tb.addEventListener("focus",()=>{
 //Function to load store items
 function initialzeStoreItems(){
 
-    TableController.showLoadingBanner("Please wait. Attempting to items in store...")
+    TableController.showLoadingBanner("Please wait. Attempting to fetch items from database...")
 
     database.fetchItems()
     .then((fetchedItems)=>{
@@ -157,8 +159,15 @@ function initialzeStoreItems(){
             //then add each item to the table in the DOM
             fetchedItems.forEach((fetchedItem)=>{
 
-               
-                    TableController.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.Stock, fetchedItem.SellingPrice, "", false, fetchedItem.CostPrice, "", true, false,"Store")
+                if(fetchedItem.Deleted === 1){
+
+                    TableController.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, "", false, fetchedItem.CostPrice, "", true, true,"Store")
+
+                }
+                else
+                {
+                    TableController.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, "", false, fetchedItem.CostPrice, "", true, false,"Store")
+                }
 
 
             })
@@ -364,14 +373,15 @@ function amtPurchased(amntPurchased){
 function showItemsInCart(){
 
 
-    console.log(cart);
-
     Modal.createCheckout(cart, totalSelectedRows,cartCount)
     .then((totalCost)=>{
 
         if(totalCost >= 0){
 
             salesMade = salesMade + totalCost;
+
+             
+
 
             //Parsing it through a converter
             let forSpan = UnitConverter.convert(salesMade);

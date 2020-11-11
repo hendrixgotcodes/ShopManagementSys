@@ -23,6 +23,10 @@ class MainWWindow extends BrowserWindow {
             center: true,
             frame: false,
             icon: icon,
+            show: false,
+            minWidth: 1503,
+            minHeight: 800,
+            hasShadow: true,
         })
 
         //Program Variables
@@ -46,6 +50,12 @@ class MainWWindow extends BrowserWindow {
 
 
 /****************************************EVENT LISTENERS************************************/
+        this.once('ready-to-show',()=>{
+
+            this.show();
+
+        })
+
 
             /***************Loads Program Pages */
             ipcMain.on('loadStore', (e, [userName, userType]) => {

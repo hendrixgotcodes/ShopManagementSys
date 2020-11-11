@@ -44,30 +44,38 @@ checkBtn.addEventListener("click", toggleDropDown)
 
 
 
-//Right Click event lister for each row
+
+
 tableROWS.forEach((row)=>{
+
+    //Right Click event lister for each row
     row.addEventListener("contextmenu",(e)=>{
 
       
-            showRowControls(row)
+        showRowControls(row)
     })
-})
 
-
-//.del button in "Control" box of every row
-tableROWS.forEach((row)=>{
+    //.del button in "Control" box of every row
     row.querySelector(".controls").querySelector(".del").addEventListener("click",(e)=>{
 
         //Prevents selection of row
         e.stopPropagation();
 
-        deleteItem(row);
+        const rowState = row.querySelector(".state").innerText;
+
+        if(rowState === "visible"){
+
+            deleteItem(row);
+
+        }
+        else if(rowState === "deleted"){
+
+            deleteItem(row, "recover");
+            
+        }
     });
-})
 
-
-//.edit button in "Control" box of every row
-tableROWS.forEach((row)=>{
+    //.edit button in "Control" box of every row
     row.querySelector(".controls").querySelector(".edit").addEventListener("click",(e)=>{
 
         //Prevents selection of row
@@ -75,17 +83,15 @@ tableROWS.forEach((row)=>{
 
         editItem(row);
     });
-})
 
-
-
-//
-tableROWS.forEach((row)=>{
 
     row.addEventListener("click", ()=>{
         checkCB(row);
     });
+
 })
+
+
 
 
 //For btnAdd(Add button in Inventory toolbar)
@@ -108,7 +114,7 @@ btnDelete.addEventListener("click", deleteMultiple)
 //Function to load store items
 function initialzeStoreItems(){
 
-    TableController.showLoadingBanner("Please wait. Attempting to load items in inventory...")
+    TableController.showLoadingBanner("Please wait. Attempting to load items in database...")
 
     database.fetchItems()
     .then((fetchedItems)=>{
@@ -123,14 +129,14 @@ function initialzeStoreItems(){
             //then add each item to the table in the DOM
             fetchedItems.forEach((fetchedItem)=>{
 
-                if(fetchedItem.Deleted === "true"){
+                if(fetchedItem.Deleted === 1){
 
-                    TableController.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.Stock, fetchedItem.SellingPrice, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory")
+                    TableController.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory")
 
                 }
                 else{
 
-                    TableController.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.Stock, fetchedItem.SellingPrice, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true,false , "Inventory")
+                    TableController.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true,false , "Inventory")
 
                 }
 
@@ -203,41 +209,80 @@ function showRowControls(row){
 //---------------------------------------------------------------------------------------------------------------
 //Function does not atually delete row(inventoryItem) but rather triggers the process and determines the result of the process through a promise.
 //And decide to show or not show an alert based on that result - (Used by event listeners on row ".del" buttons in Inventory)
-function deleteItem(row){
+function deleteItem(row, action="delete"){
+    
 
-    const itemName = row.querySelector(".td_Names").innerText;
-    const itemBrand = row.querySelector(".td_Brands").innerText
-    const itemQuantity = row.querySelector(".td_Stock").innerText;
-    const itemCategory = row.querySelector(".td_Category").innerText;
+            const itemName = row.querySelector(".td_Names").innerText;
+            const itemBrand = row.querySelector(".td_Brands").innerText
+            const itemQuantity = row.querySelector(".td_Stock").innerText;
+            const itemCategory = row.querySelector(".td_Category").innerText;
 
-    // Opens a confirmation dialog box which returns a promise
-    Modal.openConfirmationBox(itemName, itemBrand, itemQuantity)
-    .then(()=>{           
 
-            database.softDeleteItem( {
-                Name: itemName,
-                Brand: itemBrand,
-                Category: itemCategory,
-            })
-            .then(()=>{
+                
+           if(action === "delete"){
 
-                TableController.removeItem(itemName, itemBrand)
+                // Opens a confirmation dialog box which returns a promise
+                Modal.openConfirmationBox(itemName, itemQuantity, "delete")
+                .then((resolved)=>{   
+                    
 
-                Notifications.showAlert("warning", `${itemName} Of Quantity ${itemQuantity} Has Been Marked As Deleted.`)
+                    if(resolved === "confirmed"){
 
-            })
-            .catch((e)=>{
-                Notifications.showAlert("error", `Sorry, Failed To Mark ${itemName} Of Quantity ${itemQuantity} As Deleted.` )
-            })
+                        database.softDeleteItem( {
+                            Name: itemName,
+                            Brand: itemBrand,
+                            Category: itemCategory,
+                        })
+                        .then(()=>{
 
-        
-    })
-    .catch((error)=>
-    {
-        if(error.message === "wrongPassword"){
-            Notifications.showAlert("error", `Incorrect Password, ${itemName} Not Deleted`);
-        }
-    })
+                            TableController.markAsRemove(itemName, itemBrand)
+
+                            Notifications.showAlert("warning", `${itemName} of quantity ${itemQuantity} will no longer be visible in the shop front`)
+
+
+                        })
+                        .catch((e)=>{
+                            Notifications.showAlert("error", `Sorry, failed to mark ${itemName} of quantity ${itemQuantity} as deleted. ${itemName} will remain visible in the shop front` )
+                        })
+
+                    }
+
+
+                
+                })
+           }
+            else if(action === "recover"){
+
+                // Opens a confirmation dialog box which returns a promise
+                Modal.openConfirmationBox(itemName, itemQuantity, "recover")
+                .then((resolved)=>{   
+
+                    if(resolved === "confirmed"){
+
+                        database.recoverItem( {
+                            Name: itemName,
+                            Brand: itemBrand,
+                            Category: itemCategory,
+                        })
+                        .then(()=>{
+
+                            TableController.markAsVisible(itemName, itemBrand)
+
+                            Notifications.showAlert("warning", `${itemName} of quantity ${itemQuantity} will now be visible in the shop front`)
+
+
+                        })
+                        .catch((e)=>{
+                            Notifications.showAlert("error", `Sorry, failed to mark ${itemName} of quantity ${itemQuantity} as visible. ${itemName} will not be shown in the shop front` )
+                        })
+
+                    }
+
+                })
+
+            }
+
+
 
 }
 
@@ -252,6 +297,8 @@ function editItem(row){
     Modal.openItemForm(row, true)
     .then((result)=>{
 
+        console.log("result");
+
         if(result[0] === "edited"){
 
            
@@ -264,42 +311,42 @@ function editItem(row){
 
             price = UnitConverter.convert(price);
 
-            let editedInventory = new Promise(
-                (resolve, reject)=>{
-                   let done =  TableController.editItem(row, name, brand, category, stock, price);
+            // let editedInventory = new Promise(
+            //     (resolve, reject)=>{
+            //        let done =  TableController.editItem(row, name, brand, category, stock, price);
 
-                   if(done){
-                       resolve(name);
-                   }
-                   else{
-                       reject(new Error("Sorry, An Error Occured"));
-                   }
-                }
-            );
-
-            editedInventory.then(
-                (name)=>{
-                         Notifications.showAlert("success", `${itemName} Has Been Successfully Changed To ${name}`);
-                }
-            )
-            // .catch(
-            //     (error)=>{
-            //         Notifications.showAlert("error", error);
+            //        if(done){
+            //            resolve(name);
+            //        }
+            //        else{
+            //            reject(new Error("Sorry, An Error Occured"));
+            //        }
             //     }
             // );
 
+            // editedInventory.then(
+            //     (name)=>{
+            //              Notifications.showAlert("success", `${itemName} Has Been Successfully Changed To ${name}`);
+            //     }
+            // )
+            // // .catch(
+            // //     (error)=>{
+            // //         Notifications.showAlert("error", error);
+            // //     }
+            // // );
 
-            currentRow.querySelector(".td_cb").querySelector(".selectOne").checked = false;
 
-            if(rowBucket.length === 0 ){
+            // currentRow.querySelector(".td_cb").querySelector(".selectOne").checked = false;
 
-                btnEdit.disabled = true;
-                btnDelete.disabled = true  
+            // if(rowBucket.length === 0 ){
+
+            //     btnEdit.disabled = true;
+            //     btnDelete.disabled = true  
         
-              }
-              else{
-                  editMultiple();
-              }
+            //   }
+            //   else{
+            //       editMultiple();
+            //   }
         }
 
      
@@ -324,6 +371,10 @@ function addItem(){
 
     Modal.openItemForm("", false)
     .then((result)=>{
+
+        if(result === null){
+            return;
+        }
 
            
             let row, name, brand, category, stock, sellingPrice, costPrice;
@@ -351,7 +402,7 @@ function addItem(){
 
                 if(result === true){
 
-                    TableController.createItem(storeObject.Name, storeObject.Brand, storeObject.Category, storeObject.Stock, storeObject.SellingPrice, [checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "")
+                    TableController.createItem(storeObject.Name, storeObject.Brand, storeObject.Category, storeObject.Stock, storeObject.SellingPrice, [checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "", false, false, "inventory")
                     .then(()=>{
     
                         Notifications.showAlert("success", "Successfuly added to inventory")
@@ -363,21 +414,18 @@ function addItem(){
               
             })
             .catch((error)=>{
-                Notifications.showAlert("error", `Sorry, Failed To Add ${storeObject.Name} Of Brand ${storeObject.Brand} To Inventory. Try Again Later`)
+
+                if(error === "duplicate"){
+                    Notifications.showAlert("error", `Sorry, failed to add ${storeObject.Name} of brand ${storeObject.Brand} to inventory. This item already exists`)
+                    return;
+                }
+
+                Notifications.showAlert("error", `Sorry, failed to add ${storeObject.Name} of brand ${storeObject.Brand} to inventory. Try Again Later`)
                 console.log(error);
             })
 
 
     })
-    .catch(
-        (error)=>{
-
-            if(error.message === "wrongPassword"){
-                    Notifications.showAlert("error", "Sorry, Incorrect Password");    
-            }
-
-        }
-    );
 
 }
 
@@ -508,8 +556,7 @@ function deleteMultiple(){
     const returnedPromise = new Promise(
 
         (resolve, reject)=>{
-            Modal.openPrompt("", resolve, reject, true, `You Are About To Delete ${rowBucket.length} Items From Inventory.
-            Enter Password To Confirm.`)
+            Modal.openConfirmationBox("", "", "", `${rowBucket.length} items selected. Deleted items will be recovered, `)
         }
 
     )
@@ -519,19 +566,27 @@ function deleteMultiple(){
             let totalSelectedItems = rowBucket.length;
             
             if(result === "verified"){
-                rowBucket.forEach((item)=>{
+                rowBucket.forEach((row)=>{
 
-                    const itemName = item.querySelector(".td_Names").innerText;
-                    const itemBrand = item.querySelector(".td_Brands").innerText;
+                    // const itemName = item.querySelector(".td_Names").innerText;
+                    // const itemBrand = item.querySelector(".td_Brands").innerText;
 
 
-                    TableController.removeItem(itemName, itemBrand)
+                    // TableController.markAsRemove(itemName, itemBrand)
+
+                    if(row.querySelector(".state").innerText === "deleted"){
+
+                        deleteItem(row)
+                    }
+                    else{
+                        deleteItem(row, "recover")
+                    }
+
+                    deleteItem(row, )
 
                 })
 
                 rowBucket = [];
-
-                Notifications.showAlert("warning", `[${totalSelectedItems}] Items Have Been Removed From Inventory`)
 
             }
         }

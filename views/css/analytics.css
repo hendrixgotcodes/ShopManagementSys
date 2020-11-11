@@ -63,7 +63,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Roboto", "sans-serif"; }
+  font-family: "Baloo Chettan 2", "Roboto", "sans-serif"; }
 
 .tooltip_cb {
   color: white;
@@ -853,6 +853,8 @@ body {
             margin-bottom: .8rem;
             font-size: 1rem;
             color: #646766; }
+            .main_body .mainBody_content .dialog--itemFormBox .dialogContainer form input:disabled {
+              opacity: .5; }
           .main_body .mainBody_content .dialog--itemFormBox .dialogContainer form .flexContainer {
             height: 80%;
             display: flex;

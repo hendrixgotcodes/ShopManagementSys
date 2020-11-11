@@ -124,8 +124,6 @@ const goto_Analytics = document.querySelector('#goto_analytics');
 const content_cover = document.querySelector('.contentCover');
 const mainBodyContent = document.querySelector('.mainBody_content');
 const toolBar_tb = document.querySelector('.toolBar_tb');
-/****************EVENT LISTENERS ********/
-
 ipcRenderer.on("loadUserInfo", (e, array) => {
   [userName, userType] = array;
 
@@ -306,14 +304,12 @@ class STORE {
 
   set(key, val) {
     return new Promise((resolve, reject) => {
-      console.log("initiated");
       this.data[key] = val; //  const writeFileSync = promisify(fs.writeFileSync);
 
       fs.writeFileSync(this.path, JSON.stringify(this.data));
       const writeFile = promisify(fs.writeFile);
       writeFile(this.path, JSON.stringify(this.data)).then(() => {
         let date = new Date();
-        console.log("finished ", date.getSeconds(), date.getMilliseconds());
         resolve();
       });
     });

@@ -32,8 +32,6 @@ class STORE{
 
         return new Promise((resolve, reject)=>{
 
-            console.log("initiated");
-
             this.data[key] = val;
 
 
@@ -47,8 +45,6 @@ class STORE{
             .then(()=>{
 
                 let date = new Date();
-
-                console.log("finished ", date.getSeconds(), date.getMilliseconds());
 
                 resolve();
 

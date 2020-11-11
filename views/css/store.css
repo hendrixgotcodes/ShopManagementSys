@@ -63,7 +63,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Roboto", "sans-serif"; }
+  font-family: "Baloo Chettan 2", "Roboto", "sans-serif"; }
 
 .tooltip_cb {
   color: white;
@@ -133,6 +133,7 @@ body {
   height: 100%;
   display: flex;
   flex-direction: column;
+  flex-flow: column;
   justify-content: space-between;
   align-items: center; }
 
@@ -336,7 +337,7 @@ body {
           background-color: #fff;
           color: #646766;
           display: none;
-          z-index: 1;
+          z-index: 5;
           border-radius: 4px; }
           .main_body .mainBody_content .content_toolBar .toolBar_select .select_dropdown .selectDropdown_value {
             padding: .5rem;
@@ -461,7 +462,8 @@ body {
           display: flex;
           height: 4rem;
           width: 100%;
-          justify-content: center;
+          justify-content: space-between;
+          padding: 0 .5rem;
           align-items: center;
           transition: .3s;
           position: relative; }
@@ -551,7 +553,8 @@ body {
         width: 22%;
         display: flex;
         justify-content: center;
-        align-items: center; }
+        align-items: center;
+        overflow: hidden; }
       .main_body .mainBody_content .contentContainer .tb_Stock,
       .main_body .mainBody_content .contentContainer .tb_Price {
         width: 15.5%; }
@@ -560,11 +563,12 @@ body {
       .main_body .mainBody_content .contentContainer .td_Names,
       .main_body .mainBody_content .contentContainer .td_Brands,
       .main_body .mainBody_content .contentContainer .td_Category {
-        width: 22%;
+        width: 21.5%;
         display: flex;
         justify-content: center;
         align-items: center;
-        text-align: center; }
+        text-align: center;
+        overflow: hidden; }
       .main_body .mainBody_content .contentContainer .td_Stock,
       .main_body .mainBody_content .contentContainer .td_Price {
         width: 15.5%;
@@ -1091,6 +1095,8 @@ body {
             margin-bottom: .8rem;
             font-size: 1rem;
             color: #646766; }
+            .main_body .mainBody_content .dialog--itemFormBox .dialogContainer form input:disabled {
+              opacity: .5; }
           .main_body .mainBody_content .dialog--itemFormBox .dialogContainer form .flexContainer {
             height: 80%;
             display: flex;

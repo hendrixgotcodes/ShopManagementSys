@@ -34,7 +34,9 @@ const toolBar_tb = document.querySelector('.toolBar_tb');
 
 
 
-/****************EVENT LISTENERS ********/
+
+
+
 ipcRenderer.on("loadUserInfo", (e, array)=>{
     [userName, userType] = array;
 
