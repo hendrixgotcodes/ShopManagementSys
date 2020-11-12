@@ -31,15 +31,15 @@ class Notifications{
         notification_banner.style.transform = "translateX(100%)"
     }
 
-    static showAlert(errorType, message){
+    static showAlert(messageType, message){
 
         const mainBodyContent = document.querySelector(".mainBody_content");
 
-        errorType = errorType.toLowerCase();
+        messageType = messageType.toLowerCase();
 
         let bGColor;
 
-        switch (errorType){
+        switch (messageType){
             case 'success':
                 bGColor = "#12A89D";
                 break;

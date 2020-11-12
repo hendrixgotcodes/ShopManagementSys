@@ -207,9 +207,9 @@ class Modal {
                             <input type="text" class="dialogForm_tb fullwidth" ${disableField} value="${itemName}" aria-placeholder="Item Name" placeholder="Item Name" id="name" />
     
                          <div class="flexContainer">   
-                            <input type="text" class="dialogForm_tb halfwidth" ${disableField} value="${category}" aria-placeholder="Item Category" placeholder="Item Category" id="category" list="categoryList" />
+                            <select class="dialogForm_tb halfwidth" ${disableField} value="${category}" aria-placeholder="Item Category" placeholder="Item Category" id="category" ></select>
     
-                            <input type="text" class="dialogForm_tb halfwidth" ${disableField} value="${brand}" aria-placeholder="Item Brand" placeholder="Item Brand" id="brand" list="brandList" />
+                            <select class="dialogForm_tb halfwidth" ${disableField} value="${brand}" aria-placeholder="Item Brand" placeholder="Item Brand" id="brand"></select>
     
                             <input type="number" class="dialogForm_tb halfwidth" value="${itemQuantity}" aria-placeholder="Total in inventory" placeholder="Total In Inventory" id="total" />
     
@@ -265,16 +265,56 @@ class Modal {
                  //Category
                  db.getAllItemCategories()
                  .then((categories)=>{
+
+                    const categorySelect =itemForm.querySelector("#category");
+
+                    let placeholder = document.createElement("option");
+                    placeholder.value = null;
+                    placeholder.innerText = "---Choose Product Category---";
+                    placeholder.disabled = true;
+                    categorySelect.appendChild(placeholder)
  
                     categories.forEach((item)=>{
     
                         let newOption = document.createElement("option");
                         newOption.value = item;
+                        newOption.innerText = item;
     
-                        itemForm.querySelector("#categoryList").appendChild(newOption);
+                        itemForm.querySelector("#category").appendChild(newOption);
                         
     
                     })
+
+                    let newOption = document.createElement("option");
+                    newOption.value = null;
+                    newOption.innerText = "Create a new category";
+                    categorySelect.appendChild(newOption);
+
+                    //Deselecting 
+                    categorySelect.selectedIndex = "0";
+
+                    categorySelect.addEventListener("change", function changeToTextBox(e){
+
+                        console.log("changed");
+
+                        if(categorySelect.selectedIndex === categorySelect.length -1){
+
+                            e.preventDefault();
+
+                            const newTextBox = document.createElement("input");
+                            newTextBox.setAttribute("type", "text");
+                            newTextBox.placeholder = "Type in your new category"
+
+                            newTextBox.className = "dialogForm_tb halfwidth";
+                            newTextBox.id = "category"
+
+                            itemForm.querySelector("form").querySelector(".flexContainer").replaceChild(newTextBox, categorySelect)
+
+
+                        }
+
+                    })
+
 
 
                  })
@@ -284,15 +324,62 @@ class Modal {
                  db.getAllItemBrands()
                  .then((brands)=>{
 
+                    const brandSelect =itemForm.querySelector("#brand");
+
+                    let placeholder = document.createElement("option");
+                    placeholder.value = null;
+                    placeholder.innerText = "---Choose Product Brand---";
+                    placeholder.disabled = true;
+                    brandSelect.appendChild(placeholder)
+
+
                     brands.forEach((item)=>{
     
                         let newOption = document.createElement("option");
                         newOption.value = item;
+                        newOption.innerText = item;
     
-                        itemForm.querySelector("#brandList").appendChild(newOption);
+                        itemForm.querySelector("#brand").appendChild(newOption);
+
+                        
                         
     
                     })
+
+
+                    let newOption = document.createElement("option");
+                    newOption.value = null;
+                    newOption.innerText = "Create a new brand";
+                    brandSelect.appendChild(newOption);
+
+                    //Deselecting 
+                    brandSelect.selectedIndex = "0";
+
+
+
+
+                    brandSelect.addEventListener("change", function changeToTextBox(e){
+
+                        console.log("changed");
+
+                        if(brandSelect.selectedIndex === brandSelect.length -1){
+
+                            e.preventDefault();
+
+                            const newTextBox = document.createElement("input");
+                            newTextBox.setAttribute("type", "text");
+                            newTextBox.placeholder = "Type in your new brand"
+
+                            newTextBox.className = "dialogForm_tb halfwidth";
+                            newTextBox.id = "brand"
+
+                            itemForm.querySelector("form").querySelector(".flexContainer").replaceChild(newTextBox, brandSelect)
+
+
+                        }
+
+                    })
+
 
                  })
  

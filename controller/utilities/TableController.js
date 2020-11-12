@@ -266,12 +266,12 @@ class TableController{
     }
 
 
-    static editItem(row, name, brand, category, stock, price){
+    static editItem(row, name, brand, category, stock, sellingPrice){
         row.querySelector('.td_Names').innerText =  name;
         row.querySelector('.td_Brands').innerText = brand;
         row.querySelector('.td_Category').innerText = category;
         row.querySelector('.td_Stock').innerText = stock;
-        row.querySelector('.td_Price').innerText = price;
+        row.querySelector('.td_Price').innerText = sellingPrice;
 
         return true;
     }
@@ -414,13 +414,13 @@ class TableController{
 
 
 
-        const tBody = document.querySelector('tbody');
+        // const tBody = document.querySelector('tbody');
 
         const template = 
         `
                 <center>
 
-                    <img src="../../utils/media/animations/loaders/Spin-1s-200px.svg" alt="Loading.." />
+                    <img src="../../utils/media/animations/loaders/Spin-1s-200px.svg" alt=${loadinInfo} />
                     <span id="info">
                         ${loadinInfo}
                     </span>
@@ -436,6 +436,33 @@ class TableController{
         const contentContainer = document.querySelector(".contentContainer");
 
         contentContainer.appendChild(emptyBanner);
+
+   }
+
+   static showErrorBanner(loadinInfo){
+
+        const template = 
+        `
+                <center>
+
+                    <img src="../../utils/media/animations/loaders/error.svg" alt=${loadinInfo} />
+                    <span id="info">
+                        ${loadinInfo}
+                    </span>
+
+                </center>
+                
+            
+        `
+        let emptyBanner = document.createElement('div');
+        emptyBanner.className = "emptyBanner";
+        emptyBanner.innerHTML = template;
+
+        const contentContainer = document.querySelector(".contentContainer");
+
+        contentContainer.appendChild(emptyBanner);
+
+
 
    }
 

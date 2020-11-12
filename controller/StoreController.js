@@ -201,7 +201,12 @@ function initialzeStoreItems(){
 
     })
     .catch((e)=>{
-        console.log(e);
+       
+        if(e.message  === "Database not found"){
+            TableController.removeOldBanners();
+            TableController.showErrorBanner("Sorry an error occured");
+        }
+
     })
 
 }

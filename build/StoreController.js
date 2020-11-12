@@ -128,12 +128,12 @@ class Notifications {
     notification_banner.style.transform = "translateX(100%)";
   }
 
-  static showAlert(errorType, message) {
+  static showAlert(messageType, message) {
     const mainBodyContent = document.querySelector(".mainBody_content");
-    errorType = errorType.toLowerCase();
+    messageType = messageType.toLowerCase();
     let bGColor;
 
-    switch (errorType) {
+    switch (messageType) {
       case 'success':
         bGColor = "#12A89D";
         break;
@@ -341,7 +341,10 @@ function initialzeStoreItems() {
       });
     });
   }).catch(e => {
-    console.log(e);
+    if (e.message === "Database not found") {
+      _utilities_TableController__WEBPACK_IMPORTED_MODULE_4___default.a.removeOldBanners();
+      _utilities_TableController__WEBPACK_IMPORTED_MODULE_4___default.a.showErrorBanner("Sorry an error occured");
+    }
   });
 } //-----------------------------------------------------------------------------------------------
 // Searchs for an element in the Table
@@ -665,9 +668,9 @@ class Modal {
                             <input type="text" class="dialogForm_tb fullwidth" ${disableField} value="${itemName}" aria-placeholder="Item Name" placeholder="Item Name" id="name" />
     
                          <div class="flexContainer">   
-                            <input type="text" class="dialogForm_tb halfwidth" ${disableField} value="${category}" aria-placeholder="Item Category" placeholder="Item Category" id="category" list="categoryList" />
+                            <select class="dialogForm_tb halfwidth" ${disableField} value="${category}" aria-placeholder="Item Category" placeholder="Item Category" id="category" ></select>
     
-                            <input type="text" class="dialogForm_tb halfwidth" ${disableField} value="${brand}" aria-placeholder="Item Brand" placeholder="Item Brand" id="brand" list="brandList" />
+                            <select class="dialogForm_tb halfwidth" ${disableField} value="${brand}" aria-placeholder="Item Brand" placeholder="Item Brand" id="brand"></select>
     
                             <input type="number" class="dialogForm_tb halfwidth" value="${itemQuantity}" aria-placeholder="Total in inventory" placeholder="Total In Inventory" id="total" />
     
@@ -711,18 +714,70 @@ class Modal {
       const db = new _model_DATABASE__WEBPACK_IMPORTED_MODULE_0___default.a(); //Category
 
       db.getAllItemCategories().then(categories => {
+        const categorySelect = itemForm.querySelector("#category");
+        let placeholder = document.createElement("option");
+        placeholder.value = null;
+        placeholder.innerText = "---Choose Product Category---";
+        placeholder.disabled = true;
+        categorySelect.appendChild(placeholder);
         categories.forEach(item => {
           let newOption = document.createElement("option");
           newOption.value = item;
-          itemForm.querySelector("#categoryList").appendChild(newOption);
+          newOption.innerText = item;
+          itemForm.querySelector("#category").appendChild(newOption);
+        });
+        let newOption = document.createElement("option");
+        newOption.value = null;
+        newOption.innerText = "Create a new category";
+        categorySelect.appendChild(newOption); //Deselecting 
+
+        categorySelect.selectedIndex = "0";
+        categorySelect.addEventListener("change", function changeToTextBox(e) {
+          console.log("changed");
+
+          if (categorySelect.selectedIndex === categorySelect.length - 1) {
+            e.preventDefault();
+            const newTextBox = document.createElement("input");
+            newTextBox.setAttribute("type", "text");
+            newTextBox.placeholder = "Type in your new category";
+            newTextBox.className = "dialogForm_tb halfwidth";
+            newTextBox.id = "category";
+            itemForm.querySelector("form").querySelector(".flexContainer").replaceChild(newTextBox, categorySelect);
+          }
         });
       }); //Brands
 
       db.getAllItemBrands().then(brands => {
+        const brandSelect = itemForm.querySelector("#brand");
+        let placeholder = document.createElement("option");
+        placeholder.value = null;
+        placeholder.innerText = "---Choose Product Brand---";
+        placeholder.disabled = true;
+        brandSelect.appendChild(placeholder);
         brands.forEach(item => {
           let newOption = document.createElement("option");
           newOption.value = item;
-          itemForm.querySelector("#brandList").appendChild(newOption);
+          newOption.innerText = item;
+          itemForm.querySelector("#brand").appendChild(newOption);
+        });
+        let newOption = document.createElement("option");
+        newOption.value = null;
+        newOption.innerText = "Create a new brand";
+        brandSelect.appendChild(newOption); //Deselecting 
+
+        brandSelect.selectedIndex = "0";
+        brandSelect.addEventListener("change", function changeToTextBox(e) {
+          console.log("changed");
+
+          if (brandSelect.selectedIndex === brandSelect.length - 1) {
+            e.preventDefault();
+            const newTextBox = document.createElement("input");
+            newTextBox.setAttribute("type", "text");
+            newTextBox.placeholder = "Type in your new brand";
+            newTextBox.className = "dialogForm_tb halfwidth";
+            newTextBox.id = "brand";
+            itemForm.querySelector("form").querySelector(".flexContainer").replaceChild(newTextBox, brandSelect);
+          }
         });
       }); //Event Listeners
 
@@ -1195,12 +1250,12 @@ class TableController {
     });
   }
 
-  static editItem(row, name, brand, category, stock, price) {
+  static editItem(row, name, brand, category, stock, sellingPrice) {
     row.querySelector('.td_Names').innerText = name;
     row.querySelector('.td_Brands').innerText = brand;
     row.querySelector('.td_Category').innerText = category;
     row.querySelector('.td_Stock').innerText = stock;
-    row.querySelector('.td_Price').innerText = price;
+    row.querySelector('.td_Price').innerText = sellingPrice;
     return true;
   }
   /***********************************************************************************************************************************/
@@ -1291,12 +1346,32 @@ class TableController {
 
 
   static showLoadingBanner(loadinInfo) {
-    this.removeOldBanners();
-    const tBody = document.querySelector('tbody');
+    this.removeOldBanners(); // const tBody = document.querySelector('tbody');
+
     const template = `
                 <center>
 
-                    <img src="../../utils/media/animations/loaders/Spin-1s-200px.svg" alt="Loading.." />
+                    <img src="../../utils/media/animations/loaders/Spin-1s-200px.svg" alt=${loadinInfo} />
+                    <span id="info">
+                        ${loadinInfo}
+                    </span>
+
+                </center>
+                
+            
+        `;
+    let emptyBanner = document.createElement('div');
+    emptyBanner.className = "emptyBanner";
+    emptyBanner.innerHTML = template;
+    const contentContainer = document.querySelector(".contentContainer");
+    contentContainer.appendChild(emptyBanner);
+  }
+
+  static showErrorBanner(loadinInfo) {
+    const template = `
+                <center>
+
+                    <img src="../../utils/media/animations/loaders/error.svg" alt=${loadinInfo} />
                     <span id="info">
                         ${loadinInfo}
                     </span>
@@ -1397,20 +1472,52 @@ class DATABASE {
     });
     this.connector.connect(error => {
       if (error) {
-        //Query strings
+        console.log(error.code); //Query strings
+
         let createDBsql = `CREATE DATABASE duffykids`;
-        let initializeDBsql = `CREATE TABLE IF NOT EXISTS duffykids.items(
+        let createItemsTableSQL = `CREATE TABLE IF NOT EXISTS duffykids.items(
                         Name VARCHAR(255) NOT NULL ,
                         Brand VARCHAR(255) NOT NULL,
                         Category VARCHAR(255) NOT NULL,
-                        CostPrice FLOAT NOT NULL,
-                        SellingPrice FLOAT NOT NULL,
+                        CostPrice DECIMAL(8,2) NOT NULL,
+                        SellingPrice DECIMAL(10,2) NOT NULL,
                         InStock INT NOT NULL,
                         AmountSold INT NOT NULL,
                         Discount INT NOT NULL,
                         Deleted BOOLEAN NOT NULL,
-                        PRIMARY KEY (Name, Brand, Category)
+                        PRIMARY KEY (Name, Brand, Category),
+                        FOREIGN KEY (Brand) REFERENCES duffykids.itemBrands(Name),
+                        FOREIGN KEY (Category) REFERENCES duffykids.itemCategories(Name)
+
                     )`;
+        let createUserTableSQL = `
+                        CREATE TABLE IF NOT EXISTS duffykids.users
+                        (
+                            First_Name TEXT(255) NOT NULL,
+                            Last_Name TEXT(255) NOT NULL,
+                            User_Name VARCHAR(255) NOT NULL,
+                            Password VARCHAR(255) NOT NULL,
+                            Sales_Made DECIMAL(13,2) NOT NULL,
+                            Last_Seen TIMESTAMP,
+                            PRIMARY KEY (User_Name)
+                        )
+
+                    `;
+        let createBrandTableSQL = `
+                        CREATE TABLE IF NOT EXISTS duffykids.itemBrands
+                        (
+                            Name VARCHAR(255) NOT NULL,
+                            PRIMARY KEY(Name)
+                        )
+
+                    `;
+        const createCategoriesSQL = `
+                        CREATE TABLE IF NOT EXISTS duffykids.itemCategories
+                        (
+                            Name VARCHAR(255) NOT NULL, 
+                            PRIMARY KEY(Name)
+                        )
+                    `;
         this.connector = mariadb.createConnection({
           host: 'localhost',
           user: 'root',
@@ -1418,10 +1525,40 @@ class DATABASE {
         });
         this.connector.connect(err => {
           if (err) {
-            throw error;
+            console.log("error");
           } else {
             this.connector.query(createDBsql, () => {
-              this.connector.query(initializeDBsql);
+              this.connector = mariadb.createConnection({
+                host: 'localhost',
+                user: 'root',
+                password: '',
+                database: 'duffykids'
+              });
+              this.connector.connect(error => {
+                if (error) {
+                  console.log(error);
+                } else {
+                  this.connector.query(createBrandTableSQL, () => {
+                    if (error) {
+                      console.log(error);
+                    } else {
+                      this.connector.query(createCategoriesSQL, error => {
+                        if (error) {
+                          throw error;
+                        } else {
+                          this.connector.query(createItemsTableSQL, error => {
+                            if (error) {
+                              throw error;
+                            } else {
+                              this.connector.query(createUserTableSQL);
+                            }
+                          });
+                        }
+                      });
+                    }
+                  });
+                }
+              });
             });
           }
         });
@@ -1449,7 +1586,15 @@ class DATABASE {
     return new Promise((resolve, reject) => {
       const array = Object.values(shopItem);
       let [name, brand, category, stock, sellingPrice, costPrice] = array;
-      let sql = "INSERT INTO duffykids.items SET ?";
+      let insertCategorySQL = `INSERT INTO duffykids.itemCategories SET ?`;
+      let categoryValues = {
+        Name: category
+      };
+      let insertBrandSQL = `INSERT INTO duffykids.itemBrands SET ?`;
+      let brandValues = {
+        Name: brand
+      };
+      let insertItemSQL = "INSERT INTO duffykids.items SET ?";
       let values = {
         Name: name,
         Brand: brand,
@@ -1461,15 +1606,30 @@ class DATABASE {
         Discount: 20,
         Deleted: false
       };
-      this.connector.query(sql, values, (error, result) => {
+      this.connector.query(insertCategorySQL, categoryValues, (error, result) => {
         if (error) {
-          if (error.code === "ER_DUP_ENTRY") {
-            reject("duplicate");
-          } else {
-            reject("unknown error");
+          console.log(error);
+
+          if (error.code === "ER_DUP_ENTRY") {//    reject("duplicate")
           }
         } else {
-          resolve(true);
+          this.connector.query(insertBrandSQL, brandValues, (error, result) => {
+            if (error) {
+              console.log(error);
+            } else {
+              this.connector.query(insertItemSQL, values, (error, result) => {
+                if (error) {
+                  if (error.code === "ER_DUP_ENTRY") {
+                    reject("duplicate");
+                  }
+
+                  throw error;
+                } else {
+                  resolve(true);
+                }
+              });
+            }
+          });
         }
       });
     }); // return new Promise((resolve, reject)=>{
@@ -1511,19 +1671,25 @@ class DATABASE {
   }
 
   updateItem(change) {
+    // {
+    //     Name: name,
+    //     Brand: brand,
+    //     Category: category,
+    //     InStock: stock,
+    //     CostPrice: parseFloat(costPrice),
+    //     SellingPrice: parseFloat(sellingPrice),
+    // };
+    let match = {
+      Name: change.Name,
+      Brand: change.Brand,
+      Category: change.Category
+    };
     return new Promise((resolve, reject) => {
-      const array = Object.values(change);
-      let [name, brand, category, stock, sellingPrice, costPrice] = array;
-      let sql = `UPDATE duffykids.items SET ? WHERE Name='${name}, Brand='${brand}', Category='${category}'`;
-      let values = {
-        Name: name,
-        Brand: brand,
-        Category: category,
-        InStock: stock,
-        CostPrice: costPrice,
-        SellingPrice: sellingPrice
-      };
-      this.connector.query(sql, values, error => {
+      console.log(change); // let sql = `UPDATE duffykids.items SET InStock = ${change.InStock}, CostPrice = ${change.CostPrice}, SellingPrice = ${change.SellingPrice} WHERE Name="${change.Name}", Brand="${change.Brand}", Category="${change.Category}"`;
+
+      let sql = `UPDATE duffykids.items SET InStock = ${change.InStock}, CostPrice = ${change.CostPrice}, SellingPrice = ${change.SellingPrice} WHERE ?`; // let sql = `UPDATE duffykids.items SET InStock = 250, CostPrice = 15, SellingPrice = 18 WHERE Name='Beef Burger', Brand='Burger King', Category='Burger'`
+
+      this.connector.query(sql, match, (error, result) => {
         if (error) {
           console.log(error.code);
           throw error;
@@ -1589,7 +1755,7 @@ class DATABASE {
     return new Promise((resolve, reject) => {
       this.connector.query("SELECT * FROM duffykids.items", (error, results) => {
         if (error) {
-          throw error;
+          reject(new Error("database not found"));
         } else {
           console.log(results);
           resolve(results);
@@ -1727,25 +1893,27 @@ class DATABASE {
 
   getAllItemCategories() {
     return new Promise((resolve, reject) => {
-      let categoryNames = [];
-      this.db.categories.toArray(returnedArray => {
-        returnedArray.forEach(item => {
-          categoryNames.push(item.Name);
-        });
-        resolve(categoryNames);
-      });
+      let categoryNames = []; // this.db.categories.toArray((returnedArray)=>{
+      //     returnedArray.forEach((item)=>{
+      //         categoryNames.push(item.Name)
+      //     })
+      //     resolve(categoryNames)
+      // })
+
+      resolve(categoryNames);
     });
   }
 
   getAllItemBrands() {
     return new Promise((resolve, reject) => {
-      let brandNames = [];
-      this.db.brands.toArray(returnedArray => {
-        returnedArray.forEach(item => {
-          brandNames.push(item.Name);
-        });
-        resolve(brandNames);
-      });
+      let brandNames = []; //  this.db.brands.toArray((returnedArray)=>{
+      //      returnedArray.forEach((item)=>{
+      //          brandNames.push(item.Name)
+      //      })
+      //      resolve(brandNames)
+      //  })
+
+      resolve(brandNames);
     });
   }
   /****************************USER DB METHODS*******************************************/

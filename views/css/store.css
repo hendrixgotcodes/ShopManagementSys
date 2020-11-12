@@ -63,7 +63,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Baloo Chettan 2", "Roboto", "sans-serif"; }
+  font-family: "Roboto", "sans-serif"; }
 
 .tooltip_cb {
   color: white;
@@ -1040,6 +1040,14 @@ body {
           padding: 1rem;
           border: 2px solid #35594B;
           border-radius: 6px; }
+        .main_body .mainBody_content .dialog--promptBox .dialogBody select {
+          width: 100%;
+          height: 20%;
+          border: 1px solid #646766;
+          padding: 1rem;
+          border: 2px solid #35594B;
+          border-radius: 6px;
+          cursor: pointer; }
       .main_body .mainBody_content .dialog--promptBox .dialogFooter {
         height: 18%;
         width: 100%;
@@ -1097,6 +1105,13 @@ body {
             color: #646766; }
             .main_body .mainBody_content .dialog--itemFormBox .dialogContainer form input:disabled {
               opacity: .5; }
+          .main_body .mainBody_content .dialog--itemFormBox .dialogContainer form select {
+            margin-bottom: .8rem;
+            font-size: 1rem;
+            color: #646766; }
+            .main_body .mainBody_content .dialog--itemFormBox .dialogContainer form select:disabled {
+              opacity: .5;
+              cursor: default; }
           .main_body .mainBody_content .dialog--itemFormBox .dialogContainer form .flexContainer {
             height: 80%;
             display: flex;

@@ -156,7 +156,16 @@ function initialzeStoreItems(){
 
     })
     .catch((e)=>{
-        console.log(e);
+
+        if(e.message === "Database not found"){
+
+            TableController.removeOldBanners();
+            TableController.showErrorBanner("Sorry an error occured");
+
+        }
+
+
+        
     })
 
 }
@@ -292,61 +301,51 @@ function deleteItem(row, action="delete"){
 //And decide to show or not show an alert based on that result - (Used by event listeners on row ".edit" buttons in Inventory)
 function editItem(row){
 
-    const itemName = row.querySelector(".td_Names").innerText;
 
     Modal.openItemForm(row, true)
     .then((result)=>{
 
-        console.log("result");
 
-        if(result[0] === "edited"){
-
-           
-            let row, name, brand, category, stock, price;
-
-            let promisedRow = result[1];
+        if(result[0] === true){
 
 
-            [,row, name, brand, category, stock, price] = promisedRow;
+            let [,row, name, brand, category, stock, sellingPrice, costPrice] = result;
 
-            price = UnitConverter.convert(price);
-
-            // let editedInventory = new Promise(
-            //     (resolve, reject)=>{
-            //        let done =  TableController.editItem(row, name, brand, category, stock, price);
-
-            //        if(done){
-            //            resolve(name);
-            //        }
-            //        else{
-            //            reject(new Error("Sorry, An Error Occured"));
-            //        }
-            //     }
-            // );
-
-            // editedInventory.then(
-            //     (name)=>{
-            //              Notifications.showAlert("success", `${itemName} Has Been Successfully Changed To ${name}`);
-            //     }
-            // )
-            // // .catch(
-            // //     (error)=>{
-            // //         Notifications.showAlert("error", error);
-            // //     }
-            // // );
+            // price = UnitConverter.convert(price);
 
 
-            // currentRow.querySelector(".td_cb").querySelector(".selectOne").checked = false;
+            let values = 
+                {
+                    Name: name,
+                    Brand: brand,
+                    Category: category,
+                    InStock: stock,
+                    CostPrice: parseFloat(costPrice),
+                    SellingPrice: parseFloat(sellingPrice),
+                };
 
-            // if(rowBucket.length === 0 ){
 
-            //     btnEdit.disabled = true;
-            //     btnDelete.disabled = true  
-        
-            //   }
-            //   else{
-            //       editMultiple();
-            //   }
+    
+            database.updateItem(values)
+             .then((result)=>{
+
+                if(result === true){
+                    
+                    TableController.editItem(row, name, brand, category, stock, sellingPrice, costPrice)
+                    
+                    Notifications.showAlert("success", `${name} has been successfully updated.`)
+
+                }
+
+            })
+            .catch(()=>{
+                Notifications.showAlert("error", "Sorry, an error occurred during update.")
+            })
+            
+ 
+        }
+        else{
+            console.log("cap");
         }
 
      
@@ -490,13 +489,12 @@ function editMultiple(){
             let promisedRow = result[1];
 
 
-           let [,row, name, brand, category, stock, price] = promisedRow;
+           let [,row, name, brand, category, stock, price, costPrice] = promisedRow;
 
-            console.log(row, name, brand, category, stock, price);
 
             let editedInventory = new Promise(
                 (resolve, reject)=>{
-                   let done =  TableController.editItem(row, name, brand, category, stock, Number.parseFloat(price));
+                   let done =  TableController.editItem(row, name, brand, category, stock, Number.parseFloat(price), parseFloat(costPrice) );
 
                    if(done){
                        resolve(name);
