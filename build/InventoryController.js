@@ -407,14 +407,16 @@ function editItem(row) {
       };
       database.updateItem(values).then(result => {
         if (result === true) {
-          _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.editItem(row, name, brand, category, stock, sellingPrice, costPrice);
+          _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.editItem(row, name, brand, category, stock, parseFloat(sellingPrice), parseFloat(costPrice));
           _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", `${name} has been successfully updated.`);
         }
-      }).catch(() => {
-        _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("error", "Sorry, an error occurred during update.");
+      }).catch(e => {
+        if (e.message === "UNKNWN_ERR") {
+          _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("error", "Sorry, an unknown error occurred with the database during update");
+        } else if (e.message == "ERR_DUP_ENTRY") {
+          _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("error", `Sorry, ${values.Name} of brand ${values.Brand} in the ${values.Category} category already exists in database`);
+        }
       });
-    } else {
-      console.log("cap");
     }
   }).catch(error => {
     if (error.message === "wrongPassword") _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("error", "Sorry, Incorrect Password!");
@@ -813,6 +815,7 @@ class Modal {
       const db = new _model_DATABASE__WEBPACK_IMPORTED_MODULE_0___default.a(); //Category
 
       db.getAllItemCategories().then(categories => {
+        console.log("jhv", categories);
         const categorySelect = itemForm.querySelector("#category");
         let placeholder = document.createElement("option");
         placeholder.value = null;
@@ -821,9 +824,14 @@ class Modal {
         categorySelect.appendChild(placeholder);
         categories.forEach(item => {
           let newOption = document.createElement("option");
-          newOption.value = item;
-          newOption.innerText = item;
-          itemForm.querySelector("#category").appendChild(newOption);
+          newOption.value = item.Name;
+          newOption.innerText = item.Name;
+
+          if (item.Name === category) {
+            itemForm.querySelector("#category").replaceChild(newOption, placeholder);
+          } else {
+            itemForm.querySelector("#category").appendChild(newOption);
+          }
         });
         let newOption = document.createElement("option");
         newOption.value = null;
@@ -853,11 +861,16 @@ class Modal {
         placeholder.innerText = "---Choose Product Brand---";
         placeholder.disabled = true;
         brandSelect.appendChild(placeholder);
-        brands.forEach(item => {
+        brands.forEach((item, itemIndex) => {
           let newOption = document.createElement("option");
-          newOption.value = item;
-          newOption.innerText = item;
-          itemForm.querySelector("#brand").appendChild(newOption);
+          newOption.value = item.Name;
+          newOption.innerText = item.Name;
+
+          if (item.Name === brand) {
+            brandSelect.replaceChild(newOption, placeholder);
+          } else {
+            brandSelect.appendChild(newOption);
+          }
         });
         let newOption = document.createElement("option");
         newOption.value = null;
@@ -1685,11 +1698,11 @@ class DATABASE {
     return new Promise((resolve, reject) => {
       const array = Object.values(shopItem);
       let [name, brand, category, stock, sellingPrice, costPrice] = array;
-      let insertCategorySQL = `INSERT INTO duffykids.itemCategories SET ?`;
+      let insertCategorySQL = `INSERT INTO duffykids.itemCategories SET ? `;
       let categoryValues = {
         Name: category
       };
-      let insertBrandSQL = `INSERT INTO duffykids.itemBrands SET ?`;
+      let insertBrandSQL = `INSERT INTO duffykids.itemBrands SET ? `;
       let brandValues = {
         Name: brand
       };
@@ -1705,114 +1718,68 @@ class DATABASE {
         Discount: 20,
         Deleted: false
       };
-      this.connector.query(insertCategorySQL, categoryValues, (error, result) => {
+      this.connector.beginTransaction(error => {
         if (error) {
-          console.log(error);
-
-          if (error.code === "ER_DUP_ENTRY") {//    reject("duplicate")
-          }
-        } else {
-          this.connector.query(insertBrandSQL, brandValues, (error, result) => {
-            if (error) {
-              console.log(error);
-            } else {
-              this.connector.query(insertItemSQL, values, (error, result) => {
-                if (error) {
-                  if (error.code === "ER_DUP_ENTRY") {
-                    reject("duplicate");
-                  }
-
-                  throw error;
-                } else {
-                  resolve(true);
-                }
-              });
-            }
-          });
+          throw error;
         }
+
+        this.connector.query(insertCategorySQL, categoryValues, (error, result) => {
+          if (error) {
+            console.log(error.code);
+            console.log(error);
+          }
+
+          if (error === null || error.code === "ER_DUP_ENTRY") {
+            this.connector.query(insertBrandSQL, brandValues, (error, result) => {
+              if (error) {
+                console.log(error);
+              }
+
+              if (error === null || error.code === "ER_DUP_ENTRY") {
+                this.connector.query(insertItemSQL, values, (error, result) => {
+                  if (error) {
+                    if (error.code === "ER_DUP_ENTRY") {
+                      this.connector.rollback(function () {
+                        reject("duplicate");
+                        throw error;
+                      });
+                    }
+                  } else {
+                    this.connector.commit(function () {
+                      resolve(true);
+                    });
+                  }
+                });
+              }
+            });
+          }
+        });
       });
-    }); // return new Promise((resolve, reject)=>{
-    //     // let array = shopItem.toArray();
-    //     const array = Object.values(shopItem)
-    //     let name, brand, category, stock, sellingPrice, costPrice;
-    //     [name, brand, category, stock, sellingPrice, costPrice] = array;
-    //     let newShopItem = {
-    //         Name: name,
-    //         Brand: brand,
-    //         Category: category,
-    //         Stock: stock,
-    //         SellingPrice: sellingPrice,
-    //         CostPrice: costPrice,
-    //         Deleted: "false",
-    //         Profit: "0"
-    //     }
-    //     this.db.items.add(newShopItem)
-    //     .then(()=>{
-    //         resolve(true);  
-    //     })
-    //     .catch(()=>{
-    //         reject(()=>{
-    //             reject(false)
-    //         })
-    //     })
-    //     //Adding Category and Brand types
-    //     this.db.categories.get({Name: newShopItem.Category}, (item)=>{
-    //         if(item === undefined){
-    //             this.db.categories.add({Name: newShopItem.Category})
-    //         }
-    //     })
-    //     this.db.brands.get({Name: newShopItem.Brand}, (item)=>{
-    //         if(item === undefined){
-    //             this.db.brands.add({Name: newShopItem.Brand})
-    //         }
-    //     })
-    // })
+    });
   }
 
   updateItem(change) {
-    // {
-    //     Name: name,
-    //     Brand: brand,
-    //     Category: category,
-    //     InStock: stock,
-    //     CostPrice: parseFloat(costPrice),
-    //     SellingPrice: parseFloat(sellingPrice),
-    // };
-    let match = {
-      Name: change.Name,
-      Brand: change.Brand,
-      Category: change.Category
-    };
     return new Promise((resolve, reject) => {
-      console.log(change); // let sql = `UPDATE duffykids.items SET InStock = ${change.InStock}, CostPrice = ${change.CostPrice}, SellingPrice = ${change.SellingPrice} WHERE Name="${change.Name}", Brand="${change.Brand}", Category="${change.Category}"`;
-
-      let sql = `UPDATE duffykids.items SET InStock = ${change.InStock}, CostPrice = ${change.CostPrice}, SellingPrice = ${change.SellingPrice} WHERE ?`; // let sql = `UPDATE duffykids.items SET InStock = 250, CostPrice = 15, SellingPrice = 18 WHERE Name='Beef Burger', Brand='Burger King', Category='Burger'`
-
-      this.connector.query(sql, match, (error, result) => {
+      console.log("in promise", change);
+      let match = {
+        Name: change.Name,
+        Brand: change.Brand,
+        Category: change.Category
+      };
+      let updateItemSQL = `UPDATE duffykids.items SET InStock = ${change.InStock}, CostPrice = ${change.CostPrice}, SellingPrice = ${change.SellingPrice} WHERE ?`;
+      this.connector.query(updateItemSQL, match, (error, result) => {
         if (error) {
-          console.log(error.code);
+          if (error.code === "ER_DUP_ENTRY") {
+            reject(new Error("ERR_DUP_ENTRY"));
+          } else {
+            reject(new Error("UNKNWN_ERR"));
+          }
+
           throw error;
         } else {
           resolve(true);
         }
-      }); // let array = change.toArray();
-      // let [name, brand, category, stock, sellingPrice, costPrice] = array;
-      // change = {
-      //     Name: name,
-      //     Brand: brand,
-      //     Category: category,
-      //     Stock: stock,
-      //     CostPrice: costPrice,
-      //     SellingPrice: sellingPrice,
-      // }
-      // this.db.items.where({Name: name, Brand: brand, Category: Category})
-      // .modify(change)
-      // .then(()=>{
-      //     resolve(true)
-      // })
-      // .catch(()=>{
-      //     reject(false)
-      // })
+      });
     });
   }
 
@@ -1992,27 +1959,26 @@ class DATABASE {
 
   getAllItemCategories() {
     return new Promise((resolve, reject) => {
-      let categoryNames = []; // this.db.categories.toArray((returnedArray)=>{
-      //     returnedArray.forEach((item)=>{
-      //         categoryNames.push(item.Name)
-      //     })
-      //     resolve(categoryNames)
-      // })
-
-      resolve(categoryNames);
+      this.connector.query("SELECT * FROM duffykids.itemCategories", (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          resolve(result);
+          console.log(result);
+        }
+      });
     });
   }
 
   getAllItemBrands() {
     return new Promise((resolve, reject) => {
-      let brandNames = []; //  this.db.brands.toArray((returnedArray)=>{
-      //      returnedArray.forEach((item)=>{
-      //          brandNames.push(item.Name)
-      //      })
-      //      resolve(brandNames)
-      //  })
-
-      resolve(brandNames);
+      this.connector.query("SELECT * FROM duffykids.itemBrands", (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          resolve(result);
+        }
+      });
     });
   }
   /****************************USER DB METHODS*******************************************/

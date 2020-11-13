@@ -324,6 +324,8 @@ function editItem(row){
                     SellingPrice: parseFloat(sellingPrice),
                 };
 
+            
+
 
     
             database.updateItem(values)
@@ -331,23 +333,28 @@ function editItem(row){
 
                 if(result === true){
                     
-                    TableController.editItem(row, name, brand, category, stock, sellingPrice, costPrice)
+                    TableController.editItem(row, name, brand, category, stock, parseFloat(sellingPrice), parseFloat(costPrice))
                     
                     Notifications.showAlert("success", `${name} has been successfully updated.`)
 
                 }
 
             })
-            .catch(()=>{
-                Notifications.showAlert("error", "Sorry, an error occurred during update.")
+            .catch((e)=>{
+
+                if(e.message === "UNKNWN_ERR" ){
+                    Notifications.showAlert("error", "Sorry, an unknown error occurred with the database during update")
+                }
+                else if(e.message == "ERR_DUP_ENTRY"){
+
+                    Notifications.showAlert("error", `Sorry, ${values.Name} of brand ${values.Brand} in the ${values.Category} category already exists in database`)
+
+                }
+
             })
             
  
         }
-        else{
-            console.log("cap");
-        }
-
      
 
     }).catch((error)=>{

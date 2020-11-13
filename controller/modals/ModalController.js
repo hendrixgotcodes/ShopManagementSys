@@ -266,6 +266,8 @@ class Modal {
                  db.getAllItemCategories()
                  .then((categories)=>{
 
+                    console.log("jhv", categories);
+
                     const categorySelect =itemForm.querySelector("#category");
 
                     let placeholder = document.createElement("option");
@@ -277,10 +279,20 @@ class Modal {
                     categories.forEach((item)=>{
     
                         let newOption = document.createElement("option");
-                        newOption.value = item;
-                        newOption.innerText = item;
+                        newOption.value = item.Name;
+                        newOption.innerText = item.Name;
     
-                        itemForm.querySelector("#category").appendChild(newOption);
+
+                        if(item.Name === category){
+
+                            itemForm.querySelector("#category").replaceChild(newOption, placeholder)
+                            
+                        }
+                        else{
+
+                            itemForm.querySelector("#category").appendChild(newOption);
+
+                        }
                         
     
                     })
@@ -324,6 +336,7 @@ class Modal {
                  db.getAllItemBrands()
                  .then((brands)=>{
 
+
                     const brandSelect =itemForm.querySelector("#brand");
 
                     let placeholder = document.createElement("option");
@@ -333,15 +346,22 @@ class Modal {
                     brandSelect.appendChild(placeholder)
 
 
-                    brands.forEach((item)=>{
+                    brands.forEach((item, itemIndex)=>{
     
                         let newOption = document.createElement("option");
-                        newOption.value = item;
-                        newOption.innerText = item;
-    
-                        itemForm.querySelector("#brand").appendChild(newOption);
+                        newOption.value = item.Name;
+                        newOption.innerText = item.Name; 
 
-                        
+                        if(item.Name === brand){
+
+                            brandSelect.replaceChild(newOption, placeholder)
+                            
+                        }
+                        else{
+
+                            brandSelect.appendChild(newOption);
+
+                        }
                         
     
                     })
