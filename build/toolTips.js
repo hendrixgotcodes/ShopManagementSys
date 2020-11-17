@@ -97,7 +97,7 @@
 
 
 class TableController {
-  static createItem(name, brand, category, stock, sellingPrice, functions, hasItems, costPrice = "", purchased = "", dontHighlightAfterCreate = false, isdeletedItem = false, destinationPage = "") {
+  static createItem(name, brand, category, stock, sellingPrice, discount, functions, hasItems, costPrice = "", purchased = "", dontHighlightAfterCreate = false, isdeletedItem = false, destinationPage = "") {
     return new Promise((resolve, reject) => {
       const tableROWS = document.querySelector('tbody').querySelectorAll('tr'); //Removing Empty Banner Before Addition of new row
 
@@ -122,8 +122,9 @@ class TableController {
                 <td class="td_Brands">${brand}</td>
                 <td class="td_Category">${category}</td>
                 <td class="td_Stock">${stock}</td>
-                <td class="td_Price">${sellingPrice}</td>
-                <td hidden class="td_costPrice">${costPrice}</td>
+                <td class="td_Price">${parseFloat(sellingPrice)}</td>
+                <td hidden class="td_costPrice">${parseFloat(costPrice)}</td>
+                <td hidden class="td_discount">${parseFloat(discount)}</td>
                 <td hidden class="state">visible</td>
                 `;
       row.innerHTML = rowContent;
@@ -160,7 +161,14 @@ class TableController {
         let checkCB = functions[0];
         let editItem = functions[1];
         let deleteItem = functions[2];
-        let showRowControls = functions[3];
+        let showRowControls = functions[3]; // row.addEventListener("blur", ()=>{
+        //     if(row.classList.contains("controlShown")){
+        //         row.style.transform = "translateX(0px)"
+        //         row.classList.remove("controlShown");
+        //     }
+        //     console.log(row.classList);
+        // })
+
         row.addEventListener("click", toggleCB);
         row.querySelector(".controls").querySelector(".edit").addEventListener("click", function editRow(e) {
           //Prevents selection of row

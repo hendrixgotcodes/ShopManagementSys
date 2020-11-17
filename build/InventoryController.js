@@ -291,9 +291,9 @@ function initialzeStoreItems() {
 
       fetchedItems.forEach(fetchedItem => {
         if (fetchedItem.Deleted === 1) {
-          _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory");
+          _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory");
         } else {
-          _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, false, "Inventory");
+          _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, false, "Inventory");
         }
       });
     } else {
@@ -395,19 +395,19 @@ function deleteItem(row, action = "delete") {
 function editItem(row) {
   _controller_modals_ModalController__WEBPACK_IMPORTED_MODULE_1__["default"].openItemForm(row, true).then(result => {
     if (result[0] === true) {
-      let [, row, name, brand, category, stock, sellingPrice, costPrice] = result; // price = UnitConverter.convert(price);
-
+      let [, row, name, brand, category, stock, sellingPrice, costPrice, discount] = result;
       let values = {
         Name: name,
         Brand: brand,
         Category: category,
         InStock: stock,
         CostPrice: parseFloat(costPrice),
-        SellingPrice: parseFloat(sellingPrice)
+        SellingPrice: parseFloat(sellingPrice),
+        Discount: parseFloat(discount)
       };
       database.updateItem(values).then(result => {
         if (result === true) {
-          _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.editItem(row, name, brand, category, stock, parseFloat(sellingPrice), parseFloat(costPrice));
+          _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.editItem(row, name, brand, category, stock, parseFloat(sellingPrice), parseFloat(costPrice), parseFloat(discount));
           _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", `${name} has been successfully updated.`);
         }
       }).catch(e => {
@@ -432,11 +432,11 @@ function addItem() {
   _controller_modals_ModalController__WEBPACK_IMPORTED_MODULE_1__["default"].openItemForm("", false).then(result => {
     if (result === null) {
       return;
-    }
+    } // let row, name, brand, category, stock, sellingPrice, costPrice;
 
-    let row, name, brand, category, stock, sellingPrice, costPrice;
+
     let promisedRow = result;
-    [, row, name, brand, category, stock, sellingPrice, costPrice] = promisedRow; //Creating a store object to be added to database
+    let [, row, name, brand, category, stock, sellingPrice, costPrice, discount] = promisedRow; //Creating a store object to be added to database
 
     const storeObject = new Object();
     storeObject.Name = name;
@@ -444,12 +444,12 @@ function addItem() {
     storeObject.Category = category;
     storeObject.Stock = stock;
     storeObject.SellingPrice = sellingPrice;
-    storeObject.CostPrice = costPrice; // console.log([row, name, brand, category, stock, sellingPrice, costPrice]);
+    storeObject.CostPrice = costPrice;
+    storeObject.Discount = discount; // console.log([row, name, brand, category, stock, sellingPrice, costPrice]);
 
-    console.log("storeObject: ", storeObject);
     database.addNewItem(storeObject).then(result => {
       if (result === true) {
-        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(storeObject.Name, storeObject.Brand, storeObject.Category, storeObject.Stock, storeObject.SellingPrice, [checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "", false, false, "inventory").then(() => {
+        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(storeObject.Name, storeObject.Brand, storeObject.Category, storeObject.Stock, storeObject.SellingPrice, discount, [checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "", false, false, "inventory").then(() => {
           _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", "Successfuly added to inventory");
         });
       }
@@ -457,10 +457,9 @@ function addItem() {
       if (error === "duplicate") {
         _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("error", `Sorry, failed to add ${storeObject.Name} of brand ${storeObject.Brand} to inventory. This item already exists`);
         return;
+      } else {
+        _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("error", `Sorry, failed to add ${storeObject.Name} of brand ${storeObject.Brand} to inventory due to an unknown error`);
       }
-
-      _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("error", `Sorry, failed to add ${storeObject.Name} of brand ${storeObject.Brand} to inventory. Try Again Later`);
-      console.log(error);
     });
   });
 } //---------------------------------------------------------------------------------------------------------------
@@ -582,7 +581,7 @@ electron__WEBPACK_IMPORTED_MODULE_0__["ipcRenderer"].on('populateTable', (e, Ite
   });
   database.addItemsBulk(itemsArray).then(resolved => {
     resolved[1].forEach(item => {
-      _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(item.Name, item.Brand, item.Category, item.Stock, item.SellingPrice, [checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory");
+      _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(item.Name, item.Brand, item.Category, item.Stock, item.SellingPrice, item.discount, [checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory");
     });
     _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", `${resolved[1].length} Items Have Been Successfully Added. ${resolved[0].length} Items Already Existed In Database`);
   });
@@ -744,6 +743,7 @@ class Modal {
       let itemQuantity = "";
       let sellingPrice = "";
       let costPrice = "";
+      let discount = "";
 
       if (row !== "") {
         itemName = row.querySelector(".td_Names").innerText;
@@ -752,6 +752,7 @@ class Modal {
         itemQuantity = row.querySelector(".td_Stock").innerText;
         sellingPrice = row.querySelector(".td_Price").innerText;
         costPrice = row.querySelector(".td_costPrice").innerText;
+        discount = row.querySelector(".td_discount").innerText;
       }
 
       const boxTemplate = `
@@ -775,9 +776,11 @@ class Modal {
     
                             <input type="number" class="dialogForm_tb halfwidth" value="${itemQuantity}" aria-placeholder="Total in inventory" placeholder="Total In Inventory" id="total" />
     
-                            <input type="number" class="dialogForm_tb halfwidth" value="${costPrice}" aria-placeholder="Cost Price" placeholder="Cost Price (GH₵)" id="costPrice" />
+                            <input type="number" class="dialogForm_tb halfwidth" value="${parseFloat(costPrice)}" aria-placeholder="Cost Price" placeholder="Cost Price (GH₵)" id="costPrice" />
     
-                            <input type="number" class="dialogForm_tb halfwidth" value="${sellingPrice}" aria-placeholder="Unit Cost" placeholder="Selling Price (GH₵)" id="sellingPrice" />
+                            <input type="number" class="dialogForm_tb halfwidth" value="${parseFloat(sellingPrice)}" aria-placeholder="Unit Cost" placeholder="Selling Price (GH₵)" id="sellingPrice" />
+
+                            <input type="number" class="dialogForm_tb halfwidth" value="${parseFloat(discount)}" aria-placeholder="Discount(%)" placeholder="Discount(%)" id="discount" />
     
                          </div>
 
@@ -815,7 +818,6 @@ class Modal {
       const db = new _model_DATABASE__WEBPACK_IMPORTED_MODULE_0___default.a(); //Category
 
       db.getAllItemCategories().then(categories => {
-        console.log("jhv", categories);
         const categorySelect = itemForm.querySelector("#category");
         let placeholder = document.createElement("option");
         placeholder.value = null;
@@ -840,8 +842,6 @@ class Modal {
 
         categorySelect.selectedIndex = "0";
         categorySelect.addEventListener("change", function changeToTextBox(e) {
-          console.log("changed");
-
           if (categorySelect.selectedIndex === categorySelect.length - 1) {
             e.preventDefault();
             const newTextBox = document.createElement("input");
@@ -879,8 +879,6 @@ class Modal {
 
         brandSelect.selectedIndex = "0";
         brandSelect.addEventListener("change", function changeToTextBox(e) {
-          console.log("changed");
-
           if (brandSelect.selectedIndex === brandSelect.length - 1) {
             e.preventDefault();
             const newTextBox = document.createElement("input");
@@ -903,12 +901,13 @@ class Modal {
         const brand = itemForm.querySelector('#brand').value;
         const stock = itemForm.querySelector('#total').value;
         const sellingPrice = itemForm.querySelector('#sellingPrice').value;
-        const costPrice = itemForm.querySelector("#costPrice").value; // console.log(name, category, brand, stock, price);
+        const costPrice = itemForm.querySelector("#costPrice").value;
+        discount = itemForm.querySelector('#discount').value; // console.log(name, category, brand, stock, price);
 
         if (name !== "" && category !== "" && brand !== "" && stock !== "" && sellingPrice !== "") {
           closeModal(itemForm); // openPrompt("",resolve,reject, [true, row, name, brand, category, stock, sellingPrice])
 
-          resolve([true, row, name, brand, category, stock, sellingPrice, costPrice]);
+          resolve([true, row, name, brand, category, stock, sellingPrice, costPrice, discount]);
         }
       }
 
@@ -1195,7 +1194,7 @@ function openModal(modal) {
 
 
 class TableController {
-  static createItem(name, brand, category, stock, sellingPrice, functions, hasItems, costPrice = "", purchased = "", dontHighlightAfterCreate = false, isdeletedItem = false, destinationPage = "") {
+  static createItem(name, brand, category, stock, sellingPrice, discount, functions, hasItems, costPrice = "", purchased = "", dontHighlightAfterCreate = false, isdeletedItem = false, destinationPage = "") {
     return new Promise((resolve, reject) => {
       const tableROWS = document.querySelector('tbody').querySelectorAll('tr'); //Removing Empty Banner Before Addition of new row
 
@@ -1220,8 +1219,9 @@ class TableController {
                 <td class="td_Brands">${brand}</td>
                 <td class="td_Category">${category}</td>
                 <td class="td_Stock">${stock}</td>
-                <td class="td_Price">${sellingPrice}</td>
-                <td hidden class="td_costPrice">${costPrice}</td>
+                <td class="td_Price">${parseFloat(sellingPrice)}</td>
+                <td hidden class="td_costPrice">${parseFloat(costPrice)}</td>
+                <td hidden class="td_discount">${parseFloat(discount)}</td>
                 <td hidden class="state">visible</td>
                 `;
       row.innerHTML = rowContent;
@@ -1258,7 +1258,14 @@ class TableController {
         let checkCB = functions[0];
         let editItem = functions[1];
         let deleteItem = functions[2];
-        let showRowControls = functions[3];
+        let showRowControls = functions[3]; // row.addEventListener("blur", ()=>{
+        //     if(row.classList.contains("controlShown")){
+        //         row.style.transform = "translateX(0px)"
+        //         row.classList.remove("controlShown");
+        //     }
+        //     console.log(row.classList);
+        // })
+
         row.addEventListener("click", toggleCB);
         row.querySelector(".controls").querySelector(".edit").addEventListener("click", function editRow(e) {
           //Prevents selection of row
@@ -1588,108 +1595,179 @@ class DATABASE {
 
         let createDBsql = `CREATE DATABASE duffykids`;
         let createItemsTableSQL = `CREATE TABLE IF NOT EXISTS duffykids.items(
-                        Name VARCHAR(255) NOT NULL ,
-                        Brand VARCHAR(255) NOT NULL,
-                        Category VARCHAR(255) NOT NULL,
-                        CostPrice DECIMAL(8,2) NOT NULL,
-                        SellingPrice DECIMAL(10,2) NOT NULL,
-                        InStock INT NOT NULL,
-                        AmountSold INT NOT NULL,
-                        Discount INT NOT NULL,
-                        Deleted BOOLEAN NOT NULL,
-                        PRIMARY KEY (Name, Brand, Category),
-                        FOREIGN KEY (Brand) REFERENCES duffykids.itemBrands(Name),
-                        FOREIGN KEY (Category) REFERENCES duffykids.itemCategories(Name)
-
-                    )`;
+                            Name VARCHAR(255) NOT NULL ,
+                            Brand VARCHAR(255) NOT NULL,
+                            Category VARCHAR(255) NOT NULL,
+                            CostPrice DECIMAL(8,2) NOT NULL,
+                            SellingPrice DECIMAL(8,2) NOT NULL,
+                            InStock INT NOT NULL,
+                            AuditTrail INT(11),
+                            Sales INT(11),
+                            Discount INT NOT NULL,
+                            Deleted BOOLEAN NOT NULL,
+                            PRIMARY KEY (Name, Brand, Category),
+                            FOREIGN KEY (Brand) REFERENCES duffykids.itemBrands(Name),
+                            FOREIGN KEY (Category) REFERENCES duffykids.itemCategories(Name),
+                            FOREIGN KEY (AuditTrail) REFERENCES duffykids.AuditTrail(id),
+                            FOREIGN KEY (Sales) REFERENCES duffykids.Sales(id)
+                        )`;
         let createUserTableSQL = `
-                        CREATE TABLE IF NOT EXISTS duffykids.users
-                        (
-                            First_Name TEXT(255) NOT NULL,
-                            Last_Name TEXT(255) NOT NULL,
-                            User_Name VARCHAR(255) NOT NULL,
-                            Password VARCHAR(255) NOT NULL,
-                            Sales_Made DECIMAL(13,2) NOT NULL,
-                            Last_Seen TIMESTAMP,
-                            PRIMARY KEY (User_Name)
-                        )
-
-                    `;
+                            CREATE TABLE IF NOT EXISTS duffykids.users
+                            (
+                                First_Name TEXT(255) NOT NULL,
+                                Last_Name TEXT(255) NOT NULL,
+                                User_Name VARCHAR(255) NOT NULL,
+                                Password VARCHAR(255) NOT NULL,
+                                Sales_Made DECIMAL(13,2) NOT NULL,
+                                Last_Seen DATETIME,
+                                PRIMARY KEY (User_Name)
+                            )
+    
+                        `;
         let createBrandTableSQL = `
-                        CREATE TABLE IF NOT EXISTS duffykids.itemBrands
-                        (
-                            Name VARCHAR(255) NOT NULL,
-                            PRIMARY KEY(Name)
-                        )
-
-                    `;
+                            CREATE TABLE IF NOT EXISTS duffykids.itemBrands
+                            (
+                                Name VARCHAR(255) NOT NULL,
+                                PRIMARY KEY(Name)
+                            )
+    
+                        `;
         const createCategoriesSQL = `
-                        CREATE TABLE IF NOT EXISTS duffykids.itemCategories
-                        (
-                            Name VARCHAR(255) NOT NULL, 
-                            PRIMARY KEY(Name)
-                        )
-                    `;
+                            CREATE TABLE IF NOT EXISTS duffykids.itemCategories
+                            (
+                                Name VARCHAR(255) NOT NULL, 
+                                PRIMARY KEY(Name)
+                            )
+                        `;
+        const createAuditTrailTableSQL = `
+                            CREATE TABLE IF NOT EXISTS duffykids.AuditTrail
+                            (
+                                id INT(11) AUTO_INCREMENT NOT NULL,
+                                Date DATETIME NOT NULL,
+                                User VARCHAR(255) NOT NULL,
+                                Operation INT NOT NULL,
+                                PRIMARY KEY(id),
+                                FOREIGN KEY (User) REFERENCES duffykids.users(User_Name)
+                            )
+    
+                        `;
+        const createSalesTableSQL = `
+                            CREATE TABLE IF NOT EXISTS duffykids.Sales
+                                (
+                                    id INT(11) AUTO_INCREMENT NOT NULL,
+                                    Date DATE NOT NULL,
+                                    UserName VARCHAR(255) NOT NULL, 
+                                    ItemName VARCHAR(255) NOT NULL,
+                                    ItemBrand VARCHAR(255) NOT NULL,
+                                    ItemCategory VARCHAR(255) NOT NULL,
+                                    AmountPurchased INT NOT NULL,
+                                    CashMade DECIMAL(8,2) NOT NULL,
+                                    ProfitMade DECIMAL(8,2) NOT NULL,
+                                    UnitDiscount DECIMAL(8,2) NOT NULL,
+                                    TotalDiscount DECIMAL(8,2) NOT NULL,
+                                    PRIMARY KEY(id),
+                                    FOREIGN KEY (UserName) REFERENCES duffykids.users(User_Name)
+                                )
+
+                        `;
         this.connector = mariadb.createConnection({
           host: 'localhost',
           user: 'root',
           password: ''
         });
-        this.connector.connect(err => {
-          if (err) {
-            console.log("error");
+        this.connector.beginTransaction(error => {
+          if (error) {
+            throw error;
           } else {
-            this.connector.query(createDBsql, () => {
-              this.connector = mariadb.createConnection({
-                host: 'localhost',
-                user: 'root',
-                password: '',
-                database: 'duffykids'
-              });
-              this.connector.connect(error => {
-                if (error) {
-                  console.log(error);
-                } else {
-                  this.connector.query(createBrandTableSQL, () => {
+            this.connector.connect(err => {
+              if (err) {
+                this.connector.rollback(() => {});
+              } else {
+                this.connector.query(createDBsql, error => {
+                  if (error) {
+                    this.connector.rollback(() => {});
+                  }
+
+                  this.connector = mariadb.createConnection({
+                    host: 'localhost',
+                    user: 'root',
+                    password: '',
+                    database: 'duffykids'
+                  });
+                  this.connector.connect(error => {
                     if (error) {
                       console.log(error);
                     } else {
-                      this.connector.query(createCategoriesSQL, error => {
-                        if (error) {
-                          throw error;
+                      this.connector.query(createBrandTableSQL, () => {
+                        if (error !== null) {
+                          this.connector.rollback(() => {
+                            console.log("error");
+                            throw error;
+                          });
                         } else {
-                          this.connector.query(createItemsTableSQL, error => {
-                            if (error) {
-                              throw error;
+                          this.connector.query(createCategoriesSQL, error => {
+                            if (error !== null) {
+                              this.connector.rollback(() => {
+                                console.log("error");
+                                throw error;
+                              });
                             } else {
-                              this.connector.query(createUserTableSQL);
+                              this.connector.query(createUserTableSQL, error => {
+                                if (error !== null) {
+                                  this.connector.rollback(() => {
+                                    console.log("error");
+                                    throw error;
+                                  });
+                                } else {
+                                  this.connector.query(createAuditTrailTableSQL, error => {
+                                    if (error !== null) {
+                                      this.connector.rollback(() => {
+                                        console.log("error");
+                                        throw error;
+                                      });
+                                    } else {
+                                      this.connector.query(createSalesTableSQL, error => {
+                                        if (error) {
+                                          this.connector.rollback(() => {
+                                            console.log("error");
+                                            throw error;
+                                          });
+                                        } else {
+                                          this.connector.query(createItemsTableSQL, error => {
+                                            if (error) {
+                                              this.connector.rollback(() => {
+                                                console.log("error");
+                                                throw error;
+                                              });
+                                            } else {
+                                              this.connector.commit(err => {
+                                                if (error) {
+                                                  console.log(err);
+                                                }
+                                              });
+                                            }
+                                          });
+                                        }
+                                      });
+                                    }
+                                  });
+                                }
+                              });
                             }
                           });
                         }
                       });
                     }
                   });
-                }
-              });
+                });
+              }
             });
           }
         });
       } else {
         console.log("Db connectected successfully.....");
       }
-    }); //    this.db = new Dexie('DUFFYKIDS');
-    //    this.db.version(1).stores({
-    //        items: "++id, Name, Brand, Category, Deleted, Stock, SalesMade, Profit",
-    //        categories: "++id, Name",
-    //        brands: "++id, Name",
-    //        users: "++id, FirstName, LastName, Status, Password"
-    //    })
-    //    this.db.open().then(()=>{
-    //    })
-    //    .catch((e)=>{
-    //        console.log("Db failed to create")
-    //        resolve(new Error("Erro: Failed to initialize database"))
-    //    })
+    });
   }
   /*************************SINGLE OBJECT OPERATIONS******************************/
 
@@ -1697,7 +1775,7 @@ class DATABASE {
   addNewItem(shopItem) {
     return new Promise((resolve, reject) => {
       const array = Object.values(shopItem);
-      let [name, brand, category, stock, sellingPrice, costPrice] = array;
+      let [name, brand, category, stock, sellingPrice, costPrice, discount] = array;
       let insertCategorySQL = `INSERT INTO duffykids.itemCategories SET ? `;
       let categoryValues = {
         Name: category
@@ -1714,44 +1792,64 @@ class DATABASE {
         InStock: stock,
         CostPrice: costPrice,
         SellingPrice: sellingPrice,
-        AmountSold: 0,
-        Discount: 20,
+        Discount: discount,
         Deleted: false
-      };
+      }; //Sales
+      // let insertSalesSQL = "INSERT INTO duffykids.Sales SET ?";
+      // const today =  new Date();
+      // let salesValues =
+      // {
+      //     Date: `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`,
+      //     UserName: "noLimitHendrix",
+      //     ItemName: name,
+      //     ItemBrand: brand,
+      //     ItemCategory: category,
+      //     AmountPurchased: 0,
+      // }
+
       this.connector.beginTransaction(error => {
         if (error) {
           throw error;
         }
 
         this.connector.query(insertCategorySQL, categoryValues, (error, result) => {
-          if (error) {
-            console.log(error.code);
-            console.log(error);
-          }
+          console.log("result: ", result);
 
           if (error === null || error.code === "ER_DUP_ENTRY") {
             this.connector.query(insertBrandSQL, brandValues, (error, result) => {
-              if (error) {
-                console.log(error);
-              }
-
               if (error === null || error.code === "ER_DUP_ENTRY") {
                 this.connector.query(insertItemSQL, values, (error, result) => {
+                  console.log("item result: ", result);
+
                   if (error) {
                     if (error.code === "ER_DUP_ENTRY") {
                       this.connector.rollback(function () {
                         reject("duplicate");
                         throw error;
                       });
+                    } else {
+                      reject("unknown error");
+                      throw error;
                     }
                   } else {
-                    this.connector.commit(function () {
+                    this.connector.commit(function (error) {
+                      if (error) {
+                        reject("unknown error");
+                        throw error;
+                      }
+
                       resolve(true);
                     });
                   }
                 });
+              } else if (error !== null || error.code !== "ER_DUP_ENTRY") {
+                reject("unknown error");
+                throw error;
               }
             });
+          } else if (error !== null || error.code !== "ER_DUP_ENTRY") {
+            reject("unknown error");
+            throw error;
           }
         });
       });
@@ -1760,14 +1858,20 @@ class DATABASE {
 
   updateItem(change) {
     return new Promise((resolve, reject) => {
-      console.log("in promise", change);
-      let match = {
-        Name: change.Name,
-        Brand: change.Brand,
-        Category: change.Category
-      };
-      let updateItemSQL = `UPDATE duffykids.items SET InStock = ${change.InStock}, CostPrice = ${change.CostPrice}, SellingPrice = ${change.SellingPrice} WHERE ?`;
-      this.connector.query(updateItemSQL, match, (error, result) => {
+      console.log(change);
+      let update = {
+        InStock: change.InStock,
+        CostPrice: change.CostPrice,
+        SellingPrice: change.SellingPrice,
+        Discount: change.Discount
+      }; // let params = {
+      //     Name: change.Name,
+      //     Brand : change.Brand,
+      //     Category: change.Category,
+      // }
+
+      let updateItemSQL = `UPDATE duffykids.items SET ? WHERE Name = '${change.Name}' AND Brand = '${change.Brand}' AND Category = '${change.Category}'`;
+      this.connector.query(updateItemSQL, [update, change.Name, change.Brand, change.Category], (error, result) => {
         if (error) {
           if (error.code === "ER_DUP_ENTRY") {
             reject(new Error("ERR_DUP_ENTRY"));
@@ -1777,6 +1881,7 @@ class DATABASE {
 
           throw error;
         } else {
+          console.log(result);
           resolve(true);
         }
       });
@@ -1821,20 +1926,13 @@ class DATABASE {
     return new Promise((resolve, reject) => {
       this.connector.query("SELECT * FROM duffykids.items", (error, results) => {
         if (error) {
+          console.log(error);
           reject(new Error("database not found"));
         } else {
           console.log(results);
           resolve(results);
         }
-      }); // this.db.items.each((item)=>{
-      //     dbItems.push(item)
-      // })
-      // .then(()=>{
-      //     resolve(dbItems);
-      // })
-      // .catch(()=>{
-      //     resolve(false)
-      // })
+      });
     });
   }
 

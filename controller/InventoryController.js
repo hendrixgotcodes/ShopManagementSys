@@ -131,12 +131,12 @@ function initialzeStoreItems(){
 
                 if(fetchedItem.Deleted === 1){
 
-                    TableController.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory")
+                    TableController.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,[checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory")
 
                 }
                 else{
 
-                    TableController.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true,false , "Inventory")
+                    TableController.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,[checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true,false , "Inventory")
 
                 }
 
@@ -219,7 +219,6 @@ function showRowControls(row){
 //Function does not atually delete row(inventoryItem) but rather triggers the process and determines the result of the process through a promise.
 //And decide to show or not show an alert based on that result - (Used by event listeners on row ".del" buttons in Inventory)
 function deleteItem(row, action="delete"){
-    
 
             const itemName = row.querySelector(".td_Names").innerText;
             const itemBrand = row.querySelector(".td_Brands").innerText
@@ -309,9 +308,9 @@ function editItem(row){
         if(result[0] === true){
 
 
-            let [,row, name, brand, category, stock, sellingPrice, costPrice] = result;
+            let [,row, name, brand, category, stock, sellingPrice, costPrice, discount] = result;
 
-            // price = UnitConverter.convert(price);
+           
 
 
             let values = 
@@ -322,6 +321,7 @@ function editItem(row){
                     InStock: stock,
                     CostPrice: parseFloat(costPrice),
                     SellingPrice: parseFloat(sellingPrice),
+                    Discount: parseFloat(discount)
                 };
 
             
@@ -333,7 +333,7 @@ function editItem(row){
 
                 if(result === true){
                     
-                    TableController.editItem(row, name, brand, category, stock, parseFloat(sellingPrice), parseFloat(costPrice))
+                    TableController.editItem(row, name, brand, category, stock, parseFloat(sellingPrice), parseFloat(costPrice), parseFloat(discount))
                     
                     Notifications.showAlert("success", `${name} has been successfully updated.`)
 
@@ -383,12 +383,12 @@ function addItem(){
         }
 
            
-            let row, name, brand, category, stock, sellingPrice, costPrice;
+            // let row, name, brand, category, stock, sellingPrice, costPrice;
 
             let promisedRow = result;
 
 
-            [,row, name, brand, category, stock, sellingPrice, costPrice] = promisedRow;
+            let [,row, name, brand, category, stock, sellingPrice, costPrice, discount] = promisedRow;
 
             //Creating a store object to be added to database
             const storeObject = new Object();
@@ -398,17 +398,17 @@ function addItem(){
             storeObject.Stock = stock;
             storeObject.SellingPrice = sellingPrice;
             storeObject.CostPrice = costPrice;
+            storeObject.Discount = discount;
 
             // console.log([row, name, brand, category, stock, sellingPrice, costPrice]);
 
-            console.log("storeObject: ", storeObject);
 
             database.addNewItem(storeObject)
             .then((result)=>{
 
                 if(result === true){
 
-                    TableController.createItem(storeObject.Name, storeObject.Brand, storeObject.Category, storeObject.Stock, storeObject.SellingPrice, [checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "", false, false, "inventory")
+                    TableController.createItem(storeObject.Name, storeObject.Brand, storeObject.Category, storeObject.Stock, storeObject.SellingPrice, discount,[checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "", false, false, "inventory")
                     .then(()=>{
     
                         Notifications.showAlert("success", "Successfuly added to inventory")
@@ -425,9 +425,12 @@ function addItem(){
                     Notifications.showAlert("error", `Sorry, failed to add ${storeObject.Name} of brand ${storeObject.Brand} to inventory. This item already exists`)
                     return;
                 }
+                else{
 
-                Notifications.showAlert("error", `Sorry, failed to add ${storeObject.Name} of brand ${storeObject.Brand} to inventory. Try Again Later`)
-                console.log(error);
+                    Notifications.showAlert("error", `Sorry, failed to add ${storeObject.Name} of brand ${storeObject.Brand} to inventory due to an unknown error`)
+
+                }
+
             })
 
 
@@ -633,7 +636,7 @@ ipcRenderer.on('populateTable',(e, Items)=>{
 
             resolved[1].forEach((item)=>{
 
-                TableController.createItem(item.Name, item.Brand, item.Category, item.Stock, item.SellingPrice, [checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory")
+                TableController.createItem(item.Name, item.Brand, item.Category, item.Stock, item.SellingPrice, item.discount,[checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory")
 
             })
 

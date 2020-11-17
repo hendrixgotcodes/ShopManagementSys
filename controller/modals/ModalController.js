@@ -178,6 +178,7 @@ class Modal {
             let itemQuantity = ""
             let sellingPrice = ""
             let costPrice = ""
+            let discount = ""
 
            
 
@@ -189,6 +190,7 @@ class Modal {
                 itemQuantity = row.querySelector(".td_Stock").innerText;
                 sellingPrice = row.querySelector(".td_Price").innerText;
                 costPrice = row.querySelector(".td_costPrice").innerText
+                discount = row.querySelector(".td_discount").innerText
             }
             
             const boxTemplate = 
@@ -213,9 +215,11 @@ class Modal {
     
                             <input type="number" class="dialogForm_tb halfwidth" value="${itemQuantity}" aria-placeholder="Total in inventory" placeholder="Total In Inventory" id="total" />
     
-                            <input type="number" class="dialogForm_tb halfwidth" value="${costPrice}" aria-placeholder="Cost Price" placeholder="Cost Price (GH₵)" id="costPrice" />
+                            <input type="number" class="dialogForm_tb halfwidth" value="${parseFloat(costPrice)}" aria-placeholder="Cost Price" placeholder="Cost Price (GH₵)" id="costPrice" />
     
-                            <input type="number" class="dialogForm_tb halfwidth" value="${sellingPrice}" aria-placeholder="Unit Cost" placeholder="Selling Price (GH₵)" id="sellingPrice" />
+                            <input type="number" class="dialogForm_tb halfwidth" value="${parseFloat(sellingPrice)}" aria-placeholder="Unit Cost" placeholder="Selling Price (GH₵)" id="sellingPrice" />
+
+                            <input type="number" class="dialogForm_tb halfwidth" value="${parseFloat(discount)}" aria-placeholder="Discount(%)" placeholder="Discount(%)" id="discount" />
     
                          </div>
 
@@ -266,7 +270,6 @@ class Modal {
                  db.getAllItemCategories()
                  .then((categories)=>{
 
-                    console.log("jhv", categories);
 
                     const categorySelect =itemForm.querySelector("#category");
 
@@ -306,8 +309,6 @@ class Modal {
                     categorySelect.selectedIndex = "0";
 
                     categorySelect.addEventListener("change", function changeToTextBox(e){
-
-                        console.log("changed");
 
                         if(categorySelect.selectedIndex === categorySelect.length -1){
 
@@ -380,8 +381,6 @@ class Modal {
 
                     brandSelect.addEventListener("change", function changeToTextBox(e){
 
-                        console.log("changed");
-
                         if(brandSelect.selectedIndex === brandSelect.length -1){
 
                             e.preventDefault();
@@ -420,6 +419,8 @@ class Modal {
                     const sellingPrice = itemForm.querySelector('#sellingPrice').value;
                     const costPrice = itemForm.querySelector("#costPrice").value;
 
+                    discount = itemForm.querySelector('#discount').value
+
                     // console.log(name, category, brand, stock, price);
 
                     if(name !== "" && category !== "" && brand !== "" && stock !== "" && sellingPrice !== ""){
@@ -429,7 +430,7 @@ class Modal {
 
                         // openPrompt("",resolve,reject, [true, row, name, brand, category, stock, sellingPrice])
 
-                        resolve([true, row, name, brand, category, stock, sellingPrice, costPrice]);
+                        resolve([true, row, name, brand, category, stock, sellingPrice, costPrice, discount]);
 
 
                     }
