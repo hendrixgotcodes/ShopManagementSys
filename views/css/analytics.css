@@ -828,10 +828,10 @@ body {
             background-color: #dd4b4b; }
     .main_body .mainBody_content .dialog--itemFormBox {
       font-size: 1.2rem;
-      width: 45%;
-      height: 65%;
-      top: 20%;
-      left: 25%;
+      width: 55%;
+      height: 75%;
+      top: 15%;
+      left: 20%;
       transform: scale(0);
       transition: .5s;
       color: #646766; }
@@ -1014,7 +1014,7 @@ body {
               right: -5px;
               width: 4.5%;
               height: 30%;
-              background-color: #ce2727;
+              background-color: #EFB526;
               border: 2px solid #F1F2F2;
               border-radius: 100%;
               display: flex;

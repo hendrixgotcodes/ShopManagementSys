@@ -94,6 +94,10 @@ function parseExcelOutput(formTitle, JSON){
                         <div class="Short">
                             S.P
                         </div>
+
+                        <div class="Short">
+                            Discount
+                        </div>
                     
                     </div>
 
@@ -141,10 +145,20 @@ function parseExcelOutput(formTitle, JSON){
             JSON.forEach((item)=>{
 
                 if(isNaN(parseInt(item.QUANTITY)) || isNaN(parseInt(item.COSTPRICE)) || isNaN(parseInt(item.SELLINGPRICE))){
-                    showAlert('error', 'Letters Entered In Place Of Numbers. Please Correct Your Excel Sheet And Try Again')
+
+                    showAlert('error', "Your excel sheet is invalid! Please check, correct all fields and try again")
 
                     closeConfirmationBox();
                 }
+                else if(isValidForm(item) === false){
+
+                    showAlert('error', "Your excel sheet is invalid! Please check, correct all fields and try again")
+
+                    closeConfirmationBox();
+
+
+                }
+
 
                 let itemTemplate = 
                 `
@@ -173,6 +187,10 @@ function parseExcelOutput(formTitle, JSON){
 
                         <div class="Short td" id="sp">
                             ${item.SELLINGPRICE}
+                        </div>
+
+                        <div class="Short td" id="discount">
+                            ${item.DISCOUNT}
                         </div>
 
 
@@ -314,4 +332,30 @@ function showAlert(errorType, message){
     
 
 
+}
+
+function isValidForm(item){
+
+    if(item.NAMES === null || item.BRAND === null || item.CATEGORY === null || item.QUANTITY === null || item.COSTPRICE === null || item.SELLINGPRICE ===null || item.DISCOUNT === null){
+
+        return false
+
+    }
+    else if(item.NAMES === undefined || item.BRAND === undefined || item.CATEGORY === undefined || item.QUANTITY === undefined || item.COSTPRICE === undefined || item.SELLINGPRICE === undefined || item.DISCOUNT === undefined){
+
+        return false
+
+    }
+    else if((typeof item.QUANTITY) !== "number" || (typeof item.COSTPRICE) !== "number" || (typeof item.SELLINGPRICE) !== "number" || (typeof item.DISCOUNT) !== "number"){
+
+        return false
+
+    }
+    else if(item.NAMES.replace(/^\s+|\s+$/g, "") === "" || item.BRAND.replace(/^\s+|\s+$/g, "") === "" || item.CATEGORY.replace(/^\s+|\s+$/g, "") === "" ){
+        return false
+
+    }
+    else{
+        true
+    }
 }

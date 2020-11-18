@@ -623,7 +623,7 @@ ipcRenderer.on('populateTable',(e, Items)=>{
                 Name: name,
                 Brand: brand,
                 Category: category,
-                Stock: stock,
+                InStock: stock,
                 SellingPrice: sellingPrice,
                 CostPrice: costPrice,
                 Deleted : "false"
@@ -634,13 +634,13 @@ ipcRenderer.on('populateTable',(e, Items)=>{
         database.addItemsBulk(itemsArray)
         .then((resolved)=>{
 
-            resolved[1].forEach((item)=>{
+            resolved.forEach((item)=>{
 
                 TableController.createItem(item.Name, item.Brand, item.Category, item.Stock, item.SellingPrice, item.discount,[checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory")
 
             })
 
-            Notifications.showAlert("success", `${resolved[1].length} Items Have Been Successfully Added. ${resolved[0].length} Items Already Existed In Database`)
+            Notifications.showAlert("success", `${resolved.length} Items Have Been Successfully Added.`)
 
 
         })

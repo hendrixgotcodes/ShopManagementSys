@@ -702,10 +702,10 @@
 
 .dialog--itemFormBox{
     font-size: 1.2rem;
-    width: 45%;
-    height: 65%;
-    top: 20%;
-    left: 25%;
+    width: 55%;
+    height: 75%;
+    top: 15%;
+    left: 20%;
     transform: scale(0);
     transition: .5s;
     color: $primary_black;
@@ -966,7 +966,7 @@
                     right: -5px;
                     width: 4.5%;
                     height: 30%;
-                    background-color: $secondary_red;
+                    background-color: $primary_yellow;
                     border: 2px solid $OFFWHITE;
                     border-radius: 100%;
                     display: flex;

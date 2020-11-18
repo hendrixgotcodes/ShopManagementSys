@@ -90,6 +90,10 @@ class MainWWindow extends BrowserWindow {
                 this.loadFile('./views/html/index.html')
             })
 
+            ipcMain.on('loadGrowthRate',()=>{
+                this.loadFile('./views/html/maingraph.html')
+            })
+
 
         /*********************OPENS FILE EXPLORER*******************/
             ipcMain.on("openFileExplorer",(e)=>{

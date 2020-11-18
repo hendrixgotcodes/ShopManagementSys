@@ -1,10 +1,11 @@
-// const userType = "Maame Dufie";
+let userType = "Admin";
+let userName = "Maame Dufie"
 
 /************DOM ELEMENTS */
 const toolBar_btn = document.querySelector('.toolBar_btn--alpha');
 const toolBar_btn_icon = document.querySelector('.ico_btn_clear')
 const profit_card = document.querySelector(".profit");
-
+const growthRateCard = document.querySelector('#growthRate')
 
 
 
@@ -12,6 +13,7 @@ const profit_card = document.querySelector(".profit");
 toolBar_btn.addEventListener('mouseover',toggleTBbtn_white)
 toolBar_btn.addEventListener('mouseleave',toggleTBbtn_default)
 profit_card.addEventListener("click", loadProfits)
+growthRateCard.addEventListener("click", loadGrowthRate)
 
 
 
@@ -26,4 +28,8 @@ function toggleTBbtn_default(){
 
 function loadProfits(){
     ipcRenderer.send('loadProfits', [userName, userType])
+}
+
+function loadGrowthRate(){
+    ipcRenderer.send('loadGrowthRate', [userName, userType])
 }

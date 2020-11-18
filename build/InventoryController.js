@@ -573,17 +573,17 @@ electron__WEBPACK_IMPORTED_MODULE_0__["ipcRenderer"].on('populateTable', (e, Ite
       Name: name,
       Brand: brand,
       Category: category,
-      Stock: stock,
+      InStock: stock,
       SellingPrice: sellingPrice,
       CostPrice: costPrice,
       Deleted: "false"
     });
   });
   database.addItemsBulk(itemsArray).then(resolved => {
-    resolved[1].forEach(item => {
+    resolved.forEach(item => {
       _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(item.Name, item.Brand, item.Category, item.Stock, item.SellingPrice, item.discount, [checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory");
     });
-    _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", `${resolved[1].length} Items Have Been Successfully Added. ${resolved[0].length} Items Already Existed In Database`);
+    _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", `${resolved.length} Items Have Been Successfully Added.`);
   });
 });
 
@@ -1674,8 +1674,8 @@ class DATABASE {
                             (
                                 Item INT NOT NULL,
                                 AuditTrail INT NOT NULL,
-                                FOREIGN KEY (AuditTrail) REFERENCES duffykids.AuditTrails(id),
-                                FOREIGN KEY (Item) REFERENCES duffykids.items(id)
+                                FOREIGN KEY (AuditTrail) REFERENCES duffykids.AuditTrails(id) ON DELETE CASCADE,
+                                FOREIGN KEY (Item) REFERENCES duffykids.items(id) ON DELETE CASCADE
                             )
 
                         `;
@@ -1950,7 +1950,6 @@ class DATABASE {
 
   updateItem(change) {
     return new Promise((resolve, reject) => {
-      const Today = new Date();
       let update = {
         InStock: change.InStock,
         CostPrice: change.CostPrice,
@@ -1996,6 +1995,7 @@ class DATABASE {
                         throw error;
                       });
                     } else {
+                      const Today = new Date();
                       let auditTrailValues = {
                         Date: `${Today.getFullYear()}-${Today.getMonth()}-${Today.getDate()} ${Today.getHours()}:${Today.getMinutes()}:${Today.getSeconds()}`,
                         User: userId,
@@ -2138,8 +2138,98 @@ class DATABASE {
   }
 
   addItemsBulk(itemArray) {
-    console.log(itemArray);
-    return new Promise((resolve, reject) => {});
+    return new Promise((resolve, reject) => {
+      // const insertValue = [];
+      // itemArray.forEach((item)=>{
+      //     item = Object.values(item).toString();
+      //     insertValue.push(item)
+      // })
+      itemArray.forEach(item => {
+        this.connector.beginTransaction(error => {
+          this.connector.query(`INSERT INTO duffykids.itemBrands SET Name = '${item.Brand}'`, error => {
+            if (error === null || error.code === "ER_DUP_ENTRY") {
+              this.connector.query(`INSERT INTO duffykids.itemCategories SET Name='${item.Category}'`, error => {
+                if (error === null || error.code === "ER_DUP_ENTRY") {
+                  this.connector.query("INSERT INTO duffykids.items SET ? ON DUPLICATE KEY UPDATE ?", [item, item], (error, result) => {
+                    const itemId = result.insertId;
+
+                    if (error) {
+                      this.connector.rollback(() => {
+                        if (error.code === "ER_DUP_ENTRY") {
+                          reject("Duplicate");
+                        } else {
+                          reject("unknown error");
+                          throw error;
+                        }
+                      });
+                    } else {
+                      this.connector.query("SELECT * FROM duffykids.users WHERE User_Name = 'noLimitHendrix'", (error, result) => {
+                        if (error) {
+                          this.connector.rollback(() => {
+                            reject("unknown error");
+                            throw error;
+                          });
+                        } else {
+                          let user = result.shift();
+                          let userId = user.User_Name;
+                          const Today = new Date();
+                          let auditTrailValues = {
+                            Date: `${Today.getFullYear()}-${Today.getMonth()}-${Today.getDate()} ${Today.getHours()}:${Today.getMinutes()}:${Today.getSeconds()}`,
+                            User: userId,
+                            Operation: "Creation",
+                            Item: itemId
+                          };
+                          this.connector.query("INSERT INTO duffykids.auditTrails SET ?", auditTrailValues, (error, result) => {
+                            if (error) {
+                              this.connector.rollback(() => {
+                                reject("unknown error");
+                                throw error;
+                              });
+                            } else {
+                              let itemAuditTrailValues = {
+                                item: itemId,
+                                auditTrail: result.insertId
+                              };
+                              this.connector.query("INSERT INTO duffykids.itemAuditTrails SET ?", itemAuditTrailValues, error => {
+                                if (error) {
+                                  this.connector.rollback(() => {
+                                    reject("unknown error");
+                                    throw error;
+                                  });
+                                } else {
+                                  this.connector.commit(error => {
+                                    if (error) {
+                                      reject("unknown error");
+                                      throw error;
+                                    } else {
+                                      resolve(itemArray);
+                                    }
+                                  });
+                                }
+                              });
+                            }
+                          });
+                        }
+                      });
+                    }
+                  });
+                } else if (error) {
+                  this.connector.rollback(() => {
+                    reject("unknown error");
+                    throw error;
+                  });
+                }
+              });
+            } else if (error) {
+              this.connector.rollback(() => {
+                reject("unknown error");
+                throw error;
+              });
+            }
+          });
+        });
+      });
+    });
   }
   /*****************************CATEGORIES DB METHODS************************************/
 

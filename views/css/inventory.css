@@ -502,7 +502,7 @@ body {
             .main_body .mainBody_content .contentContainer .tableBody .bodyRow .td_cb .selectOne {
               width: 100%;
               height: 100%;
-              transition: .3s; }
+              transition: .5s; }
               .main_body .mainBody_content .contentContainer .tableBody .bodyRow .td_cb .selectOne::before {
                 content: "";
                 width: 13px;
@@ -511,18 +511,23 @@ body {
                 top: 0;
                 left: 0;
                 background-color: #fff;
-                border-radius: 100%;
-                border: 2px solid #35594B; }
+                border-radius: 2px;
+                border: 1.5px solid #35594B;
+                transition: .3s; }
               .main_body .mainBody_content .contentContainer .tableBody .bodyRow .td_cb .selectOne:checked::after {
                 content: "";
-                width: 6px;
-                height: 5.8px;
+                width: 3.5px;
+                height: 8px;
                 position: absolute;
-                top: 3.5px;
-                left: 3.5px;
-                background-color: #35594B;
-                border-radius: 100%;
-                border: 2px solid #35594B; }
+                top: 15%;
+                left: 39%;
+                border-radius: 2px;
+                border-right: 2.4px solid #fff;
+                border-bottom: 2.4px solid #fff;
+                transform: rotate(38deg);
+                transition: .3s; }
+              .main_body .mainBody_content .contentContainer .tableBody .bodyRow .td_cb .selectOne:checked::before {
+                background-color: #EFB526; }
           .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls {
             position: absolute;
             width: 15%;
@@ -1094,10 +1099,10 @@ body {
             background-color: #dd4b4b; }
     .main_body .mainBody_content .dialog--itemFormBox {
       font-size: 1.2rem;
-      width: 45%;
-      height: 65%;
-      top: 20%;
-      left: 25%;
+      width: 55%;
+      height: 75%;
+      top: 15%;
+      left: 20%;
       transform: scale(0);
       transition: .5s;
       color: #646766; }
@@ -1280,7 +1285,7 @@ body {
               right: -5px;
               width: 4.5%;
               height: 30%;
-              background-color: #ce2727;
+              background-color: #EFB526;
               border: 2px solid #F1F2F2;
               border-radius: 100%;
               display: flex;

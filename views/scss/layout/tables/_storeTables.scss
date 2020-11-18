@@ -112,7 +112,7 @@
             .selectOne{
                 width: 100%;
                 height: 100%;
-                transition: .3s;
+                transition: .5s;
 
                 &::before{
                     content: "";
@@ -122,22 +122,30 @@
                     top: 0;
                     left: 0;
                     background-color: $WHITE;
-                    border-radius: 100%;
-                    border: 2px solid $primary_green;
+                    border-radius: 2px;
+                    border: 1.5px solid $primary_green;
+                    transition: .3s;
                 }
 
                 &:checked{
                     &::after{
                         content: "";
-                        width: 6px;
-                        height: 5.8px;
+                        width: 3.5px;
+                        height: 8px;
                         position: absolute;
-                        top: 3.5px;
-                        left: 3.5px;
-                        background-color: $primary_green;
-                        border-radius: 100%;
-                        border: 2px solid $primary_green;
-                }
+                        top: 15%;
+                        left: 39%;
+                        // background-color: #fff;
+                        border-radius: 2px;
+                        border-right: 2.4px solid #fff;
+                        border-bottom: 2.4px solid #fff;
+                        transform: rotate(38deg);
+                        transition: .3s;
+                    }
+
+                    &::before{
+                        background-color: $primary_yellow;
+                    }
 
                 
                 }
