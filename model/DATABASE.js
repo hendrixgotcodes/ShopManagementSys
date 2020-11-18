@@ -23,21 +23,19 @@ class DATABASE{
                         //Query strings
                         let createDBsql = `CREATE DATABASE duffykids`;
                         let createItemsTableSQL = `CREATE TABLE IF NOT EXISTS duffykids.items(
+                            id INT AUTO_INCREMENT NOT NULL,
                             Name VARCHAR(255) NOT NULL ,
                             Brand VARCHAR(255) NOT NULL,
                             Category VARCHAR(255) NOT NULL,
                             CostPrice DECIMAL(8,2) NOT NULL,
                             SellingPrice DECIMAL(8,2) NOT NULL,
                             InStock INT NOT NULL,
-                            AuditTrail INT(11),
-                            Sales INT(11),
                             Discount INT NOT NULL,
                             Deleted BOOLEAN NOT NULL,
-                            PRIMARY KEY (Name, Brand, Category),
+                            UNIQUE(Name, Brand, Category),
+                            PRIMARY KEY (id),
                             FOREIGN KEY (Brand) REFERENCES duffykids.itemBrands(Name),
-                            FOREIGN KEY (Category) REFERENCES duffykids.itemCategories(Name),
-                            FOREIGN KEY (AuditTrail) REFERENCES duffykids.AuditTrail(id),
-                            FOREIGN KEY (Sales) REFERENCES duffykids.Sales(id)
+                            FOREIGN KEY (Category) REFERENCES duffykids.itemCategories(Name)
                         )`
     
                         let createUserTableSQL = 
@@ -48,7 +46,6 @@ class DATABASE{
                                 Last_Name TEXT(255) NOT NULL,
                                 User_Name VARCHAR(255) NOT NULL,
                                 Password VARCHAR(255) NOT NULL,
-                                Sales_Made DECIMAL(13,2) NOT NULL,
                                 Last_Seen DATETIME,
                                 PRIMARY KEY (User_Name)
                             )
@@ -74,35 +71,59 @@ class DATABASE{
     
                         const createAuditTrailTableSQL =
                         `
-                            CREATE TABLE IF NOT EXISTS duffykids.AuditTrail
+                            CREATE TABLE IF NOT EXISTS duffykids.auditTrails
                             (
-                                id INT(11) AUTO_INCREMENT NOT NULL,
+                                id INT AUTO_INCREMENT NOT NULL,
                                 Date DATETIME NOT NULL,
                                 User VARCHAR(255) NOT NULL,
-                                Operation INT NOT NULL,
+                                Operation VARCHAR(255) NOT NULL,
+                                Item INT NOT NULL,
                                 PRIMARY KEY(id),
-                                FOREIGN KEY (User) REFERENCES duffykids.users(User_Name)
+                                FOREIGN KEY (User) REFERENCES duffykids.users(User_Name),
+                                FOREIGN KEY (Item) REFERENCES duffykids.items(id)
                             )
     
                         `
                         const createSalesTableSQL =
                         `
-                            CREATE TABLE IF NOT EXISTS duffykids.Sales
+                            CREATE TABLE IF NOT EXISTS duffykids.sales
                                 (
-                                    id INT(11) AUTO_INCREMENT NOT NULL,
+                                    id INT AUTO_INCREMENT NOT NULL,
                                     Date DATE NOT NULL,
-                                    UserName VARCHAR(255) NOT NULL, 
-                                    ItemName VARCHAR(255) NOT NULL,
-                                    ItemBrand VARCHAR(255) NOT NULL,
-                                    ItemCategory VARCHAR(255) NOT NULL,
+                                    User VARCHAR(255) NOT NULL, 
+                                    Item INT NOT NULL,
                                     AmountPurchased INT NOT NULL,
                                     CashMade DECIMAL(8,2) NOT NULL,
                                     ProfitMade DECIMAL(8,2) NOT NULL,
                                     UnitDiscount DECIMAL(8,2) NOT NULL,
                                     TotalDiscount DECIMAL(8,2) NOT NULL,
                                     PRIMARY KEY(id),
-                                    FOREIGN KEY (UserName) REFERENCES duffykids.users(User_Name)
+                                    FOREIGN KEY (User) REFERENCES duffykids.users(User_Name),
+                                    FOREIGN KEY (Item) REFERENCES duffykids.items(id)
                                 )
+
+                        `
+                        const createItemAuditTrailSQL =
+                        `
+                            CREATE TABLE IF NOT EXISTS duffykids.itemAuditTrails
+                            (
+                                Item INT NOT NULL,
+                                AuditTrail INT NOT NULL,
+                                FOREIGN KEY (AuditTrail) REFERENCES duffykids.AuditTrails(id),
+                                FOREIGN KEY (Item) REFERENCES duffykids.items(id)
+                            )
+
+                        `
+
+                        const createUserSalesSQL =
+                        `
+                            CREATE TABLE IF NOT EXISTS duffykids.UserSales
+                            (
+                                User VARCHAR(255) NOT NULL,
+                                Sales INT NOT NULL,
+                                FOREIGN KEY(User) REFERENCES duffykids.users(User_Name),
+                                FOREIGN KEY(Sales) REFERENCES duffykids.sales(id)
+                            )
 
                         `
     
@@ -179,7 +200,7 @@ class DATABASE{
                                                                         }
                                                                         else{
                     
-                                                                            this.connector.query(createAuditTrailTableSQL, (error)=>{
+                                                                            this.connector.query(createItemsTableSQL, (error)=>{
 
                                                                                 if(error !== null){
             
@@ -200,7 +221,7 @@ class DATABASE{
                                                                                             })
                                                                                         }
                                                                                         else{
-                                                                                            this.connector.query(createItemsTableSQL, (error)=>{
+                                                                                            this.connector.query(createAuditTrailTableSQL, (error)=>{
                                                                                     
                                                                                                 if(error){
                         
@@ -210,13 +231,42 @@ class DATABASE{
                                                                                                     })
                                                                                                 }
                                                                                                 else{
-                                                                                                    this.connector.commit((err)=>{
-                                                                                                        
+                                                                                                   
+
+                                                                                                    this.connector.query(createItemAuditTrailSQL, (error)=>{
+
                                                                                                         if(error){
-                                                                                                            console.log(err);
-                                                                                                        }
                         
+                                                                                                            this.connector.rollback(()=>{
+                                                                                                                console.log("error");
+                                                                                                                throw error
+                                                                                                            })
+                                                                                                        }
+                                                                                                        else{
+                                                                                                            this.connector.query(createUserSalesSQL, (error)=>{
+
+                                                                                                                if(error){
+                        
+                                                                                                                    this.connector.rollback(()=>{
+                                                                                                                        console.log("error");
+                                                                                                                        throw error
+                                                                                                                    })
+                                                                                                                }
+                                                                                                                else{
+                                                                                                                    this.connector.commit((err)=>{
+                                                                                                                        
+                                                                                                                        if(error){
+                                                                                                                            console.log(err);
+                                                                                                                        }
+                                        
+                                                                                                                    })
+                                                                                                                }
+
+                                                                                                            })
+                                                                                                        }
+
                                                                                                     })
+
                                                                                                 }
                         
                                                                                             })
@@ -303,6 +353,14 @@ class DATABASE{
             }
             ;
 
+            // let insertItemAuditTrailSQL = "INSERT INTO duffykids.itemAuditTrails SET ?";
+            // let itemAuditTrailValues =
+            // {
+
+
+
+            // }
+
             //Sales
             // let insertSalesSQL = "INSERT INTO duffykids.Sales SET ?";
             // const today =  new Date();
@@ -323,87 +381,186 @@ class DATABASE{
                 if(error){
                     throw error
                 }
+                else
+                {
 
-                    
-                this.connector.query(insertCategorySQL, categoryValues, (error, result)=>{
+                        this.connector.query(insertCategorySQL, categoryValues, (error, result)=>{
 
-                    console.log("result: ",result);
-
-    
-                               
-                    if( error === null || error.code === "ER_DUP_ENTRY" ){
-
-                        this.connector.query(insertBrandSQL, brandValues, (error, result)=>{
-
-
-                                
-                                
-                                if( error === null || error.code === "ER_DUP_ENTRY"){
-
-                                    this.connector.query(insertItemSQL, values, (error, result)=>{
-
-                                        console.log("item result: ", result);
-
-                                        if(error){
-
-
-                                            if(error.code === "ER_DUP_ENTRY"){
-
-                                                this.connector.rollback(function(){
-
-                                                    reject("duplicate")
-                                                    throw error
-
-                                                })
-                                            }
-                                            else{
-                                                reject("unknown error")
-                                                throw error
-                                            }
+                            console.log("result: ",result);
+        
             
-                                        }
-                                        else{
-
-                                            this.connector.commit(function(error){
-
+                                       
+                            if( error === null || error.code === "ER_DUP_ENTRY" ){
+        
+                                this.connector.query(insertBrandSQL, brandValues, (error, result)=>{
+        
+        
+                                        
+                                        
+                                        if( error === null || error.code === "ER_DUP_ENTRY"){
+        
+                                            this.connector.query(insertItemSQL, values, (error, result)=>{
+        
+                                                let itemId = result.insertId;
+        
                                                 if(error){
-                                                    reject("unknown error")
-                                                    throw error
+        
+        
+                                                    if(error.code === "ER_DUP_ENTRY"){
+        
+                                                        this.connector.rollback(function(){
+        
+                                                            reject("duplicate")
+                                                            throw error
+        
+                                                        })
+                                                    }
+                                                    else{
+                                                        this.connector.rollback(function(){
+        
+                                                            reject("unknown error")
+                                                            throw error
+        
+                                                        })
+                                                    }
+                    
+                                                }
+                                                else{
+
+                                                    let userValue = 
+                                                    {
+                                                        First_Name: "Samuel",
+                                                        Last_Name: "Opoku Asare",
+                                                        User_Name: "noLimitHendrix",
+                                                        Password: "skype321"
+                                                    }
+
+
+                                                    this.connector.query("SELECT * FROM duffykids.users WHERE User_Name = 'noLimitHendrix'", (error, result)=>{
+
+                                                        console.log(result);
+
+                                                        let user = result.shift();
+
+                                                        console.log(user);
+
+                                                        if(error){
+
+                                                           
+
+                                                            this.connector.rollback(()=>{
+
+                                                                reject("unknown error")
+
+                                                                throw error
+
+                                                            })
+
+                                                        }
+                                                        else if(error === null || error.code === "ER_DUP_ENTRY"){
+
+                                                            let item = result;
+        
+                                                            const Today = new Date();
+        
+                                                            let auditTrailValues = 
+                                                            {
+                                                                Date: `${Today.getFullYear()}-${Today.getMonth()}-${Today.getDate()} ${Today.getHours()}:${Today.getMinutes()}:${Today.getSeconds()}`,
+                                                                User: user.User_Name,
+                                                                Operation: "Creation",
+                                                                Item: itemId
+                                                            }
+                
+                                                            this.connector.query("INSERT INTO duffykids.auditTrails SET ?", auditTrailValues, (error, result)=>{
+        
+                                                                if(error){
+        
+                                                                    this.connector.rollback(function(){
+                
+                                                                        reject("unknown error")
+                                                                        throw error
+                    
+                                                                    })
+        
+                                                                }
+                                                                else{
+        
+                                                                    let itemAuditTrailValues ={
+                                                                        Item: itemId,
+                                                                        AuditTrail: result.insertId
+                                                                    }
+        
+                                                                    this.connector.query("INSERT INTO duffykids.itemAuditTrails SET ?", itemAuditTrailValues, (error)=>{
+                                                                        
+        
+                                                                        if(error){
+
+                                                                            this.connector.rollback(()=>{
+
+                                                                                reject("unknown error")
+        
+                                                                                throw error
+
+                                                                            })
+                                                                           
+                                                                        }
+                                                                        else{
+        
+                                                                            this.connector.commit(function(error){
+                
+                                                                                if(error){
+                                                                                    reject("unknown error")
+                                                                                    throw error
+                                                                                }
+                                
+                                                                                resolve(true)
+                                
+                                                                            })
+        
+                                                                        }
+        
+                                                                    })
+        
+                                                                }
+        
+                                                            })
+                
+                                                        }
+
+                                                    })
+
                                                 }
 
-                                                resolve(true)
-
+        
                                             })
-
                                         }
-
-                                    })
-                                }
-                                else if(error !== null || error.code !== "ER_DUP_ENTRY"){
-
-                                    reject("unknown error")
-                                    throw error
-
-                                }
-
+                                        else if(error !== null || error.code !== "ER_DUP_ENTRY"){
+        
+                                            reject("unknown error")
+                                            throw error
+        
+                                        }
+        
+                                })
+                            }
+                            else if(error !== null || error.code !== "ER_DUP_ENTRY"){
+        
+                                reject("unknown error")
+                                throw error
+        
+                            }
+        
+                            
+        
                         })
-                    }
-                    else if(error !== null || error.code !== "ER_DUP_ENTRY"){
-
-                        reject("unknown error")
-                        throw error
-
-                    }
-
-                    
-
-                })
+        
+                }
+                        
+               
 
             })
 
-           
-
-
+            
 
         })
 
@@ -415,7 +572,7 @@ class DATABASE{
 
         return new Promise((resolve, reject)=>{
 
-            console.log(change);
+            const Today = new Date();
 
 
             let update = {
@@ -425,36 +582,162 @@ class DATABASE{
                 Discount: change.Discount
             }
 
-            // let params = {
-            //     Name: change.Name,
-            //     Brand : change.Brand,
-            //     Category: change.Category,
-            // }
+            
 
             let updateItemSQL = `UPDATE duffykids.items SET ? WHERE Name = '${change.Name}' AND Brand = '${change.Brand}' AND Category = '${change.Category}'`;
+            
 
                        
-            this.connector.query(updateItemSQL, [update, change.Name, change.Brand, change.Category],(error, result)=>{
+            this.connector.beginTransaction((error)=>{
 
                 if(error){
-
-
-                    if(error.code === "ER_DUP_ENTRY"){
-                        reject(new Error("ERR_DUP_ENTRY"))
-                    }
-                    else{
-                        reject(new Error("UNKNWN_ERR"))
-
-                    }
-
+                    reject("unknown error")
                     throw error
-
                 }
                 else{
 
-                    console.log(result);
+                    this.connector.query(updateItemSQL, update,(error, result)=>{
 
-                    resolve(true)
+                        if(error){
+
+                            this.connector.rollback(()=>{
+
+                                if(error.code === "ER_DUP_ENTRY"){
+                                    reject(new Error("ERR_DUP_ENTRY"))
+                                }
+                                else{
+                                    reject(new Error("UNKNWN_ERR"))
+            
+                                }
+            
+                                throw error
+
+                            })
+        
+        
+        
+                        }
+                        else{
+
+                            console.log(change.Name, change.Brand, change.Category);
+
+                            this.connector.query(`SELECT * FROM duffykids.items WHERE Name = '${change.Name}' AND Brand = '${change.Brand} AND Category = '${change.Category}'`,((error, result)=>{
+
+                                
+                                console.log(result);
+
+                                const itemId = result.insertId;
+
+
+                                if(error){
+
+
+
+                                    this.connector.rollback(()=>{
+
+                                        reject("unknown error")
+
+                                        throw error
+
+                                    })
+
+                                }
+                                else{
+
+                                    this.connector.query("SELECT * FROM duffykids.users WHERE User_Name = 'noLimitHendrix'", (error, result)=>{
+        
+        
+                                        let user = result.shift();
+                                        let userId = user.User_Name;
+        
+                                        if(error){
+                                            this.connector.rollback(()=>{
+        
+                                                reject("unknown error")
+                                                throw error
+        
+                                            })
+                                        }
+                                        else{
+        
+                                            let auditTrailValues = 
+                                            {
+                                                Date: `${Today.getFullYear()}-${Today.getMonth()}-${Today.getDate()} ${Today.getHours()}:${Today.getMinutes()}:${Today.getSeconds()}`,
+                                                User: userId,
+                                                Operation: "Edit",
+                                                Item: itemId
+                                            }
+                
+                                            this.connector.query("INSERT INTO duffykids.auditTrails SET ?", auditTrailValues, (error, result)=>{
+                
+                                                if(error){
+                
+                                                    this.connector.rollback(()=>{
+                
+                                                        reject("unknown error")
+                                                        throw error
+                
+                                                    })
+                
+                
+                                                }
+                                                else{
+                
+                                                    this.connector.query("INSERT INTO duffykids.itemAuditTrails SET ?", itemAuditTrailValues, (error)=>{
+                
+                                                        if(error){
+                
+                                                            this.connector.rollback(()=>{
+                
+                                                                reject("unknown error")
+                                                                throw error
+                
+                                                            })
+                
+                                                        }
+                                                        else{
+                
+                                                            this.connector.commit((error)=>{
+                
+                                                                if(error){
+                                
+                                                                    reject("unknown error")
+                                
+                                                                    throw error
+                                                                }
+                                
+                                                                console.log(result);
+                                        
+                                                                resolve(true)
+                                
+                                
+                                                            })
+                
+                                                        }
+                
+                                                    })
+                
+                                                }
+                
+                                            })
+                        
+                                            
+        
+                                        }
+        
+                                    })
+        
+        
+                                }
+
+                            }))
+
+                        }
+   
+        
+                    })
+
+
                 }
 
             })
@@ -652,107 +935,13 @@ class DATABASE{
 
     addItemsBulk(itemArray){
 
+        console.log(itemArray);
+
         return new Promise((resolve, reject)=>{
 
-            const promises= [];
             
 
-            //We need to check if the item we are trying to add to the database does not already exist, to prevent hidden issues and modifications
-
-                const alreadyInDB = [];
-
-                //So for each item we are trying to addd
-                itemArray.forEach((item)=>{
-
-                    promises.push(
-
-                        new Promise((resolve, reject)=>{
-
-                            //We check if it already exists in DB
-                            this.db.items.get({Name: item.Name, Brand: item.Brand, Category: item.Category}, (result)=>{
-
-                                //the get method resolves with undefined if it does not exist
-                                // if it exists
-                                if(result !== undefined){
-                                    console.log(result);
-
-                                    //Add to array of items which already exists in DB
-                                    alreadyInDB.push(item)
-
-                                    //Also remove it from original array
-                                    let itemIndex = itemArray.indexOf(item)
-                                    itemArray.splice(itemIndex, 1)
-
-                                }
-
-                                resolve(itemArray)
-
-                            })
-
-                         })
-                    )
-
-                     //Adding Category and Brand types
-                    this.db.categories.get({Name: item.Category}, (returnedItem)=>{
-
-                        if(returnedItem === undefined){
-                
-                            this.db.categories.add({Name: item.Category})
-                
-                        }
-                
-                    })
-                
-                    this.db.brands.get({Name: item.Brand}, (returnedItem)=>{
-                
-                        if(returnedItem === undefined){
-                
-                            this.db.brands.add({Name: item.Brand})
-                
-                        }
-                
-                    })
-
-                })
-
-                Promise.all(promises)
-                .then(()=>{
-
-                    
-                  if(itemArray.length !== 0){
-
-                        const DBOperations = []
-
-                        itemArray.forEach((item)=>{
-
-                           DBOperations.push(
-
-                                new Promise((resolve, reject)=>{
-
-                                    this.db.items.put(item)
-                                    .then(()=>{
-                                        resolve()
-                                    })        
-
-                                })
-
-                           )
-                        })
-
-                        Promise.all(DBOperations)
-                        .then(()=>{
-                            resolve([alreadyInDB, itemArray])
-                        })
-
-                  }
-                  else{
-
-                    resolve([alreadyInDB, itemArray])
-
-                  }
-
-                   
-                })
+           
 
 
         })

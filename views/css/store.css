@@ -122,7 +122,8 @@ body {
     z-index: 10; }
   body .contentCover--shown {
     background-color: rgba(0, 0, 0, 0.4);
-    pointer-events: fill; }
+    pointer-events: fill;
+    filter: blur(300px); }
 
 .tabItem {
   outline-color: #528973; }
