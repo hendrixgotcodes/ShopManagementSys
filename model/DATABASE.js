@@ -685,7 +685,10 @@ class DATABASE{
                                                 }
                                                 else{
 
-                                                    let itemAuditTrailValues
+                                                    let itemAuditTrailValues = {
+                                                        Item : itemId,
+                                                        AuditTrail: result.insertId
+                                                    }
                 
                                                     this.connector.query("INSERT INTO duffykids.itemAuditTrails SET ?", itemAuditTrailValues, (error)=>{
                 

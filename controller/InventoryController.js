@@ -331,18 +331,22 @@ function editItem(row){
             database.updateItem(values)
              .then((result)=>{
 
+                console.log(result);
+
                 if(result === true){
+
+                    Notifications.showAlert("success", `${name} has been successfully updated.`)
+
                     
                     TableController.editItem(row, name, brand, category, stock, parseFloat(sellingPrice), parseFloat(costPrice), parseFloat(discount))
                     
-                    Notifications.showAlert("success", `${name} has been successfully updated.`)
 
                 }
 
             })
             .catch((e)=>{
 
-                if(e.message === "UNKNWN_ERR" ){
+                if(e.message === "unknown error" ){
                     Notifications.showAlert("error", "Sorry, an unknown error occurred with the database during update")
                 }
                 else if(e.message == "ERR_DUP_ENTRY"){
@@ -636,7 +640,7 @@ ipcRenderer.on('populateTable',(e, Items)=>{
 
             resolved.forEach((item)=>{
 
-                TableController.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.discount,[checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory")
+                TableController.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount,[checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory")
 
             })
 

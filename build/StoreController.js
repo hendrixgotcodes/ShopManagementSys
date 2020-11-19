@@ -168,6 +168,7 @@ class Notifications {
     })().then(() => {
       setTimeout(() => {
         mainBodyContent.querySelector(".alertBanner").classList.add("alertBanner--shown");
+        console.log("shown");
       }, 300); //Automatically remove after three seconds
 
       setTimeout(() => {
@@ -1909,6 +1910,10 @@ class DATABASE {
                             throw error;
                           });
                         } else {
+                          let itemAuditTrailValues = {
+                            Item: itemId,
+                            AuditTrail: result.insertId
+                          };
                           this.connector.query("INSERT INTO duffykids.itemAuditTrails SET ?", itemAuditTrailValues, error => {
                             if (error) {
                               this.connector.rollback(() => {

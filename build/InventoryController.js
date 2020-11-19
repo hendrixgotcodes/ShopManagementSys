@@ -168,6 +168,7 @@ class Notifications {
     })().then(() => {
       setTimeout(() => {
         mainBodyContent.querySelector(".alertBanner").classList.add("alertBanner--shown");
+        console.log("shown");
       }, 300); //Automatically remove after three seconds
 
       setTimeout(() => {
@@ -406,12 +407,14 @@ function editItem(row) {
         Discount: parseFloat(discount)
       };
       database.updateItem(values).then(result => {
+        console.log(result);
+
         if (result === true) {
-          _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.editItem(row, name, brand, category, stock, parseFloat(sellingPrice), parseFloat(costPrice), parseFloat(discount));
           _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", `${name} has been successfully updated.`);
+          _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.editItem(row, name, brand, category, stock, parseFloat(sellingPrice), parseFloat(costPrice), parseFloat(discount));
         }
       }).catch(e => {
-        if (e.message === "UNKNWN_ERR") {
+        if (e.message === "unknown error") {
           _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("error", "Sorry, an unknown error occurred with the database during update");
         } else if (e.message == "ERR_DUP_ENTRY") {
           _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("error", `Sorry, ${values.Name} of brand ${values.Brand} in the ${values.Category} category already exists in database`);
@@ -581,7 +584,7 @@ electron__WEBPACK_IMPORTED_MODULE_0__["ipcRenderer"].on('populateTable', (e, Ite
   });
   database.addItemsBulk(itemsArray).then(resolved => {
     resolved.forEach(item => {
-      _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.discount, [checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory");
+      _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount, [checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory");
     });
     _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", `${resolved.length} Items Have Been Successfully Added.`);
   });
@@ -2009,6 +2012,10 @@ class DATABASE {
                             throw error;
                           });
                         } else {
+                          let itemAuditTrailValues = {
+                            Item: itemId,
+                            AuditTrail: result.insertId
+                          };
                           this.connector.query("INSERT INTO duffykids.itemAuditTrails SET ?", itemAuditTrailValues, error => {
                             if (error) {
                               this.connector.rollback(() => {
