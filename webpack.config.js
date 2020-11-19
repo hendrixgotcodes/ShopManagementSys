@@ -26,21 +26,24 @@ const electron ={
     }
 }
 
-// const regular = {
-//     entry: {
-//         utilTooltip: './views/js/ToolTip.js',
-//     },
-//     output: {
-//         path: path.resolve(__dirname, 'build'),
-//         filename: ['name'].js,
-//     },
-//     module: {
-//         rules:[
-//             {test: /\.js?$/, use: 'babel-loader'},
-//             {test: /\.css?$/, use: 'css-loader'}
-//         ]
-//     },    
-//     mode: 'development'
-// }
+const regular = {
+    entry: {
+        MainGraph: './controller/MainGraph.js',
+    },
+    output: {
+        path: path.resolve(__dirname, 'build'),
+        filename: ['name'].js,
+    },
+    module: {
+        rules:[
+            {test: /\.js?$/, use: 'babel-loader'},
+            {test: /\.css?$/, use: 'css-loader'}
+        ]
+    },    
+    externals: {
+        moment: 'moment'
+    },
+    mode: 'development'
+}
 
-module.exports = electron;
+module.exports = [electron,regular];

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Store Front</title>
+  <link rel="stylesheet" href="../../views/css/maingraph.css">
+</head>
+
+<body>
+
+  <div class="main_menu">
+    <div class="menu_a">
+      <label for="" class="lbl_storeName"><img src="../Icons/logo/logo.png" alt=""></label>
+
+      <div class="menu_iconsContainer">
+
+        <div id="goto_store" tabindex="1" class="menu_icons tabItem">
+          <img src="../Icons/menuIcons/storefront.svg" id="storefront" alt="Goto StoreFront" class="menuIcon tip_store">
+        </div>
+        <div id="goto_inventory" tabindex="2" class="menu_icons tabItem" aria-placeholder="Go to Inventory">
+          <img src="../Icons/menuIcons/inventory.png" id="menuIcon_png" alt="Goto Inventory"
+            class="menuIcon tip_inventory">
+        </div>
+        <div id="goto_analytics" tabindex="3" class="menu_icons tabItem" aria-placeholder="Go to analytics">
+          <img src="../Icons/menuIcons/analytics.svg" alt="Goto analytics" class="menuIcon tip_analytics">
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="menu_b">
+      <center>
+        <img tabindex="4" id="account" src="../Icons/menuIcons/Tray/info.svg" alt="" class="menu_items tabItem">
+        <!-- <input type="checkbox" name="" id="" class="menuB_cb"> -->
+        <img tabindex="5" id="settings" src="../Icons/menuIcons/Tray/settings.svg" alt="" class="menu_items tabItem">
+      </center>
+    </div>
+
+  </div>
+
+  <div class="main_body">
+
+    <div class="titleBar" aria-placeholder="Title Bar">
+
+      <div class="titleBar_location">Growth Rate</div>
+      <div class="titleBar_userType">Maame Dufie</div>
+
+      <div class="titleBar_controlBox">
+        <div class="controlBox_minimize control store" aria-placeholder="minimize">
+          <img src="../Icons/Control_Box/Store/Minimize.png" alt="" />
+        </div>
+        <div class="controlBox_maximize control store" aria-placeholder="maximize">
+          <img src="../Icons/Control_Box/Store/Maximize.png" id="restore_maxi" alt="" />
+        </div>
+        <div class="controlBox_close control store" aria-placeholder="close">
+          <img src="../Icons/Control_Box/Store/Close.png" alt="" />
+        </div>
+      </div>
+
+    </div>
+
+    <div class="mainBody_content">
+     
+      <div class="contentContainer">
+       
+        <div class="graphContainer">
+
+          <div class="infoBoard">
+
+            <div class="info" id="totalSalesMade">
+  
+                <label for="" class="valueLabel">280</label>
+                <label for="" class="tagLabel">Total Sales</label>
+  
+            </div>
+  
+            <div class="info" id="gross_revenue">
+  
+              <label for="" class="valueLabel">GH¢180K</label>
+  
+              <label for="" class="tagLabel">Gross Revenue</label>
+  
+            </div>
+  
+            <div class="info" id="grossProfit">
+  
+              <label for="" class="valueLabel">GH¢100k</label>
+  
+              <label for="" class="tagLabel">Gross Profit</label>
+  
+            </div>
+  
+            <div class="info" id="profitPercentage">
+  
+              <label for="" class="valueLabel">55%</label>
+              
+              <label for="" class="tagLabel">Profit Percentage</label>
+  
+            </div>
+  
+            <div class="info" id="averageBasketValue">
+  
+              <label for="" class="valueLabel">23</label>
+  
+              <label for="" class="tagLabel">Average Basket Value</label>
+  
+            </div>
+  
+            <div class="info" id="averageInventory">
+  
+              <label for="" class="valueLabel">123</label>
+  
+              <label for="" class="tagLabel">Average Inventory</label>
+  
+            </div>
+  
+  
+          </div>
+
+            <canvas id="myChart"></canvas>
+
+            <div class="extra">
+
+                <section class="sections itemSection">
+
+                  <h1 class="itemSection_header">Most Sold Items</h1>
+
+                  <div class="cardsContainer">
+
+                    <div class="items">
+
+                      <div class="itemDetails">
+
+                        <h3 class="itemName itemHeader">Nvidia GTX GEFORCE 105008079797897</h3>
+                        
+                        <lablel class="itemLabel itemBrand">Brand: <span class="itemBrand_value">Nvidia</span></lablel>
+                        <lablel class="itemLabel itemCategory">Category: <span class="itemCategory_value">Graphic Card</span></lablel>
+
+
+                      </div>
+                      <div class="itemStats">
+
+                        <label class="totalSales">
+                          <h3 class="totalSales_value itemHeader">23</h3>
+                          <label class="totalSales_label">Total Sales</label>
+                        </label>
+
+                        <label class="totalProfit">
+
+                          <h3 class="totalProfit_value itemHeader">GH¢230</h3>
+                          <label class="totalProfit_label">Total Profit</label>
+
+                        </label>
+
+                      </div>
+
+                    </div>
+
+                    <div class="items">
+
+                      <div class="itemDetails">
+
+                        <h3 class="itemName itemHeader">Push Pins</h3>
+                        
+                        <lablel class="itemLabel itemBrand">Brand: <span class="itemBrand_value">Nataraj</span></lablel>
+                        <lablel class="itemLabel itemCategory">Category: <span class="itemCategory_value">Pins</span></lablel>
+
+
+                      </div>
+                      <div class="itemStats">
+
+                        <label class="totalSales">
+                          <h3 class="totalSales_value itemHeader">23</h3>
+                          <label class="totalSales_label">Total Sales</label>
+                        </label>
+
+                        <label class="totalProfit">
+
+                          <h3 class="totalProfit_value itemHeader">GH¢230</h3>
+                          <label class="totalProfit_label">Total Profit</label>
+
+                        </label>
+
+                      </div>
+
+                    </div>
+
+                    <div class="items">
+
+                      <div class="itemDetails">
+
+                        <h3 class="itemName itemHeader">Push Pins</h3>
+                        
+                        <lablel class="itemLabel itemBrand">Brand: <span class="itemBrand_value">Nataraj</span></lablel>
+                        <lablel class="itemLabel itemCategory">Category: <span class="itemCategory_value">Pins</span></lablel>
+
+
+                      </div>
+                      <div class="itemStats">
+
+                        <label class="totalSales">
+                          <h3 class="totalSales_value itemHeader">23</h3>
+                          <label class="totalSales_label">Total Sales</label>
+                        </label>
+
+                        <label class="totalProfit">
+
+                          <h3 class="totalProfit_value itemHeader">GH¢230</h3>
+                          <label class="totalProfit_label">Total Profit</label>
+
+                        </label>
+
+                      </div>
+
+                    </div>
+
+                    <div class="items">
+
+                      <div class="itemDetails">
+
+                        <h3 class="itemName itemHeader">Push Pins</h3>
+                        
+                        <lablel class="itemLabel itemBrand">Brand: <span class="itemBrand_value">Nataraj</span></lablel>
+                        <lablel class="itemLabel itemCategory">Category: <span class="itemCategory_value">Pins</span></lablel>
+
+
+                      </div>
+                      <div class="itemStats">
+
+                        <label class="totalSales">
+                          <h3 class="totalSales_value itemHeader">23</h3>
+                          <label class="totalSales_label">Total Sales</label>
+                        </label>
+
+                        <label class="totalProfit">
+
+                          <h3 class="totalProfit_value itemHeader">GH¢230</h3>
+                          <label class="totalProfit_label">Total Profit</label>
+
+                        </label>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                </section>
+
+                <section class="sections userSection"></section>
+
+                <canvas class="sections brandSection"></canvas>
+
+
+            </div>
+
+
+        </div>
+
+
+      </div>
+
+
+    </div>
+
+    <div class="footer">
+      <div class="footer_clock"">
+        <span class=" clock_hour">6</span>
+        <span id="clock_blinker">: </span>
+        <span class="clock_min"> 15</span>
+        <span class="clock_ampm">PM</span>
+      </div>
+      <div class="footer_actions">
+     
+      </div>
+    </div>
+
+
+  </div>
+
+   
+    <!--  -->
+
+  <div class="contentCover"></div>
+
+  <script src="../../build/GeneralController.js"></script>
+  <script src="../../views/js/sortTable.js"></script>
+  <script src="../../build/toolTips.js"></script>
+  <script src="../../views/js/clock.js"></script>
+  <script src="../../build/settingsController.js"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script> -->
+  <script src="../../build/MainGraph.js"></script>
+  <!-- <script src="../../build/toolTips_Modals.js"></script> -->
+</body>
+
+</html>

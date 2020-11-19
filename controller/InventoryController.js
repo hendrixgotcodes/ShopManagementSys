@@ -408,7 +408,7 @@ function addItem(){
 
                 if(result === true){
 
-                    TableController.createItem(storeObject.Name, storeObject.Brand, storeObject.Category, storeObject.Stock, storeObject.SellingPrice, discount,[checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "", false, false, "inventory")
+                    TableController.createItem(result.Name, result.Brand, result.Category, result.Stock, result.SellingPrice, result.Discount,[checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "", false, false, "inventory")
                     .then(()=>{
     
                         Notifications.showAlert("success", "Successfuly added to inventory")
@@ -636,7 +636,7 @@ ipcRenderer.on('populateTable',(e, Items)=>{
 
             resolved.forEach((item)=>{
 
-                TableController.createItem(item.Name, item.Brand, item.Category, item.Stock, item.SellingPrice, item.discount,[checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory")
+                TableController.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.discount,[checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory")
 
             })
 

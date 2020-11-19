@@ -98,8 +98,8 @@ class DATABASE{
                                     UnitDiscount DECIMAL(8,2) NOT NULL,
                                     TotalDiscount DECIMAL(8,2) NOT NULL,
                                     PRIMARY KEY(id),
-                                    FOREIGN KEY (User) REFERENCES duffykids.users(User_Name),
-                                    FOREIGN KEY (Item) REFERENCES duffykids.items(id)
+                                    FOREIGN KEY (User) REFERENCES duffykids.users(User_Name) ON DELETE CASCADE ON UPDATE CASCADE,
+                                    FOREIGN KEY (Item) REFERENCES duffykids.items(id) ON DELETE CASCADE ON UPDATE CASCADE
                                 )
 
                         `
@@ -109,8 +109,8 @@ class DATABASE{
                             (
                                 Item INT NOT NULL,
                                 AuditTrail INT NOT NULL,
-                                FOREIGN KEY (AuditTrail) REFERENCES duffykids.AuditTrails(id) ON DELETE CASCADE,
-                                FOREIGN KEY (Item) REFERENCES duffykids.items(id) ON DELETE CASCADE
+                                FOREIGN KEY (AuditTrail) REFERENCES duffykids.AuditTrails(id) ON DELETE CASCADE ON UPDATE CASCADE,
+                                FOREIGN KEY (Item) REFERENCES duffykids.items(id) ON DELETE CASCADE ON UPDATE CASCADE
                             )
 
                         `
@@ -122,7 +122,7 @@ class DATABASE{
                                 User VARCHAR(255) NOT NULL,
                                 Sales INT NOT NULL,
                                 FOREIGN KEY(User) REFERENCES duffykids.users(User_Name),
-                                FOREIGN KEY(Sales) REFERENCES duffykids.sales(id)
+                                FOREIGN KEY(Sales) REFERENCES duffykids.sales(id) ON DELETE CASCADE ON UPDATE CASCADE
                             )
 
                         `
@@ -619,12 +619,7 @@ class DATABASE{
 
                             console.log(change.Name, change.Brand, change.Category);
 
-                            this.connector.query(`SELECT * FROM duffykids.items WHERE Name = '${change.Name}' AND Brand = '${change.Brand} AND Category = '${change.Category}'`,((error, result)=>{
-
-                                
-                                console.log(result);
-
-                                const itemId = result.insertId;
+                            this.connector.query(`SELECT * FROM duffykids.items WHERE Name = '${change.Name}' AND Brand = '${change.Brand}' AND Category = '${change.Category}'`,((error, result)=>{
 
 
                                 if(error){
@@ -641,6 +636,13 @@ class DATABASE{
 
                                 }
                                 else{
+
+                                    console.log(result);
+
+
+                                    const item = result.shift();
+                                    const itemId = item.id;
+    
 
                                     this.connector.query("SELECT * FROM duffykids.users WHERE User_Name = 'noLimitHendrix'", (error, result)=>{
         
@@ -682,6 +684,8 @@ class DATABASE{
                 
                                                 }
                                                 else{
+
+                                                    let itemAuditTrailValues
                 
                                                     this.connector.query("INSERT INTO duffykids.itemAuditTrails SET ?", itemAuditTrailValues, (error)=>{
                 
@@ -961,8 +965,9 @@ class DATABASE{
 
                                 if(error === null || error.code === "ER_DUP_ENTRY"){
 
-                                    this.connector.query("INSERT INTO duffykids.items SET ? ON DUPLICATE KEY UPDATE ?", [item,item], (error, result)=>{
+                                    this.connector.query("INSERT INTO duffykids.items SET ? ON DUPLICATE KEY UPDATE ?", [item, item], (error, result)=>{
 
+                                        console.log("item result: ", result);
 
                                         const itemId = result.insertId;
 
@@ -1208,6 +1213,7 @@ class DATABASE{
 
 
     }
+
 
 
 

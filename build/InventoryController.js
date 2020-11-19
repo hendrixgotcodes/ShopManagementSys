@@ -449,7 +449,7 @@ function addItem() {
 
     database.addNewItem(storeObject).then(result => {
       if (result === true) {
-        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(storeObject.Name, storeObject.Brand, storeObject.Category, storeObject.Stock, storeObject.SellingPrice, discount, [checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "", false, false, "inventory").then(() => {
+        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(result.Name, result.Brand, result.Category, result.Stock, result.SellingPrice, result.Discount, [checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "", false, false, "inventory").then(() => {
           _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", "Successfuly added to inventory");
         });
       }
@@ -581,7 +581,7 @@ electron__WEBPACK_IMPORTED_MODULE_0__["ipcRenderer"].on('populateTable', (e, Ite
   });
   database.addItemsBulk(itemsArray).then(resolved => {
     resolved.forEach(item => {
-      _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(item.Name, item.Brand, item.Category, item.Stock, item.SellingPrice, item.discount, [checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory");
+      _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.discount, [checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory");
     });
     _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", `${resolved.length} Items Have Been Successfully Added.`);
   });
@@ -1664,8 +1664,8 @@ class DATABASE {
                                     UnitDiscount DECIMAL(8,2) NOT NULL,
                                     TotalDiscount DECIMAL(8,2) NOT NULL,
                                     PRIMARY KEY(id),
-                                    FOREIGN KEY (User) REFERENCES duffykids.users(User_Name),
-                                    FOREIGN KEY (Item) REFERENCES duffykids.items(id)
+                                    FOREIGN KEY (User) REFERENCES duffykids.users(User_Name) ON DELETE CASCADE ON UPDATE CASCADE,
+                                    FOREIGN KEY (Item) REFERENCES duffykids.items(id) ON DELETE CASCADE ON UPDATE CASCADE
                                 )
 
                         `;
@@ -1674,8 +1674,8 @@ class DATABASE {
                             (
                                 Item INT NOT NULL,
                                 AuditTrail INT NOT NULL,
-                                FOREIGN KEY (AuditTrail) REFERENCES duffykids.AuditTrails(id) ON DELETE CASCADE,
-                                FOREIGN KEY (Item) REFERENCES duffykids.items(id) ON DELETE CASCADE
+                                FOREIGN KEY (AuditTrail) REFERENCES duffykids.AuditTrails(id) ON DELETE CASCADE ON UPDATE CASCADE,
+                                FOREIGN KEY (Item) REFERENCES duffykids.items(id) ON DELETE CASCADE ON UPDATE CASCADE
                             )
 
                         `;
@@ -1685,7 +1685,7 @@ class DATABASE {
                                 User VARCHAR(255) NOT NULL,
                                 Sales INT NOT NULL,
                                 FOREIGN KEY(User) REFERENCES duffykids.users(User_Name),
-                                FOREIGN KEY(Sales) REFERENCES duffykids.sales(id)
+                                FOREIGN KEY(Sales) REFERENCES duffykids.sales(id) ON DELETE CASCADE ON UPDATE CASCADE
                             )
 
                         `;
@@ -1975,16 +1975,16 @@ class DATABASE {
               });
             } else {
               console.log(change.Name, change.Brand, change.Category);
-              this.connector.query(`SELECT * FROM duffykids.items WHERE Name = '${change.Name}' AND Brand = '${change.Brand} AND Category = '${change.Category}'`, (error, result) => {
-                console.log(result);
-                const itemId = result.insertId;
-
+              this.connector.query(`SELECT * FROM duffykids.items WHERE Name = '${change.Name}' AND Brand = '${change.Brand}' AND Category = '${change.Category}'`, (error, result) => {
                 if (error) {
                   this.connector.rollback(() => {
                     reject("unknown error");
                     throw error;
                   });
                 } else {
+                  console.log(result);
+                  const item = result.shift();
+                  const itemId = item.id;
                   this.connector.query("SELECT * FROM duffykids.users WHERE User_Name = 'noLimitHendrix'", (error, result) => {
                     let user = result.shift();
                     let userId = user.User_Name;
@@ -2151,6 +2151,7 @@ class DATABASE {
               this.connector.query(`INSERT INTO duffykids.itemCategories SET Name='${item.Category}'`, error => {
                 if (error === null || error.code === "ER_DUP_ENTRY") {
                   this.connector.query("INSERT INTO duffykids.items SET ? ON DUPLICATE KEY UPDATE ?", [item, item], (error, result) => {
+                    console.log("item result: ", result);
                     const itemId = result.insertId;
 
                     if (error) {
