@@ -366,6 +366,7 @@ function setSellingItemProperties(row){
     sellingItem.brand = row.querySelector('.td_Brands').innerText
     sellingItem.category = row.querySelector('.td_Category').innerText
     sellingItem.price = row.querySelector('.td_Price').innerText;
+    sellingItem.costPrice = row.querySelector('.td_costPrice').innerText;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -380,24 +381,55 @@ function showItemsInCart(){
 
 
     Modal.createCheckout(cart, totalSelectedRows,cartCount)
-    .then((totalCost)=>{
+    .then((result)=>{
+
+        let totalCost = result[1];
+
+        console.log(totalCost);
+
+       
 
         if(totalCost >= 0){
 
             salesMade = salesMade + totalCost;
 
+            database.makeSale(result[0])
+            .then((result)=>{
+
+                if(result === true){
+
+                     //Parsing it through a converter
+                    let forSpan = UnitConverter.convert(salesMade);
+
+                    document.querySelector('#salesMade_amount').innerText = forSpan;
+
+                    Notifications.showAlert("success", "Great! sale made successfully")
+
+                    cartCount.innerText = '0'
+                    cartCount.style.transform = "scale(0)"
+                    
+                    cart.forEach((item)=>{
+
+                        TableController.uncheckRows(item.name, item.brand)
+
+                    })
+
+                    cart = [];
+                    totalSelectedRows = 0;
+                    footer_btn.disabled = true;
+
+
+
+                }
+
+            })
+            .catch(()=>{
+
+                Notifications.showAlert("error", "Error! Failed to make sale.")
+
+            })
+
              
-
-
-            //Parsing it through a converter
-            let forSpan = UnitConverter.convert(salesMade);
-
-            document.querySelector('#salesMade_amount').innerText = forSpan;
-
-            Notifications.showAlert("success", "Sales Made Successfully")
-
-            cart = [];
-            totalSelectedRows = 0;
 
 
         }

@@ -1217,6 +1217,182 @@ class DATABASE{
 
     }
 
+    makeSale(newSale){
+
+       return new Promise((resolve, reject)=>{
+
+            const today = new Date();
+
+            newSale.forEach((sale)=>{
+
+                console.log("sale: ",sale);
+
+                const actualSale = {
+
+                    Date: `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`,
+                    AmountPurchased: sale.AmountPurchased,
+                    CashMade: sale.CashMade,
+                    ProfitMade: sale.ProfitMade,
+                    UnitDiscount: sale.UnitDiscount,
+                    TotalDiscount: sale.TotalDiscount
+
+                }
+
+
+                this.connector.query("SELECT * FROM duffykids.users WHERE User_Name = 'noLimitHendrix'",(error, result)=>{
+
+                    if(error){
+                        reject('unknown error')
+                        throw error
+                    }
+                    else{
+
+                        console.log(result);
+    
+                        const user = result.shift();
+                        const userId = user.User_Name;
+                        actualSale.User = userId;
+    
+                        this.connector.query(`SELECT * FROM duffykids.items WHERE Name = '${sale.Name}' AND Brand='${sale.Brand}' AND Category='${sale.category}'`, (error, result)=>{
+    
+                            if(error){
+    
+                                reject("unknown error")
+                                throw error
+                                
+                            }
+                            else{
+    
+                                const item = result.shift();
+                                const itemId = item.id
+                                actualSale.Item = itemId;
+
+                                let inStock = item.InStock;
+
+                                inStock = inStock - actualSale.AmountPurchased;
+    
+                                this.connector.beginTransaction((error)=>{
+    
+                                    if(error){
+                                        reject("unknown error")
+                                        throw error
+                                    }
+                                    else{
+    
+                                        this.connector.query("INSERT INTO duffykids.sales SET ?", actualSale, (error, result)=>{
+    
+                                            if(error){
+    
+                                                this.connector.rollback(()=>{
+    
+                                                    reject("unknown error")
+                                                    throw error
+    
+                                                })
+                                                
+                                            }
+                                            else{
+    
+                                                let userSaleValue = {
+                                                    User: userId,
+                                                    Sales: result.insertId
+                                                }
+            
+                                                this.connector.query("INSERT INTO duffykids.UserSales SET ?", userSaleValue, (error)=>{
+    
+                                                    if(error){
+    
+                                                        this.connector.rollback(()=>{
+    
+                                                            reject("unknown error")
+                                                            throw error
+    
+                                                        })
+    
+                                                    }
+                                                    else{
+                                                       
+                                                        this.connector.query(`UPDATE duffykids.items SET InStock = '${inStock}' WHERE Name='${sale.Name}' AND Brand='${sale.Brand}' AND Category='${sale.category}'`, (error)=>{
+
+                                                            if(error){
+                                                                this.connector.rollback(()=>{
+
+                                                                    reject("unknown error")
+                                                                    throw error
+
+                                                                })
+                                                            }
+                                                            else{
+
+                                                                this.connector.commit(()=>{
+
+                                                                    resolve(true)
+
+                                                                })
+
+                                                            }
+
+                                                        })
+
+                                                    }
+    
+                                                })
+            
+                                            }
+            
+                                        })
+    
+                                    }
+    
+                                })
+    
+                            }
+    
+                        })
+    
+                    }
+    
+                })
+    
+
+            })
+
+       })
+
+    }
+
+    validateUser(userName, Password){
+
+        return new Promise((resolve, reject)=>{
+
+            this.connector.query(`SELECT * FROM duffykids.users WHERE User_Name ='${userName}' AND Password='${Password}'`, (error, result)=>{
+
+                if(error){
+                    reject("unknown error")
+                    throw error
+                }
+                else if(result){
+                    
+                    let user = result.shift();
+
+                    if(user === undefined){
+                        reject()
+                    }
+                    else if(user.User_Name === userName){
+                        resolve(true)
+                    }
+                    else{
+                        reject()
+                    }
+
+                }
+    
+            })
+
+        })
+
+    }
+
 
 
 

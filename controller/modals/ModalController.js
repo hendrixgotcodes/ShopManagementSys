@@ -459,10 +459,18 @@ class Modal {
 
             let totalPrice = 0;
 
+            let totalCostPrice = 0
+            let revenue = 0
+
                         
             cart.forEach((item)=>{
-                totalPrice +=  parseFloat(item.price * item.amountPurchased)
+                totalPrice +=  parseFloat(item.price * item.amountPurchased);
+
+                totalCostPrice += parseFloat(item.costPrice * item.amountPurchased)
             })
+
+            revenue = totalPrice;
+
 
             totalPrice = parseFloat(totalPrice).toFixed(2)
 
@@ -560,55 +568,36 @@ class Modal {
                     //Sell button function
                     function sellItems(){
 
+                        console.log("selling");
+
                         const sellBtnIco =  itemForm.querySelector(".dialogConfirm").querySelector('img')
                         sellBtnIco.setAttribute("src", "../../utils/media/animations/loaders/Rolling-1s-200px.svg")
 
-                        const db = new DATABASE();
-
-                        let promises = [];
+                        let Sale = []
 
                         cart.forEach((item)=>{
 
-                            promises.push(
+                            Sale.push({
 
-                                new Promise((resolve, reject)=>{
-
-                                    db.getItemStock({Name: item.name, Brand: item.brand})
-                                    .then((totalStock)=>{
-
-                                        totalStock = totalStock - parseInt(item.amountPurchased);
-
-                                        db.updateItemStock({Name: item.name, Brand: item.brand}, totalStock.toString())
-                                        .then(()=>{
-                                            resolve()
-                                        })
-
-                                    })
-
-
-                                })
-
-                            )
-
-                        })
-
-                        Promise.all(promises)
-                        .then(()=>{
-
-                            cartCount.innerText = '0'
-                            cartCount.style.transform = "scale(0)"
-                            
-                            cart.forEach((item)=>{
-
-                                TableController.uncheckRows(item.name, item.brand)
+                                Name: item.name,
+                                Brand: item.brand,
+                                category: item.category,
+                                AmountPurchased: item.amountPurchased,
+                                CashMade: parseFloat(item.price * item.amountPurchased),
+                                ProfitMade: parseFloat(item.price * item.amountPurchased) - parseFloat(item.costPrice * item.amountPurchased),
+                                UnitDiscount: 0,
+                                TotalDiscount: 0
 
                             })
 
-                            exitBox()
-
-                            resolve(totalPrice);
-
                         })
+                        
+
+                        exitBox()
+
+                        console.log(Sale, totalPrice);
+
+                        resolve([Sale, totalPrice]);
 
 
                     }

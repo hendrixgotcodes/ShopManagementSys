@@ -465,6 +465,7 @@ function setSellingItemProperties(row) {
   sellingItem.brand = row.querySelector('.td_Brands').innerText;
   sellingItem.category = row.querySelector('.td_Category').innerText;
   sellingItem.price = row.querySelector('.td_Price').innerText;
+  sellingItem.costPrice = row.querySelector('.td_costPrice').innerText;
 } //-----------------------------------------------------------------------------------------------
 
 
@@ -475,15 +476,30 @@ function amtPurchased(amntPurchased) {
 
 
 function showItemsInCart() {
-  _modals_ModalController__WEBPACK_IMPORTED_MODULE_3__["default"].createCheckout(cart, totalSelectedRows, cartCount).then(totalCost => {
-    if (totalCost >= 0) {
-      salesMade = salesMade + totalCost; //Parsing it through a converter
+  _modals_ModalController__WEBPACK_IMPORTED_MODULE_3__["default"].createCheckout(cart, totalSelectedRows, cartCount).then(result => {
+    let totalCost = result[1];
+    console.log(totalCost);
 
-      let forSpan = _utilities_UnitConverter__WEBPACK_IMPORTED_MODULE_5___default.a.convert(salesMade);
-      document.querySelector('#salesMade_amount').innerText = forSpan;
-      _controller_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_0___default.a.showAlert("success", "Sales Made Successfully");
-      cart = [];
-      totalSelectedRows = 0;
+    if (totalCost >= 0) {
+      salesMade = salesMade + totalCost;
+      database.makeSale(result[0]).then(result => {
+        if (result === true) {
+          //Parsing it through a converter
+          let forSpan = _utilities_UnitConverter__WEBPACK_IMPORTED_MODULE_5___default.a.convert(salesMade);
+          document.querySelector('#salesMade_amount').innerText = forSpan;
+          _controller_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_0___default.a.showAlert("success", "Great! sale made successfully");
+          cartCount.innerText = '0';
+          cartCount.style.transform = "scale(0)";
+          cart.forEach(item => {
+            _utilities_TableController__WEBPACK_IMPORTED_MODULE_4___default.a.uncheckRows(item.name, item.brand);
+          });
+          cart = [];
+          totalSelectedRows = 0;
+          footer_btn.disabled = true;
+        }
+      }).catch(() => {
+        _controller_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_0___default.a.showAlert("error", "Error! Failed to make sale.");
+      });
     }
   });
 } //-----------------------------------------------------------------------------------------------
@@ -823,9 +839,13 @@ class Modal {
   static createCheckout(cart, totalSelectedRows, cartCount) {
     return new Promise((resolve, reject) => {
       let totalPrice = 0;
+      let totalCostPrice = 0;
+      let revenue = 0;
       cart.forEach(item => {
         totalPrice += parseFloat(item.price * item.amountPurchased);
+        totalCostPrice += parseFloat(item.costPrice * item.amountPurchased);
       });
+      revenue = totalPrice;
       totalPrice = parseFloat(totalPrice).toFixed(2);
       const formTemplate = `
                 <div class="dialogContainer fullwidth aDialog" role="container">
@@ -894,35 +914,25 @@ class Modal {
       //Sell button function
 
       function sellItems() {
+        console.log("selling");
         const sellBtnIco = itemForm.querySelector(".dialogConfirm").querySelector('img');
         sellBtnIco.setAttribute("src", "../../utils/media/animations/loaders/Rolling-1s-200px.svg");
-        const db = new _model_DATABASE__WEBPACK_IMPORTED_MODULE_0___default.a();
-        let promises = [];
+        let Sale = [];
         cart.forEach(item => {
-          promises.push(new Promise((resolve, reject) => {
-            db.getItemStock({
-              Name: item.name,
-              Brand: item.brand
-            }).then(totalStock => {
-              totalStock = totalStock - parseInt(item.amountPurchased);
-              db.updateItemStock({
-                Name: item.name,
-                Brand: item.brand
-              }, totalStock.toString()).then(() => {
-                resolve();
-              });
-            });
-          }));
-        });
-        Promise.all(promises).then(() => {
-          cartCount.innerText = '0';
-          cartCount.style.transform = "scale(0)";
-          cart.forEach(item => {
-            TableController.uncheckRows(item.name, item.brand);
+          Sale.push({
+            Name: item.name,
+            Brand: item.brand,
+            category: item.category,
+            AmountPurchased: item.amountPurchased,
+            CashMade: parseFloat(item.price * item.amountPurchased),
+            ProfitMade: parseFloat(item.price * item.amountPurchased) - parseFloat(item.costPrice * item.amountPurchased),
+            UnitDiscount: 0,
+            TotalDiscount: 0
           });
-          exitBox();
-          resolve(totalPrice);
         });
+        exitBox();
+        console.log(Sale, totalPrice);
+        resolve([Sale, totalPrice]);
       } //Function called to close modal
 
 
@@ -2183,6 +2193,108 @@ class DATABASE {
         Name: userInfo.FirstName,
         userInfo
       }).modify(userInfo);
+    });
+  }
+
+  makeSale(newSale) {
+    return new Promise((resolve, reject) => {
+      const today = new Date();
+      newSale.forEach(sale => {
+        console.log("sale: ", sale);
+        const actualSale = {
+          Date: `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`,
+          AmountPurchased: sale.AmountPurchased,
+          CashMade: sale.CashMade,
+          ProfitMade: sale.ProfitMade,
+          UnitDiscount: sale.UnitDiscount,
+          TotalDiscount: sale.TotalDiscount
+        };
+        this.connector.query("SELECT * FROM duffykids.users WHERE User_Name = 'noLimitHendrix'", (error, result) => {
+          if (error) {
+            reject('unknown error');
+            throw error;
+          } else {
+            console.log(result);
+            const user = result.shift();
+            const userId = user.User_Name;
+            actualSale.User = userId;
+            this.connector.query(`SELECT * FROM duffykids.items WHERE Name = '${sale.Name}' AND Brand='${sale.Brand}' AND Category='${sale.category}'`, (error, result) => {
+              if (error) {
+                reject("unknown error");
+                throw error;
+              } else {
+                const item = result.shift();
+                const itemId = item.id;
+                actualSale.Item = itemId;
+                let inStock = item.InStock;
+                inStock = inStock - actualSale.AmountPurchased;
+                this.connector.beginTransaction(error => {
+                  if (error) {
+                    reject("unknown error");
+                    throw error;
+                  } else {
+                    this.connector.query("INSERT INTO duffykids.sales SET ?", actualSale, (error, result) => {
+                      if (error) {
+                        this.connector.rollback(() => {
+                          reject("unknown error");
+                          throw error;
+                        });
+                      } else {
+                        let userSaleValue = {
+                          User: userId,
+                          Sales: result.insertId
+                        };
+                        this.connector.query("INSERT INTO duffykids.UserSales SET ?", userSaleValue, error => {
+                          if (error) {
+                            this.connector.rollback(() => {
+                              reject("unknown error");
+                              throw error;
+                            });
+                          } else {
+                            this.connector.query(`UPDATE duffykids.items SET InStock = '${inStock}' WHERE Name='${sale.Name}' AND Brand='${sale.Brand}' AND Category='${sale.category}'`, error => {
+                              if (error) {
+                                this.connector.rollback(() => {
+                                  reject("unknown error");
+                                  throw error;
+                                });
+                              } else {
+                                this.connector.commit(() => {
+                                  resolve(true);
+                                });
+                              }
+                            });
+                          }
+                        });
+                      }
+                    });
+                  }
+                });
+              }
+            });
+          }
+        });
+      });
+    });
+  }
+
+  validateUser(userName, Password) {
+    return new Promise((resolve, reject) => {
+      this.connector.query(`SELECT * FROM duffykids.users WHERE User_Name ='${userName}' AND Password='${Password}'`, (error, result) => {
+        if (error) {
+          reject("unknown error");
+          throw error;
+        } else if (result) {
+          let user = result.shift();
+
+          if (user === undefined) {
+            reject();
+          } else if (user.User_Name === userName) {
+            resolve(true);
+          } else {
+            reject();
+          }
+        }
+      });
     });
   }
 

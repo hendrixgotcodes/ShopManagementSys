@@ -8,6 +8,7 @@ const electron ={
         toolTips: './controller/utilities/ToolTipController.js',
         settingsController: './controller/modals/settingsController.js',
         StoreController: './controller/StoreController.js',
+        LoginController: './controller/LoginController.js'
     },
     output: {
         path: path.resolve(__dirname, 'build'),

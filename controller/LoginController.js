@@ -2,7 +2,10 @@
 const {
     ipcRenderer
 } = require('electron');
+const DATABASE = require('../model/DATABASE');
+const Notifications = require('./Alerts/NotificationController');
 
+const database = new DATABASE();
 
 
 //DOM Elements
@@ -12,6 +15,7 @@ const controlBoxClose = document.querySelector('.controlBox_close');
 const restoreMaxi = document.getElementById('restore_maxi');
 const formBtn = document.querySelector('.form_btn');
 const formCheck = document.querySelector('.form_check');
+const tbUserName = document.querySelector('#username');
 const password = document.querySelector('#password');
 const visIcon = document.querySelector('.vis_icon');
 const btnLoader = document.querySelector(".form_btn > img")
@@ -29,6 +33,7 @@ controlBoxMaximize.addEventListener('click', sendMaximizeEvent)
 controlBoxClose.addEventListener('click', sendCloseEvent)
 formBtn.addEventListener('click', loadStore);
 formCheck.addEventListener('click', togglePassVisibility)
+
 
 
 
@@ -65,12 +70,31 @@ function sendCloseEvent() {
 
 function loadStore(e) {
 
+    console.log("in store");
+
     btnLoader.setAttribute("src", "../../utils/media/animations/loaders/Infinity-1s-200px.svg")
     btnLoader.classList.add("img_shown")
 
-    setTimeout(()=>{
-        ipcRenderer.send('loadStore', [userName, userType]);
-    }, 3000)
+    database.validateUser(tbUserName.value, password.value)
+    .then((result)=>{
+
+
+        if(result === true){
+
+                ipcRenderer.send('loadStore', [userName, userType]);
+
+        }
+
+    })
+    .catch(()=>{
+
+        Notifications.showAlert("error", "Sorry invalid password")
+
+    })
+
+
+
+   
 
 }
 
