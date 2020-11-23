@@ -77,26 +77,6 @@ toolBarBtn.addEventListener('click',(e)=>{
 
 
 
-
-
-
-//For "footer_btn"
-footer_btn.addEventListener('mouseover',toggleTBbtn_white);
-footer_btn.addEventListener('mouseleave',toggleTBbtn_default);
-
-footer_btn.addEventListener("click", (e)=>{
-    e.preventDefault();
-
-    //Displays Modal to show selected Items
-    showItemsInCart();
-    // calling function to uncheck checked rows
-    // uncheckMarkedRows()
-})
-
-
-
-
-
 //For "footer_tb"
 footer_tb.addEventListener("blur",()=>{
 
@@ -257,17 +237,6 @@ function removeSettingsModal(cover){
     cover.classList.toggle('contentCover--shown');
 }
 
-
-//-----------------------------------------------------------------------------------------------
-function toggleTBbtn_white(){
-    footer_btn_icon.setAttribute('src', '../Icons/toolBar/checkout.svg')
-}
-
-
-//-----------------------------------------------------------------------------------------------
-function toggleTBbtn_default(){
-    footer_btn_icon.setAttribute('src', '../Icons/toolBar/checkout--green.svg')
-}
 
 //-----------------------------------------------------------------------------------------------
 function toggleRowCB(row){

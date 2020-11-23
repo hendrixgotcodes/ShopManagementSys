@@ -44,6 +44,10 @@ body {
     flex-flow: column;
     justify-content: space-between;
     align-items: center;
+    position: absolute;
+    left: 0%;
+    top: 0;
+    z-index: 5;
 }
 
 .menu_a {
@@ -145,6 +149,9 @@ body {
     justify-content: center;
     align-items: center;
     overflow: hidden;
+    position: absolute;
+    right: 0;
+    top: 0;
     
 
     @import '../scss/layout/titleBar';
@@ -163,8 +170,11 @@ body {
 
         .contentContainer {
             width: 100%;
-            height: 90%;
+            height: 91%;
             position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
 
             .emptyBanner{
                 width: 100%;
@@ -197,9 +207,228 @@ body {
 
             @import '../scss/layout/tables/storeTables';
 
+            .cartContainer{
+
+                width: 35%;  
+                height: 100%;  
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+                .cart{
+
+                    width: 95%;
+                    height: 97%;
+                    background-color: $WHITE;
+                    box-shadow: -1px 3px 5px rgba($color: $primary_green, $alpha: 0.15);
+                    border-radius: 8px;
+                    padding: .4rem .8rem;
+                    color: $primary_black;
+
+                    .cartHeader{
+
+                        width: 100%;
+                        height: 8%;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        position: relative;
+                        // border-bottom: 2px solid lighten($color: $primary_black, $amount: 50);
+
+                        &::after{
+                            width: 100%;
+                            height: 1.9%;
+                            border-radius: 28px;
+                            content: '';
+                            position: absolute;
+                            bottom: 0;
+                            left: 0;
+                            background-color: lighten($color: $primary_black, $amount: 52);
+                        }
+
+                        .cartTitle{
+
+                            font-size: 1.5rem;
+                            color: lighten($color: $primary_black, $amount: 15);
+                            display: block;
+                            width: 23%;
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            font-weight: 600;
+
+                            .cartTitle_icon{
+                                width: 31%;
+                            }
+                        }
+
+                        .btnCart_clear{
+                            display: block;
+                            width: 22%;
+                            height: 65%;
+                            border: none;
+                            font-size: .9rem;
+                            color: $WHITE;
+                            border-radius: 8px;
+                            // background-color: rgba($color: $primary_green, $alpha: 1);
+                            background-color: $secondary_red;
+                        }
+
+                    }
+
+                    .cartItems{
+
+                        width: 100%;
+                        height: 50%;
+                        margin: .5rem 0;
+                        overflow-y: scroll;
+                        position: relative;
+
+                        &::-webkit-scrollbar{
+                            display: none;
+                        }
+
+                        &:after{
+
+                            content: "";
+                            width: 21.5%;
+                            background-image: linear-gradient(180deg, rgba($WHITE, 0.1),  rgba($WHITE, .8));
+                            display: block;
+                            position: fixed;
+                            bottom: 39%;
+                            right: 1.5%;
+                            height: 5%;
+
+                        }
+                        
+                        .cartItem{
+                            width: 100%;
+                            height: 20%;
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            border-radius: 8px;
+                            color: $primary_black;
+                            margin-bottom: 1%;
+
+                            &:last-child{
+                                margin-bottom: 0;
+                            }
+
+
+                            .cartItem_details{
+                                width: 30%;
+                                height: 100%;
+                                display: flex;
+                                justify-content: center;
+                                align-items: flex-start;
+                                flex-direction: column;
+
+                                .cartItem_Name{
+                                    font-size: .95rem;
+                                    // font-weight: 400;
+                                }
+
+                                .cartItem_Brand{
+                                    color: lighten($color: $primary_black, $amount: 30);
+                                    font-size: .87rem;
+                                }
+                            }
+
+                            .cartItem_discount{
+                                width: 12%;
+                                height: 50%;
+                                border: none;
+                                background-color: $secondary_green;
+                                color: $WHITE;
+                                border-radius: 4px;
+
+                                &:disabled{
+
+                                    background-color: lighten($color: $primary_black, $amount: 40);
+                                    opacity: .5;
+
+                                }
+
+                                .discountValue{
+                                    width: 100%;
+                                    height: 90%;
+                                    font-size: .95rem;
+                                    // background-color: green;
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                }
+
+
+                            }
+
+                            .cartItem_count{
+
+                                width: 12%;
+                                height: 50%;
+                                border: 1px solid lighten($color: $primary_black, $amount: 52);
+                                border-radius: 4px;
+                                color: $primary_black;
+                                outline: none;
+                                    
+                            }
+
+                            .cartItem_cost{
+                                width: 25%;
+                            }
+
+                        }
+
+                    }
+
+                    .cartExpenses{
+
+                        height: 25%;
+                        width: 100%;
+                        border-radius: 8px;
+                        box-shadow: -1px 3px 5px rgba($color: $primary_green, $alpha: 0.15);
+                        margin: 6% 0;
+                        padding: .8rem .4rem;
+                        font-size: .85rem;
+
+                        .lblExpense{
+                            display: block;
+                            width: 100%;
+                            margin-bottom: 2%;
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                        }
+
+                        .mainTotal{
+                            font-size: 1.2rem;
+                            margin-top: 21%;
+                            color: $primary_green;
+                        }
+
+                    }
+
+                    .btnCart_sell{
+
+                        width: 100%;
+                        height: 8%;
+                        font-size: 1rem;
+                        border: none;
+                        background-color: $primary_yellow;
+                        border-radius: 8px;
+                        color: $WHITE;
+
+                    }
+
+                }
+    
+            }
+    
 
         }
 
+       
         @import '../scss/utilities/modals';
 
        

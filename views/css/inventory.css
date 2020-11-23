@@ -437,18 +437,23 @@ body {
             width: 1.5%;
             cursor: pointer; }
       .main_body .mainBody_content .contentContainer .contentTable {
-        width: 100%;
+        width: 97%;
         border-collapse: collapse;
         color: #fff;
-        height: 100%;
-        display: block; }
+        height: 97%;
+        display: block;
+        border-top-right-radius: 8px;
+        border-bottom-right-radius: 8px;
+        box-shadow: -1px 3px 5px rgba(53, 89, 75, 0.15);
+        background-color: #fff; }
         .main_body .mainBody_content .contentContainer .contentTable .tableHeader {
           width: 100%;
           background-color: #35594B;
           text-align: center;
           height: 8%;
           display: block;
-          user-select: none; }
+          user-select: none;
+          border-top-right-radius: 8px; }
           .main_body .mainBody_content .contentContainer .contentTable .tableHeader .tableHead {
             display: flex;
             justify-content: center;

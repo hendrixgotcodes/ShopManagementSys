@@ -10,13 +10,13 @@ var myChart = new Chart(ctx, {
     data: {
         labels: ['First Week', 'Second Week', 'Third Week', 'Fourth Week'],
         datasets: [{
-            label: '# of Votes',
+            label: 'Sales made',
             data: [200, 109, 30, 500],
             backgroundColor: [
-                ' rgba(239, 182, 38, 0.7)',
-                'rgba(54, 162, 235, 0.7)',
-                'rgba(255, 206, 86, 0.7)',
-                'rgba(75, 192, 192, 0.7)',
+                ' rgba(239, 182, 38, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
             ],
             borderColor: [
                 ' #EFB526',
