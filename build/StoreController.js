@@ -245,10 +245,6 @@ const selectValue_span = document.querySelector('.selectValue_span');
 const toolBarTB = document.querySelector('.toolBar_tb');
 const toolBarBtn = document.querySelector('.toolBar_btn');
 const mainBodyContent = document.querySelector('.mainBody_content');
-const footer_btn = document.querySelector('.footer_btn');
-const footer_btn_icon = document.querySelector('.ico_footer_btn');
-const footer_tb = document.querySelector('.footer_tb');
-const cartCount = document.querySelector('.cartCount');
 /***********************************OBJECTS**************/
 
 let sellingItem = {// Represents an instance of a store item being added to cart
@@ -265,39 +261,6 @@ tip_default.addEventListener('click', () => {
 toolBarBtn.addEventListener('click', e => {
   e.preventDefault();
   seek(toolBarTB.value);
-}); //For "footer_btn"
-
-footer_btn.addEventListener('mouseover', toggleTBbtn_white);
-footer_btn.addEventListener('mouseleave', toggleTBbtn_default);
-footer_btn.addEventListener("click", e => {
-  e.preventDefault(); //Displays Modal to show selected Items
-
-  showItemsInCart(); // calling function to uncheck checked rows
-  // uncheckMarkedRows()
-}); //For "footer_tb"
-
-footer_tb.addEventListener("blur", () => {
-  if (sellingItem.amountPurchased !== undefined && footer_tbChanged !== true) {
-    disableDropDownList();
-    footer_tb.selectedIndex = 0; //Resets Default value of drop down list
-
-    cart.push(sellingItem);
-    sellingItem = {};
-  }
-});
-footer_tb.addEventListener("change", () => {
-  cartCount.style.transform = "scale(1)";
-  cartCount.innerText = totalSelectedRows;
-  sellingItem.amountPurchased = footer_tb.value;
-  footer_tbChanged = false;
-
-  if (footer_tb.selectedIndex > 1) {
-    footer_btn.disabled = false;
-  }
-});
-footer_tb.addEventListener("focus", () => {
-  footer_tbChanged = true;
-  console.log(footer_tbChanged);
 });
 /*************************************FUNCTIONS********************* */
 
@@ -375,36 +338,11 @@ function seek(variable) {
     _controller_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_0___default.a.showNotification("Item not found");
   }
 } //-----------------------------------------------------------------------------------------------
-//Opens Setting modal
-
-
-function removeSettingsModal(cover) {
-  if (mainBodyContent.querySelector('.settingsModal') !== null) {
-    mainBodyContent.removeChild(mainBodyContent.querySelector('.settingsModal'));
-  }
-
-  cover.classList.toggle('contentCover--shown');
-} //-----------------------------------------------------------------------------------------------
-
-
-function toggleTBbtn_white() {
-  footer_btn_icon.setAttribute('src', '../Icons/toolBar/checkout.svg');
-} //-----------------------------------------------------------------------------------------------
-
-
-function toggleTBbtn_default() {
-  footer_btn_icon.setAttribute('src', '../Icons/toolBar/checkout--green.svg');
-} //-----------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------
 
 
 function toggleRowCB(row) {
-  if (sellingItem.amountPurchased === undefined && footer_tbChanged === true) {
-    _controller_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_0___default.a.showNotification('Please specify the number of items to be sold first', true);
-    footer_tb.focus();
-    return;
-  } //Checkbox
-
-
+  //Checkbox
   let CB = row.querySelector('.td_cb').querySelector('.selectOne');
 
   if (CB.checked === true) {
@@ -424,39 +362,11 @@ function toggleRowCB(row) {
 
     if (totalSelectedRows > 0) {
       totalSelectedRows = totalSelectedRows - 1;
-      cartCount.innerText = totalSelectedRows;
-    }
-
-    if (totalSelectedRows === 0) {
-      disableDropDownList(); //Disabling footer_btn (checkout btn)
-
-      footer_btn.disabled = true; // cartCount.style.transform = "scale(0)"
-
-      cartCount.style.transform = "scale(0)";
-      cartCount.innerText = 0;
     }
   } else {
     CB.checked = true;
     totalSelectedRows = totalSelectedRows + 1;
-
-    if (totalSelectedRows > 0) {
-      enableDropDownList();
-
-      if (toolBarTB.disabled === false) {
-        footer_tb.focus();
-      }
-    }
   }
-} //-----------------------------------------------------------------------------------------------
-
-
-function disableDropDownList() {
-  footer_tb.disabled = true;
-} //-----------------------------------------------------------------------------------------------
-
-
-function enableDropDownList() {
-  footer_tb.disabled = false;
 } //-----------------------------------------------------------------------------------------------
 
 
@@ -467,42 +377,7 @@ function setSellingItemProperties(row) {
   sellingItem.price = row.querySelector('.td_Price').innerText;
   sellingItem.costPrice = row.querySelector('.td_costPrice').innerText;
 } //-----------------------------------------------------------------------------------------------
-
-
-function amtPurchased(amntPurchased) {
-  sellingItem.amountPurchased = amntPurchased;
-} //-----------------------------------------------------------------------------------------------
-// function to show item in cart
-
-
-function showItemsInCart() {
-  _modals_ModalController__WEBPACK_IMPORTED_MODULE_3__["default"].createCheckout(cart, totalSelectedRows, cartCount).then(result => {
-    let totalCost = result[1];
-    console.log(totalCost);
-
-    if (totalCost >= 0) {
-      salesMade = salesMade + totalCost;
-      database.makeSale(result[0]).then(result => {
-        if (result === true) {
-          //Parsing it through a converter
-          let forSpan = _utilities_UnitConverter__WEBPACK_IMPORTED_MODULE_5___default.a.convert(salesMade);
-          document.querySelector('#salesMade_amount').innerText = forSpan;
-          _controller_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_0___default.a.showAlert("success", "Great! sale made successfully");
-          cartCount.innerText = '0';
-          cartCount.style.transform = "scale(0)";
-          cart.forEach(item => {
-            _utilities_TableController__WEBPACK_IMPORTED_MODULE_4___default.a.uncheckRows(item.name, item.brand);
-          });
-          cart = [];
-          totalSelectedRows = 0;
-          footer_btn.disabled = true;
-        }
-      }).catch(() => {
-        _controller_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_0___default.a.showAlert("error", "Error! Failed to make sale.");
-      });
-    }
-  });
-} //-----------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------
 
 /***/ }),
 
