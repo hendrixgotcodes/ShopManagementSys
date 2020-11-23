@@ -40,7 +40,8 @@ const toolBarTB = document.querySelector('.toolBar_tb');
 const toolBarBtn = document.querySelector('.toolBar_btn')
 
 const mainBodyContent = document.querySelector('.mainBody_content');
-
+const cartUI = document.querySelector(".cart")
+const cbCart = cartUI.querySelector(".cbCart")
 
 
 
@@ -69,6 +70,7 @@ toolBarBtn.addEventListener('click',(e)=>{
 
     seek(toolBarTB.value)
 })
+
 
 
 
@@ -191,6 +193,8 @@ function seek(variable){
 //-----------------------------------------------------------------------------------------------
 function toggleRowCB(row){
 
+
+
     
     //Checkbox
     let CB = row.querySelector('.td_cb').querySelector('.selectOne');
@@ -231,11 +235,17 @@ function toggleRowCB(row){
             totalSelectedRows = totalSelectedRows -1;
         }
 
+        TableController.addToCart(row)
+
+
     }
     else{
         CB.checked = true
 
         totalSelectedRows = totalSelectedRows +1;
+
+        TableController.addToCart(row)
+
 
     }
 }

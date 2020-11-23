@@ -269,10 +269,24 @@ body {
                             border: none;
                             font-size: .9rem;
                             color: $WHITE;
-                            border-radius: 8px;
                             // background-color: rgba($color: $primary_green, $alpha: 1);
-                            background-color: $secondary_red;
+                            border: 1px solid lighten($color: $secondary_red, $amount: 15);
+                            border-radius: 8px;
+                            color: lighten($color: $secondary_red, $amount: 15);
+                            background-color: $WHITE;
+                            transition: .3s;
+
+                            &:disabled{
+                                opacity: .5;
+                            }
+
+                            &:hover{
+                                background-color: lighten($color: $secondary_red, $amount: 15);
+                                color: $WHITE;
+                            }
+
                         }
+
 
                     }
 
@@ -282,6 +296,7 @@ body {
                         height: 50%;
                         margin: .5rem 0;
                         overflow-y: scroll;
+                        overflow-x: hidden;
                         position: relative;
 
                         &::-webkit-scrollbar{
@@ -310,6 +325,9 @@ body {
                             border-radius: 8px;
                             color: $primary_black;
                             margin-bottom: 1%;
+                            transition: .3s;
+                            transform: translateX(100%);
+                            position: relative;
 
                             &:last-child{
                                 margin-bottom: 0;
@@ -343,12 +361,6 @@ body {
                                 color: $WHITE;
                                 border-radius: 4px;
 
-                                &:disabled{
-
-                                    background-color: lighten($color: $primary_black, $amount: 40);
-                                    opacity: .5;
-
-                                }
 
                                 .discountValue{
                                     width: 100%;
@@ -360,7 +372,10 @@ body {
                                     align-items: center;
                                 }
 
+                            }
 
+                            .cartItem_discount--disabled{
+                                background-color: lighten($color: $primary_black, $amount: 40);
                             }
 
                             .cartItem_count{
@@ -378,6 +393,21 @@ body {
                                 width: 25%;
                             }
 
+                            .cb_cartItem{
+
+                                width: 11%;
+                                height: 50%;
+                                position: absolute;
+                                top: 20%;
+                                left: 37.5%;
+                                // opacity: 0;
+
+                            }
+
+                        }
+
+                        .cartItem--shown{
+                            transform: translateX(0);
                         }
 
                     }

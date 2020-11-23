@@ -245,6 +245,8 @@ const selectValue_span = document.querySelector('.selectValue_span');
 const toolBarTB = document.querySelector('.toolBar_tb');
 const toolBarBtn = document.querySelector('.toolBar_btn');
 const mainBodyContent = document.querySelector('.mainBody_content');
+const cartUI = document.querySelector(".cart");
+const cbCart = cartUI.querySelector(".cbCart");
 /***********************************OBJECTS**************/
 
 let sellingItem = {// Represents an instance of a store item being added to cart
@@ -363,9 +365,12 @@ function toggleRowCB(row) {
     if (totalSelectedRows > 0) {
       totalSelectedRows = totalSelectedRows - 1;
     }
+
+    _utilities_TableController__WEBPACK_IMPORTED_MODULE_4___default.a.addToCart(row);
   } else {
     CB.checked = true;
     totalSelectedRows = totalSelectedRows + 1;
+    _utilities_TableController__WEBPACK_IMPORTED_MODULE_4___default.a.addToCart(row);
   }
 } //-----------------------------------------------------------------------------------------------
 
@@ -1315,6 +1320,91 @@ class TableController {
         console.log('checked');
       } else {
         console.log('not cheked');
+      }
+    });
+  }
+
+  static addToCart(row) {
+    const cart = document.querySelector(".cart").querySelector(".cartItems");
+    const [itemName, itemBrand, discount, itemPrice, itemStock] = [row.querySelector(".td_Names").innerText, row.querySelector(".td_Brands").innerText, row.querySelector('.td_discount').innerText, row.querySelector(".td_Price").innerText, row.querySelector('.td_Stock').innerText];
+    let itemExists = false;
+
+    if (cart.querySelector(".cartInfo") !== null) {
+      cart.querySelector(".cartInfo").style.display = "none";
+      document.querySelector(".cart").querySelector(".btnCart_clear").disabled = false;
+    }
+
+    const itemsInCart = cart.querySelectorAll(".cartItem");
+    itemsInCart.forEach(item => {
+      console.log("innit");
+
+      if (item.querySelector(".cartItem_Name").innerText === itemName && item.querySelector(".cartItem_Brand").innerText === itemBrand) {
+        item.classList.remove("cartItem--shown");
+        setTimeout(() => {
+          item.remove();
+        }, 300);
+        itemExists = true;
+      }
+    });
+
+    if (itemExists === true) {
+      return;
+    }
+
+    const cartItemTemplate = `
+            <div class="cartItem_details">
+                <div class="cartItem_Name">${itemName}</div>
+                <div class="cartItem_Brand">${itemBrand}</div>
+            </div>
+
+            <button class="cartItem_discount cartItem_discount--disabled">
+
+                <div class="discountValue">-${discount}%</div>
+
+            </button>
+
+            <input type="checkbox" class="cb_cartItem" />
+
+
+
+        `;
+    const cartItem = document.createElement("div");
+    cartItem.className = "cartItem";
+    cartItem.innerHTML = cartItemTemplate;
+    cart.appendChild(cartItem);
+    setTimeout(() => {
+      cartItem.classList.add("cartItem--shown");
+    }, 100);
+    let itemCount = parseInt(itemStock);
+    const itemSelect = document.createElement("select");
+    itemSelect.className = "cartItem_count";
+
+    for (let i = 1; i <= itemCount; i++) {
+      let option = document.createElement("option");
+      option.value = i;
+      option.innerText = i;
+      itemSelect.appendChild(option);
+    }
+
+    cartItem.appendChild(itemSelect);
+    const cartItemCost = document.createElement("div");
+    cartItemCost.className = "cartItem_cost";
+    cartItemCost.innerText = `GH¢${itemPrice}`;
+    cartItem.appendChild(cartItemCost); // EVENT LISTENERS
+
+    itemSelect.addEventListener("change", function modifyCost(e) {
+      let itemQuanity = parseInt(itemSelect.value);
+      itemQuanity = parseFloat(itemQuanity * itemPrice).toPrecision(3);
+      cartItemCost.innerText = `GH¢${itemQuanity}`;
+    });
+    let checkbox = cart.querySelector(".cb_cartItem");
+    checkbox.addEventListener("click", function toggleDiscount() {
+      console.log("in check");
+
+      if (checkbox.checked === true) {
+        cart.querySelector(".cartItem_discount").classList.remove("cartItem_discount--disabled");
+      } else {
+        cart.querySelector(".cartItem_discount").classList.add("cartItem_discount--disabled");
       }
     });
   }
