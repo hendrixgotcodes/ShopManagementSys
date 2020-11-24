@@ -983,7 +983,6 @@ class DATABASE{
                                                 }
                                                 else{
                                                     
-                                                    console.log(result, UserName);
 
                                                     let user = result.shift();
                                                     let userId = user.id;
@@ -1044,7 +1043,7 @@ class DATABASE{
                                                                              throw error
                                                                          }
                                                                          else{
-                                                                             resolve(itemArray)
+                                                                             resolve([itemArray, true])
                                                                          }
 
 
@@ -1075,7 +1074,7 @@ class DATABASE{
                                         this.updateItem(item, User)
                                         .then(()=>{
 
-                                            resolve(itemArray)
+                                            resolve([itemArray, false])
 
                                         })
                                         .catch((error)=>{
@@ -1356,16 +1355,15 @@ class DATABASE{
 
     }
 
-    validateUser(userName, Password){
+    validateUser(userName, password){
 
-        userName = userName.replace(/^\s+|\s+$/g, "")
-
-        console.log("userName: ", userName, " Password: ", Password);
+        // userName = userName.replace(/^\s+|\s+$/g, "")
+        // console.log("userName: ", userName, " Password: ", Password);
 
         return new Promise((resolve, reject)=>{
 
 
-            this.connector.query(`SELECT * FROM duffykids.users`, (error, result)=>{
+            this.connector.query(`SELECT * FROM users WHERE User_Name = ? AND Password = ? LIMIT 0,1`, [userName, password], (error, result)=>{
 
 
                 if(error){
@@ -1383,7 +1381,9 @@ class DATABASE{
                         reject()
                     }
                     else if(user.User_Name === userName){
+
                         resolve(user.IsAdmin)
+
                     }
                     else{
                         console.log(user.User_Name);
@@ -1403,4 +1403,7 @@ class DATABASE{
 
 
 }
+
+
+
 module.exports = DATABASE;

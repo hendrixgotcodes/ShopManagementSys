@@ -855,7 +855,10 @@ class DATABASE {
             if (error === null || error.code === "ER_DUP_ENTRY") {
               this.connector.query(`INSERT INTO duffykids.itemCategories SET Name='${item.Category}'`, error => {
                 if (error === null) {
-                  this.connector.query("INSERT INTO duffykids.items SET ?", item, (error, result) => {
+                  this.connector.query("INSERT INTO duffykids.items SET ? ON DUPLICATE KEY UPDATE ?", [item, item], (error, result) => {
+                    console.log("item result: ", result);
+                    const itemId = result.insertId;
+
                     if (error) {
                       this.connector.rollback(() => {
                         if (error.code === "ER_DUP_ENTRY") {
@@ -866,8 +869,6 @@ class DATABASE {
                         }
                       });
                     } else {
-                      console.log("item result: ", result);
-                      const itemId = result.insertId;
                       this.connector.query(`SELECT * FROM duffykids.users WHERE User_Name = '${User}'`, (error, result) => {
                         if (error) {
                           this.connector.rollback(() => {
@@ -875,7 +876,6 @@ class DATABASE {
                             throw error;
                           });
                         } else {
-                          console.log(result, UserName);
                           let user = result.shift();
                           let userId = user.id;
                           const Today = new Date();
@@ -908,7 +908,7 @@ class DATABASE {
                                       reject("unknown error");
                                       throw error;
                                     } else {
-                                      resolve(itemArray);
+                                      resolve([itemArray, true]);
                                     }
                                   });
                                 }
@@ -922,8 +922,7 @@ class DATABASE {
                 } else if (error.code === "ER_DUP_ENTRY") {
                   this.connector.rollback(() => {
                     this.updateItem(item, User).then(() => {
-                      resolve(itemArray);
-                      console.log("in uplicate");
+                      resolve([itemArray, false]);
                     }).catch(error => {
                       reject(error);
                     });
@@ -1076,11 +1075,11 @@ class DATABASE {
     });
   }
 
-  validateUser(userName, Password) {
-    userName = userName.replace(/^\s+|\s+$/g, "");
-    console.log("userName: ", userName, " Password: ", Password);
+  validateUser(userName, password) {
+    // userName = userName.replace(/^\s+|\s+$/g, "")
+    // console.log("userName: ", userName, " Password: ", Password);
     return new Promise((resolve, reject) => {
-      this.connector.query(`SELECT * FROM duffykids.users`, (error, result) => {
+      this.connector.query(`SELECT * FROM users WHERE User_Name = ? AND Password = ? LIMIT 0,1`, [userName, password], (error, result) => {
         if (error) {
           reject("unknown error");
           throw error;

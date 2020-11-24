@@ -595,12 +595,14 @@ electron__WEBPACK_IMPORTED_MODULE_0__["ipcRenderer"].on('populateTable', (e, Ite
     });
   });
   database.addItemsBulk(itemsArray, UserName).then(resolved => {
-    console.log(resolved); // TableController.
-
-    resolved.forEach(item => {
-      _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount, [checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory");
-    });
-    _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", `${resolved.length} Items Have Been Successfully Added.`);
+    if (resolved[1] === true) {
+      resolved[0].forEach(item => {
+        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount, [checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory");
+      });
+      _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", `${resolved.length} Items Have Been Successfully Added.`);
+    } else {
+      _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", `${resolved[0].length} Items Have Been Successfully Added. Including updates`);
+    }
   });
 });
 
@@ -2275,7 +2277,10 @@ class DATABASE {
             if (error === null || error.code === "ER_DUP_ENTRY") {
               this.connector.query(`INSERT INTO duffykids.itemCategories SET Name='${item.Category}'`, error => {
                 if (error === null) {
-                  this.connector.query("INSERT INTO duffykids.items SET ?", item, (error, result) => {
+                  this.connector.query("INSERT INTO duffykids.items SET ? ON DUPLICATE KEY UPDATE ?", [item, item], (error, result) => {
+                    console.log("item result: ", result);
+                    const itemId = result.insertId;
+
                     if (error) {
                       this.connector.rollback(() => {
                         if (error.code === "ER_DUP_ENTRY") {
@@ -2286,8 +2291,6 @@ class DATABASE {
                         }
                       });
                     } else {
-                      console.log("item result: ", result);
-                      const itemId = result.insertId;
                       this.connector.query(`SELECT * FROM duffykids.users WHERE User_Name = '${User}'`, (error, result) => {
                         if (error) {
                           this.connector.rollback(() => {
@@ -2295,7 +2298,6 @@ class DATABASE {
                             throw error;
                           });
                         } else {
-                          console.log(result, UserName);
                           let user = result.shift();
                           let userId = user.id;
                           const Today = new Date();
@@ -2328,7 +2330,7 @@ class DATABASE {
                                       reject("unknown error");
                                       throw error;
                                     } else {
-                                      resolve(itemArray);
+                                      resolve([itemArray, true]);
                                     }
                                   });
                                 }
@@ -2342,8 +2344,7 @@ class DATABASE {
                 } else if (error.code === "ER_DUP_ENTRY") {
                   this.connector.rollback(() => {
                     this.updateItem(item, User).then(() => {
-                      resolve(itemArray);
-                      console.log("in uplicate");
+                      resolve([itemArray, false]);
                     }).catch(error => {
                       reject(error);
                     });
@@ -2496,11 +2497,11 @@ class DATABASE {
     });
   }
 
-  validateUser(userName, Password) {
-    userName = userName.replace(/^\s+|\s+$/g, "");
-    console.log("userName: ", userName, " Password: ", Password);
+  validateUser(userName, password) {
+    // userName = userName.replace(/^\s+|\s+$/g, "")
+    // console.log("userName: ", userName, " Password: ", Password);
     return new Promise((resolve, reject) => {
-      this.connector.query(`SELECT * FROM duffykids.users`, (error, result) => {
+      this.connector.query(`SELECT * FROM users WHERE User_Name = ? AND Password = ? LIMIT 0,1`, [userName, password], (error, result) => {
         if (error) {
           reject("unknown error");
           throw error;
