@@ -25,6 +25,12 @@ const btnDelete =  document.querySelector(".btn_delete");
 const checkBtn = document.querySelector(".checkBtn");
 const btnDropDown = document.querySelector(".btn_dropDown");
 
+/**********USER PARAMS */
+let UserName;
+let UserType;
+
+
+
 const listItemForm = document.querySelector(".dd_listItem--form");
 
 let rowBucket = [];
@@ -104,6 +110,17 @@ btnEdit.addEventListener("click", editMultiple)
 //For btnDelete (Delete button in Inventory)
 btnDelete.addEventListener("click", deleteMultiple)
 
+//Sets the user parameters
+ipcRenderer.on("setUserParams", (e, userParamsArray)=>{
+
+
+    [UserName, UserType] = userParamsArray
+
+    let windowTitile = document.querySelector(".titleBar_userName");
+    windowTitile.innerText = UserName
+
+})
+
 
 
 
@@ -113,6 +130,9 @@ btnDelete.addEventListener("click", deleteMultiple)
 
 //Function to load store items
 function initialzeStoreItems(){
+
+    //Triggers Main Renderer to send the "setUserParams" event
+    ipcRenderer.send("sendUserParams")
 
     TableController.showLoadingBanner("Please wait. Attempting to load items in database...")
 
@@ -328,7 +348,7 @@ function editItem(row){
 
 
     
-            database.updateItem(values)
+            database.updateItem(values, UserName)
              .then((result)=>{
 
                 console.log(result);
@@ -407,7 +427,7 @@ function addItem(){
             // console.log([row, name, brand, category, stock, sellingPrice, costPrice]);
 
 
-            database.addNewItem(storeObject)
+            database.addNewItem(storeObject, UserName)
             .then((result)=>{
 
                 if(result === true){
@@ -635,8 +655,12 @@ ipcRenderer.on('populateTable',(e, Items)=>{
 
         })
 
-        database.addItemsBulk(itemsArray)
+        database.addItemsBulk(itemsArray, UserName)
         .then((resolved)=>{
+
+            console.log(resolved);
+
+            // TableController.
 
             resolved.forEach((item)=>{
 

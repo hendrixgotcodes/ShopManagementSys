@@ -236,6 +236,10 @@ const btnEdit = document.querySelector(".btn_edit");
 const btnDelete = document.querySelector(".btn_delete");
 const checkBtn = document.querySelector(".checkBtn");
 const btnDropDown = document.querySelector(".btn_dropDown");
+/**********USER PARAMS */
+
+let UserName;
+let UserType;
 const listItemForm = document.querySelector(".dd_listItem--form");
 let rowBucket = []; //Initializing Database
 
@@ -278,11 +282,19 @@ listItemForm.addEventListener("click", addItem); //For btnEdit (Edit button in I
 
 btnEdit.addEventListener("click", editMultiple); //For btnDelete (Delete button in Inventory)
 
-btnDelete.addEventListener("click", deleteMultiple);
+btnDelete.addEventListener("click", deleteMultiple); //Sets the user parameters
+
+electron__WEBPACK_IMPORTED_MODULE_0__["ipcRenderer"].on("setUserParams", (e, userParamsArray) => {
+  [UserName, UserType] = userParamsArray;
+  let windowTitile = document.querySelector(".titleBar_userName");
+  windowTitile.innerText = UserName;
+});
 /*****************************************************FUNCTIONS***************************************************/
 //Function to load store items
 
 function initialzeStoreItems() {
+  //Triggers Main Renderer to send the "setUserParams" event
+  electron__WEBPACK_IMPORTED_MODULE_0__["ipcRenderer"].send("sendUserParams");
   _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.showLoadingBanner("Please wait. Attempting to load items in database...");
   database.fetchItems().then(fetchedItems => {
     //If returned array contains any store item
@@ -406,7 +418,7 @@ function editItem(row) {
         SellingPrice: parseFloat(sellingPrice),
         Discount: parseFloat(discount)
       };
-      database.updateItem(values).then(result => {
+      database.updateItem(values, UserName).then(result => {
         console.log(result);
 
         if (result === true) {
@@ -450,7 +462,7 @@ function addItem() {
     storeObject.CostPrice = costPrice;
     storeObject.Discount = discount; // console.log([row, name, brand, category, stock, sellingPrice, costPrice]);
 
-    database.addNewItem(storeObject).then(result => {
+    database.addNewItem(storeObject, UserName).then(result => {
       if (result === true) {
         _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(result.Name, result.Brand, result.Category, result.Stock, result.SellingPrice, result.Discount, [checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "", false, false, "inventory").then(() => {
           _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", "Successfuly added to inventory");
@@ -582,7 +594,9 @@ electron__WEBPACK_IMPORTED_MODULE_0__["ipcRenderer"].on('populateTable', (e, Ite
       Deleted: "false"
     });
   });
-  database.addItemsBulk(itemsArray).then(resolved => {
+  database.addItemsBulk(itemsArray, UserName).then(resolved => {
+    console.log(resolved); // TableController.
+
     resolved.forEach(item => {
       _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount, [checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory");
     });
@@ -1374,7 +1388,18 @@ class TableController {
     row.querySelector('.td_Price').innerText = sellingPrice;
     row.querySelector('.td_Discount').innerText = discount;
     return true;
-  }
+  } // static editMany(Array){
+  //     const inTable = [];
+  //     const table = document.querySelectorAll("tr");
+  //     Array.forEach((item)=>{
+  //         table.forEach((row)=>{
+  //             if(row.querySelector('.td_Names').innerText === item.Name && row.querySelector('.td_Brands').innerText === item.Brand){
+  //                 this.editItem(row, item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount)
+  //             }
+  //         })
+  //     })
+  // }
+
   /***********************************************************************************************************************************/
 
 
@@ -1531,16 +1556,22 @@ class TableController {
   }
 
   static addToCart(row) {
-    const cart = document.querySelector(".cart").querySelector(".cartItems");
-    const [itemName, itemBrand, discount, itemPrice, itemStock] = [row.querySelector(".td_Names").innerText, row.querySelector(".td_Brands").innerText, row.querySelector('.td_discount').innerText, row.querySelector(".td_Price").innerText, row.querySelector('.td_Stock').innerText];
+    const cart = document.querySelector(".cart");
+    const subTotal = cart.querySelector(".subTotal").querySelector(".value");
+    const mainTotal = cart.querySelector(".mainTotal").querySelector(".value");
+    const cartItems = document.querySelector(".cart").querySelector(".cartItems");
+    const btnCart_clear = cart.querySelector(".btnCart_clear");
+    let [itemName, itemBrand, discount, itemPrice, itemStock] = [row.querySelector(".td_Names").innerText, row.querySelector(".td_Brands").innerText, row.querySelector('.td_discount').innerText, row.querySelector(".td_Price").innerText, row.querySelector('.td_Stock').innerText];
+    itemPrice = parseFloat(itemPrice);
     let itemExists = false;
 
-    if (cart.querySelector(".cartInfo") !== null) {
-      cart.querySelector(".cartInfo").style.display = "none";
+    if (cartItems.querySelector(".cartInfo") !== null) {
+      cartItems.querySelector(".cartInfo").style.display = "none";
       document.querySelector(".cart").querySelector(".btnCart_clear").disabled = false;
+      document.querySelector(".cart").querySelector(".btnCart_sell").disabled = false;
     }
 
-    const itemsInCart = cart.querySelectorAll(".cartItem");
+    const itemsInCart = cartItems.querySelectorAll(".cartItem");
     itemsInCart.forEach(item => {
       console.log("innit");
 
@@ -1549,6 +1580,11 @@ class TableController {
         setTimeout(() => {
           item.remove();
         }, 300);
+        let itemQuanity = parseFloat(item.querySelector(".cartItem_count").value);
+        let itemTotalCost = itemQuanity * itemPrice;
+        console.log("itemTotalCost: ", itemTotalCost);
+        subTotal.innerText = parseFloat(subTotal.innerText) - itemTotalCost;
+        mainTotal.innerText = subTotal.innerText;
         itemExists = true;
       }
     });
@@ -1577,7 +1613,7 @@ class TableController {
     const cartItem = document.createElement("div");
     cartItem.className = "cartItem";
     cartItem.innerHTML = cartItemTemplate;
-    cart.appendChild(cartItem);
+    cartItems.appendChild(cartItem);
     setTimeout(() => {
       cartItem.classList.add("cartItem--shown");
     }, 100);
@@ -1596,22 +1632,43 @@ class TableController {
     const cartItemCost = document.createElement("div");
     cartItemCost.className = "cartItem_cost";
     cartItemCost.innerText = `GH¢${itemPrice}`;
-    cartItem.appendChild(cartItemCost); // EVENT LISTENERS
+    cartItem.appendChild(cartItemCost);
+    let currentSubtotal = parseFloat(subTotal.innerText);
+    subTotal.innerText = currentSubtotal + itemPrice;
+    mainTotal.innerText = subTotal.innerText; // EVENT LISTENERS
 
     itemSelect.addEventListener("change", function modifyCost(e) {
       let itemQuanity = parseInt(itemSelect.value);
-      itemQuanity = parseFloat(itemQuanity * itemPrice).toPrecision(3);
-      cartItemCost.innerText = `GH¢${itemQuanity}`;
+      let totalItemCost = parseFloat(itemQuanity * itemPrice).toPrecision(3);
+      cartItemCost.innerText = `GH¢${totalItemCost}`;
+      let currentSubtotal = parseFloat(subTotal.innerText);
+      console.log(currentSubtotal);
+      subTotal.innerText = currentSubtotal + parseFloat(totalItemCost);
+      mainTotal.innerText = subTotal.innerText;
     });
-    let checkbox = cart.querySelector(".cb_cartItem");
+    /************************************************************************************ */
+
+    let checkbox = cartItems.querySelector(".cb_cartItem");
     checkbox.addEventListener("click", function toggleDiscount() {
       console.log("in check");
 
       if (checkbox.checked === true) {
-        cart.querySelector(".cartItem_discount").classList.remove("cartItem_discount--disabled");
+        cartItems.querySelector(".cartItem_discount").classList.remove("cartItem_discount--disabled");
       } else {
-        cart.querySelector(".cartItem_discount").classList.add("cartItem_discount--disabled");
+        cartItems.querySelector(".cartItem_discount").classList.add("cartItem_discount--disabled");
       }
+    });
+    /******************************************************************************************** */
+
+    btnCart_clear.addEventListener("click", function clearCartItems() {
+      itemsInCart.forEach(item => {
+        item.classList.remove("cartItem--shown"); // setTimeout(()=>{
+        //     item.remove()
+        // }, 300)
+      });
+      subTotal.innerText = "0.00";
+      mainTotal.innerText = "0.00";
+      cart.querySelector(".cartInfo").style.display = "inline";
     });
   }
 
@@ -1695,12 +1752,15 @@ class DATABASE {
         let createUserTableSQL = `
                             CREATE TABLE IF NOT EXISTS duffykids.users
                             (
+                                id INT AUTO_INCREMENT NOT NULL,
                                 First_Name TEXT(255) NOT NULL,
                                 Last_Name TEXT(255) NOT NULL,
                                 User_Name VARCHAR(255) NOT NULL,
                                 Password VARCHAR(255) NOT NULL,
+                                IsAdmin BOOLEAN NOT NULL,
                                 Last_Seen DATETIME,
-                                PRIMARY KEY (User_Name)
+                                UNIQUE(User_Name),
+                                PRIMARY KEY (id)
                             )
     
                         `;
@@ -1724,12 +1784,12 @@ class DATABASE {
                             (
                                 id INT AUTO_INCREMENT NOT NULL,
                                 Date DATETIME NOT NULL,
-                                User VARCHAR(255) NOT NULL,
+                                User INT NOT NULL,
                                 Operation VARCHAR(255) NOT NULL,
                                 Item INT NOT NULL,
                                 PRIMARY KEY(id),
-                                FOREIGN KEY (User) REFERENCES duffykids.users(User_Name),
-                                FOREIGN KEY (Item) REFERENCES duffykids.items(id)
+                                FOREIGN KEY (User) REFERENCES duffykids.users(id) ON DELETE CASCADE ON UPDATE CASCADE,
+                                FOREIGN KEY (Item) REFERENCES duffykids.items(id) ON DELETE CASCADE ON UPDATE CASCADE
                             )
     
                         `;
@@ -1738,7 +1798,7 @@ class DATABASE {
                                 (
                                     id INT AUTO_INCREMENT NOT NULL,
                                     Date DATE NOT NULL,
-                                    User VARCHAR(255) NOT NULL, 
+                                    User INT NOT NULL, 
                                     Item INT NOT NULL,
                                     AmountPurchased INT NOT NULL,
                                     CashMade DECIMAL(8,2) NOT NULL,
@@ -1746,7 +1806,7 @@ class DATABASE {
                                     UnitDiscount DECIMAL(8,2) NOT NULL,
                                     TotalDiscount DECIMAL(8,2) NOT NULL,
                                     PRIMARY KEY(id),
-                                    FOREIGN KEY (User) REFERENCES duffykids.users(User_Name) ON DELETE CASCADE ON UPDATE CASCADE,
+                                    FOREIGN KEY (User) REFERENCES duffykids.users(id) ON DELETE CASCADE ON UPDATE CASCADE,
                                     FOREIGN KEY (Item) REFERENCES duffykids.items(id) ON DELETE CASCADE ON UPDATE CASCADE
                                 )
 
@@ -1764,9 +1824,9 @@ class DATABASE {
         const createUserSalesSQL = `
                             CREATE TABLE IF NOT EXISTS duffykids.UserSales
                             (
-                                User VARCHAR(255) NOT NULL,
+                                User INT NOT NULL,
                                 Sales INT NOT NULL,
-                                FOREIGN KEY(User) REFERENCES duffykids.users(User_Name),
+                                FOREIGN KEY(User) REFERENCES duffykids.users(id) ON DELETE CASCADE ON UPDATE CASCADE,
                                 FOREIGN KEY(Sales) REFERENCES duffykids.sales(id) ON DELETE CASCADE ON UPDATE CASCADE
                             )
 
@@ -1891,7 +1951,7 @@ class DATABASE {
   /*************************SINGLE OBJECT OPERATIONS******************************/
 
 
-  addNewItem(shopItem) {
+  addNewItem(shopItem, userName) {
     return new Promise((resolve, reject) => {
       const array = Object.values(shopItem);
       let [name, brand, category, stock, sellingPrice, costPrice, discount] = array;
@@ -1913,30 +1973,12 @@ class DATABASE {
         SellingPrice: sellingPrice,
         Discount: discount,
         Deleted: false
-      }; // let insertItemAuditTrailSQL = "INSERT INTO duffykids.itemAuditTrails SET ?";
-      // let itemAuditTrailValues =
-      // {
-      // }
-      //Sales
-      // let insertSalesSQL = "INSERT INTO duffykids.Sales SET ?";
-      // const today =  new Date();
-      // let salesValues =
-      // {
-      //     Date: `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`,
-      //     UserName: "noLimitHendrix",
-      //     ItemName: name,
-      //     ItemBrand: brand,
-      //     ItemCategory: category,
-      //     AmountPurchased: 0,
-      // }
-
+      };
       this.connector.beginTransaction(error => {
         if (error) {
           throw error;
         } else {
           this.connector.query(insertCategorySQL, categoryValues, (error, result) => {
-            console.log("result: ", result);
-
             if (error === null || error.code === "ER_DUP_ENTRY") {
               this.connector.query(insertBrandSQL, brandValues, (error, result) => {
                 if (error === null || error.code === "ER_DUP_ENTRY") {
@@ -1956,28 +1998,25 @@ class DATABASE {
                         });
                       }
                     } else {
-                      let userValue = {
-                        First_Name: "Samuel",
-                        Last_Name: "Opoku Asare",
-                        User_Name: "noLimitHendrix",
-                        Password: "skype321"
-                      };
-                      this.connector.query("SELECT * FROM duffykids.users WHERE User_Name = 'noLimitHendrix'", (error, result) => {
-                        console.log(result);
+                      this.connector.query(`SELECT * FROM duffykids.users WHERE User_Name = '${userName}'`, (error, result) => {
                         let user = result.shift();
-                        console.log(user);
 
                         if (error) {
                           this.connector.rollback(() => {
                             reject("unknown error");
                             throw error;
                           });
+                        } else if (result === null) {
+                          this.connector.rollback(() => {
+                            reject("unknow user");
+                            throw new Error("unknown user");
+                          });
                         } else if (error === null || error.code === "ER_DUP_ENTRY") {
                           let item = result;
                           const Today = new Date();
                           let auditTrailValues = {
                             Date: `${Today.getFullYear()}-${Today.getMonth()}-${Today.getDate()} ${Today.getHours()}:${Today.getMinutes()}:${Today.getSeconds()}`,
-                            User: user.User_Name,
+                            User: user.id,
                             Operation: "Creation",
                             Item: itemId
                           };
@@ -2030,7 +2069,7 @@ class DATABASE {
     });
   }
 
-  updateItem(change) {
+  updateItem(change, User) {
     return new Promise((resolve, reject) => {
       let update = {
         InStock: change.InStock,
@@ -2050,7 +2089,7 @@ class DATABASE {
                 if (error.code === "ER_DUP_ENTRY") {
                   reject(new Error("ERR_DUP_ENTRY"));
                 } else {
-                  reject(new Error("UNKNWN_ERR"));
+                  reject(new Error("unknown error"));
                 }
 
                 throw error;
@@ -2067,14 +2106,19 @@ class DATABASE {
                   console.log(result);
                   const item = result.shift();
                   const itemId = item.id;
-                  this.connector.query("SELECT * FROM duffykids.users WHERE User_Name = 'noLimitHendrix'", (error, result) => {
+                  this.connector.query(`SELECT * FROM duffykids.users WHERE User_Name = '${User}'`, (error, result) => {
                     let user = result.shift();
-                    let userId = user.User_Name;
+                    let userId = user.id;
 
                     if (error) {
                       this.connector.rollback(() => {
                         reject("unknown error");
                         throw error;
+                      });
+                    } else if (result === null) {
+                      this.connector.rollback(() => {
+                        reject("unknown user");
+                        throw new Error("unknow user");
                       });
                     } else {
                       const Today = new Date();
@@ -2223,23 +2267,15 @@ class DATABASE {
     });
   }
 
-  addItemsBulk(itemArray) {
+  addItemsBulk(itemArray, User) {
     return new Promise((resolve, reject) => {
-      // const insertValue = [];
-      // itemArray.forEach((item)=>{
-      //     item = Object.values(item).toString();
-      //     insertValue.push(item)
-      // })
-      itemArray.forEach(item => {
+      itemArray.forEach((item, userName) => {
         this.connector.beginTransaction(error => {
           this.connector.query(`INSERT INTO duffykids.itemBrands SET Name = '${item.Brand}'`, error => {
             if (error === null || error.code === "ER_DUP_ENTRY") {
               this.connector.query(`INSERT INTO duffykids.itemCategories SET Name='${item.Category}'`, error => {
-                if (error === null || error.code === "ER_DUP_ENTRY") {
-                  this.connector.query("INSERT INTO duffykids.items SET ? ON DUPLICATE KEY UPDATE ?", [item, item], (error, result) => {
-                    console.log("item result: ", result);
-                    const itemId = result.insertId;
-
+                if (error === null) {
+                  this.connector.query("INSERT INTO duffykids.items SET ?", item, (error, result) => {
                     if (error) {
                       this.connector.rollback(() => {
                         if (error.code === "ER_DUP_ENTRY") {
@@ -2250,15 +2286,18 @@ class DATABASE {
                         }
                       });
                     } else {
-                      this.connector.query("SELECT * FROM duffykids.users WHERE User_Name = 'noLimitHendrix'", (error, result) => {
+                      console.log("item result: ", result);
+                      const itemId = result.insertId;
+                      this.connector.query(`SELECT * FROM duffykids.users WHERE User_Name = '${User}'`, (error, result) => {
                         if (error) {
                           this.connector.rollback(() => {
                             reject("unknown error");
                             throw error;
                           });
                         } else {
+                          console.log(result, UserName);
                           let user = result.shift();
-                          let userId = user.User_Name;
+                          let userId = user.id;
                           const Today = new Date();
                           let auditTrailValues = {
                             Date: `${Today.getFullYear()}-${Today.getMonth()}-${Today.getDate()} ${Today.getHours()}:${Today.getMinutes()}:${Today.getSeconds()}`,
@@ -2299,6 +2338,15 @@ class DATABASE {
                         }
                       });
                     }
+                  });
+                } else if (error.code === "ER_DUP_ENTRY") {
+                  this.connector.rollback(() => {
+                    this.updateItem(item, User).then(() => {
+                      resolve(itemArray);
+                      console.log("in uplicate");
+                    }).catch(error => {
+                      reject(error);
+                    });
                   });
                 } else if (error) {
                   this.connector.rollback(() => {
@@ -2367,7 +2415,7 @@ class DATABASE {
     });
   }
 
-  makeSale(newSale) {
+  makeSale(newSale, userName) {
     return new Promise((resolve, reject) => {
       const today = new Date();
       newSale.forEach(sale => {
@@ -2380,7 +2428,7 @@ class DATABASE {
           UnitDiscount: sale.UnitDiscount,
           TotalDiscount: sale.TotalDiscount
         };
-        this.connector.query("SELECT * FROM duffykids.users WHERE User_Name = 'noLimitHendrix'", (error, result) => {
+        this.connector.query("SELECT * FROM duffykids.users WHERE User_Name ?", userName, (error, result) => {
           if (error) {
             reject('unknown error');
             throw error;
@@ -2449,19 +2497,23 @@ class DATABASE {
   }
 
   validateUser(userName, Password) {
+    userName = userName.replace(/^\s+|\s+$/g, "");
+    console.log("userName: ", userName, " Password: ", Password);
     return new Promise((resolve, reject) => {
-      this.connector.query(`SELECT * FROM duffykids.users WHERE User_Name ='${userName}' AND Password='${Password}'`, (error, result) => {
+      this.connector.query(`SELECT * FROM duffykids.users`, (error, result) => {
         if (error) {
           reject("unknown error");
           throw error;
         } else if (result) {
+          console.log(result);
           let user = result.shift();
 
           if (user === undefined) {
             reject();
           } else if (user.User_Name === userName) {
-            resolve(true);
+            resolve(user.IsAdmin);
           } else {
+            console.log(user.User_Name);
             reject();
           }
         }

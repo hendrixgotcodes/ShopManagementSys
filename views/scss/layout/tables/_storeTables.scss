@@ -1,14 +1,12 @@
 .contentTable {
-    width: 97%;
+    width: 100%;
     border-collapse: collapse;
     color: $WHITE;
-    height: 97%;
+    height: 100%;
     // background-color: red;
     display: block;
     // margin-left: .6%;
     // border-radius: 8px;
-    border-top-right-radius: 8px;
-    border-bottom-right-radius: 8px;
     box-shadow: -1px 3px 5px rgba($color: $primary_green, $alpha: 0.15);
     background-color: $WHITE;
 
@@ -20,7 +18,6 @@
         height: 8%;
         display: block;
         user-select: none;
-        border-top-right-radius: 8px;
         // padding: 0 2rem;
         // position: relative;
 

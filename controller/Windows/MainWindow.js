@@ -63,6 +63,9 @@ class MainWWindow extends BrowserWindow {
 
                 this.userName = userName;
                 this.userType = userType;
+
+                
+
             });
 
             ipcMain.on('loadInventory',(e, [userName, userType])=>{
@@ -70,6 +73,7 @@ class MainWWindow extends BrowserWindow {
 
                 this.userName = userName;
                 this.userType = userType;
+
             });
 
             ipcMain.on('loadAnalytics',(e, [userName, userType])=>{
@@ -92,6 +96,12 @@ class MainWWindow extends BrowserWindow {
 
             ipcMain.on('loadGrowthRate',()=>{
                 this.loadFile('./views/html/maingraph.html')
+            })
+
+            ipcMain.on('sendUserParams', (e)=>{
+
+                this.webContents.send("setUserParams", [this.userName, this.userType])
+
             })
 
 

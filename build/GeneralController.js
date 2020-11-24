@@ -146,6 +146,9 @@ ipcRenderer.on("loadUserInfo", (e, array) => {
     });
   }
 });
+ipcRenderer.on("setUserParams", (e, paramsArray) => {
+  [userName, userType] = paramsArray;
+});
 /**ON LOAD */
 
 window.addEventListener("load", () => {

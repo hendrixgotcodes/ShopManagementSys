@@ -177,16 +177,16 @@ body {
             align-items: center;
 
             .emptyBanner{
-                width: 100%;
-                height: 92%;
+                width: 73.4%;
+                height: 88%;
                 position: absolute;
-                bottom: 0%;
+                bottom: 2%;
                 left: 0;
                 display: flex;
                 justify-content: center;
                 align-items: center;
                 z-index: 2;
-                background-color: $OFFWHITE;
+                background-color: $WHITE;
 
                 img{
                     width: 30%;
@@ -205,7 +205,7 @@ body {
 
             }
 
-            @import '../scss/layout/tables/storeTables';
+            @import '../scss/layout/tables/storeFrontTable';
 
             .cartContainer{
 
@@ -275,9 +275,18 @@ body {
                             color: lighten($color: $secondary_red, $amount: 15);
                             background-color: $WHITE;
                             transition: .3s;
+                            cursor: pointer;
 
                             &:disabled{
                                 opacity: .5;
+                                cursor: default;
+
+                                &:hover{
+
+                                    color: lighten($color: $secondary_red, $amount: 15);
+                                    background-color: $WHITE;
+
+                                }
                             }
 
                             &:hover{
@@ -325,7 +334,7 @@ body {
                             border-radius: 8px;
                             color: $primary_black;
                             margin-bottom: 1%;
-                            transition: .3s;
+                            transition: .3s ease-in;
                             transform: translateX(100%);
                             position: relative;
 
@@ -385,7 +394,7 @@ body {
                                 border: 1px solid lighten($color: $primary_black, $amount: 52);
                                 border-radius: 4px;
                                 color: $primary_black;
-                                outline: none;
+                                outline: $primary_yellow;
                                     
                             }
 
@@ -400,7 +409,7 @@ body {
                                 position: absolute;
                                 top: 20%;
                                 left: 37.5%;
-                                // opacity: 0;
+                                opacity: 0;
 
                             }
 
@@ -448,6 +457,16 @@ body {
                         background-color: $primary_yellow;
                         border-radius: 8px;
                         color: $WHITE;
+                        transition: .3s;
+                        cursor: pointer;
+
+                        &:disabled{
+
+                            // opacity: .5;
+                            background-color: lighten($color: $primary_yellow, $amount: 20);
+                            cursor: default;
+
+                        }
 
                     }
 

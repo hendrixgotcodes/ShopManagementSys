@@ -437,13 +437,11 @@ body {
             width: 1.5%;
             cursor: pointer; }
       .main_body .mainBody_content .contentContainer .contentTable {
-        width: 97%;
+        width: 100%;
         border-collapse: collapse;
         color: #fff;
-        height: 97%;
+        height: 100%;
         display: block;
-        border-top-right-radius: 8px;
-        border-bottom-right-radius: 8px;
         box-shadow: -1px 3px 5px rgba(53, 89, 75, 0.15);
         background-color: #fff; }
         .main_body .mainBody_content .contentContainer .contentTable .tableHeader {
@@ -452,8 +450,7 @@ body {
           text-align: center;
           height: 8%;
           display: block;
-          user-select: none;
-          border-top-right-radius: 8px; }
+          user-select: none; }
           .main_body .mainBody_content .contentContainer .contentTable .tableHeader .tableHead {
             display: flex;
             justify-content: center;

@@ -1,0 +1,277 @@
+.contentTable {
+    width: 97%;
+    border-collapse: collapse;
+    color: $WHITE;
+    height: 97%;
+    // background-color: red;
+    display: block;
+    // margin-left: .6%;
+    // border-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    box-shadow: -1px 3px 5px rgba($color: $primary_green, $alpha: 0.15);
+    background-color: $WHITE;
+
+
+    & .tableHeader {
+        width: 100%;
+        background-color: $primary_green;
+        text-align: center;
+        height: 8%;
+        display: block;
+        user-select: none;
+        border-top-right-radius: 8px;
+        // padding: 0 2rem;
+        // position: relative;
+
+        & .tableHead {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            width: 100%;
+
+            & .tableHead_items {
+                // height: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                position: relative;
+
+
+            }
+
+            & .items_pad {
+                cursor: pointer;
+                border-radius: 3px;
+                padding: .2rem .4rem;
+                transition: background-color .3s;
+                margin-right: .2rem;
+                width: 1.5rem;
+                height: 100%;
+                color: $WHITE;
+
+                &:active {
+                    background-color: darken($color: $primary_green--dark, $amount: 8);
+                }
+
+                &:hover {
+                    background-color: $primary_green--dark;
+                }
+
+            }
+
+
+        }
+
+    }
+}
+
+ .tableBody {
+    color: $primary_black;
+    text-align: center;
+    display: block;
+    width: 100%;
+    overflow-y: auto;
+    height: 92%;
+    padding: 0;
+    overflow-x: hidden;
+
+
+    & .bodyRow {
+        display: flex;
+        height: 4rem;
+        width: 100%;
+        justify-content: space-between;
+        padding: 0 .5rem;
+        align-items: center;
+        transition: .3s;
+        position: relative;
+
+        &:nth-child(odd) {
+            background-color: $WHITE;
+        }
+
+        &:nth-child(even){
+            background-color: $OFFWHITE;
+        }
+
+
+        // input[type= "checkbox"]{
+        //     background-color: red;
+        //     width: 5%;
+        // }
+        // input[type="checkbox"]::before{
+
+        //     content: "";
+        //     position: absolute;
+        //     width: 100%;
+        //     height: 100%;
+        //     background-color: $secondary_red;
+        //     top: 0;
+        //     left: 0;
+
+        // }
+        .td_cb{
+            width: 1%;
+            height: 15%;
+            position: relative;
+
+            .selectOne{
+                width: 100%;
+                height: 100%;
+                transition: .5s;
+
+                &::before{
+                    content: "";
+                    width: 13px;
+                    height: 13px;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    background-color: $WHITE;
+                    border-radius: 2px;
+                    border: 1.5px solid $primary_green;
+                    transition: .3s;
+                }
+
+                &:checked{
+                    &::after{
+                        content: "";
+                        width: 3.5px;
+                        height: 8px;
+                        position: absolute;
+                        top: 15%;
+                        left: 39%;
+                        // background-color: #fff;
+                        border-radius: 2px;
+                        border-right: 2.4px solid #fff;
+                        border-bottom: 2.4px solid #fff;
+                        transform: rotate(38deg);
+                        transition: .3s;
+                    }
+
+                    &::before{
+                        background-color: $primary_yellow;
+                    }
+
+                
+                }
+            }
+
+        }
+
+        .controls{
+            position: absolute;
+            width: 15%;
+            // background-color: blue;
+            display: flex;
+            color: $WHITE;
+            height: 100%;
+            top: 0;
+            left: -15%;
+            flex-direction: row-reverse;
+
+            & .edit{
+                width: 50%;
+                background-color: $primary_blue;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                cursor: pointer;
+                transition: .3s;
+                color: $primary_blue;
+
+                // &:hover{
+                //     color: $primary_blue;
+                // }
+            }
+            & .del{
+                width: 50%;
+                background-color: $secondary_red;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                cursor: pointer;
+                transition: .3s;
+
+                // &:hover{
+                //     color: $secondary_red;
+                // }
+            }
+
+            & .del, & .edit{
+                position: relative;
+                height: 100%;
+                color: $WHITE;
+                overflow: hidden;
+
+                & span{
+                    z-index: 2;
+                }
+
+                &::after{
+                    content: "";
+                    position: absolute;
+                    transition: .3s;
+                    background-color: rgba($color: #fff, $alpha: 0.3);
+                    width: 100%;
+                    height: 100%;
+                    top: 0;
+                    right: 0;
+                    transform: translateY(100%);
+                    z-index: 1;
+                }
+
+                &:hover::after{
+                    transform: translateY(0%);
+                }
+            }
+        }
+
+    }
+}
+
+
+
+.tb_cb {
+    width: 5%;
+}
+
+.tb_Names,
+.tb_Brands,
+.tb_Category {
+    width: 22%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.tb_Stock,
+.tb_Price {
+    width: 15.5%;
+}
+
+
+.td_cb {
+    width: 2%;
+}
+
+.td_Names,
+.td_Brands,
+.td_Category {
+    width: 21.5%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    overflow: hidden;
+
+}
+
+.td_Stock,
+.td_Price {
+    width: 15.5%;
+    text-align: center;
+}

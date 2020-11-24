@@ -70,27 +70,34 @@ function sendCloseEvent() {
 
 function loadStore(e) {
 
-    console.log("in store");
 
-    btnLoader.setAttribute("src", "../../utils/media/animations/loaders/Infinity-1s-200px.svg")
-    btnLoader.classList.add("img_shown")
+    // btnLoader.setAttribute("src", "../../utils/media/animations/loaders/Infinity-1s-200px.svg")
+    // btnLoader.classList.add("img_shown")
 
-    database.validateUser(tbUserName.value, password.value)
-    .then((result)=>{
+    // database.validateUser(tbUserName.value, password.value)
+    // .then((result)=>{
+
+    //     console.log(result);
 
 
-        if(result === true){
+    //     if(result ===  1){
 
-                ipcRenderer.send('loadStore', [userName, userType]);
+    //             ipcRenderer.send('loadStore', [tbUserName, "Admin"]);
 
-        }
+    //     }
+    //     else if(result === 0){
+    //         ipcRenderer.send("loadStore", [tbUserName, "Employee"])
+    //     }
 
-    })
-    .catch(()=>{
+    // })
+    // .catch(()=>{
 
-        Notifications.showAlert("error", "Sorry invalid password")
+    //     // Notifications.showAlert("error", "Sorry invalid password")
+    //     console.log("error");
 
-    })
+    // })
+
+    ipcRenderer.send('loadStore', ["Admin", "Admin"])
 
 
 

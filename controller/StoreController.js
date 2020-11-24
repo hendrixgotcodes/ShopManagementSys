@@ -7,6 +7,7 @@
 
 
 /**********************************IMPORTED ***************************/
+const { ipcRenderer } = require("electron");
 import Notifications from '../controller/Alerts/NotificationController'
 import DATABASE from '../model/DATABASE';
 import STORE from '../model/STORE';
@@ -14,6 +15,10 @@ import Modal from './modals/ModalController';
 import TableController from './utilities/TableController';
 import UnitConverter from './utilities/UnitConverter';
 
+
+
+/*********************************User Params */
+let UserName, UserType;
 
 
 /*********************************PROGRAM CONSTANTS********************* */
@@ -24,7 +29,6 @@ let salesMade = 0;       //Total sold Items
 //Holds the amount of table rows selected so that disabling and enabling of elements can be done based on that amount
 let totalSelectedRows = 0;
 
-let footer_tbChanged = false;
 
 //Intitalizing DB
 const database = new DATABASE();
@@ -41,7 +45,6 @@ const toolBarBtn = document.querySelector('.toolBar_btn')
 
 const mainBodyContent = document.querySelector('.mainBody_content');
 const cartUI = document.querySelector(".cart")
-const cbCart = cartUI.querySelector(".cbCart")
 
 
 
@@ -71,6 +74,16 @@ toolBarBtn.addEventListener('click',(e)=>{
     seek(toolBarTB.value)
 })
 
+//Sets user parameters
+ipcRenderer.on("setUserParams", (e, userParamsArray)=>{
+
+
+    [UserName, UserType] = userParamsArray
+
+    let windowTitile = document.querySelector(".titleBar_userName");
+    windowTitile.innerText = UserName
+
+})
 
 
 
@@ -83,6 +96,8 @@ toolBarBtn.addEventListener('click',(e)=>{
 //-----------------------------------------------------------------------------------------------
 //Function to load store items
 function initialzeStoreItems(){
+
+    ipcRenderer.send("sendUserParams")
 
     TableController.showLoadingBanner("Please wait. Attempting to fetch items from database...")
 
