@@ -168,7 +168,6 @@ class Notifications {
     })().then(() => {
       setTimeout(() => {
         mainBodyContent.querySelector(".alertBanner").classList.add("alertBanner--shown");
-        console.log("shown");
       }, 300); //Automatically remove after three seconds
 
       setTimeout(() => {
@@ -595,12 +594,15 @@ electron__WEBPACK_IMPORTED_MODULE_0__["ipcRenderer"].on('populateTable', (e, Ite
     });
   });
   database.addItemsBulk(itemsArray, UserName).then(resolved => {
-    console.log(resolved); // TableController.
-
-    resolved.forEach(item => {
-      _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount, [checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory");
-    });
-    _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", `${resolved.length} Items Have Been Successfully Added.`);
+    // console.log(resolved);
+    // // TableController.
+    // resolved.forEach((item)=>{
+    //     TableController.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount,[checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory")
+    // })
+    _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", `${resolved[0].length - resolved[1].length} Items Have Been Successfully Added. ${resolved[1].length} existed in database.`);
+  }).catch(error => {
+    _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("error", "Sorry an error occured");
+    console.log(error);
   });
 });
 
@@ -2269,24 +2271,104 @@ class DATABASE {
 
   addItemsBulk(itemArray, User) {
     return new Promise((resolve, reject) => {
+      let today = new Date();
+      const insertBrandQuery = "INSERT INTO itemCategories SET Name = ? ON DUPLICATE KEY UPDATE Name = ?";
+      const insertCategoryQuery = "INSERT INTO itemBrands SET Name = ? ON DUPLICATE KEY UPDATE Name = ?";
+      const insertItemQuery = `INSERT INTO items SET ? ON DUPLICATE UPDATE InStock = ${item.InStock}`;
+      const insertAuditTrailQuery = "INSERT INTO auditTrails SET ?";
+      const insertAuditTrailValues = {
+        Date: `${today.getFullYear()}-${today.getMonth()}-${today.getDate()} ${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`,
+        User: User,
+        Operation: "Edit"
+      };
+      const inserItemAuditTrailQuery = "INSERT INTO itemAuditTrails SET ?";
+      const insertItemAuditTrailValues = {};
       const inDB = [];
-      itemArray.forEach((item, itemIndex) => {
-        this.connector.query("SELECT * FROM items WHERE Name = ? AND Brand = ? AND Category = ?", [item.Name, item.Brand, item.Category], (error, result) => {
+      itemArray.forEach(item => {
+        this.connector.beginTransaction(error => {
           if (error) {
-            reject('unknown error');
+            reject("unknown error");
             throw error;
-          } else if (result !== null || result.length !== 0) {
-            result.forEach(itemInDb => {
-              if (item.Name === itemInDb.Name && item.Brand === itemInDb.Brand && item.Category === itemInDb.Category) {
-                inDB.push(itemInDb);
-                item.InStock = parseFloat(item.InStock) + parseFloat(itemInDb.InStock);
+          } else {
+            this.connector.query("SELECT * FROM items WHERE Name = ? AND Brand = ? AND Category = ?", [item.Name, item.Brand, item.Category], (error, result) => {
+              if (error) {
+                reject('unknown error');
+                throw error;
+              } else if (result !== null || result.length !== 0) {
+                result.forEach(itemInDb => {
+                  if (item.Name === itemInDb.Name && item.Brand === itemInDb.Brand && item.Category === itemInDb.Category) {
+                    inDB.push(itemInDb);
+                    item.InStock = parseFloat(item.InStock) + parseFloat(itemInDb.InStock);
+                  }
+                });
+                this.connector.query(insertBrandQuery, [item.Brand, item.Brand], (error, result) => {
+                  if (error) {
+                    this.connector.rollback(() => {
+                      reject("unknown error");
+                      throw error;
+                    });
+                  } else {
+                    this.connector.query(insertCategoryQuery, [item.Category, item.Category], (error, result) => {
+                      if (error) {
+                        this.connector.rollback(() => {
+                          reject("unknow error");
+                          throw error;
+                        });
+                      } else {
+                        this.connector.query(`INSERT INTO items SET ? ON DUPLICATE UPDATE InStock = ${item.InStock}`, [item, item.InStock], (error, result) => {
+                          if (error) {
+                            this.connector.rollback(() => {
+                              reject("unknown error");
+                              throw error;
+                            });
+                          } else {
+                            const itemId = result.insertId;
+                            insertAuditTrailValues.Item = itemId;
+                            this.connector.query("SELECT * FROM users WHERE UserName = ?", User, (error, result) => {
+                              if (error) {
+                                this.connector.rollback(() => {
+                                  reject("unknown error");
+                                  throw error;
+                                });
+                              } else {
+                                result = result.shift();
+                                insertAuditTrailValues.User = result.id;
+                                this.connector.query(insertAuditTrailQuery, insertAuditTrailValues, (error, result) => {
+                                  if (error) {
+                                    this.connector.rollback(() => {
+                                      reject("unknow error");
+                                      throw error;
+                                    });
+                                  } else {
+                                    insertItemAuditTrailValues.Item = itemId;
+                                    insertItemAuditTrailValues.AuditTrail = result.id;
+                                    this.connector.query(inserItemAuditTrailQuery, insertItemAuditTrailValues, (error, result) => {
+                                      if (error) {
+                                        this.connector.rollback(() => {
+                                          reject("unknown error");
+                                          throw error;
+                                        });
+                                      } else {
+                                        this.connector.commit(() => {
+                                          resolve(itemArray, inDB);
+                                        });
+                                      }
+                                    });
+                                  }
+                                });
+                              }
+                            });
+                          }
+                        });
+                      }
+                    });
+                  }
+                });
               }
             });
           }
         });
       });
-      console.log(itemArray);
-      console.log(inDB);
     });
   }
   /*****************************CATEGORIES DB METHODS************************************/

@@ -80,7 +80,6 @@ class Notifications{
             setTimeout(() => {
 
                 mainBodyContent.querySelector(".alertBanner").classList.add("alertBanner--shown")
-                console.log("shown");
                 
             }, 300)
 

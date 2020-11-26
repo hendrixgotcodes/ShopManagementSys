@@ -658,19 +658,23 @@ ipcRenderer.on('populateTable',(e, Items)=>{
         database.addItemsBulk(itemsArray, UserName)
         .then((resolved)=>{
 
-            console.log(resolved);
+            // console.log(resolved);
 
-            // TableController.
+            // // TableController.
 
-            resolved.forEach((item)=>{
+            // resolved.forEach((item)=>{
 
-                TableController.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount,[checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory")
+            //     TableController.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount,[checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory")
 
-            })
+            // })
 
-            Notifications.showAlert("success", `${resolved.length} Items Have Been Successfully Added.`)
+            Notifications.showAlert("success", `${resolved[0].length - resolved[1].length} Items Have Been Successfully Added. ${resolved[1].length} existed in database.`)
 
 
+        })
+        .catch((error)=>{
+            Notifications.showAlert("error", "Sorry an error occured")
+            console.log(error);
         })
 
 })
