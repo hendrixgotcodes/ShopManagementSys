@@ -940,12 +940,9 @@ class DATABASE{
 
             let inDb = [];
 
-            const itemArray2 = itemArray;
-            const notInDb = [];
+           
 
-            const promises = [];
-
-           itemArray.forEach((item, itemIndex)=>{
+           itemArray.forEach((item)=>{
 
 
                 this.connector.query("SELECT * FROM items WHERE Name = ? AND Brand = ? AND Category = ?", [item.Name, item.Brand, item.Category], (error, result)=>{
@@ -956,23 +953,181 @@ class DATABASE{
                         throw error
 
                     }
-                    else{
 
-                        result.forEach((dbItem)=>{
+                    result.forEach((dbItem)=>{
 
-                            item.InStock = parseInt(dbItem.InStock) + parseInt(item.InStock)
-                            
+                        item.InStock = parseInt(dbItem.InStock) + parseInt(item.InStock)
 
-                        })
+                        inDb.push(dbItem)
+                        
 
-                    }
+                    })
 
 
                 })
 
            }) 
 
-         
+            itemArray.forEach((item, USER)=>{
+
+                this.connector.beginTransaction((error)=>{
+
+                    this.connector.query(`INSERT INTO duffykids.itemBrands SET Name = '${item.Brand}'`, (error)=>{
+
+                        if(error === null || error.code === "ER_DUP_ENTRY"){
+
+                            this.connector.query(`INSERT INTO duffykids.itemCategories SET Name='${item.Category}'`, (error)=>{
+
+
+                                    this.connector.query("INSERT INTO duffykids.items SET ? ON DUPLICATE KEY UPDATE ?", [item, item], (error, result)=>{
+
+                                        if(error){
+
+                                                this.connector.rollback(()=>{
+
+                                                    if(error.code === "ER_DUP_ENTRY"){
+                                                        reject("Duplicate")
+                                                    }
+                                                    else{
+
+                                                        reject("unknown error")
+                                                        throw error
+
+                                                    }
+
+
+                                                })
+
+
+                                        }
+                                        else{
+
+                                            console.log("item result: ", result);
+
+                                            const itemId = result.insertId;
+
+
+                                            this.connector.query(`SELECT * FROM duffykids.users WHERE User_Name = '${User}'`, (error, result)=>{
+
+                                                if(error){
+
+                                                    this.connector.rollback(()=>{
+
+                                                        reject("unknown error");
+                                                        throw error
+
+                                                    })
+
+                                                }
+                                                else{
+                                                    
+
+                                                    let user = result.shift();
+                                                    let userId = user.id;
+
+
+
+
+                                                    const Today = new Date();
+
+                                                    let auditTrailValues = 
+                                                    {
+                                                        Date: `${Today.getFullYear()}-${Today.getMonth()}-${Today.getDate()} ${Today.getHours()}:${Today.getMinutes()}:${Today.getSeconds()}`,
+                                                        User: userId,
+                                                        Operation: "Creation",
+                                                        Item: itemId
+                                                    }
+
+                                                    this.connector.query("INSERT INTO duffykids.auditTrails SET ?", auditTrailValues, (error, result)=>{
+
+                                                    
+                                                        if(error){
+
+                                                            this.connector.rollback(()=>{
+        
+                                                                reject("unknown error");
+                                                                throw error
+        
+                                                            })
+        
+                                                        }
+                                                        else{
+
+                                                            let itemAuditTrailValues = {
+                                                                item: itemId,
+                                                                auditTrail: result.insertId
+                                                            }
+
+                                                            this.connector.query("INSERT INTO duffykids.itemAuditTrails SET ?", itemAuditTrailValues, (error)=>{
+
+                                                                if(error){
+
+                                                                    this.connector.rollback(()=>{
+                
+                                                                        reject("unknown error");
+                                                                        throw error
+                
+                                                                    })
+                
+                                                                }
+                                                                else{
+
+                                                                    this.connector.commit((error)=>{
+
+                                                                        if(error)
+                                                                        {
+                                                                            reject("unknown error")
+                                                                            
+                                                                            throw error
+                                                                        }
+                                                                        else{
+                                                                            resolve([itemArray, inDb])
+                                                                        }
+
+
+                                                                    })
+
+                                                                }
+
+                                                            })
+
+                                                        }
+
+
+                                                    })
+
+                                                }
+
+                                                })    
+
+                                        }
+
+                                    })
+
+
+                            })
+
+                        }
+                        else if(error){
+
+                            this.connector.rollback(()=>{
+
+                                reject("unknown error")
+                                throw error
+
+
+                            })
+                        }
+
+                    })
+
+                })
+
+             })
+        
+
+
+            
 
 
         })
