@@ -926,207 +926,53 @@ class DATABASE{
 
     addItemsBulk(itemArray, User){
 
+       
+
         return new Promise((resolve, reject)=>{
 
-            let today = new Date()
+            let today = new Date();
+            let year = today.getFullYear();
+            let month = today.getMonth();
+            let day = today.getDate();
+            let hour = today.getHours();
+            let minutes = today.getMinutes();
+            let seconds = today.getSeconds();
 
-            const insertBrandQuery = "INSERT INTO itemCategories SET Name = ? ON DUPLICATE KEY UPDATE Name = ?"
-            const insertCategoryQuery = "INSERT INTO itemBrands SET Name = ? ON DUPLICATE KEY UPDATE Name = ?"
-            const insertItemQuery = `INSERT INTO items SET ? ON DUPLICATE UPDATE InStock = ${item.InStock}`
+            let inDb = [];
 
+            const itemArray2 = itemArray;
+            const notInDb = [];
 
-            const insertAuditTrailQuery = "INSERT INTO auditTrails SET ?"
-            const insertAuditTrailValues = {
+            const promises = [];
 
-                Date: `${today.getFullYear()}-${today.getMonth()}-${today.getDate()} ${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`,
-                User: User,
-                Operation: "Edit",
-
-            }
-            const inserItemAuditTrailQuery = "INSERT INTO itemAuditTrails SET ?"
-
-            const insertItemAuditTrailValues = {}
+           itemArray.forEach((item, itemIndex)=>{
 
 
-            const inDB = [];
-
-            itemArray.forEach((item)=>{
-
-                this.connector.beginTransaction((error)=>{
+                this.connector.query("SELECT * FROM items WHERE Name = ? AND Brand = ? AND Category = ?", [item.Name, item.Brand, item.Category], (error, result)=>{
 
                     if(error){
+
                         reject("unknown error")
                         throw error
+
                     }
                     else{
 
-                        this.connector.query("SELECT * FROM items WHERE Name = ? AND Brand = ? AND Category = ?", [item.Name, item.Brand, item.Category], (error, result)=>{
+                        result.forEach((dbItem)=>{
 
-                            if(error){
-        
-                                reject('unknown error')
-                                throw error
-        
-                            }
-                            else if(result !== null || result.length !== 0){
-        
-                                result.forEach((itemInDb)=>{
-        
-                                    if(item.Name === itemInDb.Name && item.Brand === itemInDb.Brand && item.Category === itemInDb.Category){
-        
-                                        inDB.push(itemInDb)
-                                        
-                                        item.InStock = parseFloat(item.InStock) + parseFloat(itemInDb.InStock)
-        
-                                    }
-        
-                                })
+                            item.InStock = parseInt(dbItem.InStock) + parseInt(item.InStock)
+                            
 
-                                this.connector.query(insertBrandQuery, [item.Brand, item.Brand], (error, result)=>{
-
-                                    if(error){
-
-                                        this.connector.rollback(()=>{
-
-                                            reject("unknown error")
-                                            throw error
-
-                                        })
-
-                                    }
-                                    else{
-
-                                        this.connector.query(insertCategoryQuery, [item.Category, item.Category], (error, result)=>{
-
-                                            if(error){
-
-                                                this.connector.rollback(()=>{
-
-                                                    reject("unknow error")
-                                                    throw error
-
-                                                })
-
-                                            }
-                                            else{
-
-                                                this.connector.query(`INSERT INTO items SET ? ON DUPLICATE UPDATE InStock = ${item.InStock}`, [item, item.InStock], (error, result)=>{
-
-                                                    if(error){
-
-                                                        this.connector.rollback(()=>{
-
-                                                            reject("unknown error")
-                                                            throw error
-
-                                                        })
-
-                                                    }
-                                                    else{
-
-                                                        const itemId = result.insertId;
-
-                                                        insertAuditTrailValues.Item = itemId;
-
-                                                        this.connector.query("SELECT * FROM users WHERE UserName = ?", User, (error, result)=>{
-
-                                                            if(error){
-
-                                                                this.connector.rollback(()=>{
-
-                                                                    reject("unknown error")
-                                                                    throw error
-
-                                                                })
-
-                                                            }
-                                                            else{
-
-                                                                result = result.shift()
-
-                                                                insertAuditTrailValues.User = result.id
-
-                                                                this.connector.query(insertAuditTrailQuery, insertAuditTrailValues, (error, result)=>{
-
-                                                                    if(error){
-                                                                        this.connector.rollback(()=>{
-        
-                                                                            reject("unknow error")
-                                                                            throw error
-        
-                                                                        })
-                                                                    }
-                                                                    else{
-
-                                                                        insertItemAuditTrailValues.Item = itemId;
-                                                                        insertItemAuditTrailValues.AuditTrail = result.id
-        
-                                                                        this.connector.query(inserItemAuditTrailQuery, insertItemAuditTrailValues, (error, result)=>{
-        
-                                                                            if(error){
-                                                                                this.connector.rollback(()=>{
-        
-                                                                                    reject("unknown error")
-                                                                                    throw error
-        
-                                                                                })
-                                                                            }
-                                                                            else{
-        
-                                                                                this.connector.commit(()=>{
-        
-                                                                                    resolve(itemArray, inDB)
-        
-                                                                                })
-        
-                                                                            }
-        
-                                                                        })
-        
-                                                                    }
-        
-                                                                })
-        
-
-                                                            }
-
-                                                        })
-
- 
-                                                    }
-
-                                                })
-
-                                            }
-
-
-                                        })
-
-
-                                    }
-                                    
-
-                                })
-        
-                            }
-        
-                        })                        
+                        })
 
                     }
 
+
                 })
 
+           }) 
 
-
-
-            })
-
-
-            
-
-            
-
-            
+         
 
 
         })
