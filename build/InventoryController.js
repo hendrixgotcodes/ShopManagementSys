@@ -168,7 +168,6 @@ class Notifications {
     })().then(() => {
       setTimeout(() => {
         mainBodyContent.querySelector(".alertBanner").classList.add("alertBanner--shown");
-        console.log("shown");
       }, 300); //Automatically remove after three seconds
 
       setTimeout(() => {
@@ -595,14 +594,39 @@ electron__WEBPACK_IMPORTED_MODULE_0__["ipcRenderer"].on('populateTable', (e, Ite
     });
   });
   database.addItemsBulk(itemsArray, UserName).then(resolved => {
-    if (resolved[1] === true) {
-      resolved[0].forEach(item => {
+    let inDb = resolved[1];
+    inDb.forEach(item => {
+      resolved[0].forEach((item2, item2Index) => {
+        if (item.Name === item2.Name && item.Brand === item2.Brand && item.Category === item2.Category) {
+          resolved[0].splice(item2Index, 1);
+        }
+      });
+    });
+    let notInDb = resolved[0];
+    console.log(notInDb);
+
+    if (notInDb > 0 && inDb.length > 0) {
+      _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", `${notInDb} Items Have Been Successfully Added. ${inDb.length} existed in database.`);
+      notInDb.forEach(item => {
         _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount, [checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory");
       });
-      _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", `${resolved.length} Items Have Been Successfully Added.`);
-    } else {
-      _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", `${resolved[0].length} Items Have Been Successfully Added. Including updates`);
+      inDb.forEach(item => {
+        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.editItem("", item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.CostPrice, item.Discount);
+      });
+    } else if (notInDb.length === 0 && inDb.length > 0) {
+      _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", `${inDb.length} have been successfully updated`);
+      inDb.forEach(item => {
+        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.editItem("", item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.CostPrice, item.Discount);
+      });
+    } else if (notInDb.length > 0 && inDb.length === 0) {
+      _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", `${notInDb.length} items have been successfully added`);
+      notInDb.forEach(item => {
+        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount, [checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory");
+      });
     }
+  }).catch(error => {
+    _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("error", "Sorry an error occured");
+    console.log(error);
   });
 });
 
@@ -1206,10 +1230,20 @@ function openModal(modal) {
 "use strict";
 
 
+const clip = __webpack_require__(/*! text-clipper */ "./node_modules/text-clipper/dist/index.js").default;
+
 class TableController {
   static createItem(name, brand, category, stock, sellingPrice, discount, functions, hasItems, costPrice = "", purchased = "", dontHighlightAfterCreate = false, isdeletedItem = false, destinationPage = "") {
     return new Promise((resolve, reject) => {
-      const tableROWS = document.querySelector('tbody').querySelectorAll('tr'); //Removing Empty Banner Before Addition of new row
+      name = clip(name, 20);
+      brand = clip(brand, 20);
+      category = clip(category, 20);
+      const tableROWS = document.querySelectorAll('tr');
+      tableROWS.forEach(row => {
+        if (row.Name === name && row.Category === category && row.Brand === brand) {
+          reject("already created");
+        }
+      }); //Removing Empty Banner Before Addition of new row
 
       const emptyBanner = document.querySelector('.contentContainer').querySelector('.emptyBanner');
       let returnedValue = true; //Check if Default Banner is attached to the contentContainer
@@ -1382,13 +1416,31 @@ class TableController {
     });
   }
 
-  static editItem(row, name, brand, category, stock, sellingPrice, discount) {
+  static editItem(row, name, brand, category, stock, sellingPrice, costPrice, discount) {
+    if (row === "") {
+      console.log(null);
+      let tableRows = document.querySelector("tbody").querySelectorAll("tr");
+      tableRows.forEach(currentRow => {
+        if (currentRow.querySelector('.td_Names').innerText === name && currentRow.querySelector('.td_Brands').innerText === brand && currentRow.querySelector('.td_Category').innerText === category) {
+          currentRow.querySelector('.td_Names').innerText = name;
+          currentRow.querySelector('.td_Brands').innerText = brand;
+          currentRow.querySelector('.td_Category').innerText = category;
+          currentRow.querySelector('.td_Stock').innerText = stock;
+          currentRow.querySelector('.td_Price').innerText = sellingPrice;
+          currentRow.querySelector('.td_discount').innerText = discount;
+          currentRow.querySelector(".td_costPrice").innerText = costPrice;
+        }
+      });
+      return;
+    }
+
     row.querySelector('.td_Names').innerText = name;
     row.querySelector('.td_Brands').innerText = brand;
     row.querySelector('.td_Category').innerText = category;
     row.querySelector('.td_Stock').innerText = stock;
     row.querySelector('.td_Price').innerText = sellingPrice;
-    row.querySelector('.td_Discount').innerText = discount;
+    row.querySelector('.td_discount').innerText = discount;
+    row.querySelector(".td_costPrice").innerText = costPrice;
     return true;
   } // static editMany(Array){
   //     const inTable = [];
@@ -1558,26 +1610,28 @@ class TableController {
   }
 
   static addToCart(row) {
+    /******************PROGRAM VARIABLES*******************/
+    let inCart = [];
+    /*****************DOM ELEMENTS**************************/
+
     const cart = document.querySelector(".cart");
     const subTotal = cart.querySelector(".subTotal").querySelector(".value");
     const mainTotal = cart.querySelector(".mainTotal").querySelector(".value");
-    const cartItems = document.querySelector(".cart").querySelector(".cartItems");
+    const cartItemElements = document.querySelector(".cart").querySelector(".cartItems");
     const btnCart_clear = cart.querySelector(".btnCart_clear");
-    let [itemName, itemBrand, discount, itemPrice, itemStock] = [row.querySelector(".td_Names").innerText, row.querySelector(".td_Brands").innerText, row.querySelector('.td_discount').innerText, row.querySelector(".td_Price").innerText, row.querySelector('.td_Stock').innerText];
+    let [itemName, itemBrand, itemCategory, discount, itemPrice, itemStock, itemCostPrice] = [row.querySelector(".td_Names").innerText, row.querySelector(".td_Brands").innerText, row.querySelector('.td_discount').innerText, row.querySelector(".td_Price").innerText, row.querySelector('.td_Stock').innerText, row.querySelector('.td_costPrice').innerText];
     itemPrice = parseFloat(itemPrice);
     let itemExists = false;
 
-    if (cartItems.querySelector(".cartInfo") !== null) {
-      cartItems.querySelector(".cartInfo").style.display = "none";
+    if (cartItemElements.querySelector(".cartInfo") !== null) {
+      cartItemElements.querySelector(".cartInfo").style.display = "none";
       document.querySelector(".cart").querySelector(".btnCart_clear").disabled = false;
       document.querySelector(".cart").querySelector(".btnCart_sell").disabled = false;
     }
 
-    const itemsInCart = cartItems.querySelectorAll(".cartItem");
+    const itemsInCart = cartItemElements.querySelectorAll(".cartItem");
     itemsInCart.forEach(item => {
-      console.log("innit");
-
-      if (item.querySelector(".cartItem_Name").innerText === itemName && item.querySelector(".cartItem_Brand").innerText === itemBrand) {
+      if (item.querySelector(".cartItem_Name").innerText === itemName && item.querySelector(".cartItem_Brand").innerText === itemBrand && item.querySelector(".cartItem_Category").innerText === itemCategory) {
         item.classList.remove("cartItem--shown");
         setTimeout(() => {
           item.remove();
@@ -1587,7 +1641,12 @@ class TableController {
         console.log("itemTotalCost: ", itemTotalCost);
         subTotal.innerText = parseFloat(subTotal.innerText) - itemTotalCost;
         mainTotal.innerText = subTotal.innerText;
-        itemExists = true;
+        itemExists = true; //Filter and reassign the inCart array the items whose name, brand and category does not equal the current item
+
+        inCart = inCart.filter(function (cartItem) {
+          return cartItem.Item.Name;
+        });
+        console.log(inCart);
       }
     });
 
@@ -1599,6 +1658,7 @@ class TableController {
             <div class="cartItem_details">
                 <div class="cartItem_Name">${itemName}</div>
                 <div class="cartItem_Brand">${itemBrand}</div>
+                <div hidden class="cartItem_Category">${itemCategory}</div>
             </div>
 
             <button class="cartItem_discount cartItem_discount--disabled">
@@ -1615,7 +1675,7 @@ class TableController {
     const cartItem = document.createElement("div");
     cartItem.className = "cartItem";
     cartItem.innerHTML = cartItemTemplate;
-    cartItems.appendChild(cartItem);
+    cartItemElements.appendChild(cartItem);
     setTimeout(() => {
       cartItem.classList.add("cartItem--shown");
     }, 100);
@@ -1650,14 +1710,14 @@ class TableController {
     });
     /************************************************************************************ */
 
-    let checkbox = cartItems.querySelector(".cb_cartItem");
+    let checkbox = cartItemElements.querySelector(".cb_cartItem");
     checkbox.addEventListener("click", function toggleDiscount() {
       console.log("in check");
 
       if (checkbox.checked === true) {
-        cartItems.querySelector(".cartItem_discount").classList.remove("cartItem_discount--disabled");
+        cartItemElements.querySelector(".cartItem_discount").classList.remove("cartItem_discount--disabled");
       } else {
-        cartItems.querySelector(".cartItem_discount").classList.add("cartItem_discount--disabled");
+        cartItemElements.querySelector(".cartItem_discount").classList.add("cartItem_discount--disabled");
       }
     });
     /******************************************************************************************** */
@@ -1671,6 +1731,21 @@ class TableController {
       subTotal.innerText = "0.00";
       mainTotal.innerText = "0.00";
       cart.querySelector(".cartInfo").style.display = "inline";
+    }); //Add new Item(object) to array of selected items(objects)
+
+    let totalItemRevenue = parseFloat(parseInt(itemSelect.value) * parseInt(itemPrice));
+    let totalItemCostPrice = parseFloat(parseInt(itemSelect.value) * parseInt(itemCostPrice));
+    inCart.push({
+      Item: {
+        Name: itemName,
+        Brand: itemBrand,
+        Category: itemCategory
+      },
+      Purchased: parseInt(itemStock),
+      Revenue: totalItemRevenue,
+      Profit: totalItemRevenue - totalItemCostPrice,
+      UnitDiscount: discount,
+      TotalDiscount: parseFloat(discount) * parseInt(itemSelect.value)
     });
   }
 
@@ -1802,9 +1877,9 @@ class DATABASE {
                                     Date DATE NOT NULL,
                                     User INT NOT NULL, 
                                     Item INT NOT NULL,
-                                    AmountPurchased INT NOT NULL,
-                                    CashMade DECIMAL(8,2) NOT NULL,
-                                    ProfitMade DECIMAL(8,2) NOT NULL,
+                                    Purchased INT NOT NULL,
+                                    Revenue DECIMAL(8,2) NOT NULL,
+                                    Profit DECIMAL(8,2) NOT NULL,
                                     UnitDiscount DECIMAL(8,2) NOT NULL,
                                     TotalDiscount DECIMAL(8,2) NOT NULL,
                                     PRIMARY KEY(id),
@@ -2271,90 +2346,95 @@ class DATABASE {
 
   addItemsBulk(itemArray, User) {
     return new Promise((resolve, reject) => {
-      itemArray.forEach((item, userName) => {
+      let today = new Date();
+      let year = today.getFullYear();
+      let month = today.getMonth();
+      let day = today.getDate();
+      let hour = today.getHours();
+      let minutes = today.getMinutes();
+      let seconds = today.getSeconds();
+      let inDb = [];
+      itemArray.forEach(item => {
+        this.connector.query("SELECT * FROM items WHERE Name = ? AND Brand = ? AND Category = ?", [item.Name, item.Brand, item.Category], (error, result) => {
+          if (error) {
+            reject("unknown error");
+            throw error;
+          }
+
+          result.forEach(dbItem => {
+            item.InStock = parseInt(dbItem.InStock) + parseInt(item.InStock);
+            inDb.push(dbItem);
+          });
+        });
+      });
+      itemArray.forEach((item, USER) => {
         this.connector.beginTransaction(error => {
           this.connector.query(`INSERT INTO duffykids.itemBrands SET Name = '${item.Brand}'`, error => {
             if (error === null || error.code === "ER_DUP_ENTRY") {
-              this.connector.query(`INSERT INTO duffykids.itemCategories SET Name='${item.Category}'`, error => {
-                if (error === null) {
-                  this.connector.query("INSERT INTO duffykids.items SET ? ON DUPLICATE KEY UPDATE ?", [item, item], (error, result) => {
+              this.connector.query(`INSERT INTO duffykids.itemCategories SET Name='${item.Category}' ON DUPLICATE KEY UPDATE Name= '${item.Category}'`, error => {
+                this.connector.query("INSERT INTO duffykids.items SET ? ON DUPLICATE KEY UPDATE ?", [item, item], (error, result) => {
+                  if (error) {
+                    this.connector.rollback(() => {
+                      if (error.code === "ER_DUP_ENTRY") {
+                        reject("Duplicate");
+                      } else {
+                        reject("unknown error");
+                        throw error;
+                      }
+                    });
+                  } else {
                     console.log("item result: ", result);
                     const itemId = result.insertId;
-
-                    if (error) {
-                      this.connector.rollback(() => {
-                        if (error.code === "ER_DUP_ENTRY") {
-                          reject("Duplicate");
-                        } else {
+                    this.connector.query(`SELECT * FROM duffykids.users WHERE User_Name = '${User}'`, (error, result) => {
+                      if (error) {
+                        this.connector.rollback(() => {
                           reject("unknown error");
                           throw error;
-                        }
-                      });
-                    } else {
-                      this.connector.query(`SELECT * FROM duffykids.users WHERE User_Name = '${User}'`, (error, result) => {
-                        if (error) {
-                          this.connector.rollback(() => {
-                            reject("unknown error");
-                            throw error;
-                          });
-                        } else {
-                          let user = result.shift();
-                          let userId = user.id;
-                          const Today = new Date();
-                          let auditTrailValues = {
-                            Date: `${Today.getFullYear()}-${Today.getMonth()}-${Today.getDate()} ${Today.getHours()}:${Today.getMinutes()}:${Today.getSeconds()}`,
-                            User: userId,
-                            Operation: "Creation",
-                            Item: itemId
-                          };
-                          this.connector.query("INSERT INTO duffykids.auditTrails SET ?", auditTrailValues, (error, result) => {
-                            if (error) {
-                              this.connector.rollback(() => {
-                                reject("unknown error");
-                                throw error;
-                              });
-                            } else {
-                              let itemAuditTrailValues = {
-                                item: itemId,
-                                auditTrail: result.insertId
-                              };
-                              this.connector.query("INSERT INTO duffykids.itemAuditTrails SET ?", itemAuditTrailValues, error => {
-                                if (error) {
-                                  this.connector.rollback(() => {
+                        });
+                      } else {
+                        let user = result.shift();
+                        let userId = user.id;
+                        const Today = new Date();
+                        let auditTrailValues = {
+                          Date: `${Today.getFullYear()}-${Today.getMonth()}-${Today.getDate()} ${Today.getHours()}:${Today.getMinutes()}:${Today.getSeconds()}`,
+                          User: userId,
+                          Operation: "Creation",
+                          Item: itemId
+                        };
+                        this.connector.query("INSERT INTO duffykids.auditTrails SET ?", auditTrailValues, (error, result) => {
+                          if (error) {
+                            this.connector.rollback(() => {
+                              reject("unknown error");
+                              throw error;
+                            });
+                          } else {
+                            let itemAuditTrailValues = {
+                              item: itemId,
+                              auditTrail: result.insertId
+                            };
+                            this.connector.query("INSERT INTO duffykids.itemAuditTrails SET ?", itemAuditTrailValues, error => {
+                              if (error) {
+                                this.connector.rollback(() => {
+                                  reject("unknown error");
+                                  throw error;
+                                });
+                              } else {
+                                this.connector.commit(error => {
+                                  if (error) {
                                     reject("unknown error");
                                     throw error;
-                                  });
-                                } else {
-                                  this.connector.commit(error => {
-                                    if (error) {
-                                      reject("unknown error");
-                                      throw error;
-                                    } else {
-                                      resolve([itemArray, true]);
-                                    }
-                                  });
-                                }
-                              });
-                            }
-                          });
-                        }
-                      });
-                    }
-                  });
-                } else if (error.code === "ER_DUP_ENTRY") {
-                  this.connector.rollback(() => {
-                    this.updateItem(item, User).then(() => {
-                      resolve([itemArray, false]);
-                    }).catch(error => {
-                      reject(error);
+                                  } else {
+                                    resolve([itemArray, inDb]);
+                                  }
+                                });
+                              }
+                            });
+                          }
+                        });
+                      }
                     });
-                  });
-                } else if (error) {
-                  this.connector.rollback(() => {
-                    reject("unknown error");
-                    throw error;
-                  });
-                }
+                  }
+                });
               });
             } else if (error) {
               this.connector.rollback(() => {
@@ -29290,6 +29370,594 @@ function convertTimezone(tz) {
   }
 
   return false;
+}
+
+/***/ }),
+
+/***/ "./node_modules/text-clipper/dist/index.js":
+/*!*************************************************!*\
+  !*** ./node_modules/text-clipper/dist/index.js ***!
+  \*************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+}); // Void elements are elements without inner content,
+// which close themselves regardless of trailing slash.
+// E.g. both <br> and <br /> are self-closing.
+
+var VOID_ELEMENTS = ["area", "base", "br", "col", "command", "embed", "hr", "img", "input", "keygen", "link", "meta", "param", "source", "track", "wbr"]; // Block elements trigger newlines where they're inserted,
+// and are always safe places for truncation.
+
+var BLOCK_ELEMENTS = ["address", "article", "aside", "blockquote", "canvas", "dd", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer", "form", "h1", "h2", "h3", "h4", "h5", "h6", "header", "hgroup", "hr", "li", "main", "nav", "noscript", "ol", "output", "p", "pre", "section", "table", "tbody", "tfoot", "thead", "tr", "ul", "video"];
+var NEWLINE_CHAR_CODE = 10; // '\n'
+
+var EXCLAMATION_CHAR_CODE = 33; // '!'
+
+var DOUBLE_QUOTE_CHAR_CODE = 34; // '"'
+
+var AMPERSAND_CHAR_CODE = 38; // '&'
+
+var SINGLE_QUOTE_CHAR_CODE = 39; // '\''
+
+var FORWARD_SLASH_CHAR_CODE = 47; // '/'
+
+var SEMICOLON_CHAR_CODE = 59; // ';'
+
+var TAG_OPEN_CHAR_CODE = 60; // '<'
+
+var EQUAL_SIGN_CHAR_CODE = 61; // '='
+
+var TAG_CLOSE_CHAR_CODE = 62; // '>'
+
+var CHAR_OF_INTEREST_REGEX = /[<&\n\ud800-\udbff]/;
+var SIMPLIFY_WHITESPACE_REGEX = /\s{2,}/g;
+/**
+ * Clips a string to a maximum length. If the string exceeds the length, it is truncated and an
+ * indicator (an ellipsis, by default) is appended.
+ *
+ * In detail, the clipping rules are as follows:
+ * - The resulting clipped string may never contain more than maxLength characters. Examples:
+ *   - clip("foo", 3) => "foo"
+ *   - clip("foo", 2) => "f…"
+ * - The indicator is inserted if and only if the string is clipped at any place other than a
+ *   newline. Examples:
+ *   - clip("foo bar", 5) => "foo …"
+ *   - clip("foo\nbar", 5) => "foo"
+ * - If the html option is true and valid HTML is inserted, the clipped output *must* also be valid
+ *   HTML. If the input is not valid HTML, the result is undefined (not to be confused with JS'
+ *   "undefined" type; some errors might be detected and result in an exception, but this is not
+ *   guaranteed).
+ *
+ * @param string The string to clip.
+ * @param maxLength The maximum length of the clipped string in number of characters.
+ * @param options Optional options object.
+ *
+ * @return The clipped string.
+ */
+
+function clip(string, maxLength, options) {
+  if (options === void 0) {
+    options = {};
+  }
+
+  if (!string) {
+    return "";
+  }
+
+  string = string.toString();
+  return options.html ? clipHtml(string, maxLength, options) : clipPlainText(string, maxLength, options);
+}
+
+exports.default = clip;
+
+function clipHtml(string, maxLength, options) {
+  var _a = options.imageWeight,
+      imageWeight = _a === void 0 ? 2 : _a,
+      _b = options.indicator,
+      indicator = _b === void 0 ? "\u2026" : _b,
+      _c = options.maxLines,
+      maxLines = _c === void 0 ? Infinity : _c;
+  var numChars = indicator.length;
+  var numLines = 1;
+  var i = 0;
+  var isUnbreakableContent = false;
+  var tagStack = []; // Stack of currently open HTML tags.
+
+  var length = string.length;
+
+  for (; i < length; i++) {
+    var rest = i ? string.slice(i) : string;
+    var nextIndex = rest.search(CHAR_OF_INTEREST_REGEX);
+    var nextBlockSize = nextIndex > -1 ? nextIndex : rest.length;
+    i += nextBlockSize;
+
+    if (!isUnbreakableContent) {
+      if (shouldSimplifyWhiteSpace(tagStack)) {
+        numChars += simplifyWhiteSpace(nextBlockSize === rest.length ? rest : rest.slice(0, nextIndex)).length;
+
+        if (numChars > maxLength) {
+          i -= nextBlockSize; // We just cut off the entire incorrectly placed text...
+
+          break;
+        }
+      } else {
+        numChars += nextBlockSize;
+
+        if (numChars > maxLength) {
+          i = Math.max(i - numChars + maxLength, 0);
+          break;
+        }
+      }
+    }
+
+    if (nextIndex === -1) {
+      break;
+    }
+
+    var charCode = string.charCodeAt(i);
+
+    if (charCode === TAG_OPEN_CHAR_CODE) {
+      var nextCharCode = string.charCodeAt(i + 1);
+      var isSpecialTag = nextCharCode === EXCLAMATION_CHAR_CODE;
+
+      if (isSpecialTag && string.substr(i + 2, 2) === "--") {
+        var commentEndIndex = string.indexOf("-->", i + 4) + 3;
+        i = commentEndIndex - 1; // - 1 because the outer for loop will increment it
+      } else if (isSpecialTag && string.substr(i + 2, 7) === "[CDATA[") {
+        var cdataEndIndex = string.indexOf("]]>", i + 9) + 3;
+        i = cdataEndIndex - 1; // - 1 because the outer for loop will increment it
+        // note we don't count CDATA text for our character limit because it is only
+        // allowed within SVG and MathML content, both of which we don't clip
+      } else {
+        // don't open new tags if we are currently at the limit
+        if (numChars === maxLength && string.charCodeAt(i + 1) !== FORWARD_SLASH_CHAR_CODE) {
+          numChars++;
+          break;
+        }
+
+        var attributeQuoteCharCode = 0;
+        var endIndex = i;
+        var isAttributeValue = false;
+
+        while (true
+        /* eslint-disable-line */
+        ) {
+          endIndex++;
+
+          if (endIndex >= length) {
+            throw new Error("Invalid HTML: " + string);
+          }
+
+          var charCode_1 = string.charCodeAt(endIndex);
+
+          if (isAttributeValue) {
+            if (attributeQuoteCharCode) {
+              if (charCode_1 === attributeQuoteCharCode) {
+                isAttributeValue = false;
+              }
+            } else {
+              if (isWhiteSpace(charCode_1)) {
+                isAttributeValue = false;
+              } else if (charCode_1 === TAG_CLOSE_CHAR_CODE) {
+                isAttributeValue = false;
+                endIndex--; // re-evaluate this character
+              }
+            }
+          } else if (charCode_1 === EQUAL_SIGN_CHAR_CODE) {
+            while (isWhiteSpace(string.charCodeAt(endIndex + 1))) {
+              endIndex++; // skip whitespace
+            }
+
+            isAttributeValue = true;
+            var firstAttributeCharCode = string.charCodeAt(endIndex + 1);
+
+            if (firstAttributeCharCode === DOUBLE_QUOTE_CHAR_CODE || firstAttributeCharCode === SINGLE_QUOTE_CHAR_CODE) {
+              attributeQuoteCharCode = firstAttributeCharCode;
+              endIndex++;
+            } else {
+              attributeQuoteCharCode = 0;
+            }
+          } else if (charCode_1 === TAG_CLOSE_CHAR_CODE) {
+            var isEndTag = string.charCodeAt(i + 1) === FORWARD_SLASH_CHAR_CODE;
+            var tagNameStartIndex = i + (isEndTag ? 2 : 1);
+            var tagNameEndIndex = Math.min(indexOfWhiteSpace(string, tagNameStartIndex), endIndex);
+            var tagName = string.slice(tagNameStartIndex, tagNameEndIndex).toLowerCase();
+
+            if (tagName.charCodeAt(tagName.length - 1) === FORWARD_SLASH_CHAR_CODE) {
+              // Remove trailing slash for self-closing tag names like <br/>
+              tagName = tagName.slice(0, tagName.length - 1);
+            }
+
+            if (isEndTag) {
+              var currentTagName = tagStack.pop();
+
+              if (currentTagName !== tagName) {
+                throw new Error("Invalid HTML: " + string);
+              }
+
+              if (tagName === "math" || tagName === "svg") {
+                isUnbreakableContent = tagStack.includes("math") || tagStack.includes("svg");
+
+                if (!isUnbreakableContent) {
+                  numChars += imageWeight;
+
+                  if (numChars > maxLength) {
+                    break;
+                  }
+                }
+              }
+
+              if (BLOCK_ELEMENTS.includes(tagName)) {
+                // All block level elements should trigger a new line
+                // when truncating
+                if (!isUnbreakableContent) {
+                  numLines++;
+
+                  if (numLines > maxLines) {
+                    // If we exceed the max lines, push the tag back onto the
+                    // stack so that it will be added back correctly after
+                    // truncation
+                    tagStack.push(tagName);
+                    break;
+                  }
+                }
+              }
+            } else if (VOID_ELEMENTS.includes(tagName) || string.charCodeAt(endIndex - 1) === FORWARD_SLASH_CHAR_CODE) {
+              if (tagName === "br") {
+                numLines++;
+
+                if (numLines > maxLines) {
+                  break;
+                }
+              } else if (tagName === "img") {
+                numChars += imageWeight;
+
+                if (numChars > maxLength) {
+                  break;
+                }
+              }
+            } else {
+              tagStack.push(tagName);
+
+              if (tagName === "math" || tagName === "svg") {
+                isUnbreakableContent = true;
+              }
+            }
+
+            i = endIndex;
+            break;
+          }
+        }
+
+        if (numChars > maxLength || numLines > maxLines) {
+          break;
+        }
+      }
+    } else if (charCode === AMPERSAND_CHAR_CODE) {
+      var endIndex = i + 1;
+      var isCharacterReference = true;
+
+      while (true
+      /* eslint-disable-line */
+      ) {
+        var charCode_2 = string.charCodeAt(endIndex);
+
+        if (isCharacterReferenceCharacter(charCode_2)) {
+          endIndex++;
+        } else if (charCode_2 === SEMICOLON_CHAR_CODE) {
+          break;
+        } else {
+          isCharacterReference = false;
+          break;
+        }
+      }
+
+      if (!isUnbreakableContent) {
+        numChars++;
+
+        if (numChars > maxLength) {
+          break;
+        }
+      }
+
+      if (isCharacterReference) {
+        i = endIndex;
+      }
+    } else if (charCode === NEWLINE_CHAR_CODE) {
+      if (!isUnbreakableContent && !shouldSimplifyWhiteSpace(tagStack)) {
+        numChars++;
+
+        if (numChars > maxLength) {
+          break;
+        }
+
+        numLines++;
+
+        if (numLines > maxLines) {
+          break;
+        }
+      }
+    } else {
+      if (!isUnbreakableContent) {
+        numChars++;
+
+        if (numChars > maxLength) {
+          break;
+        }
+      } // high Unicode surrogate should never be separated from its matching low surrogate
+
+
+      var nextCharCode = string.charCodeAt(i + 1);
+
+      if ((nextCharCode & 0xfc00) === 0xdc00) {
+        i++;
+      }
+    }
+  }
+
+  if (numChars > maxLength) {
+    var nextChar = takeHtmlCharAt(string, i);
+
+    if (indicator) {
+      var peekIndex = i + nextChar.length;
+
+      while (string.charCodeAt(peekIndex) === TAG_OPEN_CHAR_CODE && string.charCodeAt(peekIndex + 1) === FORWARD_SLASH_CHAR_CODE) {
+        var nextPeekIndex = string.indexOf(">", peekIndex + 2) + 1;
+
+        if (nextPeekIndex) {
+          peekIndex = nextPeekIndex;
+        } else {
+          break;
+        }
+      }
+
+      if (peekIndex && (peekIndex === string.length || isLineBreak(string, peekIndex))) {
+        // if there's only a single character remaining in the input string, or the next
+        // character is followed by a line-break, we can include it instead of the clipping
+        // indicator (provided it's not a special HTML character)
+        i += nextChar.length;
+        nextChar = string.charAt(i);
+      }
+    } // include closing tags before adding the clipping indicator if that's where they
+    // are in the input string
+
+
+    while (nextChar === "<" && string.charCodeAt(i + 1) === FORWARD_SLASH_CHAR_CODE) {
+      var tagName = tagStack.pop();
+      var tagEndIndex = tagName ? string.indexOf(">", i + 2) : -1;
+
+      if (tagEndIndex === -1 || string.slice(i + 2, tagEndIndex).trim() !== tagName) {
+        throw new Error("Invalid HTML: " + string);
+      }
+
+      i = tagEndIndex + 1;
+      nextChar = string.charAt(i);
+    }
+
+    if (i < string.length) {
+      if (!options.breakWords) {
+        // try to clip at word boundaries, if desired
+        for (var j = i - indicator.length; j >= 0; j--) {
+          var charCode = string.charCodeAt(j);
+
+          if (charCode === TAG_CLOSE_CHAR_CODE || charCode === SEMICOLON_CHAR_CODE) {
+            // these characters could be just regular characters, so if they occur in
+            // the middle of a word, they would "break" our attempt to prevent breaking
+            // of words, but given this seems highly unlikely and the alternative is
+            // doing another full parsing of the preceding text, this seems acceptable.
+            break;
+          } else if (charCode === NEWLINE_CHAR_CODE || charCode === TAG_OPEN_CHAR_CODE) {
+            i = j;
+            break;
+          } else if (isWhiteSpace(charCode)) {
+            i = j + (indicator ? 1 : 0);
+            break;
+          }
+        }
+      }
+
+      var result = string.slice(0, i);
+
+      if (!isLineBreak(string, i)) {
+        result += indicator;
+      }
+
+      while (tagStack.length) {
+        var tagName = tagStack.pop();
+        result += "</" + tagName + ">";
+      }
+
+      return result;
+    }
+  } else if (numLines > maxLines) {
+    var result = string.slice(0, i);
+
+    while (tagStack.length) {
+      var tagName = tagStack.pop();
+      result += "</" + tagName + ">";
+    }
+
+    return result;
+  }
+
+  return string;
+}
+
+function clipPlainText(string, maxLength, options) {
+  var _a = options.indicator,
+      indicator = _a === void 0 ? "\u2026" : _a,
+      _b = options.maxLines,
+      maxLines = _b === void 0 ? Infinity : _b;
+  var numChars = indicator.length;
+  var numLines = 1;
+  var i = 0;
+  var length = string.length;
+
+  for (; i < length; i++) {
+    numChars++;
+
+    if (numChars > maxLength) {
+      break;
+    }
+
+    var charCode = string.charCodeAt(i);
+
+    if (charCode === NEWLINE_CHAR_CODE) {
+      numLines++;
+
+      if (numLines > maxLines) {
+        break;
+      }
+    } else if ((charCode & 0xfc00) === 0xd800) {
+      // high Unicode surrogate should never be separated from its matching low surrogate
+      var nextCharCode = string.charCodeAt(i + 1);
+
+      if ((nextCharCode & 0xfc00) === 0xdc00) {
+        i++;
+      }
+    }
+  }
+
+  if (numChars > maxLength) {
+    var nextChar = takeCharAt(string, i);
+
+    if (indicator) {
+      var peekIndex = i + nextChar.length;
+
+      if (peekIndex === string.length) {
+        return string;
+      } else if (string.charCodeAt(peekIndex) === NEWLINE_CHAR_CODE) {
+        return string.slice(0, i + nextChar.length);
+      }
+    }
+
+    if (!options.breakWords) {
+      // try to clip at word boundaries, if desired
+      for (var j = i - indicator.length; j >= 0; j--) {
+        var charCode = string.charCodeAt(j);
+
+        if (charCode === NEWLINE_CHAR_CODE) {
+          i = j;
+          nextChar = "\n";
+          break;
+        } else if (isWhiteSpace(charCode)) {
+          i = j + (indicator ? 1 : 0);
+          break;
+        }
+      }
+    }
+
+    return string.slice(0, i) + (nextChar === "\n" ? "" : indicator);
+  } else if (numLines > maxLines) {
+    return string.slice(0, i);
+  }
+
+  return string;
+}
+
+function indexOfWhiteSpace(string, fromIndex) {
+  var length = string.length;
+
+  for (var i = fromIndex; i < length; i++) {
+    if (isWhiteSpace(string.charCodeAt(i))) {
+      return i;
+    }
+  } // Rather than -1, this function returns the length of the string if no match is found,
+  // so it works well with the Math.min() usage above:
+
+
+  return length;
+}
+
+function isCharacterReferenceCharacter(charCode) {
+  return charCode >= 48 && charCode <= 57 || charCode >= 65 && charCode <= 90 || charCode >= 97 && charCode <= 122;
+}
+
+function isLineBreak(string, index) {
+  var firstCharCode = string.charCodeAt(index);
+
+  if (firstCharCode === NEWLINE_CHAR_CODE) {
+    return true;
+  } else if (firstCharCode === TAG_OPEN_CHAR_CODE) {
+    var newlineElements = "(" + BLOCK_ELEMENTS.join("|") + "|br)";
+    var newlineRegExp = new RegExp("^<" + newlineElements + "[\t\n\f\r ]*/?>", "i");
+    return newlineRegExp.test(string.slice(index));
+  } else {
+    return false;
+  }
+}
+
+function isWhiteSpace(charCode) {
+  return charCode === 9 || charCode === 10 || charCode === 12 || charCode === 13 || charCode === 32;
+}
+/**
+ * Certain tags don't display their whitespace-only content. In such cases, we
+ * should simplify the whitespace before counting it.
+ */
+
+
+function shouldSimplifyWhiteSpace(tagStack) {
+  for (var i = tagStack.length - 1; i >= 0; i--) {
+    var tagName = tagStack[i];
+
+    if (tagName === "li" || tagName === "td") {
+      return false;
+    }
+
+    if (tagName === "ol" || tagName === "table" || tagName === "ul") {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function simplifyWhiteSpace(string) {
+  return string.trim().replace(SIMPLIFY_WHITESPACE_REGEX, " ");
+}
+
+function takeCharAt(string, index) {
+  var charCode = string.charCodeAt(index);
+
+  if ((charCode & 0xfc00) === 0xd800) {
+    // high Unicode surrogate should never be separated from its matching low surrogate
+    var nextCharCode = string.charCodeAt(index + 1);
+
+    if ((nextCharCode & 0xfc00) === 0xdc00) {
+      return String.fromCharCode(charCode, nextCharCode);
+    }
+  }
+
+  return String.fromCharCode(charCode);
+}
+
+function takeHtmlCharAt(string, index) {
+  var char = takeCharAt(string, index);
+
+  if (char === "&") {
+    while (true
+    /* eslint-disable-line */
+    ) {
+      index++;
+      var nextCharCode = string.charCodeAt(index);
+
+      if (isCharacterReferenceCharacter(nextCharCode)) {
+        char += String.fromCharCode(nextCharCode);
+      } else if (nextCharCode === SEMICOLON_CHAR_CODE) {
+        char += String.fromCharCode(nextCharCode);
+        break;
+      } else {
+        break;
+      }
+    }
+  }
+
+  return char;
 }
 
 /***/ }),

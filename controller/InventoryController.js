@@ -658,6 +658,7 @@ ipcRenderer.on('populateTable',(e, Items)=>{
         database.addItemsBulk(itemsArray, UserName)
         .then((resolved)=>{
 
+<<<<<<< HEAD
             if(resolved[1] === true){
 
                 resolved[0].forEach((item)=>{
@@ -672,12 +673,79 @@ ipcRenderer.on('populateTable',(e, Items)=>{
             else{
 
                 Notifications.showAlert("success", `${resolved[0].length} Items Have Been Successfully Added. Including updates`)
+=======
+            let inDb = resolved[1];
+
+
+            inDb.forEach((item)=>{
+
+                resolved[0].forEach((item2, item2Index)=>{
+
+                    if(item.Name === item2.Name && item.Brand === item2.Brand && item.Category === item2.Category){
+                        resolved[0].splice(item2Index, 1)
+                    }
+
+                })
+>>>>>>> f2220967597bc57989dd447fa83e9111feca9fba
 
             }
 
+<<<<<<< HEAD
            
+=======
+            let notInDb = resolved[0]
+
+            console.log(notInDb);
 
 
+           if(notInDb > 0 && inDb.length > 0){
+
+                Notifications.showAlert("success", `${notInDb} Items Have Been Successfully Added. ${inDb.length} existed in database.`)
+
+                notInDb.forEach((item)=>{
+
+                    TableController.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount,[checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory")
+
+                })
+
+                inDb.forEach((item)=>{
+
+                    TableController.editItem("", item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.CostPrice, item.Discount,)
+
+                })
+
+           }
+           else if(notInDb.length === 0 && inDb.length > 0){
+
+                Notifications.showAlert("success", `${inDb.length} have been successfully updated`)
+
+                inDb.forEach((item)=>{
+
+                    TableController.editItem("", item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.CostPrice, item.Discount,)
+
+                })
+
+
+           }
+           else if(notInDb.length > 0 && inDb.length === 0){
+
+                Notifications.showAlert("success", `${notInDb.length} items have been successfully added`)
+>>>>>>> f2220967597bc57989dd447fa83e9111feca9fba
+
+                notInDb.forEach((item)=>{
+
+                    TableController.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount,[checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory")
+
+                })
+
+
+
+            }
+
+        })
+        .catch((error)=>{
+            Notifications.showAlert("error", "Sorry an error occured")
+            console.log(error);
         })
 
 })

@@ -474,6 +474,8 @@ body {
         height: 92%;
         padding: 0;
         overflow-x: hidden; }
+        .main_body .mainBody_content .contentContainer .tableBody::-webkit-scrollbar {
+          display: none; }
         .main_body .mainBody_content .contentContainer .tableBody .bodyRow {
           display: flex;
           height: 4rem;

@@ -95,9 +95,9 @@ class DATABASE{
                                     Date DATE NOT NULL,
                                     User INT NOT NULL, 
                                     Item INT NOT NULL,
-                                    AmountPurchased INT NOT NULL,
-                                    CashMade DECIMAL(8,2) NOT NULL,
-                                    ProfitMade DECIMAL(8,2) NOT NULL,
+                                    Purchased INT NOT NULL,
+                                    Revenue DECIMAL(8,2) NOT NULL,
+                                    Profit DECIMAL(8,2) NOT NULL,
                                     UnitDiscount DECIMAL(8,2) NOT NULL,
                                     TotalDiscount DECIMAL(8,2) NOT NULL,
                                     PRIMARY KEY(id),
@@ -926,11 +926,49 @@ class DATABASE{
 
     addItemsBulk(itemArray, User){
 
+       
 
         return new Promise((resolve, reject)=>{
 
-    
-           itemArray.forEach((item, userName)=>{
+            let today = new Date();
+            let year = today.getFullYear();
+            let month = today.getMonth();
+            let day = today.getDate();
+            let hour = today.getHours();
+            let minutes = today.getMinutes();
+            let seconds = today.getSeconds();
+
+            let inDb = [];
+
+           
+
+           itemArray.forEach((item)=>{
+
+
+                this.connector.query("SELECT * FROM items WHERE Name = ? AND Brand = ? AND Category = ?", [item.Name, item.Brand, item.Category], (error, result)=>{
+
+                    if(error){
+
+                        reject("unknown error")
+                        throw error
+
+                    }
+
+                    result.forEach((dbItem)=>{
+
+                        item.InStock = parseInt(dbItem.InStock) + parseInt(item.InStock)
+
+                        inDb.push(dbItem)
+                        
+
+                    })
+
+
+                })
+
+           }) 
+
+            itemArray.forEach((item, USER)=>{
 
                 this.connector.beginTransaction((error)=>{
 
@@ -938,36 +976,36 @@ class DATABASE{
 
                         if(error === null || error.code === "ER_DUP_ENTRY"){
 
-                            this.connector.query(`INSERT INTO duffykids.itemCategories SET Name='${item.Category}'`, (error)=>{
+                            this.connector.query(`INSERT INTO duffykids.itemCategories SET Name='${item.Category}' ON DUPLICATE KEY UPDATE Name= '${item.Category}'`, (error)=>{
 
-                                if(error === null){
 
                                     this.connector.query("INSERT INTO duffykids.items SET ? ON DUPLICATE KEY UPDATE ?", [item, item], (error, result)=>{
 
-                                        console.log("item result: ", result);
+                                        if(error){
 
-                                        const itemId = result.insertId;
+                                                this.connector.rollback(()=>{
 
-                                       if(error){
+                                                    if(error.code === "ER_DUP_ENTRY"){
+                                                        reject("Duplicate")
+                                                    }
+                                                    else{
 
-                                            this.connector.rollback(()=>{
+                                                        reject("unknown error")
+                                                        throw error
 
-                                                if(error.code === "ER_DUP_ENTRY"){
-                                                    reject("Duplicate")
-                                                }
-                                                else{
-    
-                                                    reject("unknown error")
-                                                    throw error
-    
-                                                }
+                                                    }
 
 
-                                            })
+                                                })
 
 
-                                       }
-                                       else{
+                                        }
+                                        else{
+
+                                            console.log("item result: ", result);
+
+                                            const itemId = result.insertId;
+
 
                                             this.connector.query(`SELECT * FROM duffykids.users WHERE User_Name = '${User}'`, (error, result)=>{
 
@@ -1002,7 +1040,7 @@ class DATABASE{
 
                                                     this.connector.query("INSERT INTO duffykids.auditTrails SET ?", auditTrailValues, (error, result)=>{
 
-                                                       
+                                                    
                                                         if(error){
 
                                                             this.connector.rollback(()=>{
@@ -1036,15 +1074,15 @@ class DATABASE{
 
                                                                     this.connector.commit((error)=>{
 
-                                                                         if(error)
-                                                                         {
-                                                                             reject("unknown error")
-                                                                             
-                                                                             throw error
-                                                                         }
-                                                                         else{
-                                                                             resolve([itemArray, true])
-                                                                         }
+                                                                        if(error)
+                                                                        {
+                                                                            reject("unknown error")
+                                                                            
+                                                                            throw error
+                                                                        }
+                                                                        else{
+                                                                            resolve([itemArray, inDb])
+                                                                        }
 
 
                                                                     })
@@ -1060,41 +1098,11 @@ class DATABASE{
 
                                                 }
 
-                                            })    
+                                                })    
 
-                                       }
-
-                                    })
-
-                                }
-                                else if( error.code === "ER_DUP_ENTRY"){
-
-                                    this.connector.rollback(()=>{
-
-                                        this.updateItem(item, User)
-                                        .then(()=>{
-
-                                            resolve([itemArray, false])
-
-                                        })
-                                        .catch((error)=>{
-                                            reject(error)
-                                        })
-
+                                        }
 
                                     })
-
-                                }
-                                else if(error){
-
-                                    this.connector.rollback(()=>{
-
-                                        reject("unknown error")
-                                        throw error
-
-                                    })
-        
-                                }
 
 
                             })
@@ -1115,12 +1123,15 @@ class DATABASE{
 
                 })
 
-           })
-           
+             })
+        
+
+
+            
 
 
         })
-
+       
     }
 
 
