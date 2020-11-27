@@ -90,20 +90,23 @@
 /*!*************************************************!*\
   !*** ./controller/utilities/TableController.js ***!
   \*************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* WEBPACK VAR INJECTION */(function(module) {/* harmony import */ var _utilities_UnitConverter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utilities/UnitConverter */ "./controller/utilities/UnitConverter.js");
+/* harmony import */ var _utilities_UnitConverter__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_utilities_UnitConverter__WEBPACK_IMPORTED_MODULE_0__);
 
 
-const clip = __webpack_require__(/*! text-clipper */ "./node_modules/text-clipper/dist/index.js").default;
+const clip = __webpack_require__(/*! text-clipper */ "./node_modules/text-clipper/dist/index.js").default; // const ToolTipsController = require('../utilities/ToolTipsController')
+
+
+
 
 class TableController {
   static createItem(name, brand, category, stock, sellingPrice, discount, functions, hasItems, costPrice = "", purchased = "", dontHighlightAfterCreate = false, isdeletedItem = false, destinationPage = "") {
     return new Promise((resolve, reject) => {
-      name = clip(name, 20);
-      brand = clip(brand, 20);
-      category = clip(category, 20);
       const tableROWS = document.querySelectorAll('tr');
       tableROWS.forEach(row => {
         if (row.Name === name && row.Category === category && row.Brand === brand) {
@@ -128,9 +131,9 @@ class TableController {
                 <td class="td_cb">
                     <input disabled type="checkbox" class="selectOne" aria-placeholder="select one">
                 </td>
-                <td class="td_Names">${name}</td>
-                <td class="td_Brands">${brand}</td>
-                <td class="td_Category">${category}</td>
+                <td class="td_Names">${clip(name, 23)}</td>
+                <td class="td_Brands">${clip(brand, 23)}</td>
+                <td class="td_Category">${clip(category, 23)}</td>
                 <td class="td_Stock">${stock}</td>
                 <td class="td_Price">${parseFloat(sellingPrice)}</td>
                 <td hidden class="td_costPrice">${parseFloat(costPrice)}</td>
@@ -138,6 +141,7 @@ class TableController {
                 <td hidden class="state">visible</td>
                 `;
       row.innerHTML = rowContent;
+      row.id = tableROWS.length + 1;
       row.className = "bodyRow";
 
       if (hasItems === true) {
@@ -147,6 +151,7 @@ class TableController {
             returnedValue = 1;
           } else {
             document.querySelector(".tableBody").appendChild(row);
+            ToolTipsConroller.generateToolTip('row.id', name);
             console.log('not matched');
           }
         });
@@ -618,6 +623,7 @@ class TableController {
 }
 
 module.exports = TableController;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../node_modules/webpack/buildin/harmony-module.js */ "./node_modules/webpack/buildin/harmony-module.js")(module)))
 
 /***/ }),
 
@@ -637,7 +643,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_tippy_js_themes_light_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../node_modules/tippy.js/themes/light.css */ "./node_modules/tippy.js/themes/light.css");
 /* harmony import */ var tippy_js_animations_perspective_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! tippy.js/animations/perspective.css */ "./node_modules/tippy.js/animations/perspective.css");
 /* harmony import */ var _TableController__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./TableController */ "./controller/utilities/TableController.js");
-/* harmony import */ var _TableController__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_TableController__WEBPACK_IMPORTED_MODULE_5__);
 /* harmony import */ var electron__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! electron */ "electron");
 /* harmony import */ var electron__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(electron__WEBPACK_IMPORTED_MODULE_6__);
 
@@ -700,7 +705,7 @@ items_in_Categories.forEach(item => {
   newItem.className = "selectDropdown_value";
   newItem.setAttribute("tabIndex", "0");
   newItem.addEventListener("click", () => {
-    _TableController__WEBPACK_IMPORTED_MODULE_5___default.a.filterItems("Category", newItem.innerText);
+    _TableController__WEBPACK_IMPORTED_MODULE_5__["default"].filterItems("Category", newItem.innerText);
     const wrapped = wrapText(newItem.innerHTML);
     selectValue_span.innerHTML = wrapped;
     selectValue_span.setAttribute("value", wrapped);
@@ -714,7 +719,7 @@ items_in_Brands.forEach(item => {
   newItem.setAttribute("tabIndex", "0");
   ul_brands.appendChild(newItem);
   newItem.addEventListener("click", () => {
-    _TableController__WEBPACK_IMPORTED_MODULE_5___default.a.filterItems("Brand", newItem.innerText);
+    _TableController__WEBPACK_IMPORTED_MODULE_5__["default"].filterItems("Brand", newItem.innerText);
     const wrapped = wrapText(newItem.innerHTML);
     selectValue_span.innerHTML = wrapped;
     selectValue_span.setAttribute("value", wrapped);
@@ -794,6 +799,39 @@ function setToolTips() {
     placement: 'bottom'
   });
 }
+
+/***/ }),
+
+/***/ "./controller/utilities/UnitConverter.js":
+/*!***********************************************!*\
+  !*** ./controller/utilities/UnitConverter.js ***!
+  \***********************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+class UnitConverter {
+  static convert(value) {
+    value = Number.parseFloat(value);
+
+    if (value >= 1000) {
+      value = (value / 1000).toFixed(2) + ' K';
+    } else if (value >= 1000000) {
+      value = (value / 1000000).toFixed(2) + ' M';
+      console.log(value);
+    } else if (value >= 1000000000) {
+      value = (value / 1000000000).toFixed(2) + ' B';
+      console.log(value);
+    } else {
+      value = value.toFixed(2);
+      console.log(value);
+    }
+
+    return value;
+  }
+
+}
+
+module.exports = UnitConverter;
 
 /***/ }),
 
@@ -9299,6 +9337,41 @@ ___CSS_LOADER_EXPORT___.push([module.i, ".tippy-box[data-theme~=material]{backgr
 // Exports
 /* harmony default export */ __webpack_exports__["default"] = (___CSS_LOADER_EXPORT___);
 
+
+/***/ }),
+
+/***/ "./node_modules/webpack/buildin/harmony-module.js":
+/*!*******************************************!*\
+  !*** (webpack)/buildin/harmony-module.js ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = function (originalModule) {
+  if (!originalModule.webpackPolyfill) {
+    var module = Object.create(originalModule); // module.parent = undefined by default
+
+    if (!module.children) module.children = [];
+    Object.defineProperty(module, "loaded", {
+      enumerable: true,
+      get: function () {
+        return module.l;
+      }
+    });
+    Object.defineProperty(module, "id", {
+      enumerable: true,
+      get: function () {
+        return module.i;
+      }
+    });
+    Object.defineProperty(module, "exports", {
+      enumerable: true
+    });
+    module.webpackPolyfill = 1;
+  }
+
+  return module;
+};
 
 /***/ }),
 

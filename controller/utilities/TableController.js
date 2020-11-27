@@ -1,6 +1,8 @@
 "use strict";
 
 const clip = require('text-clipper').default;
+// const ToolTipsController = require('../utilities/ToolTipsController')
+import ToolTipsConTroller from '../utilities/UnitConverter';
 
 class TableController{
 
@@ -8,11 +10,7 @@ class TableController{
 
 
 
-            return new Promise((resolve, reject)=>{
-
-                name = clip(name, 20);
-                brand = clip(brand, 20)
-                category = clip(category, 20)
+            return new Promise((resolve, reject)=>{                
 
                 
                 const tableROWS = document.querySelectorAll('tr');
@@ -52,9 +50,9 @@ class TableController{
                 <td class="td_cb">
                     <input disabled type="checkbox" class="selectOne" aria-placeholder="select one">
                 </td>
-                <td class="td_Names">${name}</td>
-                <td class="td_Brands">${brand}</td>
-                <td class="td_Category">${category}</td>
+                <td class="td_Names">${clip(name, 23)}</td>
+                <td class="td_Brands">${clip(brand, 23)}</td>
+                <td class="td_Category">${clip(category, 23)}</td>
                 <td class="td_Stock">${stock}</td>
                 <td class="td_Price">${parseFloat(sellingPrice)}</td>
                 <td hidden class="td_costPrice">${parseFloat(costPrice)}</td>
@@ -63,7 +61,8 @@ class TableController{
                 `;
 
                 row.innerHTML = rowContent;
-                row.className = "bodyRow";
+                row.id = tableROWS.length + 1;
+                row.className = "bodyRow";                
 
                 if(hasItems === true){
 
@@ -78,6 +77,8 @@ class TableController{
                         }
                         else{
                             document.querySelector(".tableBody").appendChild(row);
+
+                            ToolTipsConroller.generateToolTip('row.id', name);
 
                             console.log('not matched');
 

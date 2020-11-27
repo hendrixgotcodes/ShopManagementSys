@@ -210,7 +210,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _model_STORE__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_model_STORE__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _modals_ModalController__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modals/ModalController */ "./controller/modals/ModalController.js");
 /* harmony import */ var _utilities_TableController__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./utilities/TableController */ "./controller/utilities/TableController.js");
-/* harmony import */ var _utilities_TableController__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_utilities_TableController__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _utilities_UnitConverter__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./utilities/UnitConverter */ "./controller/utilities/UnitConverter.js");
 /* harmony import */ var _utilities_UnitConverter__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_utilities_UnitConverter__WEBPACK_IMPORTED_MODULE_5__);
 
@@ -261,7 +260,7 @@ window.addEventListener("load", initialzeStoreItems);
 tip_default.addEventListener('click', () => {
   selectValue_span.innerHTML = "Filter By:";
   selectValue_span.setAttribute("value", "default");
-  _utilities_TableController__WEBPACK_IMPORTED_MODULE_4___default.a.resetTable();
+  _utilities_TableController__WEBPACK_IMPORTED_MODULE_4__["default"].resetTable();
 }); //For ToolBarBtn
 
 toolBarBtn.addEventListener('click', e => {
@@ -288,25 +287,25 @@ ipcRenderer.on("setUserParams", (e, userParamsArray) => {
 
 function initialzeStoreItems() {
   ipcRenderer.send("sendUserParams");
-  _utilities_TableController__WEBPACK_IMPORTED_MODULE_4___default.a.showLoadingBanner("Please wait. Attempting to fetch items from database...");
+  _utilities_TableController__WEBPACK_IMPORTED_MODULE_4__["default"].showLoadingBanner("Please wait. Attempting to fetch items from database...");
   database.fetchItems().then(fetchedItems => {
     //If returned array contains any store item
     if (fetchedItems.length > 0) {
       //Remove loading banner
-      _utilities_TableController__WEBPACK_IMPORTED_MODULE_4___default.a.removeOldBanners(); //then add each item to the table in the DOM
+      _utilities_TableController__WEBPACK_IMPORTED_MODULE_4__["default"].removeOldBanners(); //then add each item to the table in the DOM
 
       fetchedItems.forEach(fetchedItem => {
         if (fetchedItem.Deleted === 1) {
-          _utilities_TableController__WEBPACK_IMPORTED_MODULE_4___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, "", false, fetchedItem.CostPrice, "", true, true, "Store");
+          _utilities_TableController__WEBPACK_IMPORTED_MODULE_4__["default"].createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, "", false, fetchedItem.CostPrice, "", true, true, "Store");
         } else {
-          _utilities_TableController__WEBPACK_IMPORTED_MODULE_4___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, "", false, fetchedItem.CostPrice, "", true, false, "Store");
+          _utilities_TableController__WEBPACK_IMPORTED_MODULE_4__["default"].createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, "", false, fetchedItem.CostPrice, "", true, false, "Store");
         }
       });
     } else {
       //Remove loading banner
-      _utilities_TableController__WEBPACK_IMPORTED_MODULE_4___default.a.removeOldBanners(); // Show isEmpty banner
+      _utilities_TableController__WEBPACK_IMPORTED_MODULE_4__["default"].removeOldBanners(); // Show isEmpty banner
 
-      _utilities_TableController__WEBPACK_IMPORTED_MODULE_4___default.a.showIsEmpty();
+      _utilities_TableController__WEBPACK_IMPORTED_MODULE_4__["default"].showIsEmpty();
     }
   }).then(() => {
     const tableROWS = document.querySelector('.tableBody').querySelectorAll('.bodyRow'); //For "tableBody"
@@ -319,8 +318,8 @@ function initialzeStoreItems() {
     });
   }).catch(e => {
     if (e.message === "Database not found") {
-      _utilities_TableController__WEBPACK_IMPORTED_MODULE_4___default.a.removeOldBanners();
-      _utilities_TableController__WEBPACK_IMPORTED_MODULE_4___default.a.showErrorBanner("Sorry an error occured");
+      _utilities_TableController__WEBPACK_IMPORTED_MODULE_4__["default"].removeOldBanners();
+      _utilities_TableController__WEBPACK_IMPORTED_MODULE_4__["default"].showErrorBanner("Sorry an error occured");
     }
   });
 } //-----------------------------------------------------------------------------------------------
@@ -377,11 +376,11 @@ function toggleRowCB(row) {
       totalSelectedRows = totalSelectedRows - 1;
     }
 
-    _utilities_TableController__WEBPACK_IMPORTED_MODULE_4___default.a.addToCart(row);
+    _utilities_TableController__WEBPACK_IMPORTED_MODULE_4__["default"].addToCart(row);
   } else {
     CB.checked = true;
     totalSelectedRows = totalSelectedRows + 1;
-    _utilities_TableController__WEBPACK_IMPORTED_MODULE_4___default.a.addToCart(row);
+    _utilities_TableController__WEBPACK_IMPORTED_MODULE_4__["default"].addToCart(row);
   }
 } //-----------------------------------------------------------------------------------------------
 
@@ -989,20 +988,23 @@ function openModal(modal) {
 /*!*************************************************!*\
   !*** ./controller/utilities/TableController.js ***!
   \*************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+__webpack_require__.r(__webpack_exports__);
+/* WEBPACK VAR INJECTION */(function(module) {/* harmony import */ var _utilities_UnitConverter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utilities/UnitConverter */ "./controller/utilities/UnitConverter.js");
+/* harmony import */ var _utilities_UnitConverter__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_utilities_UnitConverter__WEBPACK_IMPORTED_MODULE_0__);
 
 
-const clip = __webpack_require__(/*! text-clipper */ "./node_modules/text-clipper/dist/index.js").default;
+const clip = __webpack_require__(/*! text-clipper */ "./node_modules/text-clipper/dist/index.js").default; // const ToolTipsController = require('../utilities/ToolTipsController')
+
+
+
 
 class TableController {
   static createItem(name, brand, category, stock, sellingPrice, discount, functions, hasItems, costPrice = "", purchased = "", dontHighlightAfterCreate = false, isdeletedItem = false, destinationPage = "") {
     return new Promise((resolve, reject) => {
-      name = clip(name, 20);
-      brand = clip(brand, 20);
-      category = clip(category, 20);
       const tableROWS = document.querySelectorAll('tr');
       tableROWS.forEach(row => {
         if (row.Name === name && row.Category === category && row.Brand === brand) {
@@ -1027,9 +1029,9 @@ class TableController {
                 <td class="td_cb">
                     <input disabled type="checkbox" class="selectOne" aria-placeholder="select one">
                 </td>
-                <td class="td_Names">${name}</td>
-                <td class="td_Brands">${brand}</td>
-                <td class="td_Category">${category}</td>
+                <td class="td_Names">${clip(name, 23)}</td>
+                <td class="td_Brands">${clip(brand, 23)}</td>
+                <td class="td_Category">${clip(category, 23)}</td>
                 <td class="td_Stock">${stock}</td>
                 <td class="td_Price">${parseFloat(sellingPrice)}</td>
                 <td hidden class="td_costPrice">${parseFloat(costPrice)}</td>
@@ -1037,6 +1039,7 @@ class TableController {
                 <td hidden class="state">visible</td>
                 `;
       row.innerHTML = rowContent;
+      row.id = tableROWS.length + 1;
       row.className = "bodyRow";
 
       if (hasItems === true) {
@@ -1046,6 +1049,7 @@ class TableController {
             returnedValue = 1;
           } else {
             document.querySelector(".tableBody").appendChild(row);
+            ToolTipsConroller.generateToolTip('row.id', name);
             console.log('not matched');
           }
         });
@@ -1517,6 +1521,7 @@ class TableController {
 }
 
 module.exports = TableController;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../node_modules/webpack/buildin/harmony-module.js */ "./node_modules/webpack/buildin/harmony-module.js")(module)))
 
 /***/ }),
 
@@ -29782,6 +29787,41 @@ function takeHtmlCharAt(string, index) {
 
   return char;
 }
+
+/***/ }),
+
+/***/ "./node_modules/webpack/buildin/harmony-module.js":
+/*!*******************************************!*\
+  !*** (webpack)/buildin/harmony-module.js ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = function (originalModule) {
+  if (!originalModule.webpackPolyfill) {
+    var module = Object.create(originalModule); // module.parent = undefined by default
+
+    if (!module.children) module.children = [];
+    Object.defineProperty(module, "loaded", {
+      enumerable: true,
+      get: function () {
+        return module.l;
+      }
+    });
+    Object.defineProperty(module, "id", {
+      enumerable: true,
+      get: function () {
+        return module.i;
+      }
+    });
+    Object.defineProperty(module, "exports", {
+      enumerable: true
+    });
+    module.webpackPolyfill = 1;
+  }
+
+  return module;
+};
 
 /***/ }),
 
