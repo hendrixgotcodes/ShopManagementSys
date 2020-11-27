@@ -95,9 +95,9 @@ class DATABASE{
                                     Date DATE NOT NULL,
                                     User INT NOT NULL, 
                                     Item INT NOT NULL,
-                                    AmountPurchased INT NOT NULL,
-                                    CashMade DECIMAL(8,2) NOT NULL,
-                                    ProfitMade DECIMAL(8,2) NOT NULL,
+                                    Purchased INT NOT NULL,
+                                    Revenue DECIMAL(8,2) NOT NULL,
+                                    Profit DECIMAL(8,2) NOT NULL,
                                     UnitDiscount DECIMAL(8,2) NOT NULL,
                                     TotalDiscount DECIMAL(8,2) NOT NULL,
                                     PRIMARY KEY(id),
@@ -976,7 +976,7 @@ class DATABASE{
 
                         if(error === null || error.code === "ER_DUP_ENTRY"){
 
-                            this.connector.query(`INSERT INTO duffykids.itemCategories SET Name='${item.Category}'`, (error)=>{
+                            this.connector.query(`INSERT INTO duffykids.itemCategories SET Name='${item.Category}' ON DUPLICATE KEY UPDATE Name= '${item.Category}'`, (error)=>{
 
 
                                     this.connector.query("INSERT INTO duffykids.items SET ? ON DUPLICATE KEY UPDATE ?", [item, item], (error, result)=>{

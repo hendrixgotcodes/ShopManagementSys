@@ -1,15 +1,31 @@
 "use strict";
 
+const clip = require('text-clipper').default;
+
 class TableController{
 
     static createItem(name, brand, category, stock, sellingPrice, discount,functions, hasItems,costPrice="", purchased="", dontHighlightAfterCreate = false, isdeletedItem=false, destinationPage=""){
 
 
+
             return new Promise((resolve, reject)=>{
 
+                name = clip(name, 20);
+                brand = clip(brand, 20)
+                category = clip(category, 20)
 
                 
-                const tableROWS = document.querySelector('tbody').querySelectorAll('tr');
+                const tableROWS = document.querySelectorAll('tr');
+
+                tableROWS.forEach((row)=>{
+
+                    if(row.Name === name && row.Category === category && row.Brand === brand){
+
+                        reject("already created")
+
+                    }
+
+                })
 
 
                 //Removing Empty Banner Before Addition of new row
@@ -278,13 +294,42 @@ class TableController{
     }
 
 
-    static editItem(row, name, brand, category, stock, sellingPrice, discount){
-        row.querySelector('.td_Names').innerText =  name;
+    static editItem(row, name, brand, category, stock, sellingPrice, costPrice,discount){
+
+      
+
+        if(row === ""){
+
+            console.log(null);
+
+            let tableRows = document.querySelector("tbody").querySelectorAll("tr");
+
+            tableRows.forEach((currentRow)=>{
+
+                if(currentRow.querySelector('.td_Names').innerText === name && currentRow.querySelector('.td_Brands').innerText === brand && currentRow.querySelector('.td_Category').innerText === category){
+
+                    currentRow.querySelector('.td_Names').innerText = name;
+                    currentRow.querySelector('.td_Brands').innerText = brand;
+                    currentRow.querySelector('.td_Category').innerText = category;
+                    currentRow.querySelector('.td_Stock').innerText = stock;
+                    currentRow.querySelector('.td_Price').innerText = sellingPrice;
+                    currentRow.querySelector('.td_discount').innerText = discount;
+                    currentRow.querySelector(".td_costPrice").innerText = costPrice
+                }
+
+            })
+
+            return
+
+        }
+
+        row.querySelector('.td_Names').innerText = name;
         row.querySelector('.td_Brands').innerText = brand;
         row.querySelector('.td_Category').innerText = category;
         row.querySelector('.td_Stock').innerText = stock;
         row.querySelector('.td_Price').innerText = sellingPrice;
-        row.querySelector('.td_Discount').innerText = discount;
+        row.querySelector('.td_discount').innerText = discount;
+        row.querySelector(".td_costPrice").innerText = costPrice
 
 
         return true;
@@ -542,34 +587,37 @@ class TableController{
 
    static addToCart(row){
 
+    /******************PROGRAM VARIABLES*******************/
+        let inCart = [];
+
+    /*****************DOM ELEMENTS**************************/
         const cart = document.querySelector(".cart");
         const subTotal = cart.querySelector(".subTotal").querySelector(".value")
         const mainTotal = cart.querySelector(".mainTotal").querySelector(".value")
-        const cartItems = document.querySelector(".cart").querySelector(".cartItems");
+        const cartItemElements = document.querySelector(".cart").querySelector(".cartItems");
         const btnCart_clear = cart.querySelector(".btnCart_clear")
 
-        let [itemName, itemBrand, discount, itemPrice, itemStock] = [row.querySelector(".td_Names").innerText, row.querySelector(".td_Brands").innerText, row.querySelector('.td_discount').innerText, row.querySelector(".td_Price").innerText, row.querySelector('.td_Stock').innerText]
+        let [itemName, itemBrand,itemCategory, discount, itemPrice, itemStock, itemCostPrice] = [row.querySelector(".td_Names").innerText, row.querySelector(".td_Brands").innerText, row.querySelector('.td_discount').innerText, row.querySelector(".td_Price").innerText, row.querySelector('.td_Stock').innerText,  row.querySelector('.td_costPrice').innerText]
         itemPrice = parseFloat(itemPrice)
         let itemExists = false;
+    
+      
 
 
-        if(cartItems.querySelector(".cartInfo") !== null){
+        if(cartItemElements.querySelector(".cartInfo") !== null){
 
-            cartItems.querySelector(".cartInfo").style.display = "none"
+            cartItemElements.querySelector(".cartInfo").style.display = "none"
             document.querySelector(".cart").querySelector(".btnCart_clear").disabled = false;
             document.querySelector(".cart").querySelector(".btnCart_sell").disabled = false
 
         }
-
         
 
-        const itemsInCart = cartItems.querySelectorAll(".cartItem");
+        const itemsInCart = cartItemElements.querySelectorAll(".cartItem");
 
         itemsInCart.forEach((item)=>{
 
-            console.log("innit");
-
-            if(item.querySelector(".cartItem_Name").innerText === itemName && item.querySelector(".cartItem_Brand").innerText === itemBrand ){
+            if(item.querySelector(".cartItem_Name").innerText === itemName && item.querySelector(".cartItem_Brand").innerText === itemBrand && item.querySelector(".cartItem_Category").innerText === itemCategory ){
 
                 item.classList.remove("cartItem--shown")
 
@@ -587,6 +635,14 @@ class TableController{
 
                 itemExists = true;
 
+                //Filter and reassign the inCart array the items whose name, brand and category does not equal the current item
+                inCart = inCart.filter(function(cartItem){
+
+                    return cartItem.Item.Name;
+
+                })
+
+                console.log(inCart);
 
             }
 
@@ -597,13 +653,12 @@ class TableController{
         }
 
 
-
-
         const cartItemTemplate = 
         `
             <div class="cartItem_details">
                 <div class="cartItem_Name">${itemName}</div>
                 <div class="cartItem_Brand">${itemBrand}</div>
+                <div hidden class="cartItem_Category">${itemCategory}</div>
             </div>
 
             <button class="cartItem_discount cartItem_discount--disabled">
@@ -623,7 +678,7 @@ class TableController{
 
         cartItem.innerHTML = cartItemTemplate;
         
-        cartItems.appendChild(cartItem)
+        cartItemElements.appendChild(cartItem)
 
         setTimeout(()=>{
 
@@ -679,18 +734,18 @@ class TableController{
 
         /************************************************************************************ */
 
-        let checkbox = cartItems.querySelector(".cb_cartItem");
+        let checkbox = cartItemElements.querySelector(".cb_cartItem");
         checkbox.addEventListener("click", function toggleDiscount(){
 
             console.log("in check");
 
             if(checkbox.checked === true){
 
-                cartItems.querySelector(".cartItem_discount").classList.remove("cartItem_discount--disabled")
+                cartItemElements.querySelector(".cartItem_discount").classList.remove("cartItem_discount--disabled")
 
             }
             else{
-                cartItems.querySelector(".cartItem_discount").classList.add("cartItem_discount--disabled")
+                cartItemElements.querySelector(".cartItem_discount").classList.add("cartItem_discount--disabled")
             }
 
         })
@@ -716,7 +771,25 @@ class TableController{
 
         })
 
-       
+
+
+       //Add new Item(object) to array of selected items(objects)
+
+       let totalItemRevenue = parseFloat(parseInt(itemSelect.value) * parseInt(itemPrice))
+       let totalItemCostPrice = parseFloat(parseInt(itemSelect.value) * parseInt(itemCostPrice))
+
+       inCart.push({
+        Item: {
+            Name: itemName,
+            Brand: itemBrand,
+            Category: itemCategory
+        },
+        Purchased: parseInt(itemStock),
+        Revenue: totalItemRevenue,
+        Profit: totalItemRevenue - totalItemCostPrice,
+        UnitDiscount: discount,
+        TotalDiscount: parseFloat(discount) * parseInt(itemSelect.value)
+    })
 
 
    }
