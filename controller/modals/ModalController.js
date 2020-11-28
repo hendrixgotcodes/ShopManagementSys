@@ -453,245 +453,245 @@ class Modal {
 /************************************************************************************************************************************************************************/ 
 
 
-    static createCheckout(cart, totalSelectedRows, cartCount){
+    // static createCheckout(cart, totalSelectedRows, cartCount){
 
-        return new Promise((resolve, reject)=>{
+    //     return new Promise((resolve, reject)=>{
 
-            let totalPrice = 0;
+    //         let totalPrice = 0;
 
-            let totalCostPrice = 0
-            let revenue = 0
+    //         let totalCostPrice = 0
+    //         let revenue = 0
 
                         
-            cart.forEach((item)=>{
-                totalPrice +=  parseFloat(item.price * item.amountPurchased);
+    //         cart.forEach((item)=>{
+    //             totalPrice +=  parseFloat(item.price * item.amountPurchased);
 
-                totalCostPrice += parseFloat(item.costPrice * item.amountPurchased)
-            })
+    //             totalCostPrice += parseFloat(item.costPrice * item.amountPurchased)
+    //         })
 
-            revenue = totalPrice;
+    //         revenue = totalPrice;
 
 
-            totalPrice = parseFloat(totalPrice).toFixed(2)
+    //         totalPrice = parseFloat(totalPrice).toFixed(2)
 
-            const formTemplate = 
-            `
-                <div class="dialogContainer fullwidth aDialog" role="container">
-                    <div class="dialogHeader" role="header">
+    //         const formTemplate = 
+    //         `
+    //             <div class="dialogContainer fullwidth aDialog" role="container">
+    //                 <div class="dialogHeader" role="header">
 
-                        <span>In Cart</span>
+    //                     <span>In Cart</span>
 
-                        <span id="lblPrice"> <b>Gh¢ ${UnitConverter.convert(totalPrice)} </b></span>
+    //                     <span id="lblPrice"> <b>Gh¢ ${UnitConverter.convert(totalPrice)} </b></span>
                         
-                    </div>
+    //                 </div>
 
-                    <div class="scrollBox">
+    //                 <div class="scrollBox">
 
-                    </div>
+    //                 </div>
 
                 
-                    <div class="dialogFooter fullwidth" role="footer" aria-placeholder="Confirm here">
-                        <div class="dialogConfirm">
-                            Sell
-                            <img src="../Icons/Modals/add.svg" alt="Confirmation Message" />
-                        </div>
-                    </div>
+    //                 <div class="dialogFooter fullwidth" role="footer" aria-placeholder="Confirm here">
+    //                     <div class="dialogConfirm">
+    //                         Sell
+    //                         <img src="../Icons/Modals/add.svg" alt="Confirmation Message" />
+    //                     </div>
+    //                 </div>
 
-                </div>
+    //             </div>
                     
-            `
+    //         `
 
-            const itemForm = document.createElement('div');
-                    itemForm.className = "modal dialog--cartForm";
-                    itemForm.classList.add("dialog--promptBox")
-                    itemForm.setAttribute("aria-placeholder", "Confirm Box");
-                    itemForm.setAttribute('tabindex', '1');
+    //         const itemForm = document.createElement('div');
+    //                 itemForm.className = "modal dialog--cartForm";
+    //                 itemForm.classList.add("dialog--promptBox")
+    //                 itemForm.setAttribute("aria-placeholder", "Confirm Box");
+    //                 itemForm.setAttribute('tabindex', '1');
             
-                    itemForm.innerHTML = formTemplate;
+    //                 itemForm.innerHTML = formTemplate;
             
-                    const mainBodyContent = document.querySelector('.mainBody_content');
+    //                 const mainBodyContent = document.querySelector('.mainBody_content');
 
-                    // mainBodyContent.appendChild(itemForm);
+    //                 // mainBodyContent.appendChild(itemForm);
 
-                    openModal(itemForm)
+    //                 openModal(itemForm)
 
-                    //Giving focus to form immediately after its added to the DOM
-                    itemForm.focus();
+    //                 //Giving focus to form immediately after its added to the DOM
+    //                 itemForm.focus();
 
             
-                    document.querySelector('.contentCover').classList.add('contentCover--shown')
+    //                 document.querySelector('.contentCover').classList.add('contentCover--shown')
 
-                    setTimeout(()=>{
-                            mainBodyContent.querySelector(".dialog--cartForm").classList.add("dialog--shown")
-                    }, 100)
+    //                 setTimeout(()=>{
+    //                         mainBodyContent.querySelector(".dialog--cartForm").classList.add("dialog--shown")
+    //                 }, 100)
 
 
-                    //Adding Items to List
+    //                 //Adding Items to List
 
-                    let scrollBox = itemForm.querySelector('.scrollBox');
+    //                 let scrollBox = itemForm.querySelector('.scrollBox');
 
-                    cart.forEach((item)=>{
+    //                 cart.forEach((item)=>{
 
-                        let itemTemplate = 
-                        `
-                            <div class="itemInfo" id="name"><span>${item.name}</span></div>
-                            <div class="itemInfo" id="brand"><span>${item.brand}</span></div>
-                            <div class="itemInfo" id="amount"><span>x${item.amountPurchased}</span></div>
-                            <div class="itemInfo" id="costSection"><span>Gh¢ <span id="cost"> ${parseFloat(item.amountPurchased * item.price).toFixed(2)}</span></span></div>
-                            <div class="delItem"> <img src="../Icons/Modals/closeWhite.svg" alt="delete" /> </div>
-                        `
-                        let newRow = document.createElement('div');
-                        newRow.className = "modalItem";
-                        newRow.innerHTML = itemTemplate;
+    //                     let itemTemplate = 
+    //                     `
+    //                         <div class="itemInfo" id="name"><span>${item.name}</span></div>
+    //                         <div class="itemInfo" id="brand"><span>${item.brand}</span></div>
+    //                         <div class="itemInfo" id="amount"><span>x${item.amountPurchased}</span></div>
+    //                         <div class="itemInfo" id="costSection"><span>Gh¢ <span id="cost"> ${parseFloat(item.amountPurchased * item.price).toFixed(2)}</span></span></div>
+    //                         <div class="delItem"> <img src="../Icons/Modals/closeWhite.svg" alt="delete" /> </div>
+    //                     `
+    //                     let newRow = document.createElement('div');
+    //                     newRow.className = "modalItem";
+    //                     newRow.innerHTML = itemTemplate;
 
-                        //Delete Event Listener
-                        newRow.querySelector('.delItem').addEventListener('click',(e)=>{
-                            removeItem(e)
-                        })
+    //                     //Delete Event Listener
+    //                     newRow.querySelector('.delItem').addEventListener('click',(e)=>{
+    //                         removeItem(e)
+    //                     })
 
-                        scrollBox.appendChild(newRow);
+    //                     scrollBox.appendChild(newRow);
 
-                    })
+    //                 })
                     
 
                     
-                    /***************************EVENT LISTENERS*****************************/
+    //                 /***************************EVENT LISTENERS*****************************/
 
-                    itemForm.querySelector('.dialogConfirm').addEventListener("click", sellItems);
+    //                 itemForm.querySelector('.dialogConfirm').addEventListener("click", sellItems);
 
-                    itemForm.addEventListener('blur', exitBox)
+    //                 itemForm.addEventListener('blur', exitBox)
 
 
 
-                    /***************************FUNCTIONS*****************************/
+    //                 /***************************FUNCTIONS*****************************/
 
-                    //Sell button function
-                    function sellItems(){
+    //                 //Sell button function
+    //                 function sellItems(){
 
-                        console.log("selling");
+    //                     console.log("selling");
 
-                        const sellBtnIco =  itemForm.querySelector(".dialogConfirm").querySelector('img')
-                        sellBtnIco.setAttribute("src", "../../utils/media/animations/loaders/Rolling-1s-200px.svg")
+    //                     const sellBtnIco =  itemForm.querySelector(".dialogConfirm").querySelector('img')
+    //                     sellBtnIco.setAttribute("src", "../../utils/media/animations/loaders/Rolling-1s-200px.svg")
 
-                        let Sale = []
+    //                     let Sale = []
 
-                        cart.forEach((item)=>{
+    //                     cart.forEach((item)=>{
 
-                            Sale.push({
+    //                         Sale.push({
 
-                                Name: item.name,
-                                Brand: item.brand,
-                                category: item.category,
-                                AmountPurchased: item.amountPurchased,
-                                CashMade: parseFloat(item.price * item.amountPurchased),
-                                ProfitMade: parseFloat(item.price * item.amountPurchased) - parseFloat(item.costPrice * item.amountPurchased),
-                                UnitDiscount: 0,
-                                TotalDiscount: 0
+    //                             Name: item.name,
+    //                             Brand: item.brand,
+    //                             category: item.category,
+    //                             AmountPurchased: item.amountPurchased,
+    //                             CashMade: parseFloat(item.price * item.amountPurchased),
+    //                             ProfitMade: parseFloat(item.price * item.amountPurchased) - parseFloat(item.costPrice * item.amountPurchased),
+    //                             UnitDiscount: 0,
+    //                             TotalDiscount: 0
 
-                            })
+    //                         })
 
-                        })
+    //                     })
                         
 
-                        exitBox()
+    //                     exitBox()
 
-                        console.log(Sale, totalPrice);
+    //                     console.log(Sale, totalPrice);
 
-                        resolve([Sale, totalPrice]);
+    //                     resolve([Sale, totalPrice]);
 
 
-                    }
+    //                 }
 
-                    //Function called to close modal
-                    function exitBox(){
+    //                 //Function called to close modal
+    //                 function exitBox(){
 
-                        closeModal(itemForm)
+    //                     closeModal(itemForm)
 
-                        document.querySelector('.contentCover').classList.remove('contentCover--shown')
+    //                     document.querySelector('.contentCover').classList.remove('contentCover--shown')
 
-                    }
+    //                 }
 
-                    // Function called to remove items (divs) in cart
-                    function removeItem(e){
+    //                 // Function called to remove items (divs) in cart
+    //                 function removeItem(e){
 
-                        // Animating item (slide right)
-                        e.target.parentElement.parentElement.style.transform = 'translateX(100%)'
+    //                     // Animating item (slide right)
+    //                     e.target.parentElement.parentElement.style.transform = 'translateX(100%)'
                         
 
 
-                        //Remove element after animation
-                        setTimeout(()=>{
+    //                     //Remove element after animation
+    //                     setTimeout(()=>{
 
-                            e.target.parentElement.parentElement.remove();
+    //                         e.target.parentElement.parentElement.remove();
 
-                            let name = e.target.parentElement.parentElement.querySelector('#name').innerText;
-                            let brand = e.target.parentElement.parentElement.querySelector('#brand').innerText;
+    //                         let name = e.target.parentElement.parentElement.querySelector('#name').innerText;
+    //                         let brand = e.target.parentElement.parentElement.querySelector('#brand').innerText;
 
-                            totalSelectedRows = totalSelectedRows -1;
+    //                         totalSelectedRows = totalSelectedRows -1;
 
-                            //Modifying span on checkout box
-                            cartCount.innerText = totalSelectedRows;
+    //                         //Modifying span on checkout box
+    //                         cartCount.innerText = totalSelectedRows;
 
-                            if(totalSelectedRows === 0){
-                                cartCount.style.transform = "scale(0)"
-                            }
+    //                         if(totalSelectedRows === 0){
+    //                             cartCount.style.transform = "scale(0)"
+    //                         }
 
-                            //Uncheking Corresponding row in table
-                            TableController.uncheckRows(name, brand)
+    //                         //Uncheking Corresponding row in table
+    //                         TableController.uncheckRows(name, brand)
 
                             
-                            //Subtracting prices of removed items from main total cost
-                            let itemPrice = e.target.parentElement.parentElement.querySelector('#costSection').querySelector('#cost').innerText;
+    //                         //Subtracting prices of removed items from main total cost
+    //                         let itemPrice = e.target.parentElement.parentElement.querySelector('#costSection').querySelector('#cost').innerText;
 
-                            itemPrice = parseFloat(itemPrice);
+    //                         itemPrice = parseFloat(itemPrice);
 
-                            totalPrice = totalPrice - itemPrice;
+    //                         totalPrice = totalPrice - itemPrice;
 
-                            console.log(totalPrice, " ", itemPrice);
+    //                         console.log(totalPrice, " ", itemPrice);
 
-                            itemForm.querySelector('#lblPrice').innerHTML = `<b>Gh¢ ${UnitConverter.convert(totalPrice)} </b>`;
-
-
-                            /****Removing item from cart array****/
-                            // For each item in cart array
-                            cart.forEach((item)=>{
+    //                         itemForm.querySelector('#lblPrice').innerHTML = `<b>Gh¢ ${UnitConverter.convert(totalPrice)} </b>`;
 
 
-                                let currentItemIndex;
+    //                         /****Removing item from cart array****/
+    //                         // For each item in cart array
+    //                         cart.forEach((item)=>{
+
+
+    //                             let currentItemIndex;
                     
-                                //If 
-                                if(item.name === name && item.brand === brand){
+    //                             //If 
+    //                             if(item.name === name && item.brand === brand){
                     
-                                    currentItemIndex = cart.indexOf(item);
+    //                                 currentItemIndex = cart.indexOf(item);
                     
-                                    cart.splice(currentItemIndex, 1)
+    //                                 cart.splice(currentItemIndex, 1)
                     
                     
-                                }
-                            })
+    //                             }
+    //                         })
 
-                            // If cart is empty
-                            if(cart.length === 0){
-                                //Close modal
-                                closeModal(itemForm)
+    //                         // If cart is empty
+    //                         if(cart.length === 0){
+    //                             //Close modal
+    //                             closeModal(itemForm)
 
-                                // Disable Submit Button
-                                const footer_btn = document.querySelector('.footer_btn');
-                                footer_btn.disabled = true
-                            }
+    //                             // Disable Submit Button
+    //                             const footer_btn = document.querySelector('.footer_btn');
+    //                             footer_btn.disabled = true
+    //                         }
 
-                            resolve();
+    //                         resolve();
                             
 
-                        },400)
+    //                     },400)
 
-                    }
+    //                 }
                 
 
 
 
-        })
-    }
+    //     })
+    // }
 
     
     

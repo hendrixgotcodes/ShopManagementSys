@@ -71,33 +71,33 @@ function sendCloseEvent() {
 function loadStore(e) {
 
 
-    // btnLoader.setAttribute("src", "../../utils/media/animations/loaders/Infinity-1s-200px.svg")
-    // btnLoader.classList.add("img_shown")
+    btnLoader.setAttribute("src", "../../utils/media/animations/loaders/Infinity-1s-200px.svg")
+    btnLoader.classList.add("img_shown")
 
-    // database.validateUser(tbUserName.value, password.value)
-    // .then((result)=>{
+    database.validateUser(tbUserName.value, password.value)
+    .then((result)=>{
 
-    //     console.log(result);
+        console.log(result);
 
 
-    //     if(result ===  1){
+        if(result ===  1){
 
-    //             ipcRenderer.send('loadStore', [tbUserName, "Admin"]);
+                ipcRenderer.send('loadStore', [tbUserName.value, "Admin"]);
 
-    //     }
-    //     else if(result === 0){
-    //         ipcRenderer.send("loadStore", [tbUserName, "Employee"])
-    //     }
+        }
+        else if(result === 0){
+            ipcRenderer.send("loadStore", [tbUserName.value, "Employee"])
+        }
 
-    // })
-    // .catch(()=>{
+    })
+    .catch((error)=>{
 
-    //     // Notifications.showAlert("error", "Sorry invalid password")
-    //     console.log("error");
+        // Notifications.showAlert("error", "Sorry invalid password")
+        console.log(error);
 
-    // })
+    })
 
-    ipcRenderer.send('loadStore', ["Admin", "Admin"])
+    // ipcRenderer.send('loadStore', ["Admin", "Admin"])
 
 
 

@@ -1,12 +1,15 @@
 "use strict";
 
 const clip = require('text-clipper').default;
-// const ToolTipsController = require('../utilities/ToolTipsController')
-import ToolTipsConTroller from '../utilities/UnitConverter';
+const { default: Millify } = require('millify');
+const millify = require('millify');
+const database = require('../../model/DATABASE');
+const ToolTipsController = require('../utilities/ToolTipsController')
+// import ToolTipsConTroller from '../utilities/UnitConverter';
 
 class TableController{
 
-    static createItem(name, brand, category, stock, sellingPrice, discount,functions, hasItems,costPrice="", purchased="", dontHighlightAfterCreate = false, isdeletedItem=false, destinationPage=""){
+    static createItem(name, brand, category, stock, sellingPrice, discount,functions, hasItems,costPrice="", purchased="", dontHighlightAfterCreate = false, isdeletedItem=false, destinationPage="", Scroll=true){
 
 
 
@@ -78,7 +81,7 @@ class TableController{
                         else{
                             document.querySelector(".tableBody").appendChild(row);
 
-                            ToolTipsConroller.generateToolTip('row.id', name);
+                            ToolTipsController.generateToolTip('row.id', name);
 
                             console.log('not matched');
 
@@ -95,10 +98,12 @@ class TableController{
                 
 
 
-
-                row.scrollIntoView(
-                    {behavior: 'smooth'}
-                )
+                if(Scroll === true){
+                    row.scrollIntoView(
+                        {behavior: 'smooth'}
+                    )
+                }
+                
 
                 
                 
@@ -561,7 +566,7 @@ class TableController{
    }
 
 
-   static uncheckRows(name, brand){
+   static uncheckRows(name, brand, category){
 
         const tRows = document.querySelector('tbody').querySelectorAll('tr');
 
@@ -571,9 +576,10 @@ class TableController{
 
             let rowName = row.querySelector('.td_Names').innerText;
             let rowBrand = row.querySelector('.td_Brands').innerText
+            let rowCategory = row.querySelector('.td_Category').innerText
             let checkbox = row.querySelector('.td_cb').querySelector('.selectOne')
 
-            if(rowName === name && rowBrand === brand ){
+            if(rowName === name && rowBrand === brand && rowCategory === category){
                     checkbox.checked = false;
                     console.log('checked');
             }
@@ -588,17 +594,21 @@ class TableController{
 
    static addToCart(row){
 
-    /******************PROGRAM VARIABLES*******************/
-        let inCart = [];
+        /******************PROGRAM VARIABLES*******************/
+            let inCart = [];
 
-    /*****************DOM ELEMENTS**************************/
+        /*****************DOM ELEMENTS**************************/
+        const tableRows = document.querySelector("tbody").querySelectorAll("tr");
+
         const cart = document.querySelector(".cart");
         const subTotal = cart.querySelector(".subTotal").querySelector(".value")
         const mainTotal = cart.querySelector(".mainTotal").querySelector(".value")
         const cartItemElements = document.querySelector(".cart").querySelector(".cartItems");
         const btnCart_clear = cart.querySelector(".btnCart_clear")
+        const btnCart_sell = cart.querySelector(".btnCart_sell")
 
-        let [itemName, itemBrand,itemCategory, discount, itemPrice, itemStock, itemCostPrice] = [row.querySelector(".td_Names").innerText, row.querySelector(".td_Brands").innerText, row.querySelector('.td_discount').innerText, row.querySelector(".td_Price").innerText, row.querySelector('.td_Stock').innerText,  row.querySelector('.td_costPrice').innerText]
+
+        let [itemName, itemBrand,itemCategory, discount, itemPrice, itemStock, itemCostPrice] = [row.querySelector(".td_Names").innerText, row.querySelector(".td_Brands").innerText, row.querySelector(".td_Category").innerText,row.querySelector('.td_discount').innerText, row.querySelector(".td_Price").innerText, row.querySelector('.td_Stock').innerText,  row.querySelector('.td_costPrice').innerText]
         itemPrice = parseFloat(itemPrice)
         let itemExists = false;
     
@@ -613,12 +623,13 @@ class TableController{
 
         }
         
-
+        //Select all item elements in the cart element
         const itemsInCart = cartItemElements.querySelectorAll(".cartItem");
 
+        //Iterate through if already exists, remove
         itemsInCart.forEach((item)=>{
 
-            if(item.querySelector(".cartItem_Name").innerText === itemName && item.querySelector(".cartItem_Brand").innerText === itemBrand && item.querySelector(".cartItem_Category").innerText === itemCategory ){
+            if(item.querySelector(".hidden_itemName").innerText === itemName && item.querySelector(".hidden_itemBrand").innerText === itemBrand && item.querySelector(".hidden_itemCategory").innerText === itemCategory ){
 
                 item.classList.remove("cartItem--shown")
 
@@ -626,24 +637,7 @@ class TableController{
                     item.remove()
                 }, 300)
 
-                let itemQuanity = parseFloat(item.querySelector(".cartItem_count").value)
-
-                let itemTotalCost = itemQuanity * itemPrice
-                console.log("itemTotalCost: ",itemTotalCost);
-
-                subTotal.innerText = parseFloat(subTotal.innerText) - itemTotalCost;
-                mainTotal.innerText = subTotal.innerText
-
-                itemExists = true;
-
-                //Filter and reassign the inCart array the items whose name, brand and category does not equal the current item
-                inCart = inCart.filter(function(cartItem){
-
-                    return cartItem.Item.Name;
-
-                })
-
-                console.log(inCart);
+                subtractItem(item)
 
             }
 
@@ -657,9 +651,11 @@ class TableController{
         const cartItemTemplate = 
         `
             <div class="cartItem_details">
-                <div class="cartItem_Name">${itemName}</div>
-                <div class="cartItem_Brand">${itemBrand}</div>
-                <div hidden class="cartItem_Category">${itemCategory}</div>
+                <div class="cartItem_Name">${clip(itemName, 10)}</div>
+                <div class="cartItem_Brand">${clip(itemBrand, 10)}</div>
+                <div hidden class="hidden_itemCategory">${itemCategory}</div>
+                <div hidden class="hidden_itemName">${itemName}</div>
+                <div hidden class="hidden_itemBrand">${itemBrand}</div>
             </div>
 
             <button class="cartItem_discount cartItem_discount--disabled">
@@ -681,9 +677,13 @@ class TableController{
         
         cartItemElements.appendChild(cartItem)
 
+
         setTimeout(()=>{
 
             cartItem.classList.add("cartItem--shown")
+            cartItem.scroll({
+                behavior: "smooth",
+            })
 
 
         }, 100)
@@ -706,9 +706,14 @@ class TableController{
 
         cartItem.appendChild(itemSelect)
 
+
         const cartItemCost = document.createElement("div");
         cartItemCost.className = "cartItem_cost";
-        cartItemCost.innerText = `GH¢${itemPrice}`;
+        cartItemCost.innerText = `GH¢ ${Millify(itemPrice,
+             {
+                units: ['', 'K', 'M', 'B', 'T', 'P', 'E'],
+                precision: 2
+             })}`;
         cartItem.appendChild(cartItemCost)
 
         let currentSubtotal = parseFloat(subTotal.innerText)
@@ -752,25 +757,7 @@ class TableController{
         })
         /******************************************************************************************** */
 
-        btnCart_clear.addEventListener("click", function clearCartItems(){
-
-            itemsInCart.forEach((item)=>{
-
-                item.classList.remove("cartItem--shown")
-
-                // setTimeout(()=>{
-                //     item.remove()
-                // }, 300)
-
-
-            })
-
-            subTotal.innerText = "0.00";
-            mainTotal.innerText = "0.00"
-
-            cart.querySelector(".cartInfo").style.display = "inline"
-
-        })
+        btnCart_clear.addEventListener("click", clearAllItems)
 
 
 
@@ -791,6 +778,113 @@ class TableController{
         UnitDiscount: discount,
         TotalDiscount: parseFloat(discount) * parseInt(itemSelect.value)
     })
+
+    
+    /****************************FUNCTIONS***********************/
+    function subtractItem(item){
+
+        let itemQuanity = parseFloat(item.querySelector(".cartItem_count").value)
+        let itemTotalCost = itemQuanity * itemPrice
+
+        let initSubTotal = parseFloat(subTotal.innerText)
+
+        if(initSubTotal > 0){
+
+            subTotal.innerText = parseFloat(subTotal.innerText) - itemTotalCost;
+            mainTotal.innerText = subTotal.innerText
+    
+            itemExists = true;
+    
+            //Filter and reassign the inCart array the items whose name, brand and category does not equal the current item
+            inCart = inCart.filter(function(cartItem){
+    
+                return cartItem.Item.Name;
+    
+            })
+    
+
+        }
+
+    }
+
+    function clearAllItems(){
+
+        const itemsInCart = cartItemElements.querySelectorAll(".cartItem");
+        const allAnimationsDone = []
+
+        //disbling cart buttons
+        btnCart_clear.disabled = true;
+        btnCart_sell.disabled = true;
+
+        for(let i = itemsInCart.length-1; i >=0; i--){
+
+            allAnimationsDone.push(new Promise((resolve, reject)=>{
+
+                const afterAnimation = new Promise((resolve, reject)=>{
+
+                    const itemName = itemsInCart[i].querySelector(".hidden_itemName").innerText;
+                    const itemBrand = itemsInCart[i].querySelector(".hidden_itemBrand").innerText;
+                    const itemCategory = itemsInCart[i].querySelector(".hidden_itemCategory").innerText;
+
+
+                    setTimeout(()=>{
+
+                        tableRows.forEach((row)=>{
+
+                            let rowName = row.querySelector('.td_Names').innerText;
+                            let rowBrand = row.querySelector('.td_Brands').innerText
+                            let rowCategory = row.querySelector('.td_Category').innerText
+                            let checkbox = row.querySelector('.td_cb').querySelector('.selectOne')
+
+                            if(rowName === itemName && rowBrand === itemBrand && rowCategory === itemCategory){
+                                    checkbox.checked = false;
+                            }
+
+                        })
+                        
+    
+                        itemsInCart[i].classList.remove("cartItem--shown");
+    
+                        resolve()
+        
+                    }, (i*350))
+    
+                })
+    
+                afterAnimation.then(()=>{
+
+                    subtractItem(itemsInCart[i])
+    
+                    setTimeout(()=>{
+    
+                        itemsInCart[i].remove()
+
+                        resolve()
+        
+                    }, (i*500))
+    
+    
+                })
+
+            }))
+
+        }
+
+        Promise.all(allAnimationsDone)
+        .then(()=>{
+
+            cart.querySelector(".cartInfo").style.display = "block"
+
+        })
+
+
+    }
+
+    // functon sellItems(){
+
+    //     database.sel
+
+    // }
 
 
    }

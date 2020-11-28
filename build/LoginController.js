@@ -258,23 +258,20 @@ function sendCloseEvent() {
 }
 
 function loadStore(e) {
-  // btnLoader.setAttribute("src", "../../utils/media/animations/loaders/Infinity-1s-200px.svg")
-  // btnLoader.classList.add("img_shown")
-  // database.validateUser(tbUserName.value, password.value)
-  // .then((result)=>{
-  //     console.log(result);
-  //     if(result ===  1){
-  //             ipcRenderer.send('loadStore', [tbUserName, "Admin"]);
-  //     }
-  //     else if(result === 0){
-  //         ipcRenderer.send("loadStore", [tbUserName, "Employee"])
-  //     }
-  // })
-  // .catch(()=>{
-  //     // Notifications.showAlert("error", "Sorry invalid password")
-  //     console.log("error");
-  // })
-  ipcRenderer.send('loadStore', ["Admin", "Admin"]);
+  btnLoader.setAttribute("src", "../../utils/media/animations/loaders/Infinity-1s-200px.svg");
+  btnLoader.classList.add("img_shown");
+  database.validateUser(tbUserName.value, password.value).then(result => {
+    console.log(result);
+
+    if (result === 1) {
+      ipcRenderer.send('loadStore', [tbUserName.value, "Admin"]);
+    } else if (result === 0) {
+      ipcRenderer.send("loadStore", [tbUserName.value, "Employee"]);
+    }
+  }).catch(error => {
+    // Notifications.showAlert("error", "Sorry invalid password")
+    console.log(error);
+  }); // ipcRenderer.send('loadStore', ["Admin", "Admin"])
 } //Function to toggle password visibility
 
 
@@ -785,7 +782,7 @@ class DATABASE {
 
   fetchItems() {
     return new Promise((resolve, reject) => {
-      this.connector.query("SELECT * FROM duffykids.items", (error, results) => {
+      this.connector.query("SELECT * FROM duffykids.items ORDER BY Name ASC", (error, results) => {
         if (error) {
           console.log(error);
           reject(new Error("database not found"));
@@ -1083,21 +1080,23 @@ class DATABASE {
     // userName = userName.replace(/^\s+|\s+$/g, "")
     // console.log("userName: ", userName, " Password: ", Password);
     return new Promise((resolve, reject) => {
-      this.connector.query(`SELECT * FROM users WHERE User_Name = ? AND Password = ? LIMIT 0,1`, [userName, password], (error, result) => {
+      let user = {
+        User_Name: userName,
+        Password: password
+      };
+      this.connector.query("SELECT * FROM users", [userName, password], (error, result) => {
+        console.log(result);
+
         if (error) {
-          reject("unknown error");
+          reject(error);
           throw error;
         } else if (result) {
-          console.log(result);
           let user = result.shift();
 
           if (user === undefined) {
             reject();
-          } else if (user.User_Name === userName) {
-            resolve(user.IsAdmin);
           } else {
-            console.log(user.User_Name);
-            reject();
+            resolve(user.IsAdmin);
           }
         }
       });

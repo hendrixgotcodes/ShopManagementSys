@@ -1,6 +1,6 @@
 "use strict"
 const tippy = require('tippy.js').default;
-import 'tippy.js/themes/light.css'
+// import 'tippy.js/themes/light.css'
 
 
 class ToolTipsController{
@@ -11,7 +11,7 @@ class ToolTipsController{
         {
             content: content,
             delay: 100,
-            theme: 'light'
+            // theme: 'light'
         })
 
     }

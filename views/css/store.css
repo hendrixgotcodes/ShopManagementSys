@@ -686,7 +686,7 @@ body {
               border-radius: 8px;
               color: #646766;
               margin-bottom: 1%;
-              transition: .3s ease-in;
+              transition: .3s ease-out;
               transform: translateX(100%);
               position: relative; }
               .main_body .mainBody_content .contentContainer .cartContainer .cart .cartItems .cartItem:last-child {

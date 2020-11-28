@@ -90,22 +90,25 @@
 /*!*************************************************!*\
   !*** ./controller/utilities/TableController.js ***!
   \*************************************************/
-/*! no exports provided */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-__webpack_require__.r(__webpack_exports__);
-/* WEBPACK VAR INJECTION */(function(module) {/* harmony import */ var _utilities_UnitConverter__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utilities/UnitConverter */ "./controller/utilities/UnitConverter.js");
-/* harmony import */ var _utilities_UnitConverter__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_utilities_UnitConverter__WEBPACK_IMPORTED_MODULE_0__);
 
 
-const clip = __webpack_require__(/*! text-clipper */ "./node_modules/text-clipper/dist/index.js").default; // const ToolTipsController = require('../utilities/ToolTipsController')
+const clip = __webpack_require__(/*! text-clipper */ "./node_modules/text-clipper/dist/index.js").default;
 
+const {
+  default: Millify
+} = __webpack_require__(/*! millify */ "./node_modules/millify/dist/millify.js");
 
+const millify = __webpack_require__(/*! millify */ "./node_modules/millify/dist/millify.js");
+
+const ToolTipsController = __webpack_require__(/*! ../utilities/ToolTipsController */ "./controller/utilities/ToolTipsController.js"); // import ToolTipsConTroller from '../utilities/UnitConverter';
 
 
 class TableController {
-  static createItem(name, brand, category, stock, sellingPrice, discount, functions, hasItems, costPrice = "", purchased = "", dontHighlightAfterCreate = false, isdeletedItem = false, destinationPage = "") {
+  static createItem(name, brand, category, stock, sellingPrice, discount, functions, hasItems, costPrice = "", purchased = "", dontHighlightAfterCreate = false, isdeletedItem = false, destinationPage = "", Scroll = true) {
     return new Promise((resolve, reject) => {
       const tableROWS = document.querySelectorAll('tr');
       tableROWS.forEach(row => {
@@ -151,7 +154,7 @@ class TableController {
             returnedValue = 1;
           } else {
             document.querySelector(".tableBody").appendChild(row);
-            ToolTipsConroller.generateToolTip('row.id', name);
+            ToolTipsController.generateToolTip('row.id', name);
             console.log('not matched');
           }
         });
@@ -160,9 +163,11 @@ class TableController {
         returnedValue = true;
       }
 
-      row.scrollIntoView({
-        behavior: 'smooth'
-      });
+      if (Scroll === true) {
+        row.scrollIntoView({
+          behavior: 'smooth'
+        });
+      }
       /********************************CONDTIONS***************************************/
 
       /**_____________________________________________________________________________________________________________________________________________ */
@@ -170,6 +175,7 @@ class TableController {
       /**
            * Destination Page determines which page is requesting for a table row to be created
           */
+
 
       if (destinationPage.toLocaleLowerCase() === "inventory") {
         //Destructing functions
@@ -463,15 +469,16 @@ class TableController {
     }
   }
 
-  static uncheckRows(name, brand) {
+  static uncheckRows(name, brand, category) {
     const tRows = document.querySelector('tbody').querySelectorAll('tr');
     console.log(name, brand);
     tRows.forEach(row => {
       let rowName = row.querySelector('.td_Names').innerText;
       let rowBrand = row.querySelector('.td_Brands').innerText;
+      let rowCategory = row.querySelector('.td_Category').innerText;
       let checkbox = row.querySelector('.td_cb').querySelector('.selectOne');
 
-      if (rowName === name && rowBrand === brand) {
+      if (rowName === name && rowBrand === brand && rowCategory === category) {
         checkbox.checked = false;
         console.log('checked');
       } else {
@@ -485,12 +492,14 @@ class TableController {
     let inCart = [];
     /*****************DOM ELEMENTS**************************/
 
+    const tableRows = document.querySelector("tbody").querySelectorAll("tr");
     const cart = document.querySelector(".cart");
     const subTotal = cart.querySelector(".subTotal").querySelector(".value");
     const mainTotal = cart.querySelector(".mainTotal").querySelector(".value");
     const cartItemElements = document.querySelector(".cart").querySelector(".cartItems");
     const btnCart_clear = cart.querySelector(".btnCart_clear");
-    let [itemName, itemBrand, itemCategory, discount, itemPrice, itemStock, itemCostPrice] = [row.querySelector(".td_Names").innerText, row.querySelector(".td_Brands").innerText, row.querySelector('.td_discount').innerText, row.querySelector(".td_Price").innerText, row.querySelector('.td_Stock').innerText, row.querySelector('.td_costPrice').innerText];
+    const btnCart_sell = cart.querySelector(".btnCart_sell");
+    let [itemName, itemBrand, itemCategory, discount, itemPrice, itemStock, itemCostPrice] = [row.querySelector(".td_Names").innerText, row.querySelector(".td_Brands").innerText, row.querySelector(".td_Category").innerText, row.querySelector('.td_discount').innerText, row.querySelector(".td_Price").innerText, row.querySelector('.td_Stock').innerText, row.querySelector('.td_costPrice').innerText];
     itemPrice = parseFloat(itemPrice);
     let itemExists = false;
 
@@ -498,26 +507,18 @@ class TableController {
       cartItemElements.querySelector(".cartInfo").style.display = "none";
       document.querySelector(".cart").querySelector(".btnCart_clear").disabled = false;
       document.querySelector(".cart").querySelector(".btnCart_sell").disabled = false;
-    }
+    } //Select all item elements in the cart element
 
-    const itemsInCart = cartItemElements.querySelectorAll(".cartItem");
+
+    const itemsInCart = cartItemElements.querySelectorAll(".cartItem"); //Iterate through if already exists, remove
+
     itemsInCart.forEach(item => {
-      if (item.querySelector(".cartItem_Name").innerText === itemName && item.querySelector(".cartItem_Brand").innerText === itemBrand && item.querySelector(".cartItem_Category").innerText === itemCategory) {
+      if (item.querySelector(".hidden_itemName").innerText === itemName && item.querySelector(".hidden_itemBrand").innerText === itemBrand && item.querySelector(".hidden_itemCategory").innerText === itemCategory) {
         item.classList.remove("cartItem--shown");
         setTimeout(() => {
           item.remove();
         }, 300);
-        let itemQuanity = parseFloat(item.querySelector(".cartItem_count").value);
-        let itemTotalCost = itemQuanity * itemPrice;
-        console.log("itemTotalCost: ", itemTotalCost);
-        subTotal.innerText = parseFloat(subTotal.innerText) - itemTotalCost;
-        mainTotal.innerText = subTotal.innerText;
-        itemExists = true; //Filter and reassign the inCart array the items whose name, brand and category does not equal the current item
-
-        inCart = inCart.filter(function (cartItem) {
-          return cartItem.Item.Name;
-        });
-        console.log(inCart);
+        subtractItem(item);
       }
     });
 
@@ -527,9 +528,11 @@ class TableController {
 
     const cartItemTemplate = `
             <div class="cartItem_details">
-                <div class="cartItem_Name">${itemName}</div>
-                <div class="cartItem_Brand">${itemBrand}</div>
-                <div hidden class="cartItem_Category">${itemCategory}</div>
+                <div class="cartItem_Name">${clip(itemName, 10)}</div>
+                <div class="cartItem_Brand">${clip(itemBrand, 10)}</div>
+                <div hidden class="hidden_itemCategory">${itemCategory}</div>
+                <div hidden class="hidden_itemName">${itemName}</div>
+                <div hidden class="hidden_itemBrand">${itemBrand}</div>
             </div>
 
             <button class="cartItem_discount cartItem_discount--disabled">
@@ -549,6 +552,9 @@ class TableController {
     cartItemElements.appendChild(cartItem);
     setTimeout(() => {
       cartItem.classList.add("cartItem--shown");
+      cartItem.scroll({
+        behavior: "smooth"
+      });
     }, 100);
     let itemCount = parseInt(itemStock);
     const itemSelect = document.createElement("select");
@@ -564,7 +570,10 @@ class TableController {
     cartItem.appendChild(itemSelect);
     const cartItemCost = document.createElement("div");
     cartItemCost.className = "cartItem_cost";
-    cartItemCost.innerText = `GH¢${itemPrice}`;
+    cartItemCost.innerText = `GH¢ ${Millify(itemPrice, {
+      units: ['', 'K', 'M', 'B', 'T', 'P', 'E'],
+      precision: 2
+    })}`;
     cartItem.appendChild(cartItemCost);
     let currentSubtotal = parseFloat(subTotal.innerText);
     subTotal.innerText = currentSubtotal + itemPrice;
@@ -593,16 +602,7 @@ class TableController {
     });
     /******************************************************************************************** */
 
-    btnCart_clear.addEventListener("click", function clearCartItems() {
-      itemsInCart.forEach(item => {
-        item.classList.remove("cartItem--shown"); // setTimeout(()=>{
-        //     item.remove()
-        // }, 300)
-      });
-      subTotal.innerText = "0.00";
-      mainTotal.innerText = "0.00";
-      cart.querySelector(".cartInfo").style.display = "inline";
-    }); //Add new Item(object) to array of selected items(objects)
+    btnCart_clear.addEventListener("click", clearAllItems); //Add new Item(object) to array of selected items(objects)
 
     let totalItemRevenue = parseFloat(parseInt(itemSelect.value) * parseInt(itemPrice));
     let totalItemCostPrice = parseFloat(parseInt(itemSelect.value) * parseInt(itemCostPrice));
@@ -618,12 +618,71 @@ class TableController {
       UnitDiscount: discount,
       TotalDiscount: parseFloat(discount) * parseInt(itemSelect.value)
     });
+    /****************************FUNCTIONS***********************/
+
+    function subtractItem(item) {
+      let itemQuanity = parseFloat(item.querySelector(".cartItem_count").value);
+      let itemTotalCost = itemQuanity * itemPrice;
+      let initSubTotal = parseFloat(subTotal.innerText);
+
+      if (initSubTotal > 0) {
+        subTotal.innerText = parseFloat(subTotal.innerText) - itemTotalCost;
+        mainTotal.innerText = subTotal.innerText;
+        itemExists = true; //Filter and reassign the inCart array the items whose name, brand and category does not equal the current item
+
+        inCart = inCart.filter(function (cartItem) {
+          return cartItem.Item.Name;
+        });
+      }
+    }
+
+    function clearAllItems() {
+      const itemsInCart = cartItemElements.querySelectorAll(".cartItem");
+      const allAnimationsDone = []; //disbling cart buttons
+
+      btnCart_clear.disabled = true;
+      btnCart_sell.disabled = true;
+
+      for (let i = itemsInCart.length - 1; i >= 0; i--) {
+        allAnimationsDone.push(new Promise((resolve, reject) => {
+          const afterAnimation = new Promise((resolve, reject) => {
+            const itemName = itemsInCart[i].querySelector(".hidden_itemName").innerText;
+            const itemBrand = itemsInCart[i].querySelector(".hidden_itemBrand").innerText;
+            const itemCategory = itemsInCart[i].querySelector(".hidden_itemCategory").innerText;
+            setTimeout(() => {
+              tableRows.forEach(row => {
+                let rowName = row.querySelector('.td_Names').innerText;
+                let rowBrand = row.querySelector('.td_Brands').innerText;
+                let rowCategory = row.querySelector('.td_Category').innerText;
+                let checkbox = row.querySelector('.td_cb').querySelector('.selectOne');
+
+                if (rowName === itemName && rowBrand === itemBrand && rowCategory === itemCategory) {
+                  checkbox.checked = false;
+                }
+              });
+              itemsInCart[i].classList.remove("cartItem--shown");
+              resolve();
+            }, i * 350);
+          });
+          afterAnimation.then(() => {
+            subtractItem(itemsInCart[i]);
+            setTimeout(() => {
+              itemsInCart[i].remove();
+              resolve();
+            }, i * 500);
+          });
+        }));
+      }
+
+      Promise.all(allAnimationsDone).then(() => {
+        cart.querySelector(".cartInfo").style.display = "block";
+      });
+    }
   }
 
 }
 
 module.exports = TableController;
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../node_modules/webpack/buildin/harmony-module.js */ "./node_modules/webpack/buildin/harmony-module.js")(module)))
 
 /***/ }),
 
@@ -643,6 +702,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_tippy_js_themes_light_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../node_modules/tippy.js/themes/light.css */ "./node_modules/tippy.js/themes/light.css");
 /* harmony import */ var tippy_js_animations_perspective_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! tippy.js/animations/perspective.css */ "./node_modules/tippy.js/animations/perspective.css");
 /* harmony import */ var _TableController__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./TableController */ "./controller/utilities/TableController.js");
+/* harmony import */ var _TableController__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_TableController__WEBPACK_IMPORTED_MODULE_5__);
 /* harmony import */ var electron__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! electron */ "electron");
 /* harmony import */ var electron__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(electron__WEBPACK_IMPORTED_MODULE_6__);
 
@@ -705,7 +765,7 @@ items_in_Categories.forEach(item => {
   newItem.className = "selectDropdown_value";
   newItem.setAttribute("tabIndex", "0");
   newItem.addEventListener("click", () => {
-    _TableController__WEBPACK_IMPORTED_MODULE_5__["default"].filterItems("Category", newItem.innerText);
+    _TableController__WEBPACK_IMPORTED_MODULE_5___default.a.filterItems("Category", newItem.innerText);
     const wrapped = wrapText(newItem.innerHTML);
     selectValue_span.innerHTML = wrapped;
     selectValue_span.setAttribute("value", wrapped);
@@ -719,7 +779,7 @@ items_in_Brands.forEach(item => {
   newItem.setAttribute("tabIndex", "0");
   ul_brands.appendChild(newItem);
   newItem.addEventListener("click", () => {
-    _TableController__WEBPACK_IMPORTED_MODULE_5__["default"].filterItems("Brand", newItem.innerText);
+    _TableController__WEBPACK_IMPORTED_MODULE_5___default.a.filterItems("Brand", newItem.innerText);
     const wrapped = wrapText(newItem.innerHTML);
     selectValue_span.innerHTML = wrapped;
     selectValue_span.setAttribute("value", wrapped);
@@ -802,36 +862,31 @@ function setToolTips() {
 
 /***/ }),
 
-/***/ "./controller/utilities/UnitConverter.js":
-/*!***********************************************!*\
-  !*** ./controller/utilities/UnitConverter.js ***!
-  \***********************************************/
+/***/ "./controller/utilities/ToolTipsController.js":
+/*!****************************************************!*\
+  !*** ./controller/utilities/ToolTipsController.js ***!
+  \****************************************************/
 /*! no static exports found */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-class UnitConverter {
-  static convert(value) {
-    value = Number.parseFloat(value);
+"use strict";
 
-    if (value >= 1000) {
-      value = (value / 1000).toFixed(2) + ' K';
-    } else if (value >= 1000000) {
-      value = (value / 1000000).toFixed(2) + ' M';
-      console.log(value);
-    } else if (value >= 1000000000) {
-      value = (value / 1000000000).toFixed(2) + ' B';
-      console.log(value);
-    } else {
-      value = value.toFixed(2);
-      console.log(value);
-    }
 
-    return value;
+const tippy = __webpack_require__(/*! tippy.js */ "./node_modules/tippy.js/dist/tippy.esm.js").default; // import 'tippy.js/themes/light.css'
+
+
+class ToolTipsController {
+  static generateToolTip(elementId, content) {
+    tippy(`#${elementId}`, {
+      content: content,
+      delay: 100 // theme: 'light'
+
+    });
   }
 
 }
 
-module.exports = UnitConverter;
+module.exports = ToolTipsController;
 
 /***/ }),
 
@@ -4029,6 +4084,193 @@ function toComment(sourceMap) {
   var data = "sourceMappingURL=data:application/json;charset=utf-8;base64,".concat(base64);
   return "/*# ".concat(data, " */");
 }
+
+/***/ }),
+
+/***/ "./node_modules/millify/dist/millify.js":
+/*!**********************************************!*\
+  !*** ./node_modules/millify/dist/millify.js ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+const options_1 = __webpack_require__(/*! ./options */ "./node_modules/millify/dist/options.js");
+
+const utils_1 = __webpack_require__(/*! ./utils */ "./node_modules/millify/dist/utils.js");
+/**
+ * Divides a number [value] until a decimal value is found.
+ *
+ * A generator that divides a number [value] by a denominator,
+ * defined by the grouping base (interval) - `1000` by default.
+ *
+ * The denominator is increased every turn by multiplying
+ * the base by itself, until a decimal value is realized.
+ */
+
+
+function* divider(value, base) {
+  let denominator = base;
+
+  while (true) {
+    const result = value / denominator;
+
+    if (result < 1) {
+      return; // End of operation
+    }
+
+    yield result; // Increase the denominator after each turn
+
+    denominator *= base;
+  }
+}
+/**
+ * Millify converts long numbers to human-readable strings.
+ */
+
+
+function Millify(value, userOptions) {
+  // Override default options with options supplied by user
+  const options = userOptions ? Object.assign(Object.assign({}, options_1.defaultOptions), userOptions) : options_1.defaultOptions; // Allow backwards compatibility with API changes to lowercase option
+
+  if ((userOptions === null || userOptions === void 0 ? void 0 : userOptions.lowerCase) !== undefined) {
+    options.lowercase = userOptions.lowerCase;
+  }
+
+  if (!Array.isArray(options.units) || !options.units.length) {
+    throw new Error("Option `units` must be a non-empty array");
+  } // Validate value for type and length
+
+
+  let val = utils_1.parseValue(value); // Add a minus sign (-) prefix if it's a negative number
+
+  const prefix = val < 0 ? "-" : ""; // Work only with positive values for simplicity's sake
+
+  val = Math.abs(val); // Keep dividing the input value by the numerical grouping value (base)
+  // until the decimal and unit index is deciphered
+
+  let unitIndex = 0;
+
+  for (const result of divider(val, options.base)) {
+    val = result;
+    unitIndex += 1;
+  } // Account for out of range errors in case the units array is not complete.
+
+
+  const unitIndexOutOfRange = unitIndex >= options.units.length; // Calculate the unit suffix and make it lowercase (if needed).
+
+  let suffix = "";
+
+  if (!unitIndexOutOfRange) {
+    const unit = options.units[unitIndex];
+    suffix = options.lowercase ? unit.toLowerCase() : unit;
+  } else {
+    // tslint:disable-next-line:no-console
+    console.warn("[Millify] Length of `units` array is insufficient. Add another number unit to remove this warning.");
+  } // Add a space between number and abbreviation
+
+
+  const space = options.space && !unitIndexOutOfRange ? " " : ""; // Round decimal up to desired precision
+
+  const rounded = utils_1.roundTo(val, options.precision); // Replace decimal mark if desired
+
+  const formatted = rounded.toString().replace(options_1.defaultOptions.decimalSeparator, options.decimalSeparator);
+  return `${prefix}${formatted}${space}${suffix}`;
+}
+
+exports.default = Millify;
+
+/***/ }),
+
+/***/ "./node_modules/millify/dist/options.js":
+/*!**********************************************!*\
+  !*** ./node_modules/millify/dist/options.js ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.defaultOptions = void 0;
+/**
+ * Default options for Millify.
+ */
+
+exports.defaultOptions = {
+  base: 1000,
+  decimalSeparator: ".",
+  lowercase: false,
+  precision: 2,
+  space: false,
+  units: ["", "K", "M", "B", "T", "P", "E"]
+};
+
+/***/ }),
+
+/***/ "./node_modules/millify/dist/utils.js":
+/*!********************************************!*\
+  !*** ./node_modules/millify/dist/utils.js ***!
+  \********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.roundTo = exports.parseValue = void 0;
+/**
+ * parseValue ensures the value is a number and within accepted range.
+ */
+
+function parseValue(value) {
+  const val = parseFloat(value.toString());
+
+  if (isNaN(val)) {
+    throw new Error(`Input value is not a number`);
+  }
+
+  if (val > Number.MAX_SAFE_INTEGER || val < Number.MIN_SAFE_INTEGER) {
+    throw new RangeError("Input value is outside of safe integer range");
+  }
+
+  return val;
+}
+
+exports.parseValue = parseValue;
+/**
+ * Rounds a number [value] up to a specified [precision].
+ */
+
+function roundTo(value, precision) {
+  if (!Number.isFinite(value)) {
+    throw new Error("Input value is not a finite number");
+  }
+
+  if (!Number.isInteger(precision) || precision < 0) {
+    throw new Error("Precision is not a positive integer");
+  }
+
+  if (Number.isInteger(value)) {
+    return value;
+  }
+
+  return parseFloat(value.toFixed(precision));
+}
+
+exports.roundTo = roundTo;
 
 /***/ }),
 
@@ -9337,41 +9579,6 @@ ___CSS_LOADER_EXPORT___.push([module.i, ".tippy-box[data-theme~=material]{backgr
 // Exports
 /* harmony default export */ __webpack_exports__["default"] = (___CSS_LOADER_EXPORT___);
 
-
-/***/ }),
-
-/***/ "./node_modules/webpack/buildin/harmony-module.js":
-/*!*******************************************!*\
-  !*** (webpack)/buildin/harmony-module.js ***!
-  \*******************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = function (originalModule) {
-  if (!originalModule.webpackPolyfill) {
-    var module = Object.create(originalModule); // module.parent = undefined by default
-
-    if (!module.children) module.children = [];
-    Object.defineProperty(module, "loaded", {
-      enumerable: true,
-      get: function () {
-        return module.l;
-      }
-    });
-    Object.defineProperty(module, "id", {
-      enumerable: true,
-      get: function () {
-        return module.i;
-      }
-    });
-    Object.defineProperty(module, "exports", {
-      enumerable: true
-    });
-    module.webpackPolyfill = 1;
-  }
-
-  return module;
-};
 
 /***/ }),
 

@@ -812,7 +812,7 @@ class DATABASE{
         return new Promise((resolve, reject)=>{
 
 
-            this.connector.query("SELECT * FROM duffykids.items", (error, results)=>{
+            this.connector.query("SELECT * FROM duffykids.items ORDER BY Name ASC", (error, results)=>{
                 
                 if(error){
 
@@ -1373,35 +1373,35 @@ class DATABASE{
 
         return new Promise((resolve, reject)=>{
 
+            let user = {
+                User_Name: userName,
+                Password: password
+            }
 
-            this.connector.query(`SELECT * FROM users WHERE User_Name = ? AND Password = ? LIMIT 0,1`, [userName, password], (error, result)=>{
 
+            this.connector.query("SELECT * FROM users", [userName, password], (error, result)=>{
+
+                console.log(result);
 
                 if(error){
-                    reject("unknown error")
+                    reject(error)
                     throw error
                 }
                 else if(result){
 
-                    console.log(result);
-
-                    
                     let user = result.shift();
 
                     if(user === undefined){
                         reject()
                     }
-                    else if(user.User_Name === userName){
+                    else{
 
                         resolve(user.IsAdmin)
 
                     }
-                    else{
-                        console.log(user.User_Name);
-                        reject()
-                    }
 
                 }
+
     
             })
 

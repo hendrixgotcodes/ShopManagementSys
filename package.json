@@ -24,6 +24,7 @@
     "electron": "^10.1.4",
     "electron-db": "^0.15.7",
     "knex": "^0.21.12",
+    "millify": "^3.3.0",
     "mysql": "^2.18.1",
     "mysql2": "2.2.5",
     "source-map-loader": "^1.1.2",

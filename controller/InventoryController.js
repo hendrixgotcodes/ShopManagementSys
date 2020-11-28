@@ -151,12 +151,12 @@ function initialzeStoreItems(){
 
                 if(fetchedItem.Deleted === 1){
 
-                    TableController.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,[checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory")
+                    TableController.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,[checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory", false)
 
                 }
                 else{
 
-                    TableController.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,[checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true,false , "Inventory")
+                    TableController.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,[checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true,false , "Inventory", false)
 
                 }
 
@@ -671,11 +671,9 @@ ipcRenderer.on('populateTable',(e, Items)=>{
 
                 })
 
-            }
-
-<<<<<<< HEAD
+            })
            
-=======
+
             let notInDb = resolved[0]
 
             console.log(notInDb);
@@ -713,7 +711,6 @@ ipcRenderer.on('populateTable',(e, Items)=>{
            else if(notInDb.length > 0 && inDb.length === 0){
 
                 Notifications.showAlert("success", `${notInDb.length} items have been successfully added`)
->>>>>>> f2220967597bc57989dd447fa83e9111feca9fba
 
                 notInDb.forEach((item)=>{
 
