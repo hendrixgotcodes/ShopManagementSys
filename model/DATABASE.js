@@ -1222,13 +1222,13 @@ class DATABASE{
 
     }
 
-    makeSale(newSale, userName){
+    makeSale(newSale,userName){
 
        return new Promise((resolve, reject)=>{
 
             const today = new Date();
 
-            newSale.forEach((sale)=>{
+             newSale.forEach((sale)=>{
 
                 console.log("sale: ",sale);
 

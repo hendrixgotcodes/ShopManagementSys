@@ -250,7 +250,7 @@ function toggleRowCB(row){
             totalSelectedRows = totalSelectedRows -1;
         }
 
-        TableController.addToCart(row)
+        TableController.addToCart(row, cart, salesMade, UserName)
 
 
     }
@@ -259,7 +259,7 @@ function toggleRowCB(row){
 
         totalSelectedRows = totalSelectedRows +1;
 
-        TableController.addToCart(row)
+        TableController.addToCart(row, cart, salesMade, UserName)
 
 
     }

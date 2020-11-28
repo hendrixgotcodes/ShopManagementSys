@@ -377,11 +377,11 @@ function toggleRowCB(row) {
       totalSelectedRows = totalSelectedRows - 1;
     }
 
-    _utilities_TableController__WEBPACK_IMPORTED_MODULE_4___default.a.addToCart(row);
+    _utilities_TableController__WEBPACK_IMPORTED_MODULE_4___default.a.addToCart(row, cart, salesMade, UserName);
   } else {
     CB.checked = true;
     totalSelectedRows = totalSelectedRows + 1;
-    _utilities_TableController__WEBPACK_IMPORTED_MODULE_4___default.a.addToCart(row);
+    _utilities_TableController__WEBPACK_IMPORTED_MODULE_4___default.a.addToCart(row, cart, salesMade, UserName);
   }
 } //-----------------------------------------------------------------------------------------------
 
@@ -987,8 +987,12 @@ const {
 
 const millify = __webpack_require__(/*! millify */ "./node_modules/millify/dist/millify.js");
 
+const DATABASE = __webpack_require__(/*! ../../model/DATABASE */ "./model/DATABASE.js");
+
 const ToolTipsController = __webpack_require__(/*! ../utilities/ToolTipsController */ "./controller/utilities/ToolTipsController.js"); // import ToolTipsConTroller from '../utilities/UnitConverter';
 
+
+const database = new DATABASE();
 
 class TableController {
   static createItem(name, brand, category, stock, sellingPrice, discount, functions, hasItems, costPrice = "", purchased = "", dontHighlightAfterCreate = false, isdeletedItem = false, destinationPage = "", Scroll = true) {
@@ -1370,33 +1374,45 @@ class TableController {
     });
   }
 
-  static addToCart(row) {
-    /******************PROGRAM VARIABLES*******************/
-    let inCart = [];
-    /*****************DOM ELEMENTS**************************/
+  static addToCart(row, inCart, salesMade, user) {
+    /*
+     *   ALGORITHM
+     *
+     * 1. Establish all necessary varaibles (Includes setting dom elements)
+     * 2. Hide cartInfo ("no items in cart yet") from dom and enable all buttons acting on the cart
+     * 3. Iterate through cartItems and check if incoming item(rowItem) is not already added to the cart. If yes then remove item from cart.
+     * 4. If incoming item does not exist in cart then add to cart and show(animation)
+     * 
+     *
+     *
+     */
 
-    const tableRows = document.querySelector("tbody").querySelectorAll("tr");
+    /*****************************************DOM ELEMENTS********************************************/
+    const tableRows = document.querySelector("tbody").querySelectorAll("tr"); //Cart Content
+
     const cart = document.querySelector(".cart");
     const subTotal = cart.querySelector(".subTotal").querySelector(".value");
     const mainTotal = cart.querySelector(".mainTotal").querySelector(".value");
-    const cartItemElements = document.querySelector(".cart").querySelector(".cartItems");
+    const cartItemsContainer = document.querySelector(".cart").querySelector(".cartItems");
+    const cartInfo = cartItemsContainer.querySelector(".cartInfo");
+    const cartItems = cartItemsContainer.querySelectorAll(".cartItem");
+    const checkbox = cartItemsContainer.querySelector(".cb_cartItem"); //Buttons
+
     const btnCart_clear = cart.querySelector(".btnCart_clear");
     const btnCart_sell = cart.querySelector(".btnCart_sell");
-    let [itemName, itemBrand, itemCategory, discount, itemPrice, itemStock, itemCostPrice] = [row.querySelector(".td_Names").innerText, row.querySelector(".td_Brands").innerText, row.querySelector(".td_Category").innerText, row.querySelector('.td_discount').innerText, row.querySelector(".td_Price").innerText, row.querySelector('.td_Stock').innerText, row.querySelector('.td_costPrice').innerText];
-    itemPrice = parseFloat(itemPrice);
-    let itemExists = false;
+    /*-----------------------------------------------------------------------------------------------*/
 
-    if (cartItemElements.querySelector(".cartInfo") !== null) {
-      cartItemElements.querySelector(".cartInfo").style.display = "none";
-      document.querySelector(".cart").querySelector(".btnCart_clear").disabled = false;
-      document.querySelector(".cart").querySelector(".btnCart_sell").disabled = false;
-    } //Select all item elements in the cart element
+    let [rowItemName, rowItemBrand, rowItemCategory, rowItemDiscount, rowItemPrice, rowItemStock, rowItemCostPrice] = [row.querySelector(".td_Names").innerText, row.querySelector(".td_Brands").innerText, row.querySelector(".td_Category").innerText, row.querySelector('.td_discount').innerText, row.querySelector(".td_Price").innerText, row.querySelector('.td_Stock').innerText, row.querySelector('.td_costPrice').innerText];
+    rowItemPrice = parseFloat(rowItemPrice);
+    let itemExists = false; //Set "no items in cart yet" invisble
 
+    cartInfo.style.display = "none"; //disble buttons
 
-    const itemsInCart = cartItemElements.querySelectorAll(".cartItem"); //Iterate through if already exists, remove
+    btnCart_clear.disabled = false;
+    btnCart_sell.disabled = false; //Iterate through cart items to remove if already exists
 
-    itemsInCart.forEach(item => {
-      if (item.querySelector(".hidden_itemName").innerText === itemName && item.querySelector(".hidden_itemBrand").innerText === itemBrand && item.querySelector(".hidden_itemCategory").innerText === itemCategory) {
+    cartItems.forEach(item => {
+      if (item.querySelector(".hidden_itemName").innerText === rowItemName && item.querySelector(".hidden_itemBrand").innerText === rowItemBrand && item.querySelector(".hidden_itemCategory").innerText === rowItemCategory) {
         item.classList.remove("cartItem--shown");
         setTimeout(() => {
           item.remove();
@@ -1407,20 +1423,56 @@ class TableController {
 
     if (itemExists === true) {
       return;
+    } else {
+      addToCart();
+    }
+    /********************************EVENT LISTENERS*****************************************/
+
+
+    checkbox.addEventListener("click", function toggleDiscount() {
+      console.log("in check");
+
+      if (checkbox.checked === true) {
+        cartItemsContainer.querySelector(".cartItem_discount").classList.remove("cartItem_discount--disabled");
+      } else {
+        cartItemsContainer.querySelector(".cartItem_discount").classList.add("cartItem_discount--disabled");
+      }
+    });
+    /******************************************************************************************** */
+
+    btnCart_clear.addEventListener("click", clearAllItems);
+    /****************************FUNCTIONS***********************/
+
+    function subtractItem(item) {
+      let itemName = item.querySelector(".hidden_itemName").innerText;
+      let itemQuanity = parseFloat(item.querySelector(".cartItem_count").value);
+      let itemTotalCost = itemQuanity * rowItemPrice;
+      let initSubTotal = parseFloat(subTotal.innerText);
+
+      if (initSubTotal > 0) {
+        subTotal.innerText = parseFloat(subTotal.innerText) - itemTotalCost;
+        mainTotal.innerText = subTotal.innerText;
+        itemExists = true; //Filter and reassign the inCart array the items whose name, brand and category does not equal the current item    
+      }
+
+      console.log(inCart);
+      inCart.splice(inCart.findIndex(item => item.Item.Name === itemName), 1);
+      console.log(inCart);
     }
 
-    const cartItemTemplate = `
+    function addToCart() {
+      const cartItemTemplate = `
             <div class="cartItem_details">
-                <div class="cartItem_Name">${clip(itemName, 10)}</div>
-                <div class="cartItem_Brand">${clip(itemBrand, 10)}</div>
-                <div hidden class="hidden_itemCategory">${itemCategory}</div>
-                <div hidden class="hidden_itemName">${itemName}</div>
-                <div hidden class="hidden_itemBrand">${itemBrand}</div>
+                <div class="cartItem_Name">${clip(rowItemName, 10)}</div>
+                <div class="cartItem_Brand">${clip(rowItemBrand, 10)}</div>
+                <div hidden class="hidden_itemCategory">${rowItemCategory}</div>
+                <div hidden class="hidden_itemName">${rowItemName}</div>
+                <div hidden class="hidden_itemBrand">${rowItemBrand}</div>
             </div>
 
             <button class="cartItem_discount cartItem_discount--disabled">
 
-                <div class="discountValue">-${discount}%</div>
+                <div class="discountValue">-${rowItemDiscount}%</div>
 
             </button>
 
@@ -1429,98 +1481,65 @@ class TableController {
 
 
         `;
-    const cartItem = document.createElement("div");
-    cartItem.className = "cartItem";
-    cartItem.innerHTML = cartItemTemplate;
-    cartItemElements.appendChild(cartItem);
-    setTimeout(() => {
-      cartItem.classList.add("cartItem--shown");
-      cartItem.scroll({
-        behavior: "smooth"
-      });
-    }, 100);
-    let itemCount = parseInt(itemStock);
-    const itemSelect = document.createElement("select");
-    itemSelect.className = "cartItem_count";
-
-    for (let i = 1; i <= itemCount; i++) {
-      let option = document.createElement("option");
-      option.value = i;
-      option.innerText = i;
-      itemSelect.appendChild(option);
-    }
-
-    cartItem.appendChild(itemSelect);
-    const cartItemCost = document.createElement("div");
-    cartItemCost.className = "cartItem_cost";
-    cartItemCost.innerText = `GH¢ ${Millify(itemPrice, {
-      units: ['', 'K', 'M', 'B', 'T', 'P', 'E'],
-      precision: 2
-    })}`;
-    cartItem.appendChild(cartItemCost);
-    let currentSubtotal = parseFloat(subTotal.innerText);
-    subTotal.innerText = currentSubtotal + itemPrice;
-    mainTotal.innerText = subTotal.innerText; // EVENT LISTENERS
-
-    itemSelect.addEventListener("change", function modifyCost(e) {
-      let itemQuanity = parseInt(itemSelect.value);
-      let totalItemCost = parseFloat(itemQuanity * itemPrice).toPrecision(3);
-      cartItemCost.innerText = `GH¢${totalItemCost}`;
-      let currentSubtotal = parseFloat(subTotal.innerText);
-      console.log(currentSubtotal);
-      subTotal.innerText = currentSubtotal + parseFloat(totalItemCost);
-      mainTotal.innerText = subTotal.innerText;
-    });
-    /************************************************************************************ */
-
-    let checkbox = cartItemElements.querySelector(".cb_cartItem");
-    checkbox.addEventListener("click", function toggleDiscount() {
-      console.log("in check");
-
-      if (checkbox.checked === true) {
-        cartItemElements.querySelector(".cartItem_discount").classList.remove("cartItem_discount--disabled");
-      } else {
-        cartItemElements.querySelector(".cartItem_discount").classList.add("cartItem_discount--disabled");
-      }
-    });
-    /******************************************************************************************** */
-
-    btnCart_clear.addEventListener("click", clearAllItems); //Add new Item(object) to array of selected items(objects)
-
-    let totalItemRevenue = parseFloat(parseInt(itemSelect.value) * parseInt(itemPrice));
-    let totalItemCostPrice = parseFloat(parseInt(itemSelect.value) * parseInt(itemCostPrice));
-    inCart.push({
-      Item: {
-        Name: itemName,
-        Brand: itemBrand,
-        Category: itemCategory
-      },
-      Purchased: parseInt(itemStock),
-      Revenue: totalItemRevenue,
-      Profit: totalItemRevenue - totalItemCostPrice,
-      UnitDiscount: discount,
-      TotalDiscount: parseFloat(discount) * parseInt(itemSelect.value)
-    });
-    /****************************FUNCTIONS***********************/
-
-    function subtractItem(item) {
-      let itemQuanity = parseFloat(item.querySelector(".cartItem_count").value);
-      let itemTotalCost = itemQuanity * itemPrice;
-      let initSubTotal = parseFloat(subTotal.innerText);
-
-      if (initSubTotal > 0) {
-        subTotal.innerText = parseFloat(subTotal.innerText) - itemTotalCost;
-        mainTotal.innerText = subTotal.innerText;
-        itemExists = true; //Filter and reassign the inCart array the items whose name, brand and category does not equal the current item
-
-        inCart = inCart.filter(function (cartItem) {
-          return cartItem.Item.Name;
+      const cartItem = document.createElement("div");
+      cartItem.className = "cartItem";
+      cartItem.innerHTML = cartItemTemplate;
+      cartItemsContainer.appendChild(cartItem);
+      setTimeout(() => {
+        cartItem.classList.add("cartItem--shown");
+        cartItem.scroll({
+          behavior: "smooth"
         });
+      }, 100);
+      let itemCount = parseInt(rowItemStock);
+      const itemSelect = document.createElement("select");
+      itemSelect.className = "cartItem_count";
+
+      for (let i = 1; i <= itemCount; i++) {
+        let option = document.createElement("option");
+        option.value = i;
+        option.innerText = i;
+        itemSelect.appendChild(option);
       }
+
+      cartItem.appendChild(itemSelect);
+      itemSelect.addEventListener("change", function modifyCost(e) {
+        let itemQuanity = parseInt(itemSelect.value);
+        let totalItemCost = parseFloat(itemQuanity * rowItemPrice).toPrecision(3);
+        cartItemCost.innerText = `GH¢${totalItemCost}`;
+        let currentSubtotal = parseFloat(subTotal.innerText);
+        console.log(currentSubtotal);
+        subTotal.innerText = currentSubtotal + parseFloat(totalItemCost);
+        mainTotal.innerText = subTotal.innerText;
+      });
+      const cartItemCost = document.createElement("div");
+      cartItemCost.className = "cartItem_cost";
+      cartItemCost.innerText = `GH¢ ${Millify(rowItemPrice, {
+        units: ['', 'K', 'M', 'B', 'T', 'P', 'E'],
+        precision: 2
+      })}`;
+      cartItem.appendChild(cartItemCost);
+      let currentSubtotal = parseFloat(subTotal.innerText);
+      subTotal.innerText = currentSubtotal + rowItemPrice;
+      mainTotal.innerText = subTotal.innerText;
+      let totalItemRevenue = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemPrice));
+      let totalItemCostPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemCostPrice));
+      inCart.push({
+        Item: {
+          Name: rowItemName,
+          Brand: rowItemBrand,
+          Category: rowItemCategory
+        },
+        Purchased: parseInt(rowItemStock),
+        Revenue: totalItemRevenue,
+        Profit: totalItemRevenue - totalItemCostPrice,
+        UnitDiscount: rowItemDiscount,
+        TotalDiscount: parseFloat(rowItemDiscount) * parseInt(itemSelect.value)
+      });
     }
 
     function clearAllItems() {
-      const itemsInCart = cartItemElements.querySelectorAll(".cartItem");
+      const itemsInCart = cartItemsContainer.querySelectorAll(".cartItem");
       const allAnimationsDone = []; //disbling cart buttons
 
       btnCart_clear.disabled = true;
@@ -1560,6 +1579,10 @@ class TableController {
       Promise.all(allAnimationsDone).then(() => {
         cart.querySelector(".cartInfo").style.display = "block";
       });
+    }
+
+    function sellItems() {
+      database.makeSale(inCart, user);
     }
   }
 
