@@ -674,20 +674,20 @@ class TableController{
 
         
         /********************************EVENT LISTENERS*****************************************/
-        checkbox.addEventListener("click", function toggleDiscount(){
+        // checkbox.addEventListener("click", function toggleDiscount(){
 
-            console.log("in check");
+        //     console.log("in check");
 
-            if(checkbox.checked === true){
+        //     if(checkbox.checked === true){
 
-                cartItemsContainer.querySelector(".cartItem_discount").classList.remove("cartItem_discount--disabled")
+        //         cartItemsContainer.querySelector(".cartItem_discount").classList.remove("cartItem_discount--disabled")
 
-            }
-            else{
-                cartItemsContainer.querySelector(".cartItem_discount").classList.add("cartItem_discount--disabled")
-            }
+        //     }
+        //     else{
+        //         cartItemsContainer.querySelector(".cartItem_discount").classList.add("cartItem_discount--disabled")
+        //     }
 
-        })
+        // })
         /******************************************************************************************** */
 
         btnCart_clear.addEventListener("click", clearAllItems)
