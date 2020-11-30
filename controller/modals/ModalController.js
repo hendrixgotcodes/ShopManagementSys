@@ -4,7 +4,7 @@ import DATABASE from "../../model/DATABASE";
 import { showAlert } from "../Alerts/NotificationController";
 import UnitConverter from "../utilities/UnitConverter";
 
-const TableController = require("../utilities/TableController");
+const DOMCONTROLLER = require("../utilities/TableController");
 
 
 class Modal {

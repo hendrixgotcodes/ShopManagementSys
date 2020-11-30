@@ -1,5 +1,5 @@
 // const Chart = require('chartjs')
-import { right } from '@popperjs/core';
+import { left, right } from '@popperjs/core';
 import Chart from 'chart.js'
 
 var ctx = document.getElementById('myChart').getContext("2d");

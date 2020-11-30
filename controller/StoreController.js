@@ -12,7 +12,7 @@ import Notifications from '../controller/Alerts/NotificationController'
 import DATABASE from '../model/DATABASE';
 import STORE from '../model/STORE';
 import Modal from './modals/ModalController';
-import TableController from './utilities/TableController';
+import DOMCONTROLLER from './utilities/TableController';
 import UnitConverter from './utilities/UnitConverter';
 
 
@@ -44,7 +44,8 @@ const toolBarTB = document.querySelector('.toolBar_tb');
 const toolBarBtn = document.querySelector('.toolBar_btn')
 
 const mainBodyContent = document.querySelector('.mainBody_content');
-const cartUI = document.querySelector(".cart")
+const domCart = document.querySelector(".cart")
+const btnCart_sell = domCart.querySelector(".btnCart_sell")
 
 
 
@@ -64,7 +65,7 @@ tip_default.addEventListener('click',()=>{
     selectValue_span.innerHTML = "Filter By:"
     selectValue_span.setAttribute("value", "default");
 
-    TableController.resetTable();
+    DOMCONTROLLER.resetTable();
 })
 
 //For ToolBarBtn
@@ -85,6 +86,9 @@ ipcRenderer.on("setUserParams", (e, userParamsArray)=>{
 
 })
 
+// btnCart_sell
+btnCart_sell.addEventListener("click", checkout)
+
 
 
 /*************************************FUNCTIONS********************* */
@@ -99,7 +103,7 @@ function initialzeStoreItems(){
 
     ipcRenderer.send("sendUserParams")
 
-    TableController.showLoadingBanner("Please wait. Attempting to fetch items from database...")
+    DOMCONTROLLER.showLoadingBanner("Please wait. Attempting to fetch items from database...")
 
 
     database.fetchItems()
@@ -110,19 +114,19 @@ function initialzeStoreItems(){
         if(fetchedItems.length > 0){
 
             //Remove loading banner
-            TableController.removeOldBanners();
+            DOMCONTROLLER.removeOldBanners();
             
             //then add each item to the table in the DOM
             fetchedItems.forEach((fetchedItem)=>{
 
                 if(fetchedItem.Deleted === 1){
 
-                    TableController.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,"", false, fetchedItem.CostPrice, "", true, true,"Store", false)
+                    DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,"", false, fetchedItem.CostPrice, "", true, true,"Store", false)
 
                 }
                 else
                 {
-                    TableController.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,"", false, fetchedItem.CostPrice, "", true, false,"Store", false)
+                    DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,"", false, fetchedItem.CostPrice, "", true, false,"Store", false)
                 }
 
 
@@ -133,10 +137,10 @@ function initialzeStoreItems(){
         else{
 
                 //Remove loading banner
-                TableController.removeOldBanners();
+                DOMCONTROLLER.removeOldBanners();
 
                 // Show isEmpty banner
-                TableController.showIsEmpty();
+                DOMCONTROLLER.showIsEmpty();
 
         }
 
@@ -159,8 +163,8 @@ function initialzeStoreItems(){
     .catch((e)=>{
        
         if(e.message  === "Database not found"){
-            TableController.removeOldBanners();
-            TableController.showErrorBanner("Sorry an error occured");
+            DOMCONTROLLER.removeOldBanners();
+            DOMCONTROLLER.showErrorBanner("Sorry an error occured");
         }
 
     })
@@ -250,7 +254,7 @@ function toggleRowCB(row){
             totalSelectedRows = totalSelectedRows -1;
         }
 
-        TableController.addToCart(row, cart, salesMade, UserName)
+        DOMCONTROLLER.addToCart(row, cart, salesMade, UserName, btnCart_sell)
 
 
     }
@@ -259,7 +263,7 @@ function toggleRowCB(row){
 
         totalSelectedRows = totalSelectedRows +1;
 
-        TableController.addToCart(row, cart, salesMade, UserName)
+        DOMCONTROLLER.addToCart(row, cart, salesMade, UserName, btnCart_sell)
 
 
     }
@@ -273,6 +277,27 @@ function setSellingItemProperties(row){
     sellingItem.category = row.querySelector('.td_Category').innerText
     sellingItem.price = row.querySelector('.td_Price').innerText;
     sellingItem.costPrice = row.querySelector('.td_costPrice').innerText;
+}
+
+
+function checkout(){
+
+    database.makeSale(cart, UserName)
+    .then((result)=>{
+
+        if(result === true){
+
+            Notifications.showAlert("success", "Sale successful")
+
+        }
+
+    })
+    .catch(()=>{
+
+        Notifications.showAlert("error", "Sorry. Failed to make sale due to an unknown error")
+
+    })
+
 }
 
 //-----------------------------------------------------------------------------------------------

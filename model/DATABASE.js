@@ -1230,35 +1230,41 @@ class DATABASE{
 
              newSale.forEach((sale)=>{
 
-                console.log("sale: ",sale);
+                let [itemName, itemCategory, itemBrand] = [sale.Item.Name, sale.Item.Brand, sale.Item.Category];
 
-                const actualSale = {
+
+                sale.Date = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
+
+                sale = {
 
                     Date: `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`,
-                    AmountPurchased: sale.AmountPurchased,
-                    CashMade: sale.CashMade,
-                    ProfitMade: sale.ProfitMade,
+                    Purchased: sale.Purchased,
+                    Revenue: sale.Revenue,
+                    Profit: sale.Profit,
                     UnitDiscount: sale.UnitDiscount,
                     TotalDiscount: sale.TotalDiscount
 
                 }
 
+                console.log(userName);
 
-                this.connector.query("SELECT * FROM duffykids.users WHERE User_Name ?", userName,(error, result)=>{
 
+                this.connector.query("SELECT * FROM duffykids.users", userName ,(error, result, fields)=>{
+
+        
                     if(error){
                         reject('unknown error')
                         throw error
                     }
                     else{
 
-                        console.log(result);
+                        console.log(itemName, "hello", itemCategory);
     
                         const user = result.shift();
                         const userId = user.User_Name;
-                        actualSale.User = userId;
+                        sale.User = userId;
     
-                        this.connector.query(`SELECT * FROM duffykids.items WHERE Name = '${sale.Name}' AND Brand='${sale.Brand}' AND Category='${sale.category}'`, (error, result)=>{
+                        this.connector.query(`SELECT * FROM duffykids.items WHERE Name = '${itemName}' AND Brand='${itemBrand}' AND Category='${itemCategory}'`, (error, result)=>{
     
                             if(error){
     
@@ -1267,14 +1273,17 @@ class DATABASE{
                                 
                             }
                             else{
+
+                                console.log(result);
     
                                 const item = result.shift();
                                 const itemId = item.id
-                                actualSale.Item = itemId;
+                                sale.Item = itemId;
 
-                                let inStock = item.InStock;
+                                let InStock = item.InStock;
 
-                                inStock = inStock - actualSale.AmountPurchased;
+                                InStock = InStock - sale.Purchased;
+
     
                                 this.connector.beginTransaction((error)=>{
     
@@ -1283,8 +1292,10 @@ class DATABASE{
                                         throw error
                                     }
                                     else{
+
+                                        // this.connector.query("INSERT INTO items SET")
     
-                                        this.connector.query("INSERT INTO duffykids.sales SET ?", actualSale, (error, result)=>{
+                                        this.connector.query("INSERT INTO duffykids.sales SET ?", sale, (error, result)=>{
     
                                             if(error){
     
@@ -1316,8 +1327,9 @@ class DATABASE{
     
                                                     }
                                                     else{
+
                                                        
-                                                        this.connector.query(`UPDATE duffykids.items SET InStock = '${inStock}' WHERE Name='${sale.Name}' AND Brand='${sale.Brand}' AND Category='${sale.category}'`, (error)=>{
+                                                        this.connector.query(`UPDATE duffykids.items SET InStock = '${InStock}' WHERE Name='${sale.Name}' AND Brand='${sale.Brand}' AND Category='${sale.Name.Category}'`, (error)=>{
 
                                                             if(error){
                                                                 this.connector.rollback(()=>{

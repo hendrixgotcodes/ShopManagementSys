@@ -111,7 +111,7 @@ const ToolTipsController = __webpack_require__(/*! ../utilities/ToolTipsControll
 
 const database = new DATABASE();
 
-class TableController {
+class DOMCONTROLLER {
   static createItem(name, brand, category, stock, sellingPrice, discount, functions, hasItems, costPrice = "", purchased = "", dontHighlightAfterCreate = false, isdeletedItem = false, destinationPage = "", Scroll = true) {
     return new Promise((resolve, reject) => {
       const tableROWS = document.querySelectorAll('tr');
@@ -491,7 +491,7 @@ class TableController {
     });
   }
 
-  static addToCart(row, inCart, salesMade, user) {
+  static addToCart(row, inCart, salesMade, user, btnCart_sell) {
     /*
      *   ALGORITHM
      *
@@ -516,7 +516,6 @@ class TableController {
     const checkbox = cartItemsContainer.querySelector(".cb_cartItem"); //Buttons
 
     const btnCart_clear = cart.querySelector(".btnCart_clear");
-    const btnCart_sell = cart.querySelector(".btnCart_sell");
     /*-----------------------------------------------------------------------------------------------*/
 
     let [rowItemName, rowItemBrand, rowItemCategory, rowItemDiscount, rowItemPrice, rowItemStock, rowItemCostPrice] = [row.querySelector(".td_Names").innerText, row.querySelector(".td_Brands").innerText, row.querySelector(".td_Category").innerText, row.querySelector('.td_discount').innerText, row.querySelector(".td_Price").innerText, row.querySelector('.td_Stock').innerText, row.querySelector('.td_costPrice').innerText];
@@ -535,6 +534,12 @@ class TableController {
           item.remove();
         }, 300);
         subtractItem(item);
+
+        if (cartItems.length === 0) {
+          btnCart_clear.disabled = false;
+          btnCart_sell.disabled = false;
+          cartInfo.style.display = "block";
+        }
       }
     });
 
@@ -545,17 +550,6 @@ class TableController {
     }
     /********************************EVENT LISTENERS*****************************************/
 
-
-    checkbox.addEventListener("click", function toggleDiscount() {
-      console.log("in check");
-
-      if (checkbox.checked === true) {
-        cartItemsContainer.querySelector(".cartItem_discount").classList.remove("cartItem_discount--disabled");
-      } else {
-        cartItemsContainer.querySelector(".cartItem_discount").classList.add("cartItem_discount--disabled");
-      }
-    });
-    /******************************************************************************************** */
 
     btnCart_clear.addEventListener("click", clearAllItems);
     /****************************FUNCTIONS***********************/
@@ -587,13 +581,13 @@ class TableController {
                 <div hidden class="hidden_itemBrand">${rowItemBrand}</div>
             </div>
 
-            <button class="cartItem_discount cartItem_discount--disabled">
+            <button class="cartItem_discount cartItem_discount--disabled" id="cart_discount${cartItems.length + 1}">
 
                 <div class="discountValue">-${rowItemDiscount}%</div>
 
             </button>
 
-            <input type="checkbox" class="cb_cartItem" />
+            <input type="checkbox" class="cb_cartItem cartCheckBox" />
 
 
 
@@ -653,6 +647,17 @@ class TableController {
         UnitDiscount: rowItemDiscount,
         TotalDiscount: parseFloat(rowItemDiscount) * parseInt(itemSelect.value)
       });
+      const checkbox = cartItem.querySelector(".cartCheckBox"); //Evt Listeners
+
+      checkbox.addEventListener("click", function toggleDiscount() {
+        console.log("in check");
+
+        if (checkbox.checked === true) {
+          cartItemsContainer.querySelector(`#cart_discount${cartItems.length + 1}`).classList.remove("cartItem_discount--disabled");
+        } else {
+          cartItemsContainer.querySelector(`#cart_discount${cartItems.length + 1}`).classList.add("cartItem_discount--disabled");
+        }
+      });
     }
 
     function clearAllItems() {
@@ -705,7 +710,7 @@ class TableController {
 
 }
 
-module.exports = TableController;
+module.exports = DOMCONTROLLER;
 
 /***/ }),
 
@@ -1625,40 +1630,44 @@ class DATABASE {
     return new Promise((resolve, reject) => {
       const today = new Date();
       newSale.forEach(sale => {
-        console.log("sale: ", sale);
-        const actualSale = {
+        let [itemName, itemCategory, itemBrand] = [sale.Item.Name, sale.Item.Brand, sale.Item.Category];
+        sale.Date = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
+        sale = {
           Date: `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`,
-          AmountPurchased: sale.AmountPurchased,
-          CashMade: sale.CashMade,
-          ProfitMade: sale.ProfitMade,
+          Purchased: sale.Purchased,
+          Revenue: sale.Revenue,
+          Profit: sale.Profit,
           UnitDiscount: sale.UnitDiscount,
           TotalDiscount: sale.TotalDiscount
         };
-        this.connector.query("SELECT * FROM duffykids.users WHERE User_Name ?", userName, (error, result) => {
+        console.log(userName);
+        this.connector.query("SELECT * FROM duffykids.users", userName, (error, result, fields) => {
           if (error) {
             reject('unknown error');
             throw error;
           } else {
-            console.log(result);
+            console.log(itemName, "hello", itemCategory);
             const user = result.shift();
             const userId = user.User_Name;
-            actualSale.User = userId;
-            this.connector.query(`SELECT * FROM duffykids.items WHERE Name = '${sale.Name}' AND Brand='${sale.Brand}' AND Category='${sale.category}'`, (error, result) => {
+            sale.User = userId;
+            this.connector.query(`SELECT * FROM duffykids.items WHERE Name = '${itemName}' AND Brand='${itemBrand}' AND Category='${itemCategory}'`, (error, result) => {
               if (error) {
                 reject("unknown error");
                 throw error;
               } else {
+                console.log(result);
                 const item = result.shift();
                 const itemId = item.id;
-                actualSale.Item = itemId;
-                let inStock = item.InStock;
-                inStock = inStock - actualSale.AmountPurchased;
+                sale.Item = itemId;
+                let InStock = item.InStock;
+                InStock = InStock - sale.Purchased;
                 this.connector.beginTransaction(error => {
                   if (error) {
                     reject("unknown error");
                     throw error;
                   } else {
-                    this.connector.query("INSERT INTO duffykids.sales SET ?", actualSale, (error, result) => {
+                    // this.connector.query("INSERT INTO items SET")
+                    this.connector.query("INSERT INTO duffykids.sales SET ?", sale, (error, result) => {
                       if (error) {
                         this.connector.rollback(() => {
                           reject("unknown error");
@@ -1676,7 +1685,7 @@ class DATABASE {
                               throw error;
                             });
                           } else {
-                            this.connector.query(`UPDATE duffykids.items SET InStock = '${inStock}' WHERE Name='${sale.Name}' AND Brand='${sale.Brand}' AND Category='${sale.category}'`, error => {
+                            this.connector.query(`UPDATE duffykids.items SET InStock = '${InStock}' WHERE Name='${sale.Name}' AND Brand='${sale.Brand}' AND Category='${sale.Name.Category}'`, error => {
                               if (error) {
                                 this.connector.rollback(() => {
                                   reject("unknown error");

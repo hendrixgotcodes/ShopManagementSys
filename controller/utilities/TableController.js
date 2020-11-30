@@ -9,7 +9,7 @@ const ToolTipsController = require('../utilities/ToolTipsController')
 
 const database = new DATABASE();
 
-class TableController{
+class DOMCONTROLLER{
 
     static createItem(name, brand, category, stock, sellingPrice, discount,functions, hasItems,costPrice="", purchased="", dontHighlightAfterCreate = false, isdeletedItem=false, destinationPage="", Scroll=true){
 
@@ -594,7 +594,7 @@ class TableController{
 
    }
 
-   static addToCart(row, inCart, salesMade, user){
+   static addToCart(row, inCart, salesMade, user, btnCart_sell){
 
     /*
      *   ALGORITHM
@@ -623,7 +623,6 @@ class TableController{
 
         //Buttons
         const btnCart_clear = cart.querySelector(".btnCart_clear")
-        const btnCart_sell = cart.querySelector(".btnCart_sell")
 
 
 
@@ -657,6 +656,14 @@ class TableController{
 
                 subtractItem(item)
 
+                if(cartItems.length === 0){
+
+                    btnCart_clear.disabled = false;
+                    btnCart_sell.disabled = false
+                    cartInfo.style.display = "block"
+
+                }
+
             }
 
         })
@@ -674,22 +681,6 @@ class TableController{
 
         
         /********************************EVENT LISTENERS*****************************************/
-        // checkbox.addEventListener("click", function toggleDiscount(){
-
-        //     console.log("in check");
-
-        //     if(checkbox.checked === true){
-
-        //         cartItemsContainer.querySelector(".cartItem_discount").classList.remove("cartItem_discount--disabled")
-
-        //     }
-        //     else{
-        //         cartItemsContainer.querySelector(".cartItem_discount").classList.add("cartItem_discount--disabled")
-        //     }
-
-        // })
-        /******************************************************************************************** */
-
         btnCart_clear.addEventListener("click", clearAllItems)
 
 
@@ -736,13 +727,13 @@ class TableController{
                 <div hidden class="hidden_itemBrand">${rowItemBrand}</div>
             </div>
 
-            <button class="cartItem_discount cartItem_discount--disabled">
+            <button class="cartItem_discount cartItem_discount--disabled" id="cart_discount${cartItems.length+1}">
 
                 <div class="discountValue">-${rowItemDiscount}%</div>
 
             </button>
 
-            <input type="checkbox" class="cb_cartItem" />
+            <input type="checkbox" class="cb_cartItem cartCheckBox" />
 
 
 
@@ -828,6 +819,23 @@ class TableController{
             Profit: totalItemRevenue - totalItemCostPrice,
             UnitDiscount: rowItemDiscount,
             TotalDiscount: parseFloat(rowItemDiscount) * parseInt(itemSelect.value)
+        })
+
+        const checkbox = cartItem.querySelector(".cartCheckBox");
+        //Evt Listeners
+        checkbox.addEventListener("click", function toggleDiscount(){
+
+            console.log("in check");
+
+            if(checkbox.checked === true){
+
+                cartItemsContainer.querySelector(`#cart_discount${cartItems.length+1}`).classList.remove("cartItem_discount--disabled")
+
+            }
+            else{
+                cartItemsContainer.querySelector(`#cart_discount${cartItems.length+1}`).classList.add("cartItem_discount--disabled")
+            }
+
         })
 
     
@@ -918,4 +926,4 @@ class TableController{
 }
 
 
-module.exports = TableController;
+module.exports = DOMCONTROLLER;
