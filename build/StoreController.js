@@ -134,6 +134,10 @@ class Notifications {
       messageType = messageType.toLowerCase();
       let bGColor;
 
+      if (messageType === "error") {
+        shell.beep();
+      }
+
       switch (messageType) {
         case 'success':
           bGColor = "#12A89D";
@@ -252,6 +256,7 @@ const tip_default = document.querySelector('.tip_default');
 const selectValue_span = document.querySelector('.selectValue_span');
 const toolBarTB = document.querySelector('.toolBar_tb');
 const toolBarBtn = document.querySelector('.toolBar_btn');
+let tableRows;
 const mainBodyContent = document.querySelector('.mainBody_content');
 const domCart = document.querySelector(".cart"); //Buttons
 
@@ -318,18 +323,18 @@ function initialzeStoreItems() {
       _utilities_TableController__WEBPACK_IMPORTED_MODULE_4___default.a.showIsEmpty();
     }
   }).then(() => {
-    const tableROWS = document.querySelector('.tableBody').querySelectorAll('.bodyRow'); //For "tableBody"
+    tableRows = document.querySelector('.tableBody').querySelectorAll('.bodyRow'); //For "tableBody"
 
-    tableROWS.forEach(row => {
+    tableRows.forEach(row => {
       row.addEventListener('click', e => {
         toggleRowCB(row);
         setSellingItemProperties(row);
       });
     });
   }).catch(e => {
-    if (e.message === "Database not found") {
+    if (e === "ECONNREFUSED") {
       _utilities_TableController__WEBPACK_IMPORTED_MODULE_4___default.a.removeOldBanners();
-      _utilities_TableController__WEBPACK_IMPORTED_MODULE_4___default.a.showErrorBanner("Sorry an error occured");
+      _utilities_TableController__WEBPACK_IMPORTED_MODULE_4___default.a.showErrorBanner("Failed to connect to database. Please try reloading or contacting us");
     }
   });
 } //-----------------------------------------------------------------------------------------------
@@ -338,7 +343,7 @@ function initialzeStoreItems() {
 
 function seek(variable) {
   let notFound = true;
-  tableROWS.forEach(row => {
+  tableRows.forEach(row => {
     if (row.querySelector('.td_Names').innerText.toLowerCase() === variable.toLowerCase()) {
       row.scrollIntoView({
         behavior: 'smooth'
@@ -386,11 +391,11 @@ function toggleRowCB(row) {
       totalSelectedRows = totalSelectedRows - 1;
     }
 
-    _utilities_TableController__WEBPACK_IMPORTED_MODULE_4___default.a.addToCart(row, cart, salesMade, UserName, btnCart_sell, btnCart_clear);
+    _utilities_TableController__WEBPACK_IMPORTED_MODULE_4___default.a.addToCart(row, cart, salesMade, UserName, btnCart_sell, btnCart_clear, subtractItem);
   } else {
     CB.checked = true;
     totalSelectedRows = totalSelectedRows + 1;
-    _utilities_TableController__WEBPACK_IMPORTED_MODULE_4___default.a.addToCart(row, cart, salesMade, UserName, btnCart_sell, btnCart_clear);
+    _utilities_TableController__WEBPACK_IMPORTED_MODULE_4___default.a.addToCart(row, cart, salesMade, UserName, btnCart_sell, btnCart_clear, subtractItem);
   }
 } //-----------------------------------------------------------------------------------------------
 
@@ -419,8 +424,7 @@ function checkout() {
 
 function clearAllItems() {
   const itemsInCart = domCart.querySelectorAll(".cartItem");
-  const allAnimationsDone = [];
-  console.log(itemsInCart); //disbling cart buttons
+  const allAnimationsDone = []; //disbling cart buttons
 
   btnCart_clear.disabled = true;
   btnCart_sell.disabled = true;
@@ -440,11 +444,12 @@ function clearAllItems() {
 
             if (rowName === itemName && rowBrand === itemBrand && rowCategory === itemCategory) {
               checkbox.checked = false;
+              console.log("unchecked");
             }
           });
           itemsInCart[i].classList.remove("cartItem--shown");
           resolve();
-        }, i * 350);
+        }, i * 400);
       });
       afterAnimation.then(() => {
         subtractItem(itemsInCart[i]);
@@ -457,8 +462,36 @@ function clearAllItems() {
   }
 
   Promise.all(allAnimationsDone).then(() => {
-    cart.querySelector(".cartInfo").style.display = "block";
+    domCart.querySelector(".cartInfo").style.display = "block";
   });
+}
+
+function subtractItem(item) {
+  let rowItemPrice;
+  const subTotal = domCart.querySelector(".subTotal").querySelector(".value");
+  const mainTotal = domCart.querySelector(".mainTotal").querySelector(".value");
+  let itemName = item.querySelector(".hidden_itemName").innerText;
+  let itemBrand = item.querySelector(".hidden_itemBrand").innerText;
+  let itemCategory = item.querySelector(".hidden_itemCategory").innerText;
+  let itemQuanity = parseInt(item.querySelector(".cartItem_count").value);
+  let itemTotalCost;
+  let initSubTotal = parseFloat(subTotal.innerText);
+  tableRows.forEach(row => {
+    if (row.querySelector(".td_Names").innerText === itemName && row.querySelector(".td_Brands").innerText === itemBrand && row.querySelector(".td_Category").innerText === itemCategory) {
+      rowItemPrice = row.querySelector(".td_Price").innerText; // row.querySelector(".selectOne").checked = false
+
+      rowItemPrice = row.querySelector(".td_Price").innerText;
+      itemTotalCost = itemQuanity * parseFloat(rowItemPrice);
+    }
+  });
+  console.log(initSubTotal);
+
+  if (initSubTotal > 0) {
+    subTotal.innerText = parseFloat(subTotal.innerText) - itemTotalCost;
+    mainTotal.innerText = subTotal.innerText;
+  }
+
+  cart.splice(cart.findIndex(item => item.Item.Name === itemName), 1);
 } //-----------------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------------
 
@@ -1441,7 +1474,7 @@ class DOMCONTROLLER {
     });
   }
 
-  static addToCart(row, inCart, salesMade, user, btnCart_sell, btnCart_clear) {
+  static addToCart(row, inCart, salesMade, user, btnCart_sell, btnCart_clear, subtractItem) {
     /*
      *   ALGORITHM
      *
@@ -1453,8 +1486,6 @@ class DOMCONTROLLER {
      *
      *
      */
-
-    /*****************************************DOM ELEMENTS********************************************/
     const tableRows = document.querySelector("tbody").querySelectorAll("tr"); //Cart Content
 
     const cart = document.querySelector(".cart");
@@ -1478,6 +1509,7 @@ class DOMCONTROLLER {
     cartItems.forEach(item => {
       if (item.querySelector(".hidden_itemName").innerText === rowItemName && item.querySelector(".hidden_itemBrand").innerText === rowItemBrand && item.querySelector(".hidden_itemCategory").innerText === rowItemCategory) {
         item.classList.remove("cartItem--shown");
+        itemExists = true;
         setTimeout(() => {
           item.remove();
         }, 300);
@@ -1500,23 +1532,6 @@ class DOMCONTROLLER {
 
     /****************************FUNCTIONS***********************/
 
-
-    function subtractItem(item) {
-      let itemName = item.querySelector(".hidden_itemName").innerText;
-      let itemQuanity = parseFloat(item.querySelector(".cartItem_count").value);
-      let itemTotalCost = itemQuanity * rowItemPrice;
-      let initSubTotal = parseFloat(subTotal.innerText);
-
-      if (initSubTotal > 0) {
-        subTotal.innerText = parseFloat(subTotal.innerText) - itemTotalCost;
-        mainTotal.innerText = subTotal.innerText;
-        itemExists = true; //Filter and reassign the inCart array the items whose name, brand and category does not equal the current item    
-      }
-
-      console.log(inCart);
-      inCart.splice(inCart.findIndex(item => item.Item.Name === itemName), 1);
-      console.log(inCart);
-    }
 
     function addToCart() {
       const cartItemTemplate = `
@@ -1581,7 +1596,6 @@ class DOMCONTROLLER {
       mainTotal.innerText = subTotal.innerText;
       let totalItemSellingPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemCostPrice));
       let totalItemCostPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemPrice));
-      console.log(rowItemPrice, rowItemCostPrice);
       inCart.push({
         Item: {
           Name: rowItemName,
@@ -2170,8 +2184,13 @@ class DATABASE {
     return new Promise((resolve, reject) => {
       this.connector.query("SELECT * FROM duffykids.items ORDER BY Name ASC", (error, results) => {
         if (error) {
-          console.log(error);
-          reject(new Error("database not found"));
+          console.log(error.code);
+
+          if (error.code === "ECONNREFUSED") {
+            reject(error.code);
+          } else {
+            reject(new Error("database not found"));
+          }
         } else {
           console.log(results);
           resolve(results);

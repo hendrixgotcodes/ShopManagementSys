@@ -134,6 +134,10 @@ class Notifications {
       messageType = messageType.toLowerCase();
       let bGColor;
 
+      if (messageType === "error") {
+        shell.beep();
+      }
+
       switch (messageType) {
         case 'success':
           bGColor = "#12A89D";
@@ -318,9 +322,11 @@ function initialzeStoreItems() {
       _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.showIsEmpty();
     }
   }).catch(e => {
-    if (e.message === "Database not found") {
+    console.log("ee", e);
+
+    if (e === "ECONNREFUSED") {
       _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.removeOldBanners();
-      _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.showErrorBanner("Sorry an error occured");
+      _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.showErrorBanner("Failed to connect to database. Please try reloading or contacting us");
     }
   });
 } //---------------------------------------------------------------------------------------------------------------
@@ -1612,7 +1618,7 @@ class DOMCONTROLLER {
     });
   }
 
-  static addToCart(row, inCart, salesMade, user, btnCart_sell, btnCart_clear) {
+  static addToCart(row, inCart, salesMade, user, btnCart_sell, btnCart_clear, subtractItem) {
     /*
      *   ALGORITHM
      *
@@ -1624,8 +1630,6 @@ class DOMCONTROLLER {
      *
      *
      */
-
-    /*****************************************DOM ELEMENTS********************************************/
     const tableRows = document.querySelector("tbody").querySelectorAll("tr"); //Cart Content
 
     const cart = document.querySelector(".cart");
@@ -1649,6 +1653,7 @@ class DOMCONTROLLER {
     cartItems.forEach(item => {
       if (item.querySelector(".hidden_itemName").innerText === rowItemName && item.querySelector(".hidden_itemBrand").innerText === rowItemBrand && item.querySelector(".hidden_itemCategory").innerText === rowItemCategory) {
         item.classList.remove("cartItem--shown");
+        itemExists = true;
         setTimeout(() => {
           item.remove();
         }, 300);
@@ -1671,23 +1676,6 @@ class DOMCONTROLLER {
 
     /****************************FUNCTIONS***********************/
 
-
-    function subtractItem(item) {
-      let itemName = item.querySelector(".hidden_itemName").innerText;
-      let itemQuanity = parseFloat(item.querySelector(".cartItem_count").value);
-      let itemTotalCost = itemQuanity * rowItemPrice;
-      let initSubTotal = parseFloat(subTotal.innerText);
-
-      if (initSubTotal > 0) {
-        subTotal.innerText = parseFloat(subTotal.innerText) - itemTotalCost;
-        mainTotal.innerText = subTotal.innerText;
-        itemExists = true; //Filter and reassign the inCart array the items whose name, brand and category does not equal the current item    
-      }
-
-      console.log(inCart);
-      inCart.splice(inCart.findIndex(item => item.Item.Name === itemName), 1);
-      console.log(inCart);
-    }
 
     function addToCart() {
       const cartItemTemplate = `
@@ -1752,7 +1740,6 @@ class DOMCONTROLLER {
       mainTotal.innerText = subTotal.innerText;
       let totalItemSellingPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemCostPrice));
       let totalItemCostPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemPrice));
-      console.log(rowItemPrice, rowItemCostPrice);
       inCart.push({
         Item: {
           Name: rowItemName,
@@ -2341,8 +2328,13 @@ class DATABASE {
     return new Promise((resolve, reject) => {
       this.connector.query("SELECT * FROM duffykids.items ORDER BY Name ASC", (error, results) => {
         if (error) {
-          console.log(error);
-          reject(new Error("database not found"));
+          console.log(error.code);
+
+          if (error.code === "ECONNREFUSED") {
+            reject(error.code);
+          } else {
+            reject(new Error("database not found"));
+          }
         } else {
           console.log(results);
           resolve(results);

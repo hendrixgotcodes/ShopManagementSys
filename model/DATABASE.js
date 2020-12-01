@@ -816,9 +816,17 @@ class DATABASE{
                 
                 if(error){
 
-                    console.log(error);
+                    console.log(error.code);
 
-                    reject(new Error("database not found"))
+                    if(error.code === "ECONNREFUSED"){
+                        reject(error.code)
+                    }
+                    else{
+
+                        reject(new Error("database not found"))
+
+                    }
+
                 }
                 else{
                     console.log(results);

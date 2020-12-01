@@ -134,6 +134,10 @@ class Notifications {
       messageType = messageType.toLowerCase();
       let bGColor;
 
+      if (messageType === "error") {
+        shell.beep();
+      }
+
       switch (messageType) {
         case 'success':
           bGColor = "#12A89D";
@@ -787,8 +791,13 @@ class DATABASE {
     return new Promise((resolve, reject) => {
       this.connector.query("SELECT * FROM duffykids.items ORDER BY Name ASC", (error, results) => {
         if (error) {
-          console.log(error);
-          reject(new Error("database not found"));
+          console.log(error.code);
+
+          if (error.code === "ECONNREFUSED") {
+            reject(error.code);
+          } else {
+            reject(new Error("database not found"));
+          }
         } else {
           console.log(results);
           resolve(results);

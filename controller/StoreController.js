@@ -42,6 +42,7 @@ const tip_default = document.querySelector('.tip_default');
 const selectValue_span = document.querySelector('.selectValue_span');
 const toolBarTB = document.querySelector('.toolBar_tb');
 const toolBarBtn = document.querySelector('.toolBar_btn')
+let tableRows;
 
 const mainBodyContent = document.querySelector('.mainBody_content');
 const domCart = document.querySelector(".cart")
@@ -154,11 +155,11 @@ function initialzeStoreItems(){
     })
     .then(()=>{
 
-        const tableROWS = document.querySelector('.tableBody').querySelectorAll('.bodyRow');
+        tableRows = document.querySelector('.tableBody').querySelectorAll('.bodyRow');
 
 
         //For "tableBody"
-        tableROWS.forEach((row)=>{
+        tableRows.forEach((row)=>{
             row.addEventListener('click',(e)=>{
                 toggleRowCB(row);
                 setSellingItemProperties(row);
@@ -169,9 +170,9 @@ function initialzeStoreItems(){
     })
     .catch((e)=>{
        
-        if(e.message  === "Database not found"){
+        if(e === "ECONNREFUSED"){
             DOMCONTROLLER.removeOldBanners();
-            DOMCONTROLLER.showErrorBanner("Sorry an error occured");
+            DOMCONTROLLER.showErrorBanner("Failed to connect to database. Please try reloading or contacting us");
         }
 
     })
@@ -186,7 +187,7 @@ function seek(variable){
 
     let notFound = true;
 
-    tableROWS.forEach((row)=>{
+    tableRows.forEach((row)=>{
         if(row.querySelector('.td_Names').innerText.toLowerCase() === variable.toLowerCase()){
             row.scrollIntoView({behavior: 'smooth'});
 
@@ -261,7 +262,7 @@ function toggleRowCB(row){
             totalSelectedRows = totalSelectedRows -1;
         }
 
-        DOMCONTROLLER.addToCart(row, cart, salesMade, UserName, btnCart_sell, btnCart_clear)
+        DOMCONTROLLER.addToCart(row, cart, salesMade, UserName, btnCart_sell, btnCart_clear, subtractItem)
 
 
     }
@@ -270,7 +271,7 @@ function toggleRowCB(row){
 
         totalSelectedRows = totalSelectedRows +1;
 
-        DOMCONTROLLER.addToCart(row, cart, salesMade, UserName, btnCart_sell, btnCart_clear)
+        DOMCONTROLLER.addToCart(row, cart, salesMade, UserName, btnCart_sell, btnCart_clear, subtractItem)
 
 
     }
@@ -322,7 +323,6 @@ function clearAllItems(){
     const itemsInCart = domCart.querySelectorAll(".cartItem");
     const allAnimationsDone = []
 
-    console.log(itemsInCart);
 
     //disbling cart buttons
     btnCart_clear.disabled = true;
@@ -341,6 +341,7 @@ function clearAllItems(){
 
                 setTimeout(()=>{
 
+
                     tableRows.forEach((row)=>{
 
                         let rowName = row.querySelector('.td_Names').innerText;
@@ -348,8 +349,10 @@ function clearAllItems(){
                         let rowCategory = row.querySelector('.td_Category').innerText
                         let checkbox = row.querySelector('.td_cb').querySelector('.selectOne')
 
+
                         if(rowName === itemName && rowBrand === itemBrand && rowCategory === itemCategory){
                                 checkbox.checked = false;
+                                console.log("unchecked");
                         }
 
                     })
@@ -359,7 +362,7 @@ function clearAllItems(){
 
                     resolve()
     
-                }, (i*350))
+                }, (i*400))
 
             })
 
@@ -385,9 +388,54 @@ function clearAllItems(){
     Promise.all(allAnimationsDone)
     .then(()=>{
 
-        cart.querySelector(".cartInfo").style.display = "block"
+        domCart.querySelector(".cartInfo").style.display = "block"
 
     })
+
+
+}
+
+function subtractItem(item){
+
+    let rowItemPrice;
+    const subTotal = domCart.querySelector(".subTotal").querySelector(".value")
+    const mainTotal = domCart.querySelector(".mainTotal").querySelector(".value")
+
+    let itemName = item.querySelector(".hidden_itemName").innerText
+    let itemBrand = item.querySelector(".hidden_itemBrand").innerText;
+    let itemCategory = item.querySelector(".hidden_itemCategory").innerText;
+
+    let itemQuanity = parseInt(item.querySelector(".cartItem_count").value)
+    let itemTotalCost ;
+
+    let initSubTotal = parseFloat(subTotal.innerText)
+
+
+    tableRows.forEach((row)=>{
+
+        if(row.querySelector(".td_Names").innerText === itemName && row.querySelector(".td_Brands").innerText === itemBrand && row.querySelector(".td_Category").innerText === itemCategory)
+        {
+            rowItemPrice = row.querySelector(".td_Price").innerText;
+
+            // row.querySelector(".selectOne").checked = false
+
+            rowItemPrice = row.querySelector(".td_Price").innerText
+
+            itemTotalCost = itemQuanity * parseFloat(rowItemPrice)
+        }
+
+    })
+
+    console.log(initSubTotal);
+
+    if(initSubTotal > 0){
+
+        subTotal.innerText = parseFloat(subTotal.innerText) - itemTotalCost;
+        mainTotal.innerText = subTotal.innerText        
+
+    }
+
+   cart.splice(cart.findIndex(item=> item.Item.Name === itemName), 1)
 
 
 }

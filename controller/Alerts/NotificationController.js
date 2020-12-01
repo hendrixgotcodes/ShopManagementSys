@@ -40,6 +40,10 @@ class Notifications{
             messageType = messageType.toLowerCase();
     
             let bGColor;
+
+            if(messageType === "error"){
+                shell.beep();
+            }
     
             switch (messageType){
                 case 'success':

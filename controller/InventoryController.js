@@ -5,7 +5,7 @@ import { ipcRenderer } from 'electron';
 /************IMPORT******/
 import Modal from '../controller/modals/ModalController';
 import Notifications from './Alerts/NotificationController';
-import TableController from './utilities/TableController';
+import DOMCONTROLLER from './utilities/TableController';
 import UnitConverter from './utilities/UnitConverter';
 
 //Importing ItemDB operations
@@ -134,7 +134,7 @@ function initialzeStoreItems(){
     //Triggers Main Renderer to send the "setUserParams" event
     ipcRenderer.send("sendUserParams")
 
-    TableController.showLoadingBanner("Please wait. Attempting to load items in database...")
+    DOMCONTROLLER.showLoadingBanner("Please wait. Attempting to load items in database...")
 
     database.fetchItems()
     .then((fetchedItems)=>{
@@ -144,19 +144,19 @@ function initialzeStoreItems(){
         if(fetchedItems.length > 0){
 
             //Remove loading banner
-            TableController.removeOldBanners();
+            DOMCONTROLLER.removeOldBanners();
             
             //then add each item to the table in the DOM
             fetchedItems.forEach((fetchedItem)=>{
 
                 if(fetchedItem.Deleted === 1){
 
-                    TableController.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,[checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory", false)
+                    DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,[checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory", false)
 
                 }
                 else{
 
-                    TableController.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,[checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true,false , "Inventory", false)
+                    DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,[checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true,false , "Inventory", false)
 
                 }
 
@@ -167,25 +167,23 @@ function initialzeStoreItems(){
         else{
 
                 //Remove loading banner
-                TableController.removeOldBanners();
+                DOMCONTROLLER.removeOldBanners();
 
                 // Show isEmpty banner
-                TableController.showIsEmpty();
+                DOMCONTROLLER.showIsEmpty();
 
         }
 
     })
     .catch((e)=>{
 
-        if(e.message === "Database not found"){
-
-            TableController.removeOldBanners();
-            TableController.showErrorBanner("Sorry an error occured");
-
+        console.log("ee", e);
+       
+        if(e === "ECONNREFUSED"){
+            DOMCONTROLLER.removeOldBanners();
+            DOMCONTROLLER.showErrorBanner("Failed to connect to database. Please try reloading or contacting us");
         }
 
-
-        
     })
 
 }
@@ -263,7 +261,7 @@ function deleteItem(row, action="delete"){
                         })
                         .then(()=>{
 
-                            TableController.markAsRemove(itemName, itemBrand)
+                            DOMCONTROLLER.markAsRemove(itemName, itemBrand)
 
                             Notifications.showAlert("warning", `${itemName} of quantity ${itemQuantity} will no longer be visible in the shop front`)
 
@@ -294,7 +292,7 @@ function deleteItem(row, action="delete"){
                         })
                         .then(()=>{
 
-                            TableController.markAsVisible(itemName, itemBrand)
+                            DOMCONTROLLER.markAsVisible(itemName, itemBrand)
 
                             Notifications.showAlert("warning", `${itemName} of quantity ${itemQuantity} will now be visible in the shop front`)
 
@@ -358,7 +356,7 @@ function editItem(row){
                     Notifications.showAlert("success", `${name} has been successfully updated.`)
 
                     
-                    TableController.editItem(row, name, brand, category, stock, parseFloat(sellingPrice), parseFloat(costPrice), parseFloat(discount))
+                    DOMCONTROLLER.editItem(row, name, brand, category, stock, parseFloat(sellingPrice), parseFloat(costPrice), parseFloat(discount))
                     
 
                 }
@@ -432,7 +430,7 @@ function addItem(){
 
                 if(result === true){
 
-                    TableController.createItem(result.Name, result.Brand, result.Category, result.Stock, result.SellingPrice, result.Discount,[checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "", false, false, "inventory")
+                    DOMCONTROLLER.createItem(result.Name, result.Brand, result.Category, result.Stock, result.SellingPrice, result.Discount,[checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "", false, false, "inventory")
                     .then(()=>{
     
                         Notifications.showAlert("success", "Successfuly added to inventory")
@@ -528,7 +526,7 @@ function editMultiple(){
 
             let editedInventory = new Promise(
                 (resolve, reject)=>{
-                   let done =  TableController.editItem(row, name, brand, category, stock, Number.parseFloat(price), parseFloat(costPrice) );
+                   let done =  DOMCONTROLLER.editItem(row, name, brand, category, stock, Number.parseFloat(price), parseFloat(costPrice) );
 
                    if(done){
                        resolve(name);
@@ -685,13 +683,13 @@ ipcRenderer.on('populateTable',(e, Items)=>{
 
                 notInDb.forEach((item)=>{
 
-                    TableController.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount,[checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory")
+                    DOMCONTROLLER.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount,[checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory")
 
                 })
 
                 inDb.forEach((item)=>{
 
-                    TableController.editItem("", item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.CostPrice, item.Discount,)
+                    DOMCONTROLLER.editItem("", item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.CostPrice, item.Discount,)
 
                 })
 
@@ -702,7 +700,7 @@ ipcRenderer.on('populateTable',(e, Items)=>{
 
                 inDb.forEach((item)=>{
 
-                    TableController.editItem("", item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.CostPrice, item.Discount,)
+                    DOMCONTROLLER.editItem("", item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.CostPrice, item.Discount,)
 
                 })
 
@@ -714,7 +712,7 @@ ipcRenderer.on('populateTable',(e, Items)=>{
 
                 notInDb.forEach((item)=>{
 
-                    TableController.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount,[checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory")
+                    DOMCONTROLLER.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount,[checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory")
 
                 })
 

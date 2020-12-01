@@ -235,6 +235,8 @@ function openSettings() {
   const toolTipPref = settingsModal.querySelector('.genSettings').querySelector('#toolTipPref');
   const timeOutPref = settingsModal.querySelector('.genSettings').querySelector('#timeOutPref');
   const btnGenSettings = settingsModal.querySelector('.genSettings').querySelector('#btn_genSettings');
+  const modal_btn_add = settingsModal.querySelector(".modal_btn_add");
+  modal_btn_add.addEventListener("click", openEmployeeForm);
   /***********************************DEFAULT SETTERS**************************************** */
 
   store.get("toolTipsPref").then(userPref => {
@@ -430,6 +432,10 @@ function removeSettingsModal(cover) {
   }
 
   cover.classList.toggle('contentCover--shown');
+}
+
+function openEmployeeForm() {
+  console.log("hello openEmployee");
 }
 /**********************TIPPJS**************** */
 // import tippy from 'tippy.js'
