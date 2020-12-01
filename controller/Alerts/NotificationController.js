@@ -33,87 +33,92 @@ class Notifications{
 
     static showAlert(messageType, message){
 
-        const mainBodyContent = document.querySelector(".mainBody_content");
+        return new Promise((resolve, reject)=>{
 
-        messageType = messageType.toLowerCase();
+            const mainBodyContent = document.querySelector(".mainBody_content");
 
-        let bGColor;
-
-        switch (messageType){
-            case 'success':
-                bGColor = "#12A89D";
-                break;
-
-            case 'warning':
-                bGColor = "#E17C38";
-                break;
-
-            case 'error':
-                bGColor = " #ce2727";
-                break;
-
-            default:
-                bGColor = "#12A89D"
-        }
-
-        let alertTemplate = 
-        `
-            <img class="img_close" src="../Icons/Modals/closeWhite.svg" alt="Close Modal" />
-            <div class="alertContent">
-                ${message}
-            </div>
-        `
-
-        let alert = document.createElement("div");
-        alert.innerHTML = alertTemplate;
-        alert.className = "alertBanner";
-        alert.style.backgroundColor = bGColor;
-
-
-       (function Animate(){
-           return new Promise((resolve, reject)=>{
-                    mainBodyContent.appendChild(alert);
-                    resolve();
-           })
-       })().then(()=>{
-
-            setTimeout(() => {
-
-                mainBodyContent.querySelector(".alertBanner").classList.add("alertBanner--shown")
-                
-            }, 300)
-
-            //Automatically remove after three seconds
-            setTimeout(()=>{
-
-                (
-                    function Animate(){
-                        return new Promise((resolve, reject)=>{
-
-                            mainBodyContent.querySelector(".alertBanner").classList.remove("alertBanner--shown")
+            messageType = messageType.toLowerCase();
+    
+            let bGColor;
+    
+            switch (messageType){
+                case 'success':
+                    bGColor = "#12A89D";
+                    break;
+    
+                case 'warning':
+                    bGColor = "#E17C38";
+                    break;
+    
+                case 'error':
+                    bGColor = " #ce2727";
+                    break;
+    
+                default:
+                    bGColor = "#12A89D"
+            }
+    
+            let alertTemplate = 
+            `
+                <img class="img_close" src="../Icons/Modals/closeWhite.svg" alt="Close Modal" />
+                <div class="alertContent">
+                    ${message}
+                </div>
+            `
+    
+            let alert = document.createElement("div");
+            alert.innerHTML = alertTemplate;
+            alert.className = "alertBanner";
+            alert.style.backgroundColor = bGColor;
+    
+    
+           (function Animate(){
+               return new Promise((resolve, reject)=>{
+                        mainBodyContent.appendChild(alert);
+                        resolve();
+               })
+           })().then(()=>{
+    
+                setTimeout(() => {
+    
+                    mainBodyContent.querySelector(".alertBanner").classList.add("alertBanner--shown")
+                    resolve()
+                    
+                }, 300)
+    
+                //Automatically remove after three seconds
+                setTimeout(()=>{
+    
+                    (
+                        function Animate(){
+                            return new Promise((resolve, reject)=>{
+    
+                                mainBodyContent.querySelector(".alertBanner").classList.remove("alertBanner--shown")
+                                
+                                // function will resolve after animation is document (animation takes .5s, function resolves after .6s)
+                                setTimeout(() => {
+                                    resolve()
+                                }, 600);
+                            })
+                        }
+                    )()
+                    .then(
+                        ()=>{
+    
+                            //Removing alertbanner from DOM to increase performance
+                            mainBodyContent.querySelector(".alertBanner").remove();
                             
-                            // function will resolve after animation is document (animation takes .5s, function resolves after .6s)
-                            setTimeout(() => {
-                                resolve()
-                            }, 600);
-                        })
-                    }
-                )()
-                .then(
-                    ()=>{
+                        }
+                    )
+    
+                }, 5000)   
+    
+    
+           })
+    
+            
 
-                        //Removing alertbanner from DOM to increase performance
-                        mainBodyContent.querySelector(".alertBanner").remove();
-                        
-                    }
-                )
-
-            }, 5000)   
-
-
-       })
-
-        
+        })
 
 
     }

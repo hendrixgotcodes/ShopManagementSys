@@ -129,61 +129,64 @@ class Notifications {
   }
 
   static showAlert(messageType, message) {
-    const mainBodyContent = document.querySelector(".mainBody_content");
-    messageType = messageType.toLowerCase();
-    let bGColor;
+    return new Promise((resolve, reject) => {
+      const mainBodyContent = document.querySelector(".mainBody_content");
+      messageType = messageType.toLowerCase();
+      let bGColor;
 
-    switch (messageType) {
-      case 'success':
-        bGColor = "#12A89D";
-        break;
+      switch (messageType) {
+        case 'success':
+          bGColor = "#12A89D";
+          break;
 
-      case 'warning':
-        bGColor = "#E17C38";
-        break;
+        case 'warning':
+          bGColor = "#E17C38";
+          break;
 
-      case 'error':
-        bGColor = " #ce2727";
-        break;
+        case 'error':
+          bGColor = " #ce2727";
+          break;
 
-      default:
-        bGColor = "#12A89D";
-    }
+        default:
+          bGColor = "#12A89D";
+      }
 
-    let alertTemplate = `
-            <img class="img_close" src="../Icons/Modals/closeWhite.svg" alt="Close Modal" />
-            <div class="alertContent">
-                ${message}
-            </div>
-        `;
-    let alert = document.createElement("div");
-    alert.innerHTML = alertTemplate;
-    alert.className = "alertBanner";
-    alert.style.backgroundColor = bGColor;
-    (function Animate() {
-      return new Promise((resolve, reject) => {
-        mainBodyContent.appendChild(alert);
-        resolve();
-      });
-    })().then(() => {
-      setTimeout(() => {
-        mainBodyContent.querySelector(".alertBanner").classList.add("alertBanner--shown");
-      }, 300); //Automatically remove after three seconds
-
-      setTimeout(() => {
-        (function Animate() {
-          return new Promise((resolve, reject) => {
-            mainBodyContent.querySelector(".alertBanner").classList.remove("alertBanner--shown"); // function will resolve after animation is document (animation takes .5s, function resolves after .6s)
-
-            setTimeout(() => {
-              resolve();
-            }, 600);
-          });
-        })().then(() => {
-          //Removing alertbanner from DOM to increase performance
-          mainBodyContent.querySelector(".alertBanner").remove();
+      let alertTemplate = `
+                <img class="img_close" src="../Icons/Modals/closeWhite.svg" alt="Close Modal" />
+                <div class="alertContent">
+                    ${message}
+                </div>
+            `;
+      let alert = document.createElement("div");
+      alert.innerHTML = alertTemplate;
+      alert.className = "alertBanner";
+      alert.style.backgroundColor = bGColor;
+      (function Animate() {
+        return new Promise((resolve, reject) => {
+          mainBodyContent.appendChild(alert);
+          resolve();
         });
-      }, 5000);
+      })().then(() => {
+        setTimeout(() => {
+          mainBodyContent.querySelector(".alertBanner").classList.add("alertBanner--shown");
+          resolve();
+        }, 300); //Automatically remove after three seconds
+
+        setTimeout(() => {
+          (function Animate() {
+            return new Promise((resolve, reject) => {
+              mainBodyContent.querySelector(".alertBanner").classList.remove("alertBanner--shown"); // function will resolve after animation is document (animation takes .5s, function resolves after .6s)
+
+              setTimeout(() => {
+                resolve();
+              }, 600);
+            });
+          })().then(() => {
+            //Removing alertbanner from DOM to increase performance
+            mainBodyContent.querySelector(".alertBanner").remove();
+          });
+        }, 5000);
+      });
     });
   }
 
@@ -250,8 +253,10 @@ const selectValue_span = document.querySelector('.selectValue_span');
 const toolBarTB = document.querySelector('.toolBar_tb');
 const toolBarBtn = document.querySelector('.toolBar_btn');
 const mainBodyContent = document.querySelector('.mainBody_content');
-const domCart = document.querySelector(".cart");
+const domCart = document.querySelector(".cart"); //Buttons
+
 const btnCart_sell = domCart.querySelector(".btnCart_sell");
+const btnCart_clear = domCart.querySelector(".btnCart_clear");
 /***********************************OBJECTS**************/
 
 let sellingItem = {// Represents an instance of a store item being added to cart
@@ -277,6 +282,7 @@ ipcRenderer.on("setUserParams", (e, userParamsArray) => {
 }); // btnCart_sell
 
 btnCart_sell.addEventListener("click", checkout);
+btnCart_clear.addEventListener("click", clearAllItems);
 /*************************************FUNCTIONS********************* */
 
 /*************************************FUNCTIONS********************* */
@@ -380,11 +386,11 @@ function toggleRowCB(row) {
       totalSelectedRows = totalSelectedRows - 1;
     }
 
-    _utilities_TableController__WEBPACK_IMPORTED_MODULE_4___default.a.addToCart(row, cart, salesMade, UserName, btnCart_sell);
+    _utilities_TableController__WEBPACK_IMPORTED_MODULE_4___default.a.addToCart(row, cart, salesMade, UserName, btnCart_sell, btnCart_clear);
   } else {
     CB.checked = true;
     totalSelectedRows = totalSelectedRows + 1;
-    _utilities_TableController__WEBPACK_IMPORTED_MODULE_4___default.a.addToCart(row, cart, salesMade, UserName, btnCart_sell);
+    _utilities_TableController__WEBPACK_IMPORTED_MODULE_4___default.a.addToCart(row, cart, salesMade, UserName, btnCart_sell, btnCart_clear);
   }
 } //-----------------------------------------------------------------------------------------------
 
@@ -400,10 +406,58 @@ function setSellingItemProperties(row) {
 function checkout() {
   database.makeSale(cart, UserName).then(result => {
     if (result === true) {
-      _controller_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_0___default.a.showAlert("success", "Sale successful");
+      clearAllItems();
+      _controller_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_0___default.a.showAlert("success", "Sale successful"); // .then(()=>{
+      //     clearAllItems()
+      // })
     }
-  }).catch(() => {
+  }).catch(error => {
     _controller_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_0___default.a.showAlert("error", "Sorry. Failed to make sale due to an unknown error");
+    console.log(error);
+  });
+}
+
+function clearAllItems() {
+  const itemsInCart = domCart.querySelectorAll(".cartItem");
+  const allAnimationsDone = [];
+  console.log(itemsInCart); //disbling cart buttons
+
+  btnCart_clear.disabled = true;
+  btnCart_sell.disabled = true;
+
+  for (let i = itemsInCart.length - 1; i >= 0; i--) {
+    allAnimationsDone.push(new Promise((resolve, reject) => {
+      const afterAnimation = new Promise((resolve, reject) => {
+        const itemName = itemsInCart[i].querySelector(".hidden_itemName").innerText;
+        const itemBrand = itemsInCart[i].querySelector(".hidden_itemBrand").innerText;
+        const itemCategory = itemsInCart[i].querySelector(".hidden_itemCategory").innerText;
+        setTimeout(() => {
+          tableRows.forEach(row => {
+            let rowName = row.querySelector('.td_Names').innerText;
+            let rowBrand = row.querySelector('.td_Brands').innerText;
+            let rowCategory = row.querySelector('.td_Category').innerText;
+            let checkbox = row.querySelector('.td_cb').querySelector('.selectOne');
+
+            if (rowName === itemName && rowBrand === itemBrand && rowCategory === itemCategory) {
+              checkbox.checked = false;
+            }
+          });
+          itemsInCart[i].classList.remove("cartItem--shown");
+          resolve();
+        }, i * 350);
+      });
+      afterAnimation.then(() => {
+        subtractItem(itemsInCart[i]);
+        setTimeout(() => {
+          itemsInCart[i].remove();
+          resolve();
+        }, i * 500);
+      });
+    }));
+  }
+
+  Promise.all(allAnimationsDone).then(() => {
+    cart.querySelector(".cartInfo").style.display = "block";
   });
 } //-----------------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------------
@@ -1387,7 +1441,7 @@ class DOMCONTROLLER {
     });
   }
 
-  static addToCart(row, inCart, salesMade, user, btnCart_sell) {
+  static addToCart(row, inCart, salesMade, user, btnCart_sell, btnCart_clear) {
     /*
      *   ALGORITHM
      *
@@ -1409,9 +1463,7 @@ class DOMCONTROLLER {
     const cartItemsContainer = document.querySelector(".cart").querySelector(".cartItems");
     const cartInfo = cartItemsContainer.querySelector(".cartInfo");
     const cartItems = cartItemsContainer.querySelectorAll(".cartItem");
-    const checkbox = cartItemsContainer.querySelector(".cb_cartItem"); //Buttons
-
-    const btnCart_clear = cart.querySelector(".btnCart_clear");
+    const checkbox = cartItemsContainer.querySelector(".cb_cartItem");
     /*-----------------------------------------------------------------------------------------------*/
 
     let [rowItemName, rowItemBrand, rowItemCategory, rowItemDiscount, rowItemPrice, rowItemStock, rowItemCostPrice] = [row.querySelector(".td_Names").innerText, row.querySelector(".td_Brands").innerText, row.querySelector(".td_Category").innerText, row.querySelector('.td_discount').innerText, row.querySelector(".td_Price").innerText, row.querySelector('.td_Stock').innerText, row.querySelector('.td_costPrice').innerText];
@@ -1446,9 +1498,8 @@ class DOMCONTROLLER {
     }
     /********************************EVENT LISTENERS*****************************************/
 
-
-    btnCart_clear.addEventListener("click", clearAllItems);
     /****************************FUNCTIONS***********************/
+
 
     function subtractItem(item) {
       let itemName = item.querySelector(".hidden_itemName").innerText;
@@ -1515,7 +1566,6 @@ class DOMCONTROLLER {
         let totalItemCost = parseFloat(itemQuanity * rowItemPrice).toPrecision(3);
         cartItemCost.innerText = `GH¢${totalItemCost}`;
         let currentSubtotal = parseFloat(subTotal.innerText);
-        console.log(currentSubtotal);
         subTotal.innerText = currentSubtotal + parseFloat(totalItemCost);
         mainTotal.innerText = subTotal.innerText;
       });
@@ -1529,78 +1579,30 @@ class DOMCONTROLLER {
       let currentSubtotal = parseFloat(subTotal.innerText);
       subTotal.innerText = currentSubtotal + rowItemPrice;
       mainTotal.innerText = subTotal.innerText;
-      let totalItemRevenue = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemPrice));
-      let totalItemCostPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemCostPrice));
+      let totalItemSellingPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemCostPrice));
+      let totalItemCostPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemPrice));
+      console.log(rowItemPrice, rowItemCostPrice);
       inCart.push({
         Item: {
           Name: rowItemName,
           Brand: rowItemBrand,
           Category: rowItemCategory
         },
-        Purchased: parseInt(rowItemStock),
-        Revenue: totalItemRevenue,
-        Profit: totalItemRevenue - totalItemCostPrice,
+        Purchased: parseInt(itemSelect.value),
+        Revenue: totalItemSellingPrice,
+        Profit: totalItemSellingPrice - totalItemCostPrice,
         UnitDiscount: rowItemDiscount,
         TotalDiscount: parseFloat(rowItemDiscount) * parseInt(itemSelect.value)
       });
       const checkbox = cartItem.querySelector(".cartCheckBox"); //Evt Listeners
 
       checkbox.addEventListener("click", function toggleDiscount() {
-        console.log("in check");
-
         if (checkbox.checked === true) {
           cartItemsContainer.querySelector(`#cart_discount${cartItems.length + 1}`).classList.remove("cartItem_discount--disabled");
         } else {
           cartItemsContainer.querySelector(`#cart_discount${cartItems.length + 1}`).classList.add("cartItem_discount--disabled");
         }
       });
-    }
-
-    function clearAllItems() {
-      const itemsInCart = cartItemsContainer.querySelectorAll(".cartItem");
-      const allAnimationsDone = []; //disbling cart buttons
-
-      btnCart_clear.disabled = true;
-      btnCart_sell.disabled = true;
-
-      for (let i = itemsInCart.length - 1; i >= 0; i--) {
-        allAnimationsDone.push(new Promise((resolve, reject) => {
-          const afterAnimation = new Promise((resolve, reject) => {
-            const itemName = itemsInCart[i].querySelector(".hidden_itemName").innerText;
-            const itemBrand = itemsInCart[i].querySelector(".hidden_itemBrand").innerText;
-            const itemCategory = itemsInCart[i].querySelector(".hidden_itemCategory").innerText;
-            setTimeout(() => {
-              tableRows.forEach(row => {
-                let rowName = row.querySelector('.td_Names').innerText;
-                let rowBrand = row.querySelector('.td_Brands').innerText;
-                let rowCategory = row.querySelector('.td_Category').innerText;
-                let checkbox = row.querySelector('.td_cb').querySelector('.selectOne');
-
-                if (rowName === itemName && rowBrand === itemBrand && rowCategory === itemCategory) {
-                  checkbox.checked = false;
-                }
-              });
-              itemsInCart[i].classList.remove("cartItem--shown");
-              resolve();
-            }, i * 350);
-          });
-          afterAnimation.then(() => {
-            subtractItem(itemsInCart[i]);
-            setTimeout(() => {
-              itemsInCart[i].remove();
-              resolve();
-            }, i * 500);
-          });
-        }));
-      }
-
-      Promise.all(allAnimationsDone).then(() => {
-        cart.querySelector(".cartInfo").style.display = "block";
-      });
-    }
-
-    function sellItems() {
-      database.makeSale(inCart, user);
     }
   }
 
@@ -2381,9 +2383,10 @@ class DATABASE {
 
   makeSale(newSale, userName) {
     return new Promise((resolve, reject) => {
+      const selectItemQuery = "SELECT * FROM items WHERE Name = ? AND Brand = ? AND Category = ?";
       const today = new Date();
       newSale.forEach(sale => {
-        let [itemName, itemCategory, itemBrand] = [sale.Item.Name, sale.Item.Brand, sale.Item.Category];
+        let [itemName, itemBrand, itemCategory] = [sale.Item.Name, sale.Item.Brand, sale.Item.Category];
         sale.Date = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
         sale = {
           Date: `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`,
@@ -2393,25 +2396,21 @@ class DATABASE {
           UnitDiscount: sale.UnitDiscount,
           TotalDiscount: sale.TotalDiscount
         };
-        console.log(userName);
         this.connector.query("SELECT * FROM duffykids.users", userName, (error, result, fields) => {
           if (error) {
             reject('unknown error');
             throw error;
           } else {
-            console.log(itemName, "hello", itemCategory);
             const user = result.shift();
-            const userId = user.User_Name;
+            const userId = user.id;
             sale.User = userId;
-            this.connector.query(`SELECT * FROM duffykids.items WHERE Name = '${itemName}' AND Brand='${itemBrand}' AND Category='${itemCategory}'`, (error, result) => {
+            this.connector.query(selectItemQuery, [itemName, itemBrand, itemCategory], (error, result) => {
               if (error) {
                 reject("unknown error");
                 throw error;
               } else {
-                console.log(result);
                 const item = result.shift();
-                const itemId = item.id;
-                sale.Item = itemId;
+                sale.Item = item.id;
                 let InStock = item.InStock;
                 InStock = InStock - sale.Purchased;
                 this.connector.beginTransaction(error => {
@@ -2419,7 +2418,6 @@ class DATABASE {
                     reject("unknown error");
                     throw error;
                   } else {
-                    // this.connector.query("INSERT INTO items SET")
                     this.connector.query("INSERT INTO duffykids.sales SET ?", sale, (error, result) => {
                       if (error) {
                         this.connector.rollback(() => {
@@ -2438,7 +2436,7 @@ class DATABASE {
                               throw error;
                             });
                           } else {
-                            this.connector.query(`UPDATE duffykids.items SET InStock = '${InStock}' WHERE Name='${sale.Name}' AND Brand='${sale.Brand}' AND Category='${sale.Name.Category}'`, error => {
+                            this.connector.query(`UPDATE duffykids.items SET InStock = '${InStock}' WHERE Name='${itemName}' AND Brand='${itemBrand}' AND Category='${itemCategory}'`, error => {
                               if (error) {
                                 this.connector.rollback(() => {
                                   reject("unknown error");

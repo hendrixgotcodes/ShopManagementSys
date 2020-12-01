@@ -45,7 +45,11 @@ const toolBarBtn = document.querySelector('.toolBar_btn')
 
 const mainBodyContent = document.querySelector('.mainBody_content');
 const domCart = document.querySelector(".cart")
+
+//Buttons
 const btnCart_sell = domCart.querySelector(".btnCart_sell")
+const btnCart_clear = domCart.querySelector(".btnCart_clear")
+
 
 
 
@@ -88,6 +92,9 @@ ipcRenderer.on("setUserParams", (e, userParamsArray)=>{
 
 // btnCart_sell
 btnCart_sell.addEventListener("click", checkout)
+
+btnCart_clear.addEventListener("click", clearAllItems)
+
 
 
 
@@ -254,7 +261,7 @@ function toggleRowCB(row){
             totalSelectedRows = totalSelectedRows -1;
         }
 
-        DOMCONTROLLER.addToCart(row, cart, salesMade, UserName, btnCart_sell)
+        DOMCONTROLLER.addToCart(row, cart, salesMade, UserName, btnCart_sell, btnCart_clear)
 
 
     }
@@ -263,7 +270,7 @@ function toggleRowCB(row){
 
         totalSelectedRows = totalSelectedRows +1;
 
-        DOMCONTROLLER.addToCart(row, cart, salesMade, UserName, btnCart_sell)
+        DOMCONTROLLER.addToCart(row, cart, salesMade, UserName, btnCart_sell, btnCart_clear)
 
 
     }
@@ -287,16 +294,101 @@ function checkout(){
 
         if(result === true){
 
+            clearAllItems()
+
+
             Notifications.showAlert("success", "Sale successful")
+            // .then(()=>{
+
+            //     clearAllItems()
+
+            // })
 
         }
 
     })
-    .catch(()=>{
+    .catch((error)=>{
 
         Notifications.showAlert("error", "Sorry. Failed to make sale due to an unknown error")
 
+        console.log(error);
+
     })
+
+}
+
+function clearAllItems(){
+
+    const itemsInCart = domCart.querySelectorAll(".cartItem");
+    const allAnimationsDone = []
+
+    console.log(itemsInCart);
+
+    //disbling cart buttons
+    btnCart_clear.disabled = true;
+    btnCart_sell.disabled = true;
+
+    for(let i = itemsInCart.length-1; i >=0; i--){
+
+        allAnimationsDone.push(new Promise((resolve, reject)=>{
+
+            const afterAnimation = new Promise((resolve, reject)=>{
+
+                const itemName = itemsInCart[i].querySelector(".hidden_itemName").innerText;
+                const itemBrand = itemsInCart[i].querySelector(".hidden_itemBrand").innerText;
+                const itemCategory = itemsInCart[i].querySelector(".hidden_itemCategory").innerText;
+
+
+                setTimeout(()=>{
+
+                    tableRows.forEach((row)=>{
+
+                        let rowName = row.querySelector('.td_Names').innerText;
+                        let rowBrand = row.querySelector('.td_Brands').innerText
+                        let rowCategory = row.querySelector('.td_Category').innerText
+                        let checkbox = row.querySelector('.td_cb').querySelector('.selectOne')
+
+                        if(rowName === itemName && rowBrand === itemBrand && rowCategory === itemCategory){
+                                checkbox.checked = false;
+                        }
+
+                    })
+                    
+
+                    itemsInCart[i].classList.remove("cartItem--shown");
+
+                    resolve()
+    
+                }, (i*350))
+
+            })
+
+            afterAnimation.then(()=>{
+
+                subtractItem(itemsInCart[i])
+
+                setTimeout(()=>{
+
+                    itemsInCart[i].remove()
+
+                    resolve()
+    
+                }, (i*500))
+
+
+            })
+
+        }))
+
+    }
+
+    Promise.all(allAnimationsDone)
+    .then(()=>{
+
+        cart.querySelector(".cartInfo").style.display = "block"
+
+    })
+
 
 }
 

@@ -594,7 +594,7 @@ class DOMCONTROLLER{
 
    }
 
-   static addToCart(row, inCart, salesMade, user, btnCart_sell){
+   static addToCart(row, inCart, salesMade, user, btnCart_sell, btnCart_clear){
 
     /*
      *   ALGORITHM
@@ -621,8 +621,6 @@ class DOMCONTROLLER{
 
         const checkbox = cartItemsContainer.querySelector(".cb_cartItem");
 
-        //Buttons
-        const btnCart_clear = cart.querySelector(".btnCart_clear")
 
 
 
@@ -681,7 +679,6 @@ class DOMCONTROLLER{
 
         
         /********************************EVENT LISTENERS*****************************************/
-        btnCart_clear.addEventListener("click", clearAllItems)
 
 
        
@@ -776,12 +773,12 @@ class DOMCONTROLLER{
 
         itemSelect.addEventListener("change", function modifyCost(e){
 
+
             let itemQuanity = parseInt(itemSelect.value);
             let totalItemCost = parseFloat(itemQuanity * rowItemPrice).toPrecision(3);
             cartItemCost.innerText = `GH¢${totalItemCost}`;
 
             let currentSubtotal = parseFloat(subTotal.innerText)
-            console.log(currentSubtotal);
             subTotal.innerText = currentSubtotal + parseFloat(totalItemCost);
 
             mainTotal.innerText = subTotal.innerText
@@ -805,8 +802,12 @@ class DOMCONTROLLER{
         subTotal.innerText = currentSubtotal + rowItemPrice;
         mainTotal.innerText = subTotal.innerText;
 
-        let totalItemRevenue = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemPrice))
-       let totalItemCostPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemCostPrice))
+        let totalItemSellingPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemCostPrice))
+       let totalItemCostPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemPrice))
+
+
+
+       console.log(rowItemPrice, rowItemCostPrice);
 
        inCart.push({
             Item: {
@@ -814,9 +815,9 @@ class DOMCONTROLLER{
                 Brand: rowItemBrand,
                 Category: rowItemCategory
             },
-            Purchased: parseInt(rowItemStock),
-            Revenue: totalItemRevenue,
-            Profit: totalItemRevenue - totalItemCostPrice,
+            Purchased: parseInt(itemSelect.value),
+            Revenue: totalItemSellingPrice,
+            Profit: totalItemSellingPrice - totalItemCostPrice,
             UnitDiscount: rowItemDiscount,
             TotalDiscount: parseFloat(rowItemDiscount) * parseInt(itemSelect.value)
         })
@@ -824,8 +825,6 @@ class DOMCONTROLLER{
         const checkbox = cartItem.querySelector(".cartCheckBox");
         //Evt Listeners
         checkbox.addEventListener("click", function toggleDiscount(){
-
-            console.log("in check");
 
             if(checkbox.checked === true){
 
@@ -842,84 +841,7 @@ class DOMCONTROLLER{
 
     }
 
-    function clearAllItems(){
-
-        const itemsInCart = cartItemsContainer.querySelectorAll(".cartItem");
-        const allAnimationsDone = []
-
-        //disbling cart buttons
-        btnCart_clear.disabled = true;
-        btnCart_sell.disabled = true;
-
-        for(let i = itemsInCart.length-1; i >=0; i--){
-
-            allAnimationsDone.push(new Promise((resolve, reject)=>{
-
-                const afterAnimation = new Promise((resolve, reject)=>{
-
-                    const itemName = itemsInCart[i].querySelector(".hidden_itemName").innerText;
-                    const itemBrand = itemsInCart[i].querySelector(".hidden_itemBrand").innerText;
-                    const itemCategory = itemsInCart[i].querySelector(".hidden_itemCategory").innerText;
-
-
-                    setTimeout(()=>{
-
-                        tableRows.forEach((row)=>{
-
-                            let rowName = row.querySelector('.td_Names').innerText;
-                            let rowBrand = row.querySelector('.td_Brands').innerText
-                            let rowCategory = row.querySelector('.td_Category').innerText
-                            let checkbox = row.querySelector('.td_cb').querySelector('.selectOne')
-
-                            if(rowName === itemName && rowBrand === itemBrand && rowCategory === itemCategory){
-                                    checkbox.checked = false;
-                            }
-
-                        })
-                        
-    
-                        itemsInCart[i].classList.remove("cartItem--shown");
-    
-                        resolve()
-        
-                    }, (i*350))
-    
-                })
-    
-                afterAnimation.then(()=>{
-
-                    subtractItem(itemsInCart[i])
-    
-                    setTimeout(()=>{
-    
-                        itemsInCart[i].remove()
-
-                        resolve()
-        
-                    }, (i*500))
-    
-    
-                })
-
-            }))
-
-        }
-
-        Promise.all(allAnimationsDone)
-        .then(()=>{
-
-            cart.querySelector(".cartInfo").style.display = "block"
-
-        })
-
-
-    }
-
-    function sellItems(){
-
-        database.makeSale(inCart, user)
-
-    }
+  
 
 
    }
