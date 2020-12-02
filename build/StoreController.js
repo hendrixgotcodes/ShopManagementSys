@@ -2326,7 +2326,7 @@ class DATABASE {
                     });
                   } else {
                     const itemId = result.insertId;
-                    this.connector.query(`SELECT * FROM duffykids.users WHERE User_Name = '${User}'`, (error, result) => {
+                    this.connector.query(`SELECT * FROM users WHERE User_Name = '${User}'`, (error, result) => {
                       if (error) {
                         this.connector.rollback(() => {
                           reject("unknown error");
@@ -2452,11 +2452,10 @@ class DATABASE {
           UnitDiscount: sale.UnitDiscount,
           TotalDiscount: sale.TotalDiscount
         };
-        console.log(finalSaleValue);
-        userName = {
+        let userValue = {
           User_Name: userName
         };
-        this.connector.query("SELECT * FROM duffykids.users WHERE ?", userName, (error, result, fields) => {
+        this.connector.query("SELECT * FROM users WHERE ?", userValue, (error, result, fields) => {
           if (error) {
             reject('unknown error');
             throw error;

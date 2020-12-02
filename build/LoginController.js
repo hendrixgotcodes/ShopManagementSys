@@ -244,11 +244,16 @@ tbUserName.addEventListener("blur", function verifyInputValues() {
     warningLabel_tb.hidden = false;
     verifiedFields = false;
   } else if (tbUserName.value.replace(/^\s+|\s+$/g, "") === "") {
-    warningLabel_tb.innerText = "Whitespaces not allowed here";
+    warningLabel_tb.innerHTML = `Whitespaces not allowed here`;
+    let img = document.createElement("img");
+    img.setAttribute("src", "../Icons/form/arrow_pointer.svg");
+    img.className = "ico_form";
+    warningLabel_tb.appendChild(img);
     warningLabel_tb.hidden = false;
     verifiedFields = false;
   } else {
     warningLabel_tb.hidden = true;
+    warningLabel_tb.querySelector(".ico_form").remove();
     verifiedFields = true;
   }
 });
@@ -257,25 +262,38 @@ tbPassword.addEventListener("blur", function verifyInputValues() {
     warningLabel_pw.hidden = false;
     verifiedFields = false;
   } else if (tbPassword.value.replace(/^\s+|\s+$/g, "") === "") {
-    warningLabel_pw.innerText = "Whitespaces not allowed here";
+    warningLabel_pw.innerText = `Whitespaces not allowed here`;
+    let img = document.createElement("img");
+    img.setAttribute("src", "../Icons/form/arrow_pointer.svg");
+    img.className = "ico_form";
+    warningLabel_pw.appendChild(img);
     warningLabel_pw.hidden = false;
     verifiedFields = false;
   } else {
     warningLabel_pw.hidden = true;
     verifiedFields = true;
+    warningLabel_pw.querySelector(".ico_form").remove();
   }
 });
 tbUserName.addEventListener("keyup", function (e) {
   if (e.key == " ") {
     e.preventDefault();
-    warningLabel_tb.innerText = "Whitespaces not allowed here";
+    warningLabel_tb.innerText = `Whitespaces not allowed here`;
+    let img = document.createElement("img");
+    img.setAttribute("src", "../Icons/form/arrow_pointer.svg");
+    img.className = "ico_form";
+    warningLabel_tb.appendChild(img);
     warningLabel_tb.hidden = false;
   }
 });
 tbPassword.addEventListener("keyup", function (e) {
   if (e.key == " ") {
     e.preventDefault();
-    warningLabel_pw.innerText = "Whitespaces not allowed here";
+    warningLabel_pw.innerText = `Whitespaces not allowed here`;
+    let img = document.createElement("img");
+    img.setAttribute("src", "../Icons/form/arrow_pointer.svg");
+    img.className = "ico_form";
+    warningLabel_pw.appendChild(img);
     warningLabel_pw.hidden = false;
   }
 }); //Event Listeners From IPC
@@ -322,12 +340,20 @@ function loadStore(e) {
       btnLoader.classList.remove("img_shown");
 
       if (error === "incorrect username") {
-        warningLabel_tb.innerText = "Incorrect username";
+        warningLabel_tb.innerText = `Incorrect username`;
+        let img = document.createElement("img");
+        img.setAttribute("src", "../Icons/form/arrow_pointer.svg");
+        img.className = "ico_form";
+        warningLabel_tb.appendChild(img);
         warningLabel_tb.hidden = false;
         tbUserName.value = "";
         tbPassword.value = "";
       } else if (error === "incorrect password") {
-        warningLabel_pw.innerText = "Incorrect password";
+        warningLabel_pw.innerText = `Incorrect password`;
+        let img = document.createElement("img");
+        img.setAttribute("src", "../Icons/form/arrow_pointer.svg");
+        img.className = "ico_form";
+        warningLabel_pw.appendChild(img);
         warningLabel_pw.hidden = false;
         tbPassword.value = "";
       }
@@ -946,7 +972,7 @@ class DATABASE {
                     });
                   } else {
                     const itemId = result.insertId;
-                    this.connector.query(`SELECT * FROM duffykids.users WHERE User_Name = '${User}'`, (error, result) => {
+                    this.connector.query(`SELECT * FROM users WHERE User_Name = '${User}'`, (error, result) => {
                       if (error) {
                         this.connector.rollback(() => {
                           reject("unknown error");
@@ -1072,11 +1098,10 @@ class DATABASE {
           UnitDiscount: sale.UnitDiscount,
           TotalDiscount: sale.TotalDiscount
         };
-        console.log(finalSaleValue);
-        userName = {
+        let userValue = {
           User_Name: userName
         };
-        this.connector.query("SELECT * FROM duffykids.users WHERE ?", userName, (error, result, fields) => {
+        this.connector.query("SELECT * FROM users WHERE ?", userValue, (error, result, fields) => {
           if (error) {
             reject('unknown error');
             throw error;

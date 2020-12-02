@@ -1011,7 +1011,7 @@ class DATABASE{
                                             const itemId = result.insertId;
 
 
-                                            this.connector.query(`SELECT * FROM duffykids.users WHERE User_Name = '${User}'`, (error, result)=>{
+                                            this.connector.query(`SELECT * FROM users WHERE User_Name = '${User}'`, (error, result)=>{
 
                                                 if(error){
 
@@ -1253,13 +1253,12 @@ class DATABASE{
 
                 }
 
-                console.log(finalSaleValue);
 
-                userName = {
+                let userValue = {
                     User_Name: userName
                 }
 
-                this.connector.query("SELECT * FROM duffykids.users WHERE ?", userName ,(error, result, fields)=>{
+                this.connector.query("SELECT * FROM users WHERE ?", userValue ,(error, result, fields)=>{
 
         
                     if(error){
@@ -1267,7 +1266,6 @@ class DATABASE{
                         throw error
                     }
                     else{
-                        
                         const user = result.shift();
                         const userId = user.id;
                         finalSaleValue.User = userId;

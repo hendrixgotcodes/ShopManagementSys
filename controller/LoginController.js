@@ -44,13 +44,22 @@ tbUserName.addEventListener("blur", function verifyInputValues(){
     }
     else if(tbUserName.value.replace(/^\s+|\s+$/g, "") === ""){
 
-        warningLabel_tb.innerText = "Whitespaces not allowed here"
+        warningLabel_tb.innerHTML = `Whitespaces not allowed here`
+
+        let img = document.createElement("img")
+        img.setAttribute("src", "../Icons/form/arrow_pointer.svg");
+        img.className = "ico_form"
+        warningLabel_tb.appendChild(img)
+
         warningLabel_tb.hidden = false
         verifiedFields = false
 
     }
     else{
         warningLabel_tb.hidden = true
+        warningLabel_tb.querySelector(".ico_form").remove()
+
+
         verifiedFields = true
     }
 
@@ -65,7 +74,15 @@ tbPassword.addEventListener("blur", function verifyInputValues(){
     }
     else if(tbPassword.value.replace(/^\s+|\s+$/g, "") === ""){
 
-        warningLabel_pw.innerText = "Whitespaces not allowed here";
+        warningLabel_pw.innerText = `Whitespaces not allowed here`;
+
+        let img = document.createElement("img")
+        img.setAttribute("src", "../Icons/form/arrow_pointer.svg");
+        img.className = "ico_form"
+
+        warningLabel_pw.appendChild(img)
+
+
         warningLabel_pw.hidden = false;
         verifiedFields = false;
 
@@ -73,6 +90,8 @@ tbPassword.addEventListener("blur", function verifyInputValues(){
     else{
         warningLabel_pw.hidden = true;
         verifiedFields = true;
+
+        warningLabel_pw.querySelector(".ico_form").remove()
     }
 
 })
@@ -82,7 +101,13 @@ tbUserName.addEventListener("keyup", function(e){
     if(e.key == " "){
         e.preventDefault()
 
-        warningLabel_tb.innerText = "Whitespaces not allowed here"
+        warningLabel_tb.innerText = `Whitespaces not allowed here`
+
+        let img = document.createElement("img")
+        img.setAttribute("src", "../Icons/form/arrow_pointer.svg");
+        img.className = "ico_form"
+        warningLabel_tb.appendChild(img)
+
         warningLabel_tb.hidden = false
 
     }
@@ -94,7 +119,13 @@ tbPassword.addEventListener("keyup", function(e){
     if(e.key == " "){
         e.preventDefault()
 
-        warningLabel_pw.innerText = "Whitespaces not allowed here"
+        warningLabel_pw.innerText = `Whitespaces not allowed here`
+
+        let img = document.createElement("img")
+        img.setAttribute("src", "../Icons/form/arrow_pointer.svg");
+        img.className = "ico_form"
+        warningLabel_pw.appendChild(img)
+
         warningLabel_pw.hidden = false
 
     }
@@ -167,7 +198,12 @@ function loadStore(e) {
 
             if(error === "incorrect username"){
 
-                warningLabel_tb.innerText = "Incorrect username"
+                warningLabel_tb.innerText = `Incorrect username`;
+                let img = document.createElement("img")
+                img.setAttribute("src", "../Icons/form/arrow_pointer.svg");
+                img.className = "ico_form"
+                warningLabel_tb.appendChild(img)
+
                 warningLabel_tb.hidden = false
 
                 tbUserName.value = "";
@@ -176,7 +212,13 @@ function loadStore(e) {
             }
             else if(error === "incorrect password"){
 
-                warningLabel_pw.innerText = "Incorrect password"
+                warningLabel_pw.innerText = `Incorrect password`
+
+                let img = document.createElement("img")
+                img.setAttribute("src", "../Icons/form/arrow_pointer.svg");
+                img.className = "ico_form"
+                warningLabel_pw.appendChild(img)
+
                 warningLabel_pw.hidden = false
 
                 tbPassword.value = "";

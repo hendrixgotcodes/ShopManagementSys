@@ -245,6 +245,9 @@ body {
         color: #EFB526;
         font-weight: 500;
         transition: .3s; }
+        .loginForm_center .loginForm_fields .form_lbl .warningLabel .ico_form {
+          transform: rotate(270deg);
+          width: 3.3%; }
   .loginForm_center .form_btn {
     width: 10%;
     background-color: #204B40;
