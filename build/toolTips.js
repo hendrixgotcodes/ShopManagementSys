@@ -130,23 +130,46 @@ class DOMCONTROLLER {
 
 
       const row = document.createElement("tr");
-      const rowContent = `
-                <td class="controls">
-                    <div class="edit"><span>Edit</span></div>
-                    <div class="del"><span>Soft Delete</span></div>
-                </td>
-                <td class="td_cb">
-                    <input disabled type="checkbox" class="selectOne" aria-placeholder="select one">
-                </td>
-                <td class="td_Names">${clip(name, 23)}</td>
-                <td class="td_Brands">${clip(brand, 23)}</td>
-                <td class="td_Category">${clip(category, 23)}</td>
-                <td class="td_Stock">${stock}</td>
-                <td class="td_Price">${parseFloat(sellingPrice)}</td>
-                <td hidden class="td_costPrice">${parseFloat(costPrice)}</td>
-                <td hidden class="td_discount">${parseFloat(discount)}</td>
-                <td hidden class="state">visible</td>
-                `;
+      let rowContent = "";
+
+      if (destinationPage.toLowerCase() === "store") {
+        rowContent = `
+                    <td class="controls">
+                        <div class="edit"><span>Edit</span></div>
+                        <div class="del"><span>Soft Delete</span></div>
+                    </td>
+                    <td class="td_cb">
+                        <input disabled type="checkbox" class="selectOne" aria-placeholder="select one">
+                    </td>
+                    <td class="td_Names">${clip(name, 23)}</td>
+                    <td class="td_Brands">${clip(brand, 23)}</td>
+                    <td class="td_Category">${clip(category, 23)}</td>
+                    <td class="td_Stock">${stock}</td>
+                    <td class="td_Price">${parseFloat(sellingPrice)}</td>
+                    <td hidden class="td_costPrice">${parseFloat(costPrice)}</td>
+                    <td hidden class="td_discount">${parseFloat(discount)}</td>
+                    <td hidden class="state">visible</td>
+                    `;
+      } else {
+        rowContent = `
+                    <td class="controls">
+                        <div class="edit"><span>Edit</span></div>
+                        <div class="del"><span>Soft Delete</span></div>
+                    </td>
+                    <td class="td_cb">
+                        <input disabled type="checkbox" class="selectOne" aria-placeholder="select one">
+                    </td>
+                    <td class="td_Names">${clip(name, 23)}</td>
+                    <td class="td_Brands">${clip(brand, 23)}</td>
+                    <td class="td_Category">${clip(category, 23)}</td>
+                    <td class="td_Stock">${stock}</td>
+                    <td class="td_costPrice">${parseFloat(costPrice)}</td>
+                    <td class="td_sellingPrice">${parseFloat(sellingPrice)}</td>
+                    <td hidden class="td_discount">${parseFloat(discount)}</td>
+                    <td hidden class="state">visible</td>
+                    `;
+      }
+
       row.innerHTML = rowContent;
       row.id = tableROWS.length + 1;
       row.className = "bodyRow";
@@ -603,8 +626,8 @@ class DOMCONTROLLER {
       let currentSubtotal = parseFloat(subTotal.innerText);
       subTotal.innerText = currentSubtotal + rowItemPrice;
       mainTotal.innerText = subTotal.innerText;
-      let totalItemSellingPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemCostPrice));
-      let totalItemCostPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemPrice));
+      let totalItemSellingPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemPrice));
+      let totalItemCostPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemCostPrice));
       inCart.push({
         Item: {
           Name: rowItemName,
@@ -628,21 +651,26 @@ class DOMCONTROLLER {
       });
       itemSelect.addEventListener("change", function modifyCost(e) {
         let [itemName, itemBrand, itemCategory] = [cartItem.querySelector(".hidden_itemName").innerText, cartItem.querySelector(".hidden_itemBrand").innerText, cartItem.querySelector(".hidden_itemCategory").innerText];
-        totalItemSellingPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemCostPrice));
-        totalItemCostPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemPrice));
+        let newRevenue = 0;
+        totalItemSellingPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemPrice));
+        totalItemCostPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemCostPrice));
         inCart.forEach(item => {
           if (item.Item.Name === itemName && item.Item.Brand === itemBrand && item.Item.Category === itemCategory) {
             item.Purchased = parseInt(itemSelect.value);
             item.Revenue = totalItemSellingPrice;
             item.Profit = totalItemSellingPrice - totalItemCostPrice;
           }
+
+          console.log(item);
+          newRevenue = parseFloat(item.Revenue + newRevenue);
         });
         let itemQuanity = parseInt(itemSelect.value);
         let totalItemCost = parseFloat(itemQuanity * rowItemPrice).toPrecision(3);
         cartItemCost.innerText = `GH¢${totalItemCost}`;
-        let currentSubtotal = parseFloat(subTotal.innerText);
-        subTotal.innerText = currentSubtotal + parseFloat(totalItemCost);
-        mainTotal.innerText = subTotal.innerText;
+        let currentSubtotal = parseFloat(subTotal.innerText); // subTotal.innerText = currentSubtotal + parseFloat(totalItemCost);
+
+        subTotal.innerText = newRevenue;
+        mainTotal.innerText = newRevenue;
       });
     }
   }
