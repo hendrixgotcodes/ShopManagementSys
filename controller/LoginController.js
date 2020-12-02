@@ -16,7 +16,7 @@ const restoreMaxi = document.getElementById('restore_maxi');
 const formBtn = document.querySelector('.form_btn');
 const formCheck = document.querySelector('.form_check');
 const tbUserName = document.querySelector('#username');
-const password = document.querySelector('#password');
+const tbPassword = document.querySelector('#password');
 const visIcon = document.querySelector('.vis_icon');
 const btnLoader = document.querySelector(".form_btn > img")
 
@@ -74,30 +74,33 @@ function loadStore(e) {
     btnLoader.setAttribute("src", "../../utils/media/animations/loaders/Infinity-1s-200px.svg")
     btnLoader.classList.add("img_shown")
 
-    database.validateUser(tbUserName.value, password.value)
+
+    database.validateUser(tbUserName.value, tbPassword.value)
     .then((result)=>{
 
         console.log(result);
 
 
-        if(result ===  1){
+        if(result[1] === "Admin"){
 
-                ipcRenderer.send('loadStore', [tbUserName.value, "Admin"]);
+                ipcRenderer.send('loadStore', [result[0], "Admin"]);
 
         }
-        else if(result === 0){
-            ipcRenderer.send("loadStore", [tbUserName.value, "Employee"])
+        else if(result[1] === "Employee"){
+            ipcRenderer.send("loadStore", [result[0], "Employee"])
         }
 
     })
     .catch((error)=>{
 
-        // Notifications.showAlert("error", "Sorry invalid password")
-        console.log(error);
+        if(error === "No match"){
+
+        }
 
     })
 
-    // ipcRenderer.send('loadStore', ["Admin", "Admin"])
+    tbUserName.value = "";
+    tbPassword.value = "";
 
 
 
@@ -109,11 +112,11 @@ function loadStore(e) {
 function togglePassVisibility() {
 
     if (formCheck.checked == true) {
-        password.type = 'text'
+        tbPassword.type = 'text'
         visIcon.setAttribute('src', '../Icons/unwatch.svg')
 
     } else {
-        password.type = 'password'
+        tbPassword.type = 'password'
         visIcon.setAttribute('src', '../Icons/watch.svg')
 
     }

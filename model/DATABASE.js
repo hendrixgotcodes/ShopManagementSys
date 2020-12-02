@@ -1390,15 +1390,15 @@ class DATABASE{
 
         return new Promise((resolve, reject)=>{
 
-            let user = {
+
+            let userValue = {
                 User_Name: userName,
                 Password: password
             }
 
 
-            this.connector.query("SELECT * FROM users", [userName, password], (error, result)=>{
+            this.connector.query("SELECT * FROM users WHERE User_Name = ? AND Password = ?", [userName, password], (error, result)=>{
 
-                console.log(result);
 
                 if(error){
                     reject(error)
@@ -1408,14 +1408,28 @@ class DATABASE{
 
                     let user = result.shift();
 
+                    console.log(result, user);
+
                     if(user === undefined){
                         reject()
                     }
-                    else{
+                    else if(user.User_Name === userName && user.Password === password){
 
-                        resolve(user.IsAdmin)
+                        if(user.IsAdmin === 1){
+                            resolve([user.User_Name, "Admin"])
+                        }
+                        else if(user.IsAdmin === 1){
+                            resolve([user.User_Name, "Employee"])
+                        }
+                        else{
+
+                            reject("no match")
+
+                        }
+
 
                     }
+
 
                 }
 

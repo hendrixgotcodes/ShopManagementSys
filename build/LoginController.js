@@ -225,7 +225,7 @@ const restoreMaxi = document.getElementById('restore_maxi');
 const formBtn = document.querySelector('.form_btn');
 const formCheck = document.querySelector('.form_check');
 const tbUserName = document.querySelector('#username');
-const password = document.querySelector('#password');
+const tbPassword = document.querySelector('#password');
 const visIcon = document.querySelector('.vis_icon');
 const btnLoader = document.querySelector(".form_btn > img"); //Program Variables
 
@@ -267,27 +267,28 @@ function sendCloseEvent() {
 function loadStore(e) {
   btnLoader.setAttribute("src", "../../utils/media/animations/loaders/Infinity-1s-200px.svg");
   btnLoader.classList.add("img_shown");
-  database.validateUser(tbUserName.value, password.value).then(result => {
+  database.validateUser(tbUserName.value, tbPassword.value).then(result => {
     console.log(result);
 
-    if (result === 1) {
-      ipcRenderer.send('loadStore', [tbUserName.value, "Admin"]);
-    } else if (result === 0) {
-      ipcRenderer.send("loadStore", [tbUserName.value, "Employee"]);
+    if (result[1] === "Admin") {
+      ipcRenderer.send('loadStore', [result[0], "Admin"]);
+    } else if (result[1] === "Employee") {
+      ipcRenderer.send("loadStore", [result[0], "Employee"]);
     }
   }).catch(error => {
-    // Notifications.showAlert("error", "Sorry invalid password")
-    console.log(error);
-  }); // ipcRenderer.send('loadStore', ["Admin", "Admin"])
+    if (error === "No match") {}
+  });
+  tbUserName.value = "";
+  tbPassword.value = "";
 } //Function to toggle password visibility
 
 
 function togglePassVisibility() {
   if (formCheck.checked == true) {
-    password.type = 'text';
+    tbPassword.type = 'text';
     visIcon.setAttribute('src', '../Icons/unwatch.svg');
   } else {
-    password.type = 'password';
+    tbPassword.type = 'password';
     visIcon.setAttribute('src', '../Icons/watch.svg');
   }
 }
@@ -1093,23 +1094,28 @@ class DATABASE {
     // userName = userName.replace(/^\s+|\s+$/g, "")
     // console.log("userName: ", userName, " Password: ", Password);
     return new Promise((resolve, reject) => {
-      let user = {
+      let userValue = {
         User_Name: userName,
         Password: password
       };
-      this.connector.query("SELECT * FROM users", [userName, password], (error, result) => {
-        console.log(result);
-
+      this.connector.query("SELECT * FROM users WHERE User_Name = ? AND Password = ?", [userName, password], (error, result) => {
         if (error) {
           reject(error);
           throw error;
         } else if (result) {
           let user = result.shift();
+          console.log(result, user);
 
           if (user === undefined) {
             reject();
-          } else {
-            resolve(user.IsAdmin);
+          } else if (user.User_Name === userName && user.Password === password) {
+            if (user.IsAdmin === 1) {
+              resolve([user.User_Name, "Admin"]);
+            } else if (user.IsAdmin === 1) {
+              resolve([user.User_Name, "Employee"]);
+            } else {
+              reject("no match");
+            }
           }
         }
       });

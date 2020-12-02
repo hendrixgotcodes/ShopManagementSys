@@ -1656,23 +1656,28 @@ class DATABASE {
     // userName = userName.replace(/^\s+|\s+$/g, "")
     // console.log("userName: ", userName, " Password: ", Password);
     return new Promise((resolve, reject) => {
-      let user = {
+      let userValue = {
         User_Name: userName,
         Password: password
       };
-      this.connector.query("SELECT * FROM users", [userName, password], (error, result) => {
-        console.log(result);
-
+      this.connector.query("SELECT * FROM users WHERE User_Name = ? AND Password = ?", [userName, password], (error, result) => {
         if (error) {
           reject(error);
           throw error;
         } else if (result) {
           let user = result.shift();
+          console.log(result, user);
 
           if (user === undefined) {
             reject();
-          } else {
-            resolve(user.IsAdmin);
+          } else if (user.User_Name === userName && user.Password === password) {
+            if (user.IsAdmin === 1) {
+              resolve([user.User_Name, "Admin"]);
+            } else if (user.IsAdmin === 1) {
+              resolve([user.User_Name, "Employee"]);
+            } else {
+              reject("no match");
+            }
           }
         }
       });
