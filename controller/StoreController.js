@@ -127,14 +127,19 @@ function initialzeStoreItems(){
             //then add each item to the table in the DOM
             fetchedItems.forEach((fetchedItem)=>{
 
-                if(fetchedItem.Deleted === 1){
+                //T his will only add items which "InStock" is greater than zero
+                if(parseInt(fetchedItem.InStock) > 0){
 
-                    DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,"", false, fetchedItem.CostPrice, "", true, true,"Store", false)
+                    if(fetchedItem.Deleted === 1){
 
-                }
-                else
-                {
-                    DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,"", false, fetchedItem.CostPrice, "", true, false,"Store", false)
+                        DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,"", false, fetchedItem.CostPrice, "", true, true,"Store", false)
+    
+                    }
+                    else
+                    {
+                        DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,"", false, fetchedItem.CostPrice, "", true, false,"Store", false)
+                    }
+
                 }
 
 
@@ -262,7 +267,7 @@ function toggleRowCB(row){
             totalSelectedRows = totalSelectedRows -1;
         }
 
-        DOMCONTROLLER.addToCart(row, cart, salesMade, UserName, btnCart_sell, btnCart_clear, subtractItem)
+        DOMCONTROLLER.addToCart(row, cart, btnCart_sell, btnCart_clear, subtractItem)
 
 
     }
@@ -271,7 +276,7 @@ function toggleRowCB(row){
 
         totalSelectedRows = totalSelectedRows +1;
 
-        DOMCONTROLLER.addToCart(row, cart, salesMade, UserName, btnCart_sell, btnCart_clear, subtractItem)
+        DOMCONTROLLER.addToCart(row, cart, btnCart_sell, btnCart_clear, subtractItem)
 
 
     }
@@ -290,6 +295,7 @@ function setSellingItemProperties(row){
 
 function checkout(){
 
+
     database.makeSale(cart, UserName)
     .then((result)=>{
 
@@ -299,11 +305,7 @@ function checkout(){
 
 
             Notifications.showAlert("success", "Sale successful")
-            // .then(()=>{
-
-            //     clearAllItems()
-
-            // })
+            
 
         }
 
@@ -318,79 +320,86 @@ function checkout(){
 
 }
 
-function clearAllItems(){
+function clearAllItems(afterSale){
 
-    const itemsInCart = domCart.querySelectorAll(".cartItem");
-    const allAnimationsDone = []
-
-
-    //disbling cart buttons
-    btnCart_clear.disabled = true;
-    btnCart_sell.disabled = true;
-
-    for(let i = itemsInCart.length-1; i >=0; i--){
-
-        allAnimationsDone.push(new Promise((resolve, reject)=>{
-
-            const afterAnimation = new Promise((resolve, reject)=>{
-
-                const itemName = itemsInCart[i].querySelector(".hidden_itemName").innerText;
-                const itemBrand = itemsInCart[i].querySelector(".hidden_itemBrand").innerText;
-                const itemCategory = itemsInCart[i].querySelector(".hidden_itemCategory").innerText;
+   /** 
+    * Since this function "clearAllItems", can be called after a sale or just to clear the cart the afterSale boolean is there to indicate which situation 
+    * the function is being used. If it is after a sale,     
+    */
 
 
-                setTimeout(()=>{
+        const itemsInCart = domCart.querySelectorAll(".cartItem");
+        const allAnimationsDone = []
 
 
-                    tableRows.forEach((row)=>{
+        //disbling cart buttons
+        btnCart_clear.disabled = true;
+        btnCart_sell.disabled = true;
 
-                        let rowName = row.querySelector('.td_Names').innerText;
-                        let rowBrand = row.querySelector('.td_Brands').innerText
-                        let rowCategory = row.querySelector('.td_Category').innerText
-                        let checkbox = row.querySelector('.td_cb').querySelector('.selectOne')
+        for(let i = itemsInCart.length-1; i >=0; i--){
 
-
-                        if(rowName === itemName && rowBrand === itemBrand && rowCategory === itemCategory){
-                                checkbox.checked = false;
-                                console.log("unchecked");
-                        }
-
-                    })
-                    
-
-                    itemsInCart[i].classList.remove("cartItem--shown");
-
-                    resolve()
+            allAnimationsDone.push(new Promise((resolve, reject)=>{
     
-                }, (i*400))
-
-            })
-
-            afterAnimation.then(()=>{
-
-                subtractItem(itemsInCart[i])
-
-                setTimeout(()=>{
-
-                    itemsInCart[i].remove()
-
-                    resolve()
+                const afterAnimation = new Promise((resolve, reject)=>{
     
-                }, (i*500))
+                    const itemName = itemsInCart[i].querySelector(".hidden_itemName").innerText;
+                    const itemBrand = itemsInCart[i].querySelector(".hidden_itemBrand").innerText;
+                    const itemCategory = itemsInCart[i].querySelector(".hidden_itemCategory").innerText;
+    
+    
+                    setTimeout(()=>{
+    
+    
+                        tableRows.forEach((row)=>{
+    
+                            let rowName = row.querySelector('.td_Names').innerText;
+                            let rowBrand = row.querySelector('.td_Brands').innerText
+                            let rowCategory = row.querySelector('.td_Category').innerText
+                            let checkbox = row.querySelector('.td_cb').querySelector('.selectOne')
+    
+    
+                            if(rowName === itemName && rowBrand === itemBrand && rowCategory === itemCategory){
+                                    checkbox.checked = false;
+                            }
+    
+                        })
+                        
+    
+                        itemsInCart[i].classList.remove("cartItem--shown");
+    
+                        resolve()
+        
+                    }, (i*400))
+    
+                })
+    
+                afterAnimation.then(()=>{
+    
+                    subtractItem(itemsInCart[i])
+    
+                    setTimeout(()=>{
+    
+                        itemsInCart[i].remove()
+    
+                        resolve()
+        
+                    }, (i*500))
+    
+    
+                })
+    
+            }))
+    
+        }
+
+        Promise.all(allAnimationsDone)
+        .then(()=>{
+
+            domCart.querySelector(".cartInfo").style.display = "block"
+
+        })
 
 
-            })
-
-        }))
-
-    }
-
-    Promise.all(allAnimationsDone)
-    .then(()=>{
-
-        domCart.querySelector(".cartInfo").style.display = "block"
-
-    })
 
 
 }
@@ -426,7 +435,6 @@ function subtractItem(item){
 
     })
 
-    console.log(initSubTotal);
 
     if(initSubTotal > 0){
 

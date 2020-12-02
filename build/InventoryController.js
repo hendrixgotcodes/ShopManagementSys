@@ -148,7 +148,7 @@ class Notifications {
           break;
 
         case 'error':
-          bGColor = " #ce2727";
+          bGColor = " #E16161";
           break;
 
         default:
@@ -1618,7 +1618,7 @@ class DOMCONTROLLER {
     });
   }
 
-  static addToCart(row, inCart, salesMade, user, btnCart_sell, btnCart_clear, subtractItem) {
+  static addToCart(row, inCart, btnCart_sell, btnCart_clear, subtractItem) {
     /*
      *   ALGORITHM
      *
@@ -1720,14 +1720,6 @@ class DOMCONTROLLER {
       }
 
       cartItem.appendChild(itemSelect);
-      itemSelect.addEventListener("change", function modifyCost(e) {
-        let itemQuanity = parseInt(itemSelect.value);
-        let totalItemCost = parseFloat(itemQuanity * rowItemPrice).toPrecision(3);
-        cartItemCost.innerText = `GH¢${totalItemCost}`;
-        let currentSubtotal = parseFloat(subTotal.innerText);
-        subTotal.innerText = currentSubtotal + parseFloat(totalItemCost);
-        mainTotal.innerText = subTotal.innerText;
-      });
       const cartItemCost = document.createElement("div");
       cartItemCost.className = "cartItem_cost";
       cartItemCost.innerText = `GH¢ ${Millify(rowItemPrice, {
@@ -1760,6 +1752,24 @@ class DOMCONTROLLER {
         } else {
           cartItemsContainer.querySelector(`#cart_discount${cartItems.length + 1}`).classList.add("cartItem_discount--disabled");
         }
+      });
+      itemSelect.addEventListener("change", function modifyCost(e) {
+        let [itemName, itemBrand, itemCategory] = [cartItem.querySelector(".hidden_itemName").innerText, cartItem.querySelector(".hidden_itemBrand").innerText, cartItem.querySelector(".hidden_itemCategory").innerText];
+        totalItemSellingPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemCostPrice));
+        totalItemCostPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemPrice));
+        inCart.forEach(item => {
+          if (item.Item.Name === itemName && item.Item.Brand === itemBrand && item.Item.Category === itemCategory) {
+            item.Purchased = parseInt(itemSelect.value);
+            item.Revenue = totalItemSellingPrice;
+            item.Profit = totalItemSellingPrice - totalItemCostPrice;
+          }
+        });
+        let itemQuanity = parseInt(itemSelect.value);
+        let totalItemCost = parseFloat(itemQuanity * rowItemPrice).toPrecision(3);
+        cartItemCost.innerText = `GH¢${totalItemCost}`;
+        let currentSubtotal = parseFloat(subTotal.innerText);
+        subTotal.innerText = currentSubtotal + parseFloat(totalItemCost);
+        mainTotal.innerText = subTotal.innerText;
       });
     }
   }
@@ -2328,15 +2338,12 @@ class DATABASE {
     return new Promise((resolve, reject) => {
       this.connector.query("SELECT * FROM duffykids.items ORDER BY Name ASC", (error, results) => {
         if (error) {
-          console.log(error.code);
-
           if (error.code === "ECONNREFUSED") {
             reject(error.code);
           } else {
             reject(new Error("database not found"));
           }
         } else {
-          console.log(results);
           resolve(results);
         }
       });
@@ -2415,7 +2422,7 @@ class DATABASE {
           });
         });
       });
-      itemArray.forEach((item, USER) => {
+      itemArray.forEach(item => {
         this.connector.beginTransaction(error => {
           this.connector.query(`INSERT INTO duffykids.itemBrands SET Name = '${item.Brand}'`, error => {
             if (error === null || error.code === "ER_DUP_ENTRY") {
@@ -2431,7 +2438,6 @@ class DATABASE {
                       }
                     });
                   } else {
-                    console.log("item result: ", result);
                     const itemId = result.insertId;
                     this.connector.query(`SELECT * FROM duffykids.users WHERE User_Name = '${User}'`, (error, result) => {
                       if (error) {
@@ -2551,7 +2557,7 @@ class DATABASE {
       newSale.forEach(sale => {
         let [itemName, itemBrand, itemCategory] = [sale.Item.Name, sale.Item.Brand, sale.Item.Category];
         sale.Date = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
-        sale = {
+        let finalSaleValue = {
           Date: `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`,
           Purchased: sale.Purchased,
           Revenue: sale.Revenue,
@@ -2559,35 +2565,40 @@ class DATABASE {
           UnitDiscount: sale.UnitDiscount,
           TotalDiscount: sale.TotalDiscount
         };
-        this.connector.query("SELECT * FROM duffykids.users", userName, (error, result, fields) => {
+        console.log(finalSaleValue);
+        userName = {
+          User_Name: userName
+        };
+        this.connector.query("SELECT * FROM duffykids.users WHERE ?", userName, (error, result, fields) => {
           if (error) {
             reject('unknown error');
             throw error;
           } else {
             const user = result.shift();
             const userId = user.id;
-            sale.User = userId;
+            finalSaleValue.User = userId;
             this.connector.query(selectItemQuery, [itemName, itemBrand, itemCategory], (error, result) => {
               if (error) {
                 reject("unknown error");
                 throw error;
               } else {
                 const item = result.shift();
-                sale.Item = item.id;
+                finalSaleValue.Item = item.id;
                 let InStock = item.InStock;
-                InStock = InStock - sale.Purchased;
+                InStock = InStock - finalSaleValue.Purchased;
                 this.connector.beginTransaction(error => {
                   if (error) {
                     reject("unknown error");
                     throw error;
                   } else {
-                    this.connector.query("INSERT INTO duffykids.sales SET ?", sale, (error, result) => {
+                    this.connector.query("INSERT INTO duffykids.sales SET ?", finalSaleValue, (error, result) => {
                       if (error) {
                         this.connector.rollback(() => {
                           reject("unknown error");
                           throw error;
                         });
                       } else {
+                        console.log(result);
                         let userSaleValue = {
                           User: userId,
                           Sales: result.insertId

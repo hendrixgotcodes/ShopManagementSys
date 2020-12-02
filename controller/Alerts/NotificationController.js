@@ -55,7 +55,7 @@ class Notifications{
                     break;
     
                 case 'error':
-                    bGColor = " #ce2727";
+                    bGColor = " #E16161";
                     break;
     
                 default:

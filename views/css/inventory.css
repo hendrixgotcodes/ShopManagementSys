@@ -243,7 +243,7 @@ body {
         transition: background-color 0.3s;
         background-color: #fff; }
       .main_body .titleBar .titleBar_controlBox .controlBox_close:hover {
-        background-color: #ce2727; }
+        background-color: #e16161; }
   .main_body .mainBody_content {
     width: 100%;
     height: 89.5%;
@@ -550,7 +550,7 @@ body {
               color: #35594B; }
             .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .del {
               width: 50%;
-              background-color: #ce2727;
+              background-color: #e16161;
               display: flex;
               justify-content: center;
               align-items: center;
@@ -718,7 +718,7 @@ body {
                 .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .modalContent_settings .settingsAlert--success {
                   background-color: #12A89D; }
                 .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .modalContent_settings .settingsAlert--fail {
-                  background-color: #ce2727; }
+                  background-color: #e16161; }
               .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings {
                 margin-top: 8%;
                 position: relative; }
@@ -940,7 +940,7 @@ body {
         .main_body .mainBody_content .dialog--confirmationBox .dialogFooter .dialogConfirm {
           height: 100%;
           width: 50%;
-          background-color: #ce2727;
+          background-color: #e16161;
           display: flex;
           justify-content: center;
           align-items: center;
@@ -949,7 +949,7 @@ body {
           cursor: pointer;
           transition: .3s; }
           .main_body .mainBody_content .dialog--confirmationBox .dialogFooter .dialogConfirm:hover {
-            background-color: #dd4b4b; }
+            background-color: #e98b8b; }
         .main_body .mainBody_content .dialog--confirmationBox .dialogFooter .dialogRevert {
           height: 100%;
           width: 50%;
@@ -1088,7 +1088,7 @@ body {
         .main_body .mainBody_content .dialog--promptBox .dialogFooter .dialogConfirm {
           height: 100%;
           width: 100%;
-          background-color: #ce2727;
+          background-color: #e16161;
           display: flex;
           justify-content: center;
           align-items: center;
@@ -1098,7 +1098,7 @@ body {
           cursor: pointer;
           transition: .3s; }
           .main_body .mainBody_content .dialog--promptBox .dialogFooter .dialogConfirm:hover {
-            background-color: #dd4b4b; }
+            background-color: #e98b8b; }
     .main_body .mainBody_content .dialog--itemFormBox {
       font-size: 1.2rem;
       width: 55%;
@@ -1377,7 +1377,7 @@ body {
     align-items: center;
     padding: 1rem;
     color: #fff;
-    background-color: #ce2727;
+    background-color: #e16161;
     transition: .5s;
     transform: translateY(-100%); }
     .main_body .alertBanner img {
@@ -1441,21 +1441,21 @@ body {
           background-color: #35594B;
           color: #fff; }
       .main_body .footer .footer_actions .btn_delete {
-        border-color: #ce2727;
-        background-color: #ce2727;
+        border-color: #e16161;
+        background-color: #e16161;
         color: #fff;
         display: flex;
         justify-content: center;
         align-items: center;
         transition: .5s; }
         .main_body .footer .footer_actions .btn_delete:hover {
-          background-color: #db4242; }
+          background-color: #e78383; }
         .main_body .footer .footer_actions .btn_delete img {
           width: 17%;
           margin-left: .2rem; }
         .main_body .footer .footer_actions .btn_delete:disabled {
-          background-color: #e05c5c;
-          border-color: #e26565;
+          background-color: #ec9d9d;
+          border-color: #eea5a5;
           opacity: .6;
           cursor: default; }
       .main_body .footer .footer_actions .btn_edit {

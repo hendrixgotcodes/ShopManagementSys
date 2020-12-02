@@ -816,8 +816,6 @@ class DATABASE{
                 
                 if(error){
 
-                    console.log(error.code);
-
                     if(error.code === "ECONNREFUSED"){
                         reject(error.code)
                     }
@@ -829,7 +827,6 @@ class DATABASE{
 
                 }
                 else{
-                    console.log(results);
                     resolve(results)
                 }
 
@@ -976,7 +973,7 @@ class DATABASE{
 
            }) 
 
-            itemArray.forEach((item, USER)=>{
+            itemArray.forEach((item)=>{
 
                 this.connector.beginTransaction((error)=>{
 
@@ -1010,7 +1007,6 @@ class DATABASE{
                                         }
                                         else{
 
-                                            console.log("item result: ", result);
 
                                             const itemId = result.insertId;
 
@@ -1246,7 +1242,7 @@ class DATABASE{
 
                 sale.Date = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
 
-                sale = {
+                let finalSaleValue = {
 
                     Date: `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`,
                     Purchased: sale.Purchased,
@@ -1257,7 +1253,13 @@ class DATABASE{
 
                 }
 
-                this.connector.query("SELECT * FROM duffykids.users", userName ,(error, result, fields)=>{
+                console.log(finalSaleValue);
+
+                userName = {
+                    User_Name: userName
+                }
+
+                this.connector.query("SELECT * FROM duffykids.users WHERE ?", userName ,(error, result, fields)=>{
 
         
                     if(error){
@@ -1268,7 +1270,7 @@ class DATABASE{
                         
                         const user = result.shift();
                         const userId = user.id;
-                        sale.User = userId;
+                        finalSaleValue.User = userId;
 
                         this.connector.query(selectItemQuery, [itemName, itemBrand, itemCategory],(error, result)=>{
     
@@ -1281,11 +1283,11 @@ class DATABASE{
                             else{
 
                                 const item = result.shift();
-                                sale.Item = item.id;
+                                finalSaleValue.Item = item.id;
 
                                 let InStock = item.InStock;
 
-                                InStock = InStock - sale.Purchased;
+                                InStock = InStock - finalSaleValue.Purchased;
 
     
                                 this.connector.beginTransaction((error)=>{
@@ -1296,7 +1298,7 @@ class DATABASE{
                                     }
                                     else{
 
-                                        this.connector.query("INSERT INTO duffykids.sales SET ?", sale, (error, result)=>{
+                                        this.connector.query("INSERT INTO duffykids.sales SET ?", finalSaleValue, (error, result)=>{
     
                                             if(error){
     
@@ -1309,6 +1311,8 @@ class DATABASE{
                                                 
                                             }
                                             else{
+
+                                                console.log(result);
     
                                                 let userSaleValue = {
                                                     User: userId,

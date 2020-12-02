@@ -594,7 +594,7 @@ class DOMCONTROLLER{
 
    }
 
-   static addToCart(row, inCart, salesMade, user, btnCart_sell, btnCart_clear, subtractItem){
+   static addToCart(row, inCart,btnCart_sell, btnCart_clear, subtractItem){
 
     /*
      *   ALGORITHM
@@ -742,21 +742,6 @@ class DOMCONTROLLER{
 
         cartItem.appendChild(itemSelect)
 
-        itemSelect.addEventListener("change", function modifyCost(e){
-
-
-            let itemQuanity = parseInt(itemSelect.value);
-            let totalItemCost = parseFloat(itemQuanity * rowItemPrice).toPrecision(3);
-            cartItemCost.innerText = `GH¢${totalItemCost}`;
-
-            let currentSubtotal = parseFloat(subTotal.innerText)
-            subTotal.innerText = currentSubtotal + parseFloat(totalItemCost);
-
-            mainTotal.innerText = subTotal.innerText
-
-        })
-
-
         const cartItemCost = document.createElement("div");
         cartItemCost.className = "cartItem_cost";
         cartItemCost.innerText = 
@@ -793,6 +778,8 @@ class DOMCONTROLLER{
         })
 
         const checkbox = cartItem.querySelector(".cartCheckBox");
+
+
         //Evt Listeners
         checkbox.addEventListener("click", function toggleDiscount(){
 
@@ -804,6 +791,37 @@ class DOMCONTROLLER{
             else{
                 cartItemsContainer.querySelector(`#cart_discount${cartItems.length+1}`).classList.add("cartItem_discount--disabled")
             }
+
+        })
+
+        itemSelect.addEventListener("change", function modifyCost(e){
+
+            let [itemName, itemBrand, itemCategory] = [cartItem.querySelector(".hidden_itemName").innerText, cartItem.querySelector(".hidden_itemBrand").innerText, cartItem.querySelector(".hidden_itemCategory").innerText]
+
+            totalItemSellingPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemCostPrice))
+            totalItemCostPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemPrice))
+
+            inCart.forEach((item)=>{
+
+                if(item.Item.Name === itemName && item.Item.Brand === itemBrand && item.Item.Category === itemCategory){
+
+                    item.Purchased = parseInt(itemSelect.value);
+                    item.Revenue = totalItemSellingPrice;
+                    item.Profit = totalItemSellingPrice - totalItemCostPrice
+
+                }
+
+            })
+
+
+            let itemQuanity = parseInt(itemSelect.value);
+            let totalItemCost = parseFloat(itemQuanity * rowItemPrice).toPrecision(3);
+            cartItemCost.innerText = `GH¢${totalItemCost}`;
+
+            let currentSubtotal = parseFloat(subTotal.innerText)
+            subTotal.innerText = currentSubtotal + parseFloat(totalItemCost);
+
+            mainTotal.innerText = subTotal.innerText
 
         })
 
