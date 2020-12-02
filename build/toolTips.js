@@ -1660,23 +1660,24 @@ class DATABASE {
         User_Name: userName,
         Password: password
       };
-      this.connector.query("SELECT * FROM users WHERE User_Name = ? AND Password = ?", [userName, password], (error, result) => {
+      this.connector.query("SELECT * FROM users WHERE User_Name = ?", userName, (error, result) => {
         if (error) {
           reject(error);
           throw error;
         } else if (result) {
           let user = result.shift();
-          console.log(result, user);
 
           if (user === undefined) {
-            reject();
-          } else if (user.User_Name === userName && user.Password === password) {
-            if (user.IsAdmin === 1) {
-              resolve([user.User_Name, "Admin"]);
-            } else if (user.IsAdmin === 1) {
-              resolve([user.User_Name, "Employee"]);
-            } else {
-              reject("no match");
+            reject("incorrect username");
+          } else if (user) {
+            if (user.Password !== password) {
+              reject("incorrect password");
+            } else if (user.User_Name === userName && user.Password === password) {
+              if (user.IsAdmin === 1) {
+                resolve([user.User_Name, "Admin"]);
+              } else if (user.IsAdmin === 1) {
+                resolve([user.User_Name, "Employee"]);
+              }
             }
           }
         }

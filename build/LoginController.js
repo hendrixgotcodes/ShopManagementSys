@@ -227,17 +227,58 @@ const formCheck = document.querySelector('.form_check');
 const tbUserName = document.querySelector('#username');
 const tbPassword = document.querySelector('#password');
 const visIcon = document.querySelector('.vis_icon');
-const btnLoader = document.querySelector(".form_btn > img"); //Program Variables
+const btnLoader = document.querySelector(".form_btn > img");
+const warningLabel_tb = document.querySelector(".warningLabel_tb");
+const warningLabel_pw = document.querySelector(".warningLabel_pw"); //Program Variables
 
 let isFullScreen = false;
-const userName = 'Maame Dufie';
-const userType = 'Admin'; //Adding event listeners to trigger minimize, maximize and events in the mainWindow Controller
+let verifiedFields = false; //Adding event listeners to trigger minimize, maximize and events in the mainWindow Controller
 
 controlBoxMinimize.addEventListener('click', sendMinimizeEvent);
 controlBoxMaximize.addEventListener('click', sendMaximizeEvent);
 controlBoxClose.addEventListener('click', sendCloseEvent);
 formBtn.addEventListener('click', loadStore);
-formCheck.addEventListener('click', togglePassVisibility); //Event Listeners From IPC
+formCheck.addEventListener('click', togglePassVisibility);
+tbUserName.addEventListener("blur", function verifyInputValues() {
+  if (tbUserName.value === "") {
+    warningLabel_tb.hidden = false;
+    verifiedFields = false;
+  } else if (tbUserName.value.replace(/^\s+|\s+$/g, "") === "") {
+    warningLabel_tb.innerText = "Whitespaces not allowed here";
+    warningLabel_tb.hidden = false;
+    verifiedFields = false;
+  } else {
+    warningLabel_tb.hidden = true;
+    verifiedFields = true;
+  }
+});
+tbPassword.addEventListener("blur", function verifyInputValues() {
+  if (tbPassword.value === "") {
+    warningLabel_pw.hidden = false;
+    verifiedFields = false;
+  } else if (tbPassword.value.replace(/^\s+|\s+$/g, "") === "") {
+    warningLabel_pw.innerText = "Whitespaces not allowed here";
+    warningLabel_pw.hidden = false;
+    verifiedFields = false;
+  } else {
+    warningLabel_pw.hidden = true;
+    verifiedFields = true;
+  }
+});
+tbUserName.addEventListener("keyup", function (e) {
+  if (e.key == " ") {
+    e.preventDefault();
+    warningLabel_tb.innerText = "Whitespaces not allowed here";
+    warningLabel_tb.hidden = false;
+  }
+});
+tbPassword.addEventListener("keyup", function (e) {
+  if (e.key == " ") {
+    e.preventDefault();
+    warningLabel_pw.innerText = "Whitespaces not allowed here";
+    warningLabel_pw.hidden = false;
+  }
+}); //Event Listeners From IPC
 
 ipcRenderer.on('isFullScreen', () => {
   restoreMaxi.setAttribute('src', "../Icons/Control_Box/Restore.png");
@@ -265,21 +306,33 @@ function sendCloseEvent() {
 }
 
 function loadStore(e) {
-  btnLoader.setAttribute("src", "../../utils/media/animations/loaders/Infinity-1s-200px.svg");
-  btnLoader.classList.add("img_shown");
-  database.validateUser(tbUserName.value, tbPassword.value).then(result => {
-    console.log(result);
+  if (verifiedFields === true) {
+    btnLoader.setAttribute("src", "../../utils/media/animations/loaders/Infinity-1s-200px.svg");
+    btnLoader.classList.add("img_shown");
+    database.validateUser(tbUserName.value, tbPassword.value).then(result => {
+      console.log(result);
 
-    if (result[1] === "Admin") {
-      ipcRenderer.send('loadStore', [result[0], "Admin"]);
-    } else if (result[1] === "Employee") {
-      ipcRenderer.send("loadStore", [result[0], "Employee"]);
-    }
-  }).catch(error => {
-    if (error === "No match") {}
-  });
-  tbUserName.value = "";
-  tbPassword.value = "";
+      if (result[1] === "Admin") {
+        ipcRenderer.send('loadStore', [result[0], "Admin"]);
+      } else if (result[1] === "Employee") {
+        ipcRenderer.send("loadStore", [result[0], "Employee"]);
+      }
+    }).catch(error => {
+      btnLoader.removeAttribute("src");
+      btnLoader.classList.remove("img_shown");
+
+      if (error === "incorrect username") {
+        warningLabel_tb.innerText = "Incorrect username";
+        warningLabel_tb.hidden = false;
+        tbUserName.value = "";
+        tbPassword.value = "";
+      } else if (error === "incorrect password") {
+        warningLabel_pw.innerText = "Incorrect password";
+        warningLabel_pw.hidden = false;
+        tbPassword.value = "";
+      }
+    });
+  }
 } //Function to toggle password visibility
 
 
@@ -1098,23 +1151,24 @@ class DATABASE {
         User_Name: userName,
         Password: password
       };
-      this.connector.query("SELECT * FROM users WHERE User_Name = ? AND Password = ?", [userName, password], (error, result) => {
+      this.connector.query("SELECT * FROM users WHERE User_Name = ?", userName, (error, result) => {
         if (error) {
           reject(error);
           throw error;
         } else if (result) {
           let user = result.shift();
-          console.log(result, user);
 
           if (user === undefined) {
-            reject();
-          } else if (user.User_Name === userName && user.Password === password) {
-            if (user.IsAdmin === 1) {
-              resolve([user.User_Name, "Admin"]);
-            } else if (user.IsAdmin === 1) {
-              resolve([user.User_Name, "Employee"]);
-            } else {
-              reject("no match");
+            reject("incorrect username");
+          } else if (user) {
+            if (user.Password !== password) {
+              reject("incorrect password");
+            } else if (user.User_Name === userName && user.Password === password) {
+              if (user.IsAdmin === 1) {
+                resolve([user.User_Name, "Admin"]);
+              } else if (user.IsAdmin === 1) {
+                resolve([user.User_Name, "Employee"]);
+              }
             }
           }
         }
