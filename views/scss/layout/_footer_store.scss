@@ -102,6 +102,24 @@
                 transition: 1;
                 transition: transform .7s;
             }
+
+        }
+
+
+        .filter{
+            width: 80%;
+            height: 100%;
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+
+            select{
+                width: 60%;
+                height: 65%;
+                border: 1px solid $primary_green;
+                border-radius: 3px;
+                color: $primary_black;
+            }
         }
 
 

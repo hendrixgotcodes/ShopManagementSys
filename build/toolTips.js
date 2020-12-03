@@ -1711,6 +1711,113 @@ class DATABASE {
       });
     });
   }
+  /******************FOR GRAPH */
+
+
+  getLastWeek() {
+    return new Promise((resolve, reject) => {
+      let days = [];
+      let revenues = [];
+      let colors = [];
+      let grossRevenue = 0;
+      let grossProfit = 0;
+      let totalSalesMade = 0;
+      let itemsSold = 0;
+      this.connector.query("SELECT DAYNAME(Date) Day, SUM(Revenue) Revenue, SUM(Profit) Profit, COUNT(id) SalesMade, SUM(Purchased) ItemsSold From `sales` WHERE DATE_SUB(NOW(), INTERVAL 1 WEEK) GROUP BY DAYNAME(Date) ORDER BY DAYNAME(Date) ASC", (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        result.forEach(item => {
+          days.push(item.Day);
+          revenues.push(parseFloat(item.Revenue));
+          grossRevenue = grossRevenue + parseFloat(item.Revenue);
+          grossProfit = grossProfit + parseFloat(item.Profit);
+          totalSalesMade = totalSalesMade + parseFloat(item.SalesMade);
+          itemsSold = itemsSold + parseInt(item.ItemsSold);
+          colors.push(`hsl(${randomNumber(0, 360)}, ${randomNumber(80, 100)}%, ${randomNumber(30, 70)}%)`);
+        });
+        resolve([days, revenues, grossRevenue, grossProfit, totalSalesMade, itemsSold, colors]);
+      });
+    });
+
+    function randomNumber(min, max) {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min) + min);
+    }
+  }
+
+  getLastMonth() {
+    return new Promise((resolve, reject) => {
+      let months = [];
+      let revenues = [];
+      let colors = [];
+      let grossRevenue = 0;
+      let grossProfit = 0;
+      let totalSalesMade = 0;
+      let itemsSold = 0;
+      this.connector.query("SELECT MONTHNAME(Date) Month, SUM(Revenue) Revenue, SUM(Profit) Profit, COUNT(id) SalesMade, SUM(Purchased) ItemsSold From `sales` WHERE DATE_SUB(NOW(), INTERVAL 1 MONTH) GROUP BY MONTHNAME(Date) ORDER BY MONTHNAME(Date) DESC", (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        result.forEach(item => {
+          months.push(item.Month);
+          revenues.push(parseFloat(item.Revenue));
+          grossRevenue = grossRevenue + parseFloat(item.Revenue);
+          grossProfit = grossProfit + parseFloat(item.Profit);
+          totalSalesMade = totalSalesMade + parseFloat(item.SalesMade);
+          itemsSold = itemsSold + parseInt(item.ItemsSold);
+          colors.push(`hsl(${randomNumber(0, 360)}, ${randomNumber(80, 100)}%, ${randomNumber(30, 50)}%)`);
+        });
+        resolve([months, revenues, grossRevenue, grossProfit, totalSalesMade, itemsSold, colors]);
+      });
+    });
+
+    function randomNumber(min, max) {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min) + min);
+    }
+  }
+
+  getLastYear() {
+    return new Promise((resolve, reject) => {
+      let years = [];
+      let revenues = [];
+      let colors = [];
+      let grossRevenue = 0;
+      let grossProfit = 0;
+      let totalSalesMade = 0;
+      let itemsSold = 0;
+      this.connector.query("SELECT YEAR(Date) Year, SUM(Revenue) Revenue, SUM(Profit) Profit, COUNT(id) SalesMade, SUM(Purchased) ItemsSold From `sales` WHERE DATE_SUB(NOW(), INTERVAL 1 YEAR) GROUP BY YEAR(Date) ORDER BY YEAR(Date) DESC", (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        result.forEach(item => {
+          years.push(item.Year);
+          revenues.push(parseFloat(item.Revenue));
+          grossRevenue = grossRevenue + parseFloat(item.Revenue);
+          grossProfit = grossProfit + parseFloat(item.Profit);
+          totalSalesMade = totalSalesMade + parseFloat(item.SalesMade);
+          itemsSold = itemsSold + parseInt(item.ItemsSold);
+          colors.push(`hsl(${randomNumber(0, 360)}, ${randomNumber(80, 100)}%, ${randomNumber(30, 70)}%)`);
+        });
+        resolve([years, revenues, grossRevenue, grossProfit, totalSalesMade, itemsSold, colors]);
+      });
+    });
+
+    function randomNumber(min, max) {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min) + min);
+    }
+  }
 
 }
 

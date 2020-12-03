@@ -443,7 +443,7 @@ body {
               width: 100%;
               text-align: center; }
             .main_body .mainBody_content .contentContainer .graphContainer .infoBoard .info .valueLabel {
-              color: #35594B;
+              color: #EFB526;
               font-size: 2rem;
               font-weight: 500; }
             .main_body .mainBody_content .contentContainer .graphContainer .infoBoard .info .tagLabel {
@@ -1405,6 +1405,18 @@ body {
           border-radius: 100%;
           transition: 1;
           transition: transform .7s; }
+      .main_body .footer .footer_actions .filter {
+        width: 80%;
+        height: 100%;
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center; }
+        .main_body .footer .footer_actions .filter select {
+          width: 60%;
+          height: 65%;
+          border: 1px solid #35594B;
+          border-radius: 3px;
+          color: #646766; }
     .main_body .footer .footer_clock #clock_blinker {
       position: absolute; }
     .main_body .footer .footer_clock .clock_min {

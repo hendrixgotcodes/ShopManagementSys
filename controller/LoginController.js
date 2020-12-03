@@ -129,6 +129,9 @@ tbPassword.addEventListener("keyup", function(e){
         warningLabel_pw.hidden = false
 
     }
+    if(e.key === "Enter"){
+        loadStore(e)
+    }
 
 })
 

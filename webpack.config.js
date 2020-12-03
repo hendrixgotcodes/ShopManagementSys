@@ -8,7 +8,8 @@ const electron ={
         toolTips: './controller/utilities/ToolTipController.js',
         settingsController: './controller/modals/settingsController.js',
         StoreController: './controller/StoreController.js',
-        LoginController: './controller/LoginController.js'
+        LoginController: './controller/LoginController.js',
+        MainGraph: './controller/MainGraph.js',
     },
     output: {
         path: path.resolve(__dirname, 'build'),
@@ -27,24 +28,23 @@ const electron ={
     }
 }
 
-const regular = {
-    entry: {
-        MainGraph: './controller/MainGraph.js',
-    },
-    output: {
-        path: path.resolve(__dirname, 'build'),
-        filename: ['name'].js,
-    },
-    module: {
-        rules:[
-            {test: /\.js?$/, use: 'babel-loader'},
-            {test: /\.css?$/, use: 'css-loader'}
-        ]
-    },    
-    externals: {
-        moment: 'moment'
-    },
-    mode: 'development'
-}
+// const regular = {
+//     entry: {
+//     },
+//     output: {
+//         path: path.resolve(__dirname, 'build'),
+//         filename: ['name'].js,
+//     },
+//     module: {
+//         rules:[
+//             {test: /\.js?$/, use: 'babel-loader'},
+//             {test: /\.css?$/, use: 'css-loader'}
+//         ]
+//     },    
+//     externals: {
+//         moment: 'moment'
+//     },
+//     mode: 'development'
+// }
 
-module.exports = [electron,regular];
+module.exports = electron;

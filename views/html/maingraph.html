@@ -72,22 +72,37 @@
 
             <div class="info" id="totalSalesMade">
   
-                <label for="" class="valueLabel">280</label>
-                <label for="" class="tagLabel">Total Sales</label>
-  
+              <label for="" hidden class="valueLabel">---</label>
+              <label for="" class="tagLabel">Total Sales</label>
+
+            </div>
+
+            <div class="info" id="totalItemsSold">
+
+              <label for="" class="valueLabel">---</label>
+              <label for="" class="tagLabel">Items Sold</label>
+
             </div>
   
+            <div class="info" id="averageBasketValue">
+  
+              <label for="" class="valueLabel">---</label>
+  
+              <label for="" class="tagLabel">Average Basket Value</label>
+  
+            </div>
+
             <div class="info" id="gross_revenue">
   
-              <label for="" class="valueLabel">GH¢180K</label>
+              <label for="" class="valueLabel">---</label>
   
               <label for="" class="tagLabel">Gross Revenue</label>
   
             </div>
-  
+
             <div class="info" id="grossProfit">
   
-              <label for="" class="valueLabel">GH¢100k</label>
+              <label for="" class="valueLabel">---</label>
   
               <label for="" class="tagLabel">Gross Profit</label>
   
@@ -95,25 +110,9 @@
   
             <div class="info" id="profitPercentage">
   
-              <label for="" class="valueLabel">55%</label>
+              <label for="" class="valueLabel">---</label>
               
               <label for="" class="tagLabel">Profit Percentage</label>
-  
-            </div>
-  
-            <div class="info" id="averageBasketValue">
-  
-              <label for="" class="valueLabel">23</label>
-  
-              <label for="" class="tagLabel">Average Basket Value</label>
-  
-            </div>
-  
-            <div class="info" id="averageInventory">
-  
-              <label for="" class="valueLabel">123</label>
-  
-              <label for="" class="tagLabel">Average Inventory</label>
   
             </div>
   
@@ -275,6 +274,16 @@
       </div>
       <div class="footer_actions">
      
+        <label for="" class="filter">
+          View From:
+          <select name="" id="select_footer">
+            <option value="Last Week">Last Week</option>
+            <option value="Last Month">Last Month</option>
+            <option value="Last Year">Last Year</option>
+            <!-- <option value="Today">Today</option> -->
+          </select>
+        </label>
+
       </div>
     </div>
 
