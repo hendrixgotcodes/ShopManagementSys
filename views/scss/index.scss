@@ -78,12 +78,17 @@ body {
             display: block;
             width: 35.4%;
             height: 4.5rem;
-            margin: 2.5rem 0;
+            margin: 3rem 0;
             // background-color: $primary_yellow;
             text-align: left;
             font-weight: 600;
             font-size: 1.2rem;
             position: relative;
+
+            &:last-child{
+                margin-bottom: 2rem;
+            }
+
             // color: $secondary_yellow;
 
             // & .tb_label{
@@ -144,6 +149,20 @@ body {
                 opacity: 0;
                 cursor: pointer;
                 transition: .5s;
+            }
+
+            .warningLabel{
+
+                font-size: .8rem;
+                color: $primary_yellow;
+                font-weight: 500;
+                transition: .3s;
+
+                .ico_form{
+                    transform: rotate(270deg);
+                    width: 3.3%;
+                }
+
             }
         }
 

@@ -639,7 +639,7 @@ ipcRenderer.on('populateTable',(e, Items)=>{
 
             let newArray = Object.values(item);
 
-            let [name, brand, category, stock, sellingPrice, costPrice] = newArray;
+            let [name, brand, category, stock, costPrice, sellingPrice] = newArray;
 
             itemsArray.push({
                 Name: name,

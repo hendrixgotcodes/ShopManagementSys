@@ -16,14 +16,15 @@ const restoreMaxi = document.getElementById('restore_maxi');
 const formBtn = document.querySelector('.form_btn');
 const formCheck = document.querySelector('.form_check');
 const tbUserName = document.querySelector('#username');
-const password = document.querySelector('#password');
+const tbPassword = document.querySelector('#password');
 const visIcon = document.querySelector('.vis_icon');
 const btnLoader = document.querySelector(".form_btn > img")
+const warningLabel_tb = document.querySelector(".warningLabel_tb");
+const warningLabel_pw = document.querySelector(".warningLabel_pw");
 
 //Program Variables
 let isFullScreen = false;
-const userName = 'Maame Dufie'
-const userType = 'Admin'
+let verifiedFields = false;
 
 
 
@@ -33,6 +34,106 @@ controlBoxMaximize.addEventListener('click', sendMaximizeEvent)
 controlBoxClose.addEventListener('click', sendCloseEvent)
 formBtn.addEventListener('click', loadStore);
 formCheck.addEventListener('click', togglePassVisibility)
+
+tbUserName.addEventListener("blur", function verifyInputValues(){
+
+    if(tbUserName.value === "")
+    {
+        warningLabel_tb.hidden = false
+        verifiedFields = false
+    }
+    else if(tbUserName.value.replace(/^\s+|\s+$/g, "") === ""){
+
+        warningLabel_tb.innerHTML = `Whitespaces not allowed here`
+
+        let img = document.createElement("img")
+        img.setAttribute("src", "../Icons/form/arrow_pointer.svg");
+        img.className = "ico_form"
+        warningLabel_tb.appendChild(img)
+
+        warningLabel_tb.hidden = false
+        verifiedFields = false
+
+    }
+    else{
+        warningLabel_tb.hidden = true
+        warningLabel_tb.querySelector(".ico_form").remove()
+
+
+        verifiedFields = true
+    }
+
+})
+
+tbPassword.addEventListener("blur", function verifyInputValues(){
+
+    if(tbPassword.value === "")
+    {
+        warningLabel_pw.hidden = false
+        verifiedFields = false
+    }
+    else if(tbPassword.value.replace(/^\s+|\s+$/g, "") === ""){
+
+        warningLabel_pw.innerText = `Whitespaces not allowed here`;
+
+        let img = document.createElement("img")
+        img.setAttribute("src", "../Icons/form/arrow_pointer.svg");
+        img.className = "ico_form"
+
+        warningLabel_pw.appendChild(img)
+
+
+        warningLabel_pw.hidden = false;
+        verifiedFields = false;
+
+    }
+    else{
+        warningLabel_pw.hidden = true;
+        verifiedFields = true;
+
+        warningLabel_pw.querySelector(".ico_form").remove()
+    }
+
+})
+
+tbUserName.addEventListener("keyup", function(e){
+
+    if(e.key == " "){
+        e.preventDefault()
+
+        warningLabel_tb.innerText = `Whitespaces not allowed here`
+
+        let img = document.createElement("img")
+        img.setAttribute("src", "../Icons/form/arrow_pointer.svg");
+        img.className = "ico_form"
+        warningLabel_tb.appendChild(img)
+
+        warningLabel_tb.hidden = false
+
+    }
+
+})
+
+tbPassword.addEventListener("keyup", function(e){
+
+    if(e.key == " "){
+        e.preventDefault()
+
+        warningLabel_pw.innerText = `Whitespaces not allowed here`
+
+        let img = document.createElement("img")
+        img.setAttribute("src", "../Icons/form/arrow_pointer.svg");
+        img.className = "ico_form"
+        warningLabel_pw.appendChild(img)
+
+        warningLabel_pw.hidden = false
+
+    }
+    if(e.key === "Enter"){
+        loadStore(e)
+    }
+
+})
 
 
 
@@ -70,34 +171,68 @@ function sendCloseEvent() {
 
 function loadStore(e) {
 
+    if(verifiedFields === true){
 
-    btnLoader.setAttribute("src", "../../utils/media/animations/loaders/Infinity-1s-200px.svg")
-    btnLoader.classList.add("img_shown")
-
-    database.validateUser(tbUserName.value, password.value)
-    .then((result)=>{
-
-        console.log(result);
+        btnLoader.setAttribute("src", "../../utils/media/animations/loaders/Infinity-1s-200px.svg")
+        btnLoader.classList.add("img_shown")
 
 
-        if(result ===  1){
+        database.validateUser(tbUserName.value, tbPassword.value)
+        .then((result)=>{
 
-                ipcRenderer.send('loadStore', [tbUserName.value, "Admin"]);
+            console.log(result);
 
-        }
-        else if(result === 0){
-            ipcRenderer.send("loadStore", [tbUserName.value, "Employee"])
-        }
 
-    })
-    .catch((error)=>{
+            if(result[1] === "Admin"){
 
-        // Notifications.showAlert("error", "Sorry invalid password")
-        console.log(error);
+                    ipcRenderer.send('loadStore', [result[0], "Admin"]);
 
-    })
+            }
+            else if(result[1] === "Employee"){
+                ipcRenderer.send("loadStore", [result[0], "Employee"])
+            }
 
-    // ipcRenderer.send('loadStore', ["Admin", "Admin"])
+        })
+        .catch((error)=>{
+
+            btnLoader.removeAttribute("src")
+            btnLoader.classList.remove("img_shown")
+
+
+            if(error === "incorrect username"){
+
+                warningLabel_tb.innerText = `Incorrect username`;
+                let img = document.createElement("img")
+                img.setAttribute("src", "../Icons/form/arrow_pointer.svg");
+                img.className = "ico_form"
+                warningLabel_tb.appendChild(img)
+
+                warningLabel_tb.hidden = false
+
+                tbUserName.value = "";
+                tbPassword.value = "";
+
+            }
+            else if(error === "incorrect password"){
+
+                warningLabel_pw.innerText = `Incorrect password`
+
+                let img = document.createElement("img")
+                img.setAttribute("src", "../Icons/form/arrow_pointer.svg");
+                img.className = "ico_form"
+                warningLabel_pw.appendChild(img)
+
+                warningLabel_pw.hidden = false
+
+                tbPassword.value = "";
+
+            }
+
+
+        })
+
+        
+    }
 
 
 
@@ -109,11 +244,11 @@ function loadStore(e) {
 function togglePassVisibility() {
 
     if (formCheck.checked == true) {
-        password.type = 'text'
+        tbPassword.type = 'text'
         visIcon.setAttribute('src', '../Icons/unwatch.svg')
 
     } else {
-        password.type = 'password'
+        tbPassword.type = 'password'
         visIcon.setAttribute('src', '../Icons/watch.svg')
 
     }

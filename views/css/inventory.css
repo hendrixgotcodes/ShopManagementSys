@@ -581,28 +581,28 @@ body {
       .main_body .mainBody_content .contentContainer .tb_Names,
       .main_body .mainBody_content .contentContainer .tb_Brands,
       .main_body .mainBody_content .contentContainer .tb_Category {
-        width: 22%;
+        width: 20%;
         display: flex;
         justify-content: center;
         align-items: center;
         overflow: hidden; }
       .main_body .mainBody_content .contentContainer .tb_Stock,
-      .main_body .mainBody_content .contentContainer .tb_Price {
-        width: 15.5%; }
+      .main_body .mainBody_content .contentContainer .tb_Price, .main_body .mainBody_content .contentContainer .tb_sellingPrice {
+        width: 18.5%; }
       .main_body .mainBody_content .contentContainer .td_cb {
         width: 2%; }
       .main_body .mainBody_content .contentContainer .td_Names,
       .main_body .mainBody_content .contentContainer .td_Brands,
       .main_body .mainBody_content .contentContainer .td_Category {
-        width: 21.5%;
+        width: 20%;
         display: flex;
         justify-content: center;
         align-items: center;
         text-align: center;
         overflow: hidden; }
       .main_body .mainBody_content .contentContainer .td_Stock,
-      .main_body .mainBody_content .contentContainer .td_Price {
-        width: 15.5%;
+      .main_body .mainBody_content .contentContainer .td_costPrice, .main_body .mainBody_content .contentContainer .td_sellingPrice {
+        width: 18.5%;
         text-align: center; }
     .main_body .mainBody_content .modal_hide {
       transition: .3s;

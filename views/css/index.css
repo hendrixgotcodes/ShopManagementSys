@@ -196,11 +196,13 @@ body {
       display: block;
       width: 35.4%;
       height: 4.5rem;
-      margin: 2.5rem 0;
+      margin: 3rem 0;
       text-align: left;
       font-weight: 600;
       font-size: 1.2rem;
       position: relative; }
+      .loginForm_center .loginForm_fields .form_lbl:last-child {
+        margin-bottom: 2rem; }
       .loginForm_center .loginForm_fields .form_lbl .form_tb {
         width: 100%;
         height: 85%;
@@ -238,6 +240,14 @@ body {
         opacity: 0;
         cursor: pointer;
         transition: .5s; }
+      .loginForm_center .loginForm_fields .form_lbl .warningLabel {
+        font-size: .8rem;
+        color: #EFB526;
+        font-weight: 500;
+        transition: .3s; }
+        .loginForm_center .loginForm_fields .form_lbl .warningLabel .ico_form {
+          transform: rotate(270deg);
+          width: 3.3%; }
   .loginForm_center .form_btn {
     width: 10%;
     background-color: #204B40;

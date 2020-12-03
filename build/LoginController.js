@@ -225,19 +225,82 @@ const restoreMaxi = document.getElementById('restore_maxi');
 const formBtn = document.querySelector('.form_btn');
 const formCheck = document.querySelector('.form_check');
 const tbUserName = document.querySelector('#username');
-const password = document.querySelector('#password');
+const tbPassword = document.querySelector('#password');
 const visIcon = document.querySelector('.vis_icon');
-const btnLoader = document.querySelector(".form_btn > img"); //Program Variables
+const btnLoader = document.querySelector(".form_btn > img");
+const warningLabel_tb = document.querySelector(".warningLabel_tb");
+const warningLabel_pw = document.querySelector(".warningLabel_pw"); //Program Variables
 
 let isFullScreen = false;
-const userName = 'Maame Dufie';
-const userType = 'Admin'; //Adding event listeners to trigger minimize, maximize and events in the mainWindow Controller
+let verifiedFields = false; //Adding event listeners to trigger minimize, maximize and events in the mainWindow Controller
 
 controlBoxMinimize.addEventListener('click', sendMinimizeEvent);
 controlBoxMaximize.addEventListener('click', sendMaximizeEvent);
 controlBoxClose.addEventListener('click', sendCloseEvent);
 formBtn.addEventListener('click', loadStore);
-formCheck.addEventListener('click', togglePassVisibility); //Event Listeners From IPC
+formCheck.addEventListener('click', togglePassVisibility);
+tbUserName.addEventListener("blur", function verifyInputValues() {
+  if (tbUserName.value === "") {
+    warningLabel_tb.hidden = false;
+    verifiedFields = false;
+  } else if (tbUserName.value.replace(/^\s+|\s+$/g, "") === "") {
+    warningLabel_tb.innerHTML = `Whitespaces not allowed here`;
+    let img = document.createElement("img");
+    img.setAttribute("src", "../Icons/form/arrow_pointer.svg");
+    img.className = "ico_form";
+    warningLabel_tb.appendChild(img);
+    warningLabel_tb.hidden = false;
+    verifiedFields = false;
+  } else {
+    warningLabel_tb.hidden = true;
+    warningLabel_tb.querySelector(".ico_form").remove();
+    verifiedFields = true;
+  }
+});
+tbPassword.addEventListener("blur", function verifyInputValues() {
+  if (tbPassword.value === "") {
+    warningLabel_pw.hidden = false;
+    verifiedFields = false;
+  } else if (tbPassword.value.replace(/^\s+|\s+$/g, "") === "") {
+    warningLabel_pw.innerText = `Whitespaces not allowed here`;
+    let img = document.createElement("img");
+    img.setAttribute("src", "../Icons/form/arrow_pointer.svg");
+    img.className = "ico_form";
+    warningLabel_pw.appendChild(img);
+    warningLabel_pw.hidden = false;
+    verifiedFields = false;
+  } else {
+    warningLabel_pw.hidden = true;
+    verifiedFields = true;
+    warningLabel_pw.querySelector(".ico_form").remove();
+  }
+});
+tbUserName.addEventListener("keyup", function (e) {
+  if (e.key == " ") {
+    e.preventDefault();
+    warningLabel_tb.innerText = `Whitespaces not allowed here`;
+    let img = document.createElement("img");
+    img.setAttribute("src", "../Icons/form/arrow_pointer.svg");
+    img.className = "ico_form";
+    warningLabel_tb.appendChild(img);
+    warningLabel_tb.hidden = false;
+  }
+});
+tbPassword.addEventListener("keyup", function (e) {
+  if (e.key == " ") {
+    e.preventDefault();
+    warningLabel_pw.innerText = `Whitespaces not allowed here`;
+    let img = document.createElement("img");
+    img.setAttribute("src", "../Icons/form/arrow_pointer.svg");
+    img.className = "ico_form";
+    warningLabel_pw.appendChild(img);
+    warningLabel_pw.hidden = false;
+  }
+
+  if (e.key === "Enter") {
+    loadStore(e);
+  }
+}); //Event Listeners From IPC
 
 ipcRenderer.on('isFullScreen', () => {
   restoreMaxi.setAttribute('src', "../Icons/Control_Box/Restore.png");
@@ -265,29 +328,50 @@ function sendCloseEvent() {
 }
 
 function loadStore(e) {
-  btnLoader.setAttribute("src", "../../utils/media/animations/loaders/Infinity-1s-200px.svg");
-  btnLoader.classList.add("img_shown");
-  database.validateUser(tbUserName.value, password.value).then(result => {
-    console.log(result);
+  if (verifiedFields === true) {
+    btnLoader.setAttribute("src", "../../utils/media/animations/loaders/Infinity-1s-200px.svg");
+    btnLoader.classList.add("img_shown");
+    database.validateUser(tbUserName.value, tbPassword.value).then(result => {
+      console.log(result);
 
-    if (result === 1) {
-      ipcRenderer.send('loadStore', [tbUserName.value, "Admin"]);
-    } else if (result === 0) {
-      ipcRenderer.send("loadStore", [tbUserName.value, "Employee"]);
-    }
-  }).catch(error => {
-    // Notifications.showAlert("error", "Sorry invalid password")
-    console.log(error);
-  }); // ipcRenderer.send('loadStore', ["Admin", "Admin"])
+      if (result[1] === "Admin") {
+        ipcRenderer.send('loadStore', [result[0], "Admin"]);
+      } else if (result[1] === "Employee") {
+        ipcRenderer.send("loadStore", [result[0], "Employee"]);
+      }
+    }).catch(error => {
+      btnLoader.removeAttribute("src");
+      btnLoader.classList.remove("img_shown");
+
+      if (error === "incorrect username") {
+        warningLabel_tb.innerText = `Incorrect username`;
+        let img = document.createElement("img");
+        img.setAttribute("src", "../Icons/form/arrow_pointer.svg");
+        img.className = "ico_form";
+        warningLabel_tb.appendChild(img);
+        warningLabel_tb.hidden = false;
+        tbUserName.value = "";
+        tbPassword.value = "";
+      } else if (error === "incorrect password") {
+        warningLabel_pw.innerText = `Incorrect password`;
+        let img = document.createElement("img");
+        img.setAttribute("src", "../Icons/form/arrow_pointer.svg");
+        img.className = "ico_form";
+        warningLabel_pw.appendChild(img);
+        warningLabel_pw.hidden = false;
+        tbPassword.value = "";
+      }
+    });
+  }
 } //Function to toggle password visibility
 
 
 function togglePassVisibility() {
   if (formCheck.checked == true) {
-    password.type = 'text';
+    tbPassword.type = 'text';
     visIcon.setAttribute('src', '../Icons/unwatch.svg');
   } else {
-    password.type = 'password';
+    tbPassword.type = 'password';
     visIcon.setAttribute('src', '../Icons/watch.svg');
   }
 }
@@ -892,7 +976,7 @@ class DATABASE {
                     });
                   } else {
                     const itemId = result.insertId;
-                    this.connector.query(`SELECT * FROM duffykids.users WHERE User_Name = '${User}'`, (error, result) => {
+                    this.connector.query(`SELECT * FROM users WHERE User_Name = '${User}'`, (error, result) => {
                       if (error) {
                         this.connector.rollback(() => {
                           reject("unknown error");
@@ -1018,11 +1102,10 @@ class DATABASE {
           UnitDiscount: sale.UnitDiscount,
           TotalDiscount: sale.TotalDiscount
         };
-        console.log(finalSaleValue);
-        userName = {
+        let userValue = {
           User_Name: userName
         };
-        this.connector.query("SELECT * FROM duffykids.users WHERE ?", userName, (error, result, fields) => {
+        this.connector.query("SELECT * FROM users WHERE ?", userValue, (error, result, fields) => {
           if (error) {
             reject('unknown error');
             throw error;
@@ -1093,13 +1176,11 @@ class DATABASE {
     // userName = userName.replace(/^\s+|\s+$/g, "")
     // console.log("userName: ", userName, " Password: ", Password);
     return new Promise((resolve, reject) => {
-      let user = {
+      let userValue = {
         User_Name: userName,
         Password: password
       };
-      this.connector.query("SELECT * FROM users", [userName, password], (error, result) => {
-        console.log(result);
-
+      this.connector.query("SELECT * FROM users WHERE User_Name = ?", userName, (error, result) => {
         if (error) {
           reject(error);
           throw error;
@@ -1107,13 +1188,128 @@ class DATABASE {
           let user = result.shift();
 
           if (user === undefined) {
-            reject();
-          } else {
-            resolve(user.IsAdmin);
+            reject("incorrect username");
+          } else if (user) {
+            if (user.Password !== password) {
+              reject("incorrect password");
+            } else if (user.User_Name === userName && user.Password === password) {
+              if (user.IsAdmin === 1) {
+                resolve([user.User_Name, "Admin"]);
+              } else if (user.IsAdmin === 1) {
+                resolve([user.User_Name, "Employee"]);
+              }
+            }
           }
         }
       });
     });
+  }
+  /******************FOR GRAPH */
+
+
+  getLastWeek() {
+    return new Promise((resolve, reject) => {
+      let days = [];
+      let revenues = [];
+      let colors = [];
+      let grossRevenue = 0;
+      let grossProfit = 0;
+      let totalSalesMade = 0;
+      let itemsSold = 0;
+      this.connector.query("SELECT DAYNAME(Date) Day, SUM(Revenue) Revenue, SUM(Profit) Profit, COUNT(id) SalesMade, SUM(Purchased) ItemsSold From `sales` WHERE DATE_SUB(NOW(), INTERVAL 1 WEEK) GROUP BY DAYNAME(Date) ORDER BY DAYNAME(Date) ASC", (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        result.forEach(item => {
+          days.push(item.Day);
+          revenues.push(parseFloat(item.Revenue));
+          grossRevenue = grossRevenue + parseFloat(item.Revenue);
+          grossProfit = grossProfit + parseFloat(item.Profit);
+          totalSalesMade = totalSalesMade + parseFloat(item.SalesMade);
+          itemsSold = itemsSold + parseInt(item.ItemsSold);
+          colors.push(`hsl(${randomNumber(0, 360)}, ${randomNumber(80, 100)}%, ${randomNumber(30, 70)}%)`);
+        });
+        resolve([days, revenues, grossRevenue, grossProfit, totalSalesMade, itemsSold, colors]);
+      });
+    });
+
+    function randomNumber(min, max) {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min) + min);
+    }
+  }
+
+  getLastMonth() {
+    return new Promise((resolve, reject) => {
+      let months = [];
+      let revenues = [];
+      let colors = [];
+      let grossRevenue = 0;
+      let grossProfit = 0;
+      let totalSalesMade = 0;
+      let itemsSold = 0;
+      this.connector.query("SELECT MONTHNAME(Date) Month, SUM(Revenue) Revenue, SUM(Profit) Profit, COUNT(id) SalesMade, SUM(Purchased) ItemsSold From `sales` WHERE DATE_SUB(NOW(), INTERVAL 1 MONTH) GROUP BY MONTHNAME(Date) ORDER BY MONTHNAME(Date) DESC", (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        result.forEach(item => {
+          months.push(item.Month);
+          revenues.push(parseFloat(item.Revenue));
+          grossRevenue = grossRevenue + parseFloat(item.Revenue);
+          grossProfit = grossProfit + parseFloat(item.Profit);
+          totalSalesMade = totalSalesMade + parseFloat(item.SalesMade);
+          itemsSold = itemsSold + parseInt(item.ItemsSold);
+          colors.push(`hsl(${randomNumber(0, 360)}, ${randomNumber(80, 100)}%, ${randomNumber(30, 50)}%)`);
+        });
+        resolve([months, revenues, grossRevenue, grossProfit, totalSalesMade, itemsSold, colors]);
+      });
+    });
+
+    function randomNumber(min, max) {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min) + min);
+    }
+  }
+
+  getLastYear() {
+    return new Promise((resolve, reject) => {
+      let years = [];
+      let revenues = [];
+      let colors = [];
+      let grossRevenue = 0;
+      let grossProfit = 0;
+      let totalSalesMade = 0;
+      let itemsSold = 0;
+      this.connector.query("SELECT YEAR(Date) Year, SUM(Revenue) Revenue, SUM(Profit) Profit, COUNT(id) SalesMade, SUM(Purchased) ItemsSold From `sales` WHERE DATE_SUB(NOW(), INTERVAL 1 YEAR) GROUP BY YEAR(Date) ORDER BY YEAR(Date) DESC", (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        result.forEach(item => {
+          years.push(item.Year);
+          revenues.push(parseFloat(item.Revenue));
+          grossRevenue = grossRevenue + parseFloat(item.Revenue);
+          grossProfit = grossProfit + parseFloat(item.Profit);
+          totalSalesMade = totalSalesMade + parseFloat(item.SalesMade);
+          itemsSold = itemsSold + parseInt(item.ItemsSold);
+          colors.push(`hsl(${randomNumber(0, 360)}, ${randomNumber(80, 100)}%, ${randomNumber(30, 70)}%)`);
+        });
+        resolve([years, revenues, grossRevenue, grossProfit, totalSalesMade, itemsSold, colors]);
+      });
+    });
+
+    function randomNumber(min, max) {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min) + min);
+    }
   }
 
 }

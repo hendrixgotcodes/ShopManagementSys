@@ -1011,7 +1011,7 @@ class DATABASE{
                                             const itemId = result.insertId;
 
 
-                                            this.connector.query(`SELECT * FROM duffykids.users WHERE User_Name = '${User}'`, (error, result)=>{
+                                            this.connector.query(`SELECT * FROM users WHERE User_Name = '${User}'`, (error, result)=>{
 
                                                 if(error){
 
@@ -1253,13 +1253,12 @@ class DATABASE{
 
                 }
 
-                console.log(finalSaleValue);
 
-                userName = {
+                let userValue = {
                     User_Name: userName
                 }
 
-                this.connector.query("SELECT * FROM duffykids.users WHERE ?", userName ,(error, result, fields)=>{
+                this.connector.query("SELECT * FROM users WHERE ?", userValue ,(error, result, fields)=>{
 
         
                     if(error){
@@ -1267,7 +1266,6 @@ class DATABASE{
                         throw error
                     }
                     else{
-                        
                         const user = result.shift();
                         const userId = user.id;
                         finalSaleValue.User = userId;
@@ -1390,15 +1388,15 @@ class DATABASE{
 
         return new Promise((resolve, reject)=>{
 
-            let user = {
+
+            let userValue = {
                 User_Name: userName,
                 Password: password
             }
 
 
-            this.connector.query("SELECT * FROM users", [userName, password], (error, result)=>{
+            this.connector.query("SELECT * FROM users WHERE User_Name = ?", userName,  (error, result)=>{
 
-                console.log(result);
 
                 if(error){
                     reject(error)
@@ -1409,13 +1407,27 @@ class DATABASE{
                     let user = result.shift();
 
                     if(user === undefined){
-                        reject()
+                        reject("incorrect username")
                     }
-                    else{
+                    else if(user){
 
-                        resolve(user.IsAdmin)
+                        if(user.Password !== password){
+                            reject("incorrect password")
+                        }
+                        else if(user.User_Name === userName && user.Password === password){
+
+                            if(user.IsAdmin === 1){
+                                resolve([user.User_Name, "Admin"])
+                            }
+                            else if(user.IsAdmin === 1){
+                                resolve([user.User_Name, "Employee"])
+                            }    
+    
+                        }
 
                     }
+                    
+
 
                 }
 
@@ -1426,6 +1438,163 @@ class DATABASE{
 
     }
 
+
+    /******************FOR GRAPH */
+    getLastWeekSale(){
+
+        return new Promise((resolve, reject)=>{
+
+            let days = []
+            let revenues = [];
+            let colors = [];
+            let grossRevenue = 0;
+            let grossProfit = 0;
+            let totalSalesMade = 0;
+            let itemsSold = 0;
+
+            this.connector.query("SELECT DAYNAME(Date) Day, SUM(Revenue) Revenue, SUM(Profit) Profit, COUNT(id) SalesMade, SUM(Purchased) ItemsSold From `sales` WHERE DATE_SUB(NOW(), INTERVAL 1 WEEK) GROUP BY DAYNAME(Date) ORDER BY DAYNAME(Date) ASC", (error, result)=>{
+
+                if(error){
+                    reject(error)
+                    throw error
+                }
+                
+            
+                result.forEach((item)=>{
+
+                    days.push(item.Day)
+                    revenues.push(parseFloat(item.Revenue))
+
+                    grossRevenue = grossRevenue + parseFloat(item.Revenue)
+                    grossProfit = grossProfit + parseFloat(item.Profit);
+                    totalSalesMade = totalSalesMade + parseFloat(item.SalesMade);
+                    itemsSold = itemsSold + parseInt(item.ItemsSold);
+
+                    colors.push(`hsl(${randomNumber(0, 360)}, ${randomNumber(80, 100)}%, ${randomNumber(30, 70)}%)`)
+
+                })
+
+                resolve([days, revenues,grossRevenue, grossProfit, totalSalesMade, itemsSold, colors])
+
+            })
+
+
+        })
+
+        function randomNumber(min, max){
+
+            min = Math.ceil(min);
+            max = Math.floor(max);
+
+            return Math.floor(Math.random() * (max - min) + min);
+
+        }
+        
+    }
+
+    getLastMonthSale(){
+
+        return new Promise((resolve, reject)=>{
+
+            let months = []
+            let revenues = [];
+            let colors = [];
+            let grossRevenue = 0;
+            let grossProfit = 0;
+            let totalSalesMade = 0;
+            let itemsSold = 0;
+
+            this.connector.query("SELECT MONTHNAME(Date) Month, SUM(Revenue) Revenue, SUM(Profit) Profit, COUNT(id) SalesMade, SUM(Purchased) ItemsSold From `sales` WHERE DATE_SUB(NOW(), INTERVAL 1 MONTH) GROUP BY MONTHNAME(Date) ORDER BY MONTHNAME(Date) DESC", (error, result)=>{
+
+                if(error){
+                    reject(error)
+                    throw error
+                }
+                
+            
+                result.forEach((item)=>{
+
+                    months.push(item.Month)
+                    revenues.push(parseFloat(item.Revenue))
+
+                    grossRevenue = grossRevenue + parseFloat(item.Revenue)
+                    grossProfit = grossProfit + parseFloat(item.Profit);
+                    totalSalesMade = totalSalesMade + parseFloat(item.SalesMade);
+                    itemsSold = itemsSold + parseInt(item.ItemsSold);
+
+                    colors.push(`hsl(${randomNumber(0, 360)}, ${randomNumber(80, 100)}%, ${randomNumber(30, 50)}%)`)
+
+                })
+
+                resolve([months, revenues,grossRevenue, grossProfit, totalSalesMade, itemsSold, colors])
+
+            })
+
+
+        })
+
+        function randomNumber(min, max){
+
+            min = Math.ceil(min);
+            max = Math.floor(max);
+
+            return Math.floor(Math.random() * (max - min) + min);
+
+        }
+        
+    }
+
+    getLastYearSale(){
+
+        return new Promise((resolve, reject)=>{
+
+            let years = []
+            let revenues = [];
+            let colors = [];
+            let grossRevenue = 0;
+            let grossProfit = 0;
+            let totalSalesMade = 0;
+            let itemsSold = 0;
+
+            this.connector.query("SELECT YEAR(Date) Year, SUM(Revenue) Revenue, SUM(Profit) Profit, COUNT(id) SalesMade, SUM(Purchased) ItemsSold From `sales` WHERE DATE_SUB(NOW(), INTERVAL 1 YEAR) GROUP BY YEAR(Date) ORDER BY YEAR(Date) DESC", (error, result)=>{
+
+                if(error){
+                    reject(error)
+                    throw error
+                }
+                
+            
+                result.forEach((item)=>{
+
+                    years.push(item.Year)
+                    revenues.push(parseFloat(item.Revenue))
+
+                    grossRevenue = grossRevenue + parseFloat(item.Revenue)
+                    grossProfit = grossProfit + parseFloat(item.Profit);
+                    totalSalesMade = totalSalesMade + parseFloat(item.SalesMade);
+                    itemsSold = itemsSold + parseInt(item.ItemsSold);
+
+                    colors.push(`hsl(${randomNumber(0, 360)}, ${randomNumber(80, 100)}%, ${randomNumber(30, 70)}%)`)
+
+                })
+
+                resolve([years, revenues,grossRevenue, grossProfit, totalSalesMade, itemsSold, colors])
+
+            })
+
+
+        })
+
+        function randomNumber(min, max){
+
+            min = Math.ceil(min);
+            max = Math.floor(max);
+
+            return Math.floor(Math.random() * (max - min) + min);
+
+        }
+        
+    }
 
 
 

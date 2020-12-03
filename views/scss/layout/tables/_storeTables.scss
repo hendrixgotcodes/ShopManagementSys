@@ -238,7 +238,7 @@
 .tb_Names,
 .tb_Brands,
 .tb_Category {
-    width: 22%;
+    width: 20%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -246,8 +246,8 @@
 }
 
 .tb_Stock,
-.tb_Price {
-    width: 15.5%;
+.tb_Price, .tb_sellingPrice {
+    width: 18.5%;
 }
 
 
@@ -258,7 +258,7 @@
 .td_Names,
 .td_Brands,
 .td_Category {
-    width: 21.5%;
+    width: 20%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -268,7 +268,7 @@
 }
 
 .td_Stock,
-.td_Price {
-    width: 15.5%;
+.td_costPrice, .td_sellingPrice {
+    width: 18.5%;
     text-align: center;
 }

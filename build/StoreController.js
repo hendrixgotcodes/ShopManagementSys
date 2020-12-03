@@ -1116,23 +1116,46 @@ class DOMCONTROLLER {
 
 
       const row = document.createElement("tr");
-      const rowContent = `
-                <td class="controls">
-                    <div class="edit"><span>Edit</span></div>
-                    <div class="del"><span>Soft Delete</span></div>
-                </td>
-                <td class="td_cb">
-                    <input disabled type="checkbox" class="selectOne" aria-placeholder="select one">
-                </td>
-                <td class="td_Names">${clip(name, 23)}</td>
-                <td class="td_Brands">${clip(brand, 23)}</td>
-                <td class="td_Category">${clip(category, 23)}</td>
-                <td class="td_Stock">${stock}</td>
-                <td class="td_Price">${parseFloat(sellingPrice)}</td>
-                <td hidden class="td_costPrice">${parseFloat(costPrice)}</td>
-                <td hidden class="td_discount">${parseFloat(discount)}</td>
-                <td hidden class="state">visible</td>
-                `;
+      let rowContent = "";
+
+      if (destinationPage.toLowerCase() === "store") {
+        rowContent = `
+                    <td class="controls">
+                        <div class="edit"><span>Edit</span></div>
+                        <div class="del"><span>Soft Delete</span></div>
+                    </td>
+                    <td class="td_cb">
+                        <input disabled type="checkbox" class="selectOne" aria-placeholder="select one">
+                    </td>
+                    <td class="td_Names">${clip(name, 23)}</td>
+                    <td class="td_Brands">${clip(brand, 23)}</td>
+                    <td class="td_Category">${clip(category, 23)}</td>
+                    <td class="td_Stock">${stock}</td>
+                    <td class="td_Price">${parseFloat(sellingPrice)}</td>
+                    <td hidden class="td_costPrice">${parseFloat(costPrice)}</td>
+                    <td hidden class="td_discount">${parseFloat(discount)}</td>
+                    <td hidden class="state">visible</td>
+                    `;
+      } else {
+        rowContent = `
+                    <td class="controls">
+                        <div class="edit"><span>Edit</span></div>
+                        <div class="del"><span>Soft Delete</span></div>
+                    </td>
+                    <td class="td_cb">
+                        <input disabled type="checkbox" class="selectOne" aria-placeholder="select one">
+                    </td>
+                    <td class="td_Names">${clip(name, 23)}</td>
+                    <td class="td_Brands">${clip(brand, 23)}</td>
+                    <td class="td_Category">${clip(category, 23)}</td>
+                    <td class="td_Stock">${stock}</td>
+                    <td class="td_costPrice">${parseFloat(costPrice)}</td>
+                    <td class="td_sellingPrice">${parseFloat(sellingPrice)}</td>
+                    <td hidden class="td_discount">${parseFloat(discount)}</td>
+                    <td hidden class="state">visible</td>
+                    `;
+      }
+
       row.innerHTML = rowContent;
       row.id = tableROWS.length + 1;
       row.className = "bodyRow";
@@ -1589,8 +1612,8 @@ class DOMCONTROLLER {
       let currentSubtotal = parseFloat(subTotal.innerText);
       subTotal.innerText = currentSubtotal + rowItemPrice;
       mainTotal.innerText = subTotal.innerText;
-      let totalItemSellingPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemCostPrice));
-      let totalItemCostPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemPrice));
+      let totalItemSellingPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemPrice));
+      let totalItemCostPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemCostPrice));
       inCart.push({
         Item: {
           Name: rowItemName,
@@ -1614,21 +1637,26 @@ class DOMCONTROLLER {
       });
       itemSelect.addEventListener("change", function modifyCost(e) {
         let [itemName, itemBrand, itemCategory] = [cartItem.querySelector(".hidden_itemName").innerText, cartItem.querySelector(".hidden_itemBrand").innerText, cartItem.querySelector(".hidden_itemCategory").innerText];
-        totalItemSellingPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemCostPrice));
-        totalItemCostPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemPrice));
+        let newRevenue = 0;
+        totalItemSellingPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemPrice));
+        totalItemCostPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemCostPrice));
         inCart.forEach(item => {
           if (item.Item.Name === itemName && item.Item.Brand === itemBrand && item.Item.Category === itemCategory) {
             item.Purchased = parseInt(itemSelect.value);
             item.Revenue = totalItemSellingPrice;
             item.Profit = totalItemSellingPrice - totalItemCostPrice;
           }
+
+          console.log(item);
+          newRevenue = parseFloat(item.Revenue + newRevenue);
         });
         let itemQuanity = parseInt(itemSelect.value);
         let totalItemCost = parseFloat(itemQuanity * rowItemPrice).toPrecision(3);
         cartItemCost.innerText = `GH¢${totalItemCost}`;
-        let currentSubtotal = parseFloat(subTotal.innerText);
-        subTotal.innerText = currentSubtotal + parseFloat(totalItemCost);
-        mainTotal.innerText = subTotal.innerText;
+        let currentSubtotal = parseFloat(subTotal.innerText); // subTotal.innerText = currentSubtotal + parseFloat(totalItemCost);
+
+        subTotal.innerText = newRevenue;
+        mainTotal.innerText = newRevenue;
       });
     }
   }
@@ -2298,7 +2326,7 @@ class DATABASE {
                     });
                   } else {
                     const itemId = result.insertId;
-                    this.connector.query(`SELECT * FROM duffykids.users WHERE User_Name = '${User}'`, (error, result) => {
+                    this.connector.query(`SELECT * FROM users WHERE User_Name = '${User}'`, (error, result) => {
                       if (error) {
                         this.connector.rollback(() => {
                           reject("unknown error");
@@ -2424,11 +2452,10 @@ class DATABASE {
           UnitDiscount: sale.UnitDiscount,
           TotalDiscount: sale.TotalDiscount
         };
-        console.log(finalSaleValue);
-        userName = {
+        let userValue = {
           User_Name: userName
         };
-        this.connector.query("SELECT * FROM duffykids.users WHERE ?", userName, (error, result, fields) => {
+        this.connector.query("SELECT * FROM users WHERE ?", userValue, (error, result, fields) => {
           if (error) {
             reject('unknown error');
             throw error;
@@ -2499,13 +2526,11 @@ class DATABASE {
     // userName = userName.replace(/^\s+|\s+$/g, "")
     // console.log("userName: ", userName, " Password: ", Password);
     return new Promise((resolve, reject) => {
-      let user = {
+      let userValue = {
         User_Name: userName,
         Password: password
       };
-      this.connector.query("SELECT * FROM users", [userName, password], (error, result) => {
-        console.log(result);
-
+      this.connector.query("SELECT * FROM users WHERE User_Name = ?", userName, (error, result) => {
         if (error) {
           reject(error);
           throw error;
@@ -2513,13 +2538,128 @@ class DATABASE {
           let user = result.shift();
 
           if (user === undefined) {
-            reject();
-          } else {
-            resolve(user.IsAdmin);
+            reject("incorrect username");
+          } else if (user) {
+            if (user.Password !== password) {
+              reject("incorrect password");
+            } else if (user.User_Name === userName && user.Password === password) {
+              if (user.IsAdmin === 1) {
+                resolve([user.User_Name, "Admin"]);
+              } else if (user.IsAdmin === 1) {
+                resolve([user.User_Name, "Employee"]);
+              }
+            }
           }
         }
       });
     });
+  }
+  /******************FOR GRAPH */
+
+
+  getLastWeek() {
+    return new Promise((resolve, reject) => {
+      let days = [];
+      let revenues = [];
+      let colors = [];
+      let grossRevenue = 0;
+      let grossProfit = 0;
+      let totalSalesMade = 0;
+      let itemsSold = 0;
+      this.connector.query("SELECT DAYNAME(Date) Day, SUM(Revenue) Revenue, SUM(Profit) Profit, COUNT(id) SalesMade, SUM(Purchased) ItemsSold From `sales` WHERE DATE_SUB(NOW(), INTERVAL 1 WEEK) GROUP BY DAYNAME(Date) ORDER BY DAYNAME(Date) ASC", (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        result.forEach(item => {
+          days.push(item.Day);
+          revenues.push(parseFloat(item.Revenue));
+          grossRevenue = grossRevenue + parseFloat(item.Revenue);
+          grossProfit = grossProfit + parseFloat(item.Profit);
+          totalSalesMade = totalSalesMade + parseFloat(item.SalesMade);
+          itemsSold = itemsSold + parseInt(item.ItemsSold);
+          colors.push(`hsl(${randomNumber(0, 360)}, ${randomNumber(80, 100)}%, ${randomNumber(30, 70)}%)`);
+        });
+        resolve([days, revenues, grossRevenue, grossProfit, totalSalesMade, itemsSold, colors]);
+      });
+    });
+
+    function randomNumber(min, max) {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min) + min);
+    }
+  }
+
+  getLastMonth() {
+    return new Promise((resolve, reject) => {
+      let months = [];
+      let revenues = [];
+      let colors = [];
+      let grossRevenue = 0;
+      let grossProfit = 0;
+      let totalSalesMade = 0;
+      let itemsSold = 0;
+      this.connector.query("SELECT MONTHNAME(Date) Month, SUM(Revenue) Revenue, SUM(Profit) Profit, COUNT(id) SalesMade, SUM(Purchased) ItemsSold From `sales` WHERE DATE_SUB(NOW(), INTERVAL 1 MONTH) GROUP BY MONTHNAME(Date) ORDER BY MONTHNAME(Date) DESC", (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        result.forEach(item => {
+          months.push(item.Month);
+          revenues.push(parseFloat(item.Revenue));
+          grossRevenue = grossRevenue + parseFloat(item.Revenue);
+          grossProfit = grossProfit + parseFloat(item.Profit);
+          totalSalesMade = totalSalesMade + parseFloat(item.SalesMade);
+          itemsSold = itemsSold + parseInt(item.ItemsSold);
+          colors.push(`hsl(${randomNumber(0, 360)}, ${randomNumber(80, 100)}%, ${randomNumber(30, 50)}%)`);
+        });
+        resolve([months, revenues, grossRevenue, grossProfit, totalSalesMade, itemsSold, colors]);
+      });
+    });
+
+    function randomNumber(min, max) {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min) + min);
+    }
+  }
+
+  getLastYear() {
+    return new Promise((resolve, reject) => {
+      let years = [];
+      let revenues = [];
+      let colors = [];
+      let grossRevenue = 0;
+      let grossProfit = 0;
+      let totalSalesMade = 0;
+      let itemsSold = 0;
+      this.connector.query("SELECT YEAR(Date) Year, SUM(Revenue) Revenue, SUM(Profit) Profit, COUNT(id) SalesMade, SUM(Purchased) ItemsSold From `sales` WHERE DATE_SUB(NOW(), INTERVAL 1 YEAR) GROUP BY YEAR(Date) ORDER BY YEAR(Date) DESC", (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        result.forEach(item => {
+          years.push(item.Year);
+          revenues.push(parseFloat(item.Revenue));
+          grossRevenue = grossRevenue + parseFloat(item.Revenue);
+          grossProfit = grossProfit + parseFloat(item.Profit);
+          totalSalesMade = totalSalesMade + parseFloat(item.SalesMade);
+          itemsSold = itemsSold + parseInt(item.ItemsSold);
+          colors.push(`hsl(${randomNumber(0, 360)}, ${randomNumber(80, 100)}%, ${randomNumber(30, 70)}%)`);
+        });
+        resolve([years, revenues, grossRevenue, grossProfit, totalSalesMade, itemsSold, colors]);
+      });
+    });
+
+    function randomNumber(min, max) {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min) + min);
+    }
   }
 
 }
