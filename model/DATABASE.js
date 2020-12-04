@@ -1199,15 +1199,7 @@ class DATABASE{
 
         return new Promise((resolve, reject)=>{
 
-            this.db.users(userInfo)
-            .then(()=>{
-
-                resolve(true)
-
-            })
-            .catch(()=>{
-                reject(false);
-            })
+            this.connector.query("INSER")
 
         })
 

@@ -1,7 +1,10 @@
 "use strict";
 
 const { ipcRenderer } = require("electron");
+const DATABASE = require("../../model/DATABASE");
 const STORE = require("../../model/STORE");
+
+const database = new DATABASE();
 
 const store = new STORE({
     configName: 'userPrefs',
@@ -463,17 +466,152 @@ function openEmployeeForm(){
     `
         <header class="header">New Employee</header>
 
+        <div class="alertBanner">Content Here</div>
+
         <form class="newEmployeeForm">
 
+            <label for="tb_firstName" class="form_lbl" id="lbl_firstName">
 
+                First Name:
+
+                <input type="text" name="tb_firstName" id="tb_firstName" class="form_tb">
+
+            </label>
+
+            <label for="tb_secondName" class="form_lbl" id="lbl_secondName">
+
+                Second Name:
+                <input type="text" name="tb_secondName" id="tb_secondName" class="form_tb" >
+
+            </label>
+
+            <label for="tb_userName" class="form_lbl" id="lbl_userName">
+
+                User Name:
+                <input type="text" name="tb_userName" id="tb_userName" class="form_tb" >
+
+            </label>
+
+            <label for="tb_newPassword" class="form_lbl" id="lbl_newPassword">
+
+                Password:
+                <input type="password" name="tb_newPassword" id="tb_newPassword" class="form_tb" >
+
+            </label>
+
+            <label for="tb_confirmPassword" class="form_lbl" id="lbl_confirmPassword">
+
+                Confirm Password:
+                <input type="password" name="tb_confirmPassword" id="tb_confirmPassword" class="form_tb" >
+
+            </label>
+
+            <label for="tb_empStatus" class="form_lbl" id="lbl_empStatus">
+
+                Account Type:
+                <select id="tb_empStatus" name="tb_empStatus">
+
+                    <option value="1">Regular</option>
+                    <option value="0">Administrator</option>
+
+                </select>
+
+            </label>
 
         </form>
+
+        <button id="btn_employ">Employ</button>
         
 
     `
-    console.log(adminSettings);
-
     adminSettings.appendChild(addEmployeePage)
+
+    const formTBs = addEmployeePage.querySelectorAll(".form_tb");
+    const btnEmploy = addEmployeePage.querySelector("#btn_employ")
+    const alertBanner = addEmployeePage.querySelector(".alertBanner")
+
+    //Textbox
+    const firstName = addEmployeePage.querySelector("#tb_firstName");
+    const secondName = addEmployeePage.querySelector("#tb_secondName")
+    const userName = addEmployeePage.querySelector("#tb_userName")
+    const newPassword = addEmployeePage.querySelector("#tb_newPassword")
+    const confirmPassword = addEmployeePage.querySelector("#tb_confirmPassword")
+    const accountType = addEmployeePage.querySelector("#tb_empStatus")
+    
+
+    /************EVENT LISTENERS */
+    formTBs.forEach((textbox)=>{
+
+        textbox.addEventListener("blur", ()=>{
+
+            if(textbox.value === ""){
+                textbox.classList.add("emptyTB")
+                textbox.setAttribute("placeholder", "*empty field")
+            }
+            else{
+                textbox.classList.remove("emptyTB")
+                textbox.setAttribute("placeholder", "")
+            }
+
+        })
+
+    })
+
+    btnEmploy.addEventListener("click", ()=>{
+
+        let emptyField = false;
+
+        formTBs.forEach((textbox)=>{
+
+            if(textbox.value === ""){
+
+                alertBanner.innerText = "One or more field is empty"
+                alertBanner.classList.add("alertError");
+
+                emptyField = true;
+
+                setTimeout(()=>{
+                    alertBanner.classList.remove("alertError")
+                }, 3000)
+
+                return;
+
+            }
+
+        })
+
+        if(emptyField === false){
+
+            if(newPassword.value === confirmPassword.value){
+
+                let newUser = {
+                    First_Name: firstName.value,
+                    Last_Name: secondName.value,
+                    User_Name: userName.value,
+                    Password: confirmPassword.value,
+                    IsAdmin: accountType.value
+                }
+
+                database.addNewUser(newUser)
+
+            }
+            else{
+
+                alertBanner.innerText = "The two provided passwords do not match"
+                alertBanner.classList.add("alertError");
+
+                setTimeout(()=>{
+                    alertBanner.classList.remove("alertError")
+                }, 3000)
+
+
+            }
+
+        }
+
+        
+
+    })
 
 }
 

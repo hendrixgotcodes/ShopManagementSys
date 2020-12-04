@@ -21,10 +21,10 @@
 
 .settingsModal {
     position: absolute;
-    top: 10%;
-    left: 15%;
-    width: 65%;
-    height: 85%;
+    top: 5%;
+    left: 12%;
+    width: 75%;
+    height: 90%;
     background-color: $WHITE;
     border-radius: 8px;
     z-index: 11;
@@ -295,6 +295,103 @@
                                 height: 10%;
                                 background-color: $primary_green;
                                 color: $WHITE;
+                                display: flex;
+                                padding: 1rem;
+                                justify-content: space-between;
+                                align-items: center;
+                                font-size: 1.1rem;
+                                font-weight: 600;
+                                z-index: 2;
+                                position: relative;
+                            }
+
+                            .alertBanner{
+
+                                width: 100%;
+                                height: 5%;
+                                background-color: $secondary_green;
+                                position: absolute;
+                                top: 5%;
+                                left: 0;
+                                z-index: 1;
+                                transition: .3s;
+
+                            }
+
+                            .alertError{
+                                background-color: $secondary_red;
+                                top: 15%;
+                            }
+                            .alertSuccess{
+                                background-color: $secondary_green;
+                                top: 15%;
+                            }
+
+                            .newEmployeeForm{
+                                
+                                width: 100%;
+                                height: 65%;
+                                padding: .5rem;
+                                margin-top: 1rem;
+                                margin-bottom: .5rem;
+                                display: flex;
+                                align-items: center;
+                                flex-direction: column;
+                                flex-wrap: wrap;
+                                color: $primary_green;
+
+                                .form_lbl{
+                                    display: block;
+                                    width: 48%;
+                                    height: 20%;
+                                    margin-bottom: 1rem;
+                                    
+                                    .form_tb{
+                                        display: block;
+                                        width: 100%;
+                                        height: 60%;
+                                        border: 1px solid $primary_black;
+                                        border-radius: 4px;
+                                        padding: .5rem;
+                                        color: $primary_black;
+                                        font-size: .8rem;
+                                    }
+
+                                    .emptyTB{
+                                        outline: 3px solid rgba($color: $secondary_red, $alpha:  .5);
+                                        &::placeholder{
+                                            color: rgba($color: $secondary_red, $alpha:  .5);
+                                        }
+                                    }
+
+                                    select{
+                                        width: 100%;
+                                        height: 60%;
+                                        border: 1px solid $primary_black;
+                                        border-radius: 4px;
+                                        display: block;
+                                        font-size: .9rem;
+                                        color: $primary_black;
+                                    }
+                                }
+                                
+                            }
+
+                            #btn_employ{
+                                margin-left: 1rem;
+                                width: 11%;
+                                height: 6.5%;
+                                background-color: $WHITE;
+                                color: $primary_green;
+                                transition: .3s;
+                                border: 1px solid $primary_green;
+                                border-radius: 3px;
+
+                                &:hover, &:focus{
+                                    background-color: $primary_green;
+                                    color: $WHITE;
+                                }
+
                             }
                         }
 
