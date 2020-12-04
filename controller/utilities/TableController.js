@@ -841,8 +841,6 @@ class DOMCONTROLLER{
 
                 }
 
-                console.log(item);
-
                 newRevenue = parseFloat(item.Revenue + newRevenue);
 
             })
@@ -850,7 +848,6 @@ class DOMCONTROLLER{
 
             let itemQuanity = parseInt(itemSelect.value);
             let totalItemCost = parseFloat(itemQuanity * rowItemPrice).toPrecision(3);
-            cartItemCost.innerText = `GH¢${totalItemCost}`;
 
             let currentSubtotal = parseFloat(subTotal.innerText)
             // subTotal.innerText = currentSubtotal + parseFloat(totalItemCost);
