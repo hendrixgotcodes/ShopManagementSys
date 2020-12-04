@@ -4,6 +4,7 @@ const {
 } = require('electron');
 const DATABASE = require('../model/DATABASE');
 const Notifications = require('./Alerts/NotificationController');
+const cryptoJS = require('crypto-js')
 
 const database = new DATABASE();
 

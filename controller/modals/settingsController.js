@@ -3,6 +3,7 @@
 const { ipcRenderer } = require("electron");
 const DATABASE = require("../../model/DATABASE");
 const STORE = require("../../model/STORE");
+const cryptoJS = require("crypto-js")
 
 const database = new DATABASE();
 
@@ -511,8 +512,8 @@ function openEmployeeForm(){
                 Account Type:
                 <select id="tb_empStatus" name="tb_empStatus">
 
-                    <option value="1">Regular</option>
-                    <option value="0">Administrator</option>
+                    <option value="0">Regular</option>
+                    <option value="1">Administrator</option>
 
                 </select>
 
@@ -584,34 +585,81 @@ function openEmployeeForm(){
 
             if(newPassword.value === confirmPassword.value){
 
-                let newUser = {
-                    First_Name: firstName.value,
-                    Last_Name: secondName.value,
-                    User_Name: userName.value,
-                    Password: confirmPassword.value,
-                    IsAdmin: accountType.value
+
+                    generateHash(confirmPassword.value)
+                    .then((hash)=>{
+
+                        let newUser = {
+                            First_Name: firstName.value,
+                            Last_Name: secondName.value,
+                            User_Name: userName.value,
+                            Password: hash,
+                            IsAdmin: accountType.value
+                        }
+
+                        formTBs.forEach((textbox)=>{
+
+                            textbox.value = "";
+        
+                        })
+
+                        database.addNewUser(newUser)
+                        .then(()=>{
+
+                            alertBanner.innerText = "User added successfully"
+                            alertBanner.classList.add("alertSuccess");
+
+                            setTimeout(()=>{
+                                alertBanner.classList.remove("alertSuccess")
+                            }, 3000)
+
+                        })
+                        .catch(()=>{
+
+                            alertBanner.innerText = "Failed to add user. An error occured"
+                            alertBanner.classList.add("alertError");
+
+                            setTimeout(()=>{
+                                alertBanner.classList.remove("alertError")
+                            }, 3000)
+
+                        })
+
+                    })
+                    
+
+                }
+                else{
+
+                    alertBanner.innerText = "The two provided passwords do not match"
+                    alertBanner.classList.add("alertError");
+
+                    setTimeout(()=>{
+                        alertBanner.classList.remove("alertError")
+                    }, 3000)
+
+
                 }
 
-                database.addNewUser(newUser)
-
             }
-            else{
-
-                alertBanner.innerText = "The two provided passwords do not match"
-                alertBanner.classList.add("alertError");
-
-                setTimeout(()=>{
-                    alertBanner.classList.remove("alertError")
-                }, 3000)
-
-
-            }
-
-        }
 
         
 
     })
+
+    //Functions
+    function generateHash(password){
+
+        return new Promise((resolve, reject)=>{
+
+            const hash = cryptoJS.AES.encrypt(password, "advanceES##98*2303").toString()
+
+            resolve(hash)
+
+        })
+
+
+    }
 
 }
 

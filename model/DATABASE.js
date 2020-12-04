@@ -1,5 +1,6 @@
 // const Dexie = require('dexie').default
 const mariadb = require('mysql2');
+const cryptoJS = require('crypto-js');
 
 class DATABASE{
 
@@ -1199,7 +1200,21 @@ class DATABASE{
 
         return new Promise((resolve, reject)=>{
 
-            this.connector.query("INSER")
+            this.connector.query("INSERT INTO `users` SET ?", userInfo, (error, result)=>{
+
+                if(error){
+                    reject(error)
+                    throw error
+                }
+                else{
+
+                    console.log(result);
+
+                    resolve()
+
+                }
+
+            })
 
         })
 
@@ -1403,19 +1418,26 @@ class DATABASE{
                     }
                     else if(user){
 
-                        if(user.Password !== password){
-                            reject("incorrect password")
-                        }
-                        else if(user.User_Name === userName && user.Password === password){
+                        let storedPassword = user.Password;
 
-                            if(user.IsAdmin === 1){
-                                resolve([user.User_Name, "Admin"])
+                        verifyPassword(password, storedPassword)
+                        .then((result)=>{
+
+                            if(result === true && user.User_Name === userName){
+                                
+                                if(user.IsAdmin === 1){
+                                    resolve([user.User_Name, "Admin"])
+                                }
+                                else if(user.IsAdmin === 1){
+                                    resolve([user.User_Name, "Employee"])
+                                }  
+
                             }
-                            else if(user.IsAdmin === 1){
-                                resolve([user.User_Name, "Employee"])
-                            }    
-    
-                        }
+                            else{
+                                reject("incorrect password")
+                            }
+
+                        })
 
                     }
                     
@@ -1536,11 +1558,34 @@ class DATABASE{
         })
         
     }
+    
+                           
 
 
 
 
 }
+
+//FUNCTIONS
+function verifyPassword(incomingPassword, storedPassword){
+
+    return new Promise((resolve, reject)=>{
+
+        const decrypted = cryptoJS.AES.decrypt(storedPassword, 'advanceES##98*2303').toString(cryptoJS.enc.Utf8)
+
+        if(incomingPassword === decrypted){
+
+            resolve(true)
+
+        }
+        else{
+            resolve(false)
+            console.log(incomingPassword, decrypted);
+        }
+
+    })
+
+}  
 
 
 

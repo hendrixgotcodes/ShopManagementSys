@@ -20,6 +20,7 @@
     "babel-preset-env": "^1.7.0",
     "bootbox": "^5.5.1",
     "chart.js": "^2.9.4",
+    "crypto-js": "^4.0.0",
     "css-loader": "^4.3.0",
     "electron": "^10.1.4",
     "electron-db": "^0.15.7",
