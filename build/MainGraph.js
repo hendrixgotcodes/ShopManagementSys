@@ -109,13 +109,18 @@ __webpack_require__.r(__webpack_exports__);
 
 /**************DOM ELEMENTS************************/
 
-const select_footer = document.querySelector("#select_footer");
 const totalSalesMade = document.querySelector("#totalSalesMade").querySelector(".valueLabel");
 const totalItemsSold = document.querySelector("#totalItemsSold").querySelector(".valueLabel");
 const gross_revenue = document.querySelector("#gross_revenue").querySelector(".valueLabel");
 const grossProfit = document.querySelector("#grossProfit").querySelector(".valueLabel");
 const profitPercentage = document.querySelector("#profitPercentage").querySelector(".valueLabel");
 const averageBasketValue = document.querySelector("#averageBasketValue").querySelector(".valueLabel");
+const cardsContainer = document.querySelector(".cardsContainer"); ///Calenders
+
+const footerDate_from = document.querySelector("#footerDate_from");
+const footerDate_to = document.querySelector("#footerDate_to"); //Btns
+
+const footer_btn = document.querySelector(".footer_btn");
 var ctx = document.getElementById('myChart').getContext("2d");
 const database = new _model_DATABASE__WEBPACK_IMPORTED_MODULE_3___default.a();
 var myChart = new chart_js__WEBPACK_IMPORTED_MODULE_1___default.a(ctx, {
@@ -176,70 +181,88 @@ const brandSectionChart = new chart_js__WEBPACK_IMPORTED_MODULE_1___default.a(br
   }
 });
 /**************************EVENT LISTENERS***************************/
+// window.addEventListener("load", getLastWeek)
 
-window.addEventListener("load", getLastWeek);
-select_footer.addEventListener("change", e => {
-  let userSelection = select_footer.value;
-
-  switch (userSelection) {
-    case "Last Week":
-      getLastWeek();
-      break;
-
-    case "Last Month":
-      getLastMonth();
-      break;
-
-    case "Last Year":
-      getLastYear();
-      break;
-
-    default:
-      getLastWeek();
-  }
+footer_btn.addEventListener("click", e => {
+  e.preventDefault();
+  let from = footerDate_from.value;
+  let to = footerDate_to.value;
+  plotData(from, to);
+  displayTopItems(from, to);
 });
 /**************************FUNCTIONS********************************/
 
-function plotData(result, timePeriod) {
-  let [days, revenues, totalRevenue, totalProfit, salesMade, itemsSold, colors] = result;
-  myChart.data.labels = days;
-  myChart.data.datasets = [{
-    label: `Sales Made Last ${timePeriod}`,
-    data: revenues,
-    borderColor: colors,
-    borderWidth: 3,
-    backgroundColor: colors
-  }];
-  myChart.update();
-  /********UPDATING DOM  ELEMENTS***********/
+function plotData(from, to) {
+  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+  const date = new Date();
+  let newFrom = `${(dayNames[date.getDay(from)], monthNames[date.getMonth(from)])} ${date.getFullYear()}`;
+  let newTo = `${(dayNames[date.getDay(to)], monthNames[date.getMonth(to)])} ${date.getFullYear()}`;
+  database.getSaleRecords(from, to).then(result => {
+    let [days, revenues, totalRevenue, totalProfit, salesMade, itemsSold, colors] = result;
+    myChart.data.labels = days;
+    myChart.data.datasets = [{
+      label: "Sales Made",
+      data: revenues,
+      borderColor: '#35594B',
+      borderWidth: 2,
+      backgroundColor: colors,
+      fill: false
+    }];
+    myChart.update();
+    /********UPDATING DOM  ELEMENTS***********/
 
-  gross_revenue.innerText = `GH¢${millify__WEBPACK_IMPORTED_MODULE_2___default()(parseFloat(totalRevenue))}`;
-  grossProfit.innerText = `GH¢${millify__WEBPACK_IMPORTED_MODULE_2___default()(parseFloat(totalProfit))}`;
-  profitPercentage.innerText = `${parseFloat(totalProfit / parseFloat(totalRevenue) * 100).toPrecision(3)}%`;
-  totalSalesMade.innerText = salesMade;
-  totalItemsSold.innerText = itemsSold;
-  averageBasketValue.innerText = parseFloat(itemsSold / salesMade).toPrecision(3);
-}
-
-function getLastWeek() {
-  database.getLastWeek().then(result => {
-    plotData(result, "Week");
+    gross_revenue.innerText = `GH¢${millify__WEBPACK_IMPORTED_MODULE_2___default()(parseFloat(totalRevenue).toPrecision(3))}`;
+    grossProfit.innerText = `GH¢${millify__WEBPACK_IMPORTED_MODULE_2___default()(parseFloat(totalProfit).toPrecision(3))}`;
+    profitPercentage.innerText = `${parseFloat(totalProfit / parseFloat(totalRevenue).toPrecision(3) * 100).toPrecision(3)}%`;
+    totalSalesMade.innerText = salesMade;
+    totalItemsSold.innerText = itemsSold;
+    averageBasketValue.innerText = parseInt(itemsSold / salesMade);
   }).catch(error => {
     throw error;
   });
 }
 
-function getLastMonth() {
-  database.getLastMonth().then(result => {
-    plotData(result, "Month");
-  }).catch(error => {
-    throw error;
-  });
-}
-
-function getLastYear() {
-  database.getLastYear().then(result => {
-    plotData(result, "Year");
+function displayTopItems(from, to) {
+  database.getTopItems(from, to).then(result => {
+    cardsContainer.innerHTML = "";
+    const promises = [];
+    promises.push(result);
+    Promise.all(promises).then(result => {
+      result = result.shift();
+      result.forEach(item => {
+        const innerCardTemplate = `
+                <div class="itemDetails">
+    
+                    <h3 class="itemName itemHeader">${item.Name}</h3>
+                    
+                    <lablel class="itemLabel itemBrand">Brand: <span class="itemBrand_value">${item.Brand}</span></lablel>
+                    <lablel class="itemLabel itemCategory">Category: <span class="itemCategory_value">${item.Category}</span></lablel>
+    
+                </div>
+                <div class="itemStats">
+    
+                    <label class="totalSales">
+                        <h3 class="totalSales_value itemHeader">${item.Sold}</h3>
+                        <label class="totalSales_label">Total Sales</label>
+                    </label>
+    
+                    <label class="totalProfit">
+    
+                        <h3 class="totalProfit_value itemHeader">GH¢${item.Profit}</h3>
+                        <label class="totalProfit_label">Total Profit</label>
+    
+                    </label>
+    
+                </div>
+    
+                `;
+        const newCard = document.createElement("div");
+        newCard.className = "items";
+        newCard.innerHTML = innerCardTemplate;
+        cardsContainer.appendChild(newCard);
+      });
+    });
   }).catch(error => {
     throw error;
   });
@@ -1076,7 +1099,7 @@ class DATABASE {
   /******************FOR GRAPH */
 
 
-  getLastWeek() {
+  getSaleRecords(from, to) {
     return new Promise((resolve, reject) => {
       let days = [];
       let revenues = [];
@@ -1085,20 +1108,20 @@ class DATABASE {
       let grossProfit = 0;
       let totalSalesMade = 0;
       let itemsSold = 0;
-      this.connector.query("SELECT DAYNAME(Date) Day, SUM(Revenue) Revenue, SUM(Profit) Profit, COUNT(id) SalesMade, SUM(Purchased) ItemsSold From `sales` WHERE DATE_SUB(NOW(), INTERVAL 1 WEEK) GROUP BY DAYNAME(Date) ORDER BY DAYNAME(Date) ASC", (error, result) => {
+      this.connector.query("SELECT Date, DAYNAME(Date) Day, SUM(Revenue) Revenue, SUM(Profit) Profit, COUNT(id) SalesMade, SUM(Purchased) ItemsSold From `sales` WHERE Date BETWEEN ? AND ? GROUP BY Date ORDER BY Date DESC", [from, to], (error, result) => {
         if (error) {
           reject(error);
           throw error;
         }
 
         result.forEach(item => {
-          days.push(item.Day);
+          days.push(`${item.Day}`);
           revenues.push(parseFloat(item.Revenue));
           grossRevenue = grossRevenue + parseFloat(item.Revenue);
           grossProfit = grossProfit + parseFloat(item.Profit);
           totalSalesMade = totalSalesMade + parseFloat(item.SalesMade);
           itemsSold = itemsSold + parseInt(item.ItemsSold);
-          colors.push(`hsl(${randomNumber(0, 360)}, ${randomNumber(80, 100)}%, ${randomNumber(30, 70)}%)`);
+          colors.push(`hsl(${randomNumber(0, 360)}, ${randomNumber(80, 100)}%, ${randomNumber(60, 70)}%)`);
         });
         resolve([days, revenues, grossRevenue, grossProfit, totalSalesMade, itemsSold, colors]);
       });
@@ -1111,74 +1134,36 @@ class DATABASE {
     }
   }
 
-  getLastMonth() {
+  getTopItems(from, to) {
     return new Promise((resolve, reject) => {
-      let months = [];
-      let revenues = [];
-      let colors = [];
-      let grossRevenue = 0;
-      let grossProfit = 0;
-      let totalSalesMade = 0;
-      let itemsSold = 0;
-      this.connector.query("SELECT MONTHNAME(Date) Month, SUM(Revenue) Revenue, SUM(Profit) Profit, COUNT(id) SalesMade, SUM(Purchased) ItemsSold From `sales` WHERE DATE_SUB(NOW(), INTERVAL 1 MONTH) GROUP BY MONTHNAME(Date) ORDER BY MONTHNAME(Date) DESC", (error, result) => {
+      const items = [];
+      this.connector.query("SELECT Item ItemID, SUM(Purchased) Sold, SUM(Profit) Profit FROM `sales` WHERE Date BETWEEN ? AND ? GROUP BY Item ORDER BY COUNT(Item) DESC LIMIT 3", [from, to], (error, topItemResult) => {
         if (error) {
           reject(error);
           throw error;
-        }
+        } else {
+          topItemResult.forEach(topItem => {
+            this.connector.query("SELECT * FROM items WHERE id = ?", topItem.ItemID, (error, result) => {
+              if (error) {
+                reject(error);
+                throw error;
+              }
 
-        result.forEach(item => {
-          months.push(item.Month);
-          revenues.push(parseFloat(item.Revenue));
-          grossRevenue = grossRevenue + parseFloat(item.Revenue);
-          grossProfit = grossProfit + parseFloat(item.Profit);
-          totalSalesMade = totalSalesMade + parseFloat(item.SalesMade);
-          itemsSold = itemsSold + parseInt(item.ItemsSold);
-          colors.push(`hsl(${randomNumber(0, 360)}, ${randomNumber(80, 100)}%, ${randomNumber(30, 50)}%)`);
-        });
-        resolve([months, revenues, grossRevenue, grossProfit, totalSalesMade, itemsSold, colors]);
+              result.forEach(item => {
+                items.push({
+                  Name: item.Name,
+                  Brand: item.Brand,
+                  Category: item.Category,
+                  Sold: topItem.Sold,
+                  Profit: topItem.Profit
+                });
+                resolve(items);
+              });
+            });
+          });
+        }
       });
     });
-
-    function randomNumber(min, max) {
-      min = Math.ceil(min);
-      max = Math.floor(max);
-      return Math.floor(Math.random() * (max - min) + min);
-    }
-  }
-
-  getLastYear() {
-    return new Promise((resolve, reject) => {
-      let years = [];
-      let revenues = [];
-      let colors = [];
-      let grossRevenue = 0;
-      let grossProfit = 0;
-      let totalSalesMade = 0;
-      let itemsSold = 0;
-      this.connector.query("SELECT YEAR(Date) Year, SUM(Revenue) Revenue, SUM(Profit) Profit, COUNT(id) SalesMade, SUM(Purchased) ItemsSold From `sales` WHERE DATE_SUB(NOW(), INTERVAL 1 YEAR) GROUP BY YEAR(Date) ORDER BY YEAR(Date) DESC", (error, result) => {
-        if (error) {
-          reject(error);
-          throw error;
-        }
-
-        result.forEach(item => {
-          years.push(item.Year);
-          revenues.push(parseFloat(item.Revenue));
-          grossRevenue = grossRevenue + parseFloat(item.Revenue);
-          grossProfit = grossProfit + parseFloat(item.Profit);
-          totalSalesMade = totalSalesMade + parseFloat(item.SalesMade);
-          itemsSold = itemsSold + parseInt(item.ItemsSold);
-          colors.push(`hsl(${randomNumber(0, 360)}, ${randomNumber(80, 100)}%, ${randomNumber(30, 70)}%)`);
-        });
-        resolve([years, revenues, grossRevenue, grossProfit, totalSalesMade, itemsSold, colors]);
-      });
-    });
-
-    function randomNumber(min, max) {
-      min = Math.ceil(min);
-      max = Math.floor(max);
-      return Math.floor(Math.random() * (max - min) + min);
-    }
   }
 
 }

@@ -435,7 +435,22 @@ function removeSettingsModal(cover) {
 }
 
 function openEmployeeForm() {
-  console.log("hello openEmployee");
+  const adminSettings = document.querySelector(".adminSettings");
+  const addEmployeePage = document.createElement("div");
+  addEmployeePage.className = "addEmployeePage";
+  addEmployeePage.innerHTML = `
+        <header class="header">New Employee</header>
+
+        <form class="newEmployeeForm">
+
+
+
+        </form>
+        
+
+    `;
+  console.log(adminSettings);
+  adminSettings.appendChild(addEmployeePage);
 }
 /**********************TIPPJS**************** */
 // import tippy from 'tippy.js'

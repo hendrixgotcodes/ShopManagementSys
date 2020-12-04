@@ -6,14 +6,20 @@ import DATABASE from '../model/DATABASE';
 
 
 /**************DOM ELEMENTS************************/
-const select_footer = document.querySelector("#select_footer");
-
 const totalSalesMade = document.querySelector("#totalSalesMade").querySelector(".valueLabel");
 const totalItemsSold = document.querySelector("#totalItemsSold").querySelector(".valueLabel");
 const gross_revenue = document.querySelector("#gross_revenue").querySelector(".valueLabel");
 const grossProfit = document.querySelector("#grossProfit").querySelector(".valueLabel");
 const profitPercentage = document.querySelector("#profitPercentage").querySelector(".valueLabel");
 const averageBasketValue = document.querySelector("#averageBasketValue").querySelector(".valueLabel")
+const cardsContainer = document.querySelector(".cardsContainer");
+
+///Calenders
+const footerDate_from = document.querySelector("#footerDate_from");
+const footerDate_to = document.querySelector("#footerDate_to");
+
+//Btns
+const footer_btn = document.querySelector(".footer_btn");
 
 
 var ctx = document.getElementById('myChart').getContext("2d");
@@ -103,31 +109,17 @@ const brandSectionChart = new Chart(brandSection, {
 
 
 /**************************EVENT LISTENERS***************************/
-window.addEventListener("load", getLastWeek)
-select_footer.addEventListener("change", (e)=>{
+// window.addEventListener("load", getLastWeek)
+footer_btn.addEventListener("click", (e)=>{
 
-    let userSelection = select_footer.value;
+    e.preventDefault()
 
-    switch (userSelection){
+    let from = footerDate_from.value;
+    let to = footerDate_to.value;
 
-        case "Last Week":
-            getLastWeek();
-            break;
+    plotData(from, to)
 
-        case "Last Month":
-            getLastMonth();
-            break;
-        
-        case "Last Year":
-            getLastYear();
-            break;
-
-        default:
-            getLastWeek();
-
-
-    }
-
+    displayTopItems(from, to)
 
 })
 
@@ -135,18 +127,33 @@ select_footer.addEventListener("change", (e)=>{
 
 
 /**************************FUNCTIONS********************************/
-function plotData(result, timePeriod){
+function plotData(from, to){
 
-    let [days, revenues, totalRevenue, totalProfit, salesMade, itemsSold, colors] = result;
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec']
+
+    const date = new Date();
+
+ 
+
+    let newFrom = `${dayNames[date.getDay(from)], monthNames[date.getMonth(from)]} ${date.getFullYear()}`;
+    let newTo = `${dayNames[date.getDay(to)], monthNames[date.getMonth(to)]} ${date.getFullYear()}`
+    
+
+    database.getSaleRecords(from, to)
+    .then((result)=>{
+
+        let [days, revenues, totalRevenue, totalProfit, salesMade, itemsSold, colors] = result;
 
         myChart.data.labels = days;
         myChart.data.datasets = [
             {
-                label: `Sales Made Last ${timePeriod}`,
+                label: "Sales Made",
                 data: revenues,
-                borderColor: colors,
-                borderWidth: 3,
-                backgroundColor: colors
+                borderColor: '#35594B',
+                borderWidth: 2,
+                backgroundColor: colors,
+                fill: false
             }
         ]
 
@@ -154,57 +161,80 @@ function plotData(result, timePeriod){
 
 
         /********UPDATING DOM  ELEMENTS***********/
-        gross_revenue.innerText= `GH¢${Millify(parseFloat(totalRevenue))}`
-        grossProfit.innerText = `GH¢${Millify(parseFloat(totalProfit))}`;
-        profitPercentage.innerText = `${parseFloat((totalProfit/parseFloat(totalRevenue))*100).toPrecision(3)}%`
+        gross_revenue.innerText= `GH¢${Millify(parseFloat(totalRevenue).toPrecision(3))}`
+        grossProfit.innerText = `GH¢${Millify(parseFloat(totalProfit).toPrecision(3))}`;
+        profitPercentage.innerText = `${parseFloat((totalProfit/parseFloat(totalRevenue).toPrecision(3))*100).toPrecision(3)}%`
         totalSalesMade.innerText = salesMade;
         totalItemsSold.innerText = itemsSold;
-        averageBasketValue.innerText = parseFloat(itemsSold/salesMade).toPrecision(3);  
+        averageBasketValue.innerText = parseInt(itemsSold/salesMade);  
+        
+    })
+    .catch((error)=>{
+        throw error
+    })
 
 }
 
-function getLastWeek(){
+function displayTopItems(from, to){
 
-    database.getLastWeekSale()
+    database.getTopItems(from, to)
     .then((result)=>{
 
-        plotData(result, "Week")
+        cardsContainer.innerHTML = "";
+
+        const promises = []
+        promises.push(result)
+
+        Promise.all(promises)
+        .then((result)=>{
+
+            result = result.shift();
+
+            result.forEach((item)=>{
+
+                const innerCardTemplate =
+                `
+                <div class="itemDetails">
+    
+                    <h3 class="itemName itemHeader">${item.Name}</h3>
+                    
+                    <lablel class="itemLabel itemBrand">Brand: <span class="itemBrand_value">${item.Brand}</span></lablel>
+                    <lablel class="itemLabel itemCategory">Category: <span class="itemCategory_value">${item.Category}</span></lablel>
+    
+                </div>
+                <div class="itemStats">
+    
+                    <label class="totalSales">
+                        <h3 class="totalSales_value itemHeader">${item.Sold}</h3>
+                        <label class="totalSales_label">Total Sales</label>
+                    </label>
+    
+                    <label class="totalProfit">
+    
+                        <h3 class="totalProfit_value itemHeader">GH¢${item.Profit}</h3>
+                        <label class="totalProfit_label">Total Profit</label>
+    
+                    </label>
+    
+                </div>
+    
+                `
+    
+                const newCard = document.createElement("div");
+                newCard.className = "items";
+                newCard.innerHTML = innerCardTemplate;
+    
+                cardsContainer.appendChild(newCard)
+    
+            })
+
+        })
 
     })
     .catch((error)=>{
 
         throw error
 
-    })
-
-}
-
-function getLastMonth(){
-
-    database.getLastMonthSale()
-    .then((result)=>{
-
-        plotData(result, "Month")
-
-    })
-    .catch((error)=>{
-
-        throw error
-
-    })
-
-}
-
-function getLastYear(){
-
-    database.getLastYearSale()
-    .then((result)=>{
-
-        plotData(result, "Year")
-
-    })
-    .catch((error)=>{
-        throw error
     })
 
 }

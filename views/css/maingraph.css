@@ -726,6 +726,19 @@ body {
                     transform: scale(1); }
                   .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .modal_btn_add img {
                     z-index: 1; }
+                .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .addEmployeePage {
+                  width: 100%;
+                  height: 110%;
+                  position: absolute;
+                  top: 0%;
+                  left: 0;
+                  background-color: #fff;
+                  z-index: 2; }
+                  .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .addEmployeePage header {
+                    width: 100%;
+                    height: 10%;
+                    background-color: #35594B;
+                    color: #fff; }
               .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .accSettings {
                 margin-top: 10%;
                 padding: 1rem; }
@@ -1338,85 +1351,42 @@ body {
     padding: 0 1rem;
     border-top: 3px solid #b8d5ca; }
     .main_body .footer .footer_actions {
-      width: 25%;
+      width: 42%;
       height: 100%;
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
       align-self: flex-end;
       align-items: center;
       font-size: 1rem; }
-      .main_body .footer .footer_actions .footer_lbl {
+      .main_body .footer .footer_actions .footer_btn {
+        width: 15%;
+        text-decoration: none;
+        color: #35594B;
+        background-color: #fff;
+        border: 1px solid #35594B;
+        height: 70%;
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 100%;
-        width: 80%; }
-        .main_body .footer .footer_actions .footer_lbl .footer_tb {
-          width: 30%;
-          height: 68%;
-          margin-left: .8rem;
-          border: 1px solid #646766;
-          border-radius: 3px;
-          outline-color: #f4cd6d;
-          text-align: center;
-          transition: outline .3s; }
-          .main_body .footer .footer_actions .footer_lbl .footer_tb:focus {
-            outline-width: 20px;
-            outline-offset: 3px; }
-      .main_body .footer .footer_actions .footer_btn {
-        width: 38%;
-        height: 68%;
-        border: 1.8px solid #35594B;
-        background-color: #fff;
         border-radius: 4px;
-        color: #35594B;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: .3s;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: .5rem;
-        position: relative; }
+        transition: .3s; }
         .main_body .footer .footer_actions .footer_btn:hover {
           background-color: #35594B;
           color: #fff; }
-        .main_body .footer .footer_actions .footer_btn:disabled {
-          opacity: .4; }
-          .main_body .footer .footer_actions .footer_btn:disabled:hover {
-            background-color: #fff;
-            color: #646766;
-            cursor: default; }
-        .main_body .footer .footer_actions .footer_btn img {
-          width: 20%; }
-        .main_body .footer .footer_actions .footer_btn .cartCount {
-          width: 20%;
-          position: absolute;
-          right: -.7rem;
-          top: -.7rem;
-          transform: scale(0);
-          height: 67%;
-          background-color: #EFB526;
-          color: #fff;
-          font-size: .5rem;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          border-radius: 100%;
-          transition: 1;
-          transition: transform .7s; }
       .main_body .footer .footer_actions .filter {
-        width: 80%;
+        width: 88%;
         height: 100%;
         display: flex;
         justify-content: space-evenly;
-        align-items: center; }
-        .main_body .footer .footer_actions .filter select {
-          width: 60%;
-          height: 65%;
-          border: 1px solid #35594B;
-          border-radius: 3px;
-          color: #646766; }
+        align-items: center;
+        color: #646766;
+        border-radius: 4px; }
+        .main_body .footer .footer_actions .filter .footer_date {
+          border: 1px solid #646766;
+          color: #646766;
+          border-radius: 4px;
+          padding: .5rem;
+          height: 65%; }
     .main_body .footer .footer_clock #clock_blinker {
       position: absolute; }
     .main_body .footer .footer_clock .clock_min {
