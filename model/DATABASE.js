@@ -1388,7 +1388,7 @@ class DATABASE{
 
     }
 
-    validateUser(userName, password){
+    validateUser(userName, incomingPassword){
 
         // userName = userName.replace(/^\s+|\s+$/g, "")
         // console.log("userName: ", userName, " Password: ", Password);
@@ -1398,7 +1398,7 @@ class DATABASE{
 
             let userValue = {
                 User_Name: userName,
-                Password: password
+                Password: incomingPassword
             }
 
 
@@ -1420,7 +1420,7 @@ class DATABASE{
 
                         let storedPassword = user.Password;
 
-                        verifyPassword(password, storedPassword)
+                        verifyPassword(userName, incomingPassword, storedPassword)
                         .then((result)=>{
 
                             if(result === true && user.User_Name === userName){
@@ -1567,11 +1567,11 @@ class DATABASE{
 }
 
 //FUNCTIONS
-function verifyPassword(incomingPassword, storedPassword){
+function verifyPassword(userName, incomingPassword, storedPassword){
 
     return new Promise((resolve, reject)=>{
 
-        const decrypted = cryptoJS.AES.decrypt(storedPassword, 'advanceES##98*2303').toString(cryptoJS.enc.Utf8)
+        const decrypted = cryptoJS.AES.decrypt(storedPassword, userName).toString(cryptoJS.enc.Utf8)
 
         if(incomingPassword === decrypted){
 

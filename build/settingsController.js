@@ -544,7 +544,7 @@ function openEmployeeForm() {
 
     if (emptyField === false) {
       if (newPassword.value === confirmPassword.value) {
-        generateHash(confirmPassword.value).then(hash => {
+        generateHash(userName.value, confirmPassword.value).then(hash => {
           let newUser = {
             First_Name: firstName.value,
             Last_Name: secondName.value,
@@ -579,9 +579,9 @@ function openEmployeeForm() {
     }
   }); //Functions
 
-  function generateHash(password) {
+  function generateHash(userName, password) {
     return new Promise((resolve, reject) => {
-      const hash = cryptoJS.AES.encrypt(password, "advanceES##98*2303").toString();
+      const hash = cryptoJS.AES.encrypt(password, userName).toString();
       resolve(hash);
     });
   }
@@ -1421,13 +1421,13 @@ class DATABASE {
     });
   }
 
-  validateUser(userName, password) {
+  validateUser(userName, incomingPassword) {
     // userName = userName.replace(/^\s+|\s+$/g, "")
     // console.log("userName: ", userName, " Password: ", Password);
     return new Promise((resolve, reject) => {
       let userValue = {
         User_Name: userName,
-        Password: password
+        Password: incomingPassword
       };
       this.connector.query("SELECT * FROM users WHERE User_Name = ?", userName, (error, result) => {
         if (error) {
@@ -1440,7 +1440,7 @@ class DATABASE {
             reject("incorrect username");
           } else if (user) {
             let storedPassword = user.Password;
-            verifyPassword(password, storedPassword).then(result => {
+            verifyPassword(userName, incomingPassword, storedPassword).then(result => {
               if (result === true && user.User_Name === userName) {
                 if (user.IsAdmin === 1) {
                   resolve([user.User_Name, "Admin"]);
@@ -1529,9 +1529,9 @@ class DATABASE {
 } //FUNCTIONS
 
 
-function verifyPassword(incomingPassword, storedPassword) {
+function verifyPassword(userName, incomingPassword, storedPassword) {
   return new Promise((resolve, reject) => {
-    const decrypted = cryptoJS.AES.decrypt(storedPassword, 'advanceES##98*2303').toString(cryptoJS.enc.Utf8);
+    const decrypted = cryptoJS.AES.decrypt(storedPassword, userName).toString(cryptoJS.enc.Utf8);
 
     if (incomingPassword === decrypted) {
       resolve(true);

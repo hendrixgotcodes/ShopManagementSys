@@ -586,7 +586,7 @@ function openEmployeeForm(){
             if(newPassword.value === confirmPassword.value){
 
 
-                    generateHash(confirmPassword.value)
+                    generateHash(userName.value, confirmPassword.value)
                     .then((hash)=>{
 
                         let newUser = {
@@ -648,11 +648,11 @@ function openEmployeeForm(){
     })
 
     //Functions
-    function generateHash(password){
+    function generateHash(userName, password){
 
         return new Promise((resolve, reject)=>{
 
-            const hash = cryptoJS.AES.encrypt(password, "advanceES##98*2303").toString()
+            const hash = cryptoJS.AES.encrypt(password, userName).toString()
 
             resolve(hash)
 
