@@ -28,7 +28,7 @@ const database = new DATABASE();
 
 
 var myChart = new Chart(ctx, {
-    type: 'bar',
+    type: 'line',
     data: {
         labels: [],
         datasets: [{
