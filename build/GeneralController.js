@@ -324,7 +324,6 @@ function parseDataFile(filePath, defaults) {
   try {
     return JSON.parse(fs.readFileSync(filePath));
   } catch (error) {
-    console.log(error);
     return defaults;
   }
 }

@@ -419,7 +419,6 @@ function checkout() {
     }
   }).catch(error => {
     _controller_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_0___default.a.showAlert("error", "Sorry. Failed to make sale due to an unknown error");
-    console.log(error);
   });
 }
 
@@ -456,7 +455,7 @@ function clearAllItems(afterSale) {
         }, i * 400);
       });
       afterAnimation.then(() => {
-        subtractItem(itemsInCart[i]);
+        subtractItem(itemsInCart[i], cart);
         setTimeout(() => {
           itemsInCart[i].remove();
           resolve();
@@ -470,7 +469,7 @@ function clearAllItems(afterSale) {
   });
 }
 
-function subtractItem(item) {
+function subtractItem(item, inCart = "") {
   let rowItemPrice;
   const subTotal = domCart.querySelector(".subTotal").querySelector(".value");
   const mainTotal = domCart.querySelector(".mainTotal").querySelector(".value");
@@ -481,11 +480,19 @@ function subtractItem(item) {
   let itemTotalCost;
   let initSubTotal = parseFloat(subTotal.innerText);
   tableRows.forEach(row => {
-    if (row.querySelector(".td_Names").innerText === itemName && row.querySelector(".td_Brands").innerText === itemBrand && row.querySelector(".td_Category").innerText === itemCategory) {
+    const rowName = row.querySelector(".td_Names").innerText;
+    const rowBrand = row.querySelector(".td_Brands").innerText;
+    const rowCategory = row.querySelector(".td_Category").innerText;
+
+    if (rowName === itemName && rowBrand === itemBrand && rowCategory === itemCategory) {
       rowItemPrice = row.querySelector(".td_Price").innerText; // row.querySelector(".selectOne").checked = false
 
       rowItemPrice = row.querySelector(".td_Price").innerText;
-      itemTotalCost = itemQuanity * parseFloat(rowItemPrice);
+      itemTotalCost = itemQuanity * parseFloat(rowItemPrice); //Update stock in dom
+
+      const rowStock = row.querySelector(".td_Stock"); // inCart.forEach((item)=>{
+      //     if(item.Item.Name === rowName && item.Item.Ro)
+      // })
     }
   });
 
@@ -1316,9 +1323,9 @@ class DOMCONTROLLER {
           currentRow.querySelector('.td_Brands').innerText = brand;
           currentRow.querySelector('.td_Category').innerText = category;
           currentRow.querySelector('.td_Stock').innerText = stock;
-          currentRow.querySelector('.td_Price').innerText = sellingPrice;
+          currentRow.querySelector('.td_costPrice').innerText = costPrice;
           currentRow.querySelector('.td_discount').innerText = discount;
-          currentRow.querySelector(".td_costPrice").innerText = costPrice;
+          currentRow.querySelector(".td_sellingPrice").innerText = sellingPrice;
         }
       });
       return;
@@ -1328,10 +1335,27 @@ class DOMCONTROLLER {
     row.querySelector('.td_Brands').innerText = brand;
     row.querySelector('.td_Category').innerText = category;
     row.querySelector('.td_Stock').innerText = stock;
-    row.querySelector('.td_Price').innerText = sellingPrice;
+    row.querySelector('.td_costPrice').innerText = costPrice;
     row.querySelector('.td_discount').innerText = discount;
-    row.querySelector(".td_costPrice").innerText = costPrice;
+    row.querySelector(".td_sellingPrice").innerText = sellingPrice;
     return true;
+  }
+
+  static updateStock(row, name = "", brand = "", category = "", stock) {
+    if (row === "") {
+      let tableRows = document.querySelector("tbody").querySelectorAll("tr");
+      tableRows.forEach(currentRow => {
+        if (currentRow.querySelector('.td_Names').innerText === name && currentRow.querySelector('.td_Brands').innerText === brand && currentRow.querySelector('.td_Category').innerText === category) {
+          currentRow.querySelector('.td_Names').innerText = name;
+          currentRow.querySelector('.td_Brands').innerText = brand;
+          currentRow.querySelector('.td_Category').innerText = category;
+          currentRow.querySelector('.td_Stock').innerText = stock;
+          return;
+        }
+      });
+    } else {
+      row.querySelector('.td_Stock').innerText = stock;
+    }
   } // static editMany(Array){
   //     const inTable = [];
   //     const table = document.querySelectorAll("tr");
@@ -2700,7 +2724,6 @@ function parseDataFile(filePath, defaults) {
   try {
     return JSON.parse(fs.readFileSync(filePath));
   } catch (error) {
-    console.log(error);
     return defaults;
   }
 }

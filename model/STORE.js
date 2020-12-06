@@ -12,6 +12,7 @@ class STORE{
 
         const userDataPath = (electron.app || electron.remote.app).getPath('userData');
 
+
         this.path = path.join(userDataPath, data.configName + '.json');
 
         this.data = parseDataFile(this.path, data.defaults);
@@ -68,7 +69,6 @@ function parseDataFile(filePath, defaults){
         return JSON.parse(fs.readFileSync(filePath))
     }
     catch(error){
-        console.log(error);
         return defaults;
     }
         

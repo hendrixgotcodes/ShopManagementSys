@@ -302,9 +302,9 @@ function checkout(){
         if(result === true){
 
             clearAllItems()
-
-
             Notifications.showAlert("success", "Sale successful")
+
+
             
 
         }
@@ -313,8 +313,6 @@ function checkout(){
     .catch((error)=>{
 
         Notifications.showAlert("error", "Sorry. Failed to make sale due to an unknown error")
-
-        console.log(error);
 
     })
 
@@ -375,7 +373,7 @@ function clearAllItems(afterSale){
     
                 afterAnimation.then(()=>{
     
-                    subtractItem(itemsInCart[i])
+                    subtractItem(itemsInCart[i], cart)
     
                     setTimeout(()=>{
     
@@ -404,7 +402,7 @@ function clearAllItems(afterSale){
 
 }
 
-function subtractItem(item){
+function subtractItem(item, inCart=""){
 
     let rowItemPrice;
     const subTotal = domCart.querySelector(".subTotal").querySelector(".value")
@@ -422,7 +420,11 @@ function subtractItem(item){
 
     tableRows.forEach((row)=>{
 
-        if(row.querySelector(".td_Names").innerText === itemName && row.querySelector(".td_Brands").innerText === itemBrand && row.querySelector(".td_Category").innerText === itemCategory)
+        const rowName = row.querySelector(".td_Names").innerText;
+        const rowBrand = row.querySelector(".td_Brands").innerText ;
+        const rowCategory = row.querySelector(".td_Category").innerText ;
+
+        if( rowName=== itemName && rowBrand=== itemBrand && rowCategory=== itemCategory)
         {
             rowItemPrice = row.querySelector(".td_Price").innerText;
 
@@ -431,6 +433,16 @@ function subtractItem(item){
             rowItemPrice = row.querySelector(".td_Price").innerText
 
             itemTotalCost = itemQuanity * parseFloat(rowItemPrice)
+
+            //Update stock in dom
+            const rowStock = row.querySelector(".td_Stock");
+            
+            // inCart.forEach((item)=>{
+
+            //     if(item.Item.Name === rowName && item.Item.Ro)
+
+            // })
+
         }
 
     })

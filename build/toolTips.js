@@ -330,9 +330,9 @@ class DOMCONTROLLER {
           currentRow.querySelector('.td_Brands').innerText = brand;
           currentRow.querySelector('.td_Category').innerText = category;
           currentRow.querySelector('.td_Stock').innerText = stock;
-          currentRow.querySelector('.td_Price').innerText = sellingPrice;
+          currentRow.querySelector('.td_costPrice').innerText = costPrice;
           currentRow.querySelector('.td_discount').innerText = discount;
-          currentRow.querySelector(".td_costPrice").innerText = costPrice;
+          currentRow.querySelector(".td_sellingPrice").innerText = sellingPrice;
         }
       });
       return;
@@ -342,10 +342,27 @@ class DOMCONTROLLER {
     row.querySelector('.td_Brands').innerText = brand;
     row.querySelector('.td_Category').innerText = category;
     row.querySelector('.td_Stock').innerText = stock;
-    row.querySelector('.td_Price').innerText = sellingPrice;
+    row.querySelector('.td_costPrice').innerText = costPrice;
     row.querySelector('.td_discount').innerText = discount;
-    row.querySelector(".td_costPrice").innerText = costPrice;
+    row.querySelector(".td_sellingPrice").innerText = sellingPrice;
     return true;
+  }
+
+  static updateStock(row, name = "", brand = "", category = "", stock) {
+    if (row === "") {
+      let tableRows = document.querySelector("tbody").querySelectorAll("tr");
+      tableRows.forEach(currentRow => {
+        if (currentRow.querySelector('.td_Names').innerText === name && currentRow.querySelector('.td_Brands').innerText === brand && currentRow.querySelector('.td_Category').innerText === category) {
+          currentRow.querySelector('.td_Names').innerText = name;
+          currentRow.querySelector('.td_Brands').innerText = brand;
+          currentRow.querySelector('.td_Category').innerText = category;
+          currentRow.querySelector('.td_Stock').innerText = stock;
+          return;
+        }
+      });
+    } else {
+      row.querySelector('.td_Stock').innerText = stock;
+    }
   } // static editMany(Array){
   //     const inTable = [];
   //     const table = document.querySelectorAll("tr");
@@ -1857,7 +1874,6 @@ function parseDataFile(filePath, defaults) {
   try {
     return JSON.parse(fs.readFileSync(filePath));
   } catch (error) {
-    console.log(error);
     return defaults;
   }
 }

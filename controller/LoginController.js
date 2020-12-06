@@ -2,14 +2,17 @@
 const {
     ipcRenderer
 } = require('electron');
+const ACCOUNTREPORTER = require('../model/ACCOUNTREPORTER.js');
 const DATABASE = require('../model/DATABASE');
-const Notifications = require('./Alerts/NotificationController');
-const cryptoJS = require('crypto-js')
 
+// const STORE = require('../model/STORE');
 const database = new DATABASE();
+const lostAccountReporter = new ACCOUNTREPORTER();
 
 
 //DOM Elements
+const main = document.querySelector("body");
+const contentCover  = document.querySelector(".contentCover");
 const controlBoxMinimize = document.querySelector('.controlBox_minimize');
 const controlBoxMaximize = document.querySelector('.controlBox_maximize');
 const controlBoxClose = document.querySelector('.controlBox_close');
@@ -22,6 +25,7 @@ const visIcon = document.querySelector('.vis_icon');
 const btnLoader = document.querySelector(".form_btn > img")
 const warningLabel_tb = document.querySelector(".warningLabel_tb");
 const warningLabel_pw = document.querySelector(".warningLabel_pw");
+const forgottenPassword = document.querySelector(".forgottenPassword");
 
 //Program Variables
 let isFullScreen = false;
@@ -45,7 +49,7 @@ tbUserName.addEventListener("blur", function verifyInputValues(){
     }
     else if(tbUserName.value.replace(/^\s+|\s+$/g, "") === ""){
 
-        warningLabel_tb.innerHTML = `Whitespaces not allowed here`
+        warningLabel_tb.innerHTML = `Spaces not allowed here`
 
         let img = document.createElement("img")
         img.setAttribute("src", "../Icons/form/arrow_pointer.svg");
@@ -75,7 +79,7 @@ tbPassword.addEventListener("blur", function verifyInputValues(){
     }
     else if(tbPassword.value.replace(/^\s+|\s+$/g, "") === ""){
 
-        warningLabel_pw.innerText = `Whitespaces not allowed here`;
+        warningLabel_pw.innerText = `Spaces not allowed here`;
 
         let img = document.createElement("img")
         img.setAttribute("src", "../Icons/form/arrow_pointer.svg");
@@ -102,7 +106,7 @@ tbUserName.addEventListener("keyup", function(e){
     if(e.key == " "){
         e.preventDefault()
 
-        warningLabel_tb.innerText = `Whitespaces not allowed here`
+        warningLabel_tb.innerText = `Spaces not allowed here`
 
         let img = document.createElement("img")
         img.setAttribute("src", "../Icons/form/arrow_pointer.svg");
@@ -120,7 +124,7 @@ tbPassword.addEventListener("keyup", function(e){
     if(e.key == " "){
         e.preventDefault()
 
-        warningLabel_pw.innerText = `Whitespaces not allowed here`
+        warningLabel_pw.innerText = `Spaces not allowed here`
 
         let img = document.createElement("img")
         img.setAttribute("src", "../Icons/form/arrow_pointer.svg");
@@ -136,6 +140,83 @@ tbPassword.addEventListener("keyup", function(e){
 
 })
 
+contentCover.addEventListener("click", ()=>{
+
+    closeConfirmationBox();
+
+})
+
+forgottenPassword.addEventListener("click", function loadPasswordHelpCenter(e){
+
+    e.preventDefault();
+
+    contentCover.classList.add("contentCover--shown");
+
+    loadConfirmationBox()
+
+})
+
+function loadConfirmationBox(){
+
+    const confirmationBoxInnerTemplate = 
+    `
+        <header class="mainHeader">Confirm</header>
+
+        <form class="mainForm">
+        
+            <label class="confirmationLabel" for="confirmationBox">
+
+                A report will be sent to the administrator to reset your password.
+                Do you wish to continue with this process?
+            
+            </label>
+
+            <button class="btnConfirm">Yes</button>
+
+        </form>
+    `
+    const confirmationBox = document.createElement("div");
+    confirmationBox.className = "confirmationBox";
+
+    confirmationBox.innerHTML = confirmationBoxInnerTemplate;
+
+    main.appendChild(confirmationBox)
+
+    const btnConfirm = main.querySelector(".btnConfirm")
+
+    btnConfirm.addEventListener("click", (e)=>{
+
+        e.preventDefault()
+
+        lostAccountReporter.set(tbUserName.value)
+        .then(()=>{
+
+            closeConfirmationBox();
+
+        })
+        
+
+       
+
+    })
+
+    function closeConfirmationBox(){
+
+        const confirmationBox = main.querySelector(".confirmationBox");
+
+        if(confirmationBox !== null){
+
+            contentCover.classList.remove("contentCover--shown");
+            confirmationBox.remove(); 
+
+        }
+
+    }
+
+}
+
+/*________________________________________________________________________________________*/
+
 
 
 
@@ -147,7 +228,7 @@ ipcRenderer.on('isFullScreen', () => {
 })
 
 
-//Functions Being Called
+/***********************Functions Being Called/********************************* */
 function sendMinimizeEvent() {
     ipcRenderer.send('minimize')
 
@@ -199,6 +280,7 @@ function loadStore(e) {
             btnLoader.removeAttribute("src")
             btnLoader.classList.remove("img_shown")
 
+            console.log(error.code);
 
             if(error === "incorrect username"){
 

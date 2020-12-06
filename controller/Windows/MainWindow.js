@@ -3,7 +3,7 @@ const {
     globalShortcut,
     dialog,
     ipcMain,
-    remote
+    remote,
 } = require('electron');
 
 //Loading directory which contains static files
@@ -103,6 +103,8 @@ class MainWWindow extends BrowserWindow {
                 this.webContents.send("setUserParams", [this.userName, this.userType])
 
             })
+
+            
 
 
         /*********************OPENS FILE EXPLORER*******************/
