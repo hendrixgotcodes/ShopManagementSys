@@ -60,8 +60,9 @@ const settingsModalTemplate =
                                 <thead class="tableHeader">
                                     <tr class="modal_tHead">
                                         <th class="tableHead_items">Name</th>
-                                        <th class="tableHead_items">DOB</th>
-                                        <th class="tableHead_items">Date Registered</th>
+                                        <th class="tableHead_items">User Name</th>
+                                        <th class="tableHead_items">Admin Status</th>
+                                        <th class="tableHead_items">Last Seen</th>
                                     </tr>
                                 </thead>
                                 <tbody class="modal_tBody">
@@ -150,6 +151,7 @@ const modalMenu_adminSettings = document.querySelector('.modalMenu_adminSettings
 const modalMenu_accSettings = document.querySelector('.modalMenu_accSettings');
 const modalMenu_genSettings = document.querySelector('.modalMenu_genSettings');
 const modal_slider = document.querySelector('.slider');
+const modal_tBody = settingsModal.querySelector(".settingsContainer").querySelector(".modal_tBody");
 
 const toolTipPref = settingsModal.querySelector('.genSettings').querySelector('#toolTipPref');
 const timeOutPref = settingsModal.querySelector('.genSettings').querySelector('#timeOutPref');
@@ -157,9 +159,14 @@ const btnGenSettings = settingsModal.querySelector('.genSettings').querySelector
 
 const modal_btn_add = settingsModal.querySelector(".modal_btn_add");
 
+
+/***********Event Listeners */
 modal_btn_add.addEventListener("click", openEmployeeForm)
 
+
 /***********************************DEFAULT SETTERS**************************************** */
+initializeEmployeeTable()
+
 store.get("toolTipsPref")
 .then((userPref)=>{
 
@@ -216,6 +223,44 @@ store.get("timeOutPref")
 
 
 /***********************************FUNCTIONS**************************************** */
+function initializeEmployeeTable(){
+
+    console.log("initializing...");
+
+    database.getUsers()
+    .then((users)=>{
+
+        console.log(users);
+
+        users.forEach((user)=>{
+
+            let userStatus = "Regular"
+
+            if(user.IsAdmin === 1){
+                userStatus = "Admin"
+            }
+
+            const tableContentTemplate = 
+            `
+                <td>${user.First_Name} ${user.Last_Name}</td>
+                <td>${user.User_Name}</td>
+                <td>${userStatus}</td>
+                <td>${user.Last_Seen}</td>
+            `
+
+            const tableRow = document.createElement("tr");
+            tableRow.className = "bodyRow";
+            tableRow.innerHTML = tableContentTemplate;
+
+            modal_tBody.appendChild(tableRow);
+            
+
+        })
+
+    })
+
+}
+
 //Notification/Alert
 function alertSaved(settingType, action){
 

@@ -178,7 +178,7 @@ tbUserName.addEventListener("keyup", function (e) {
   }
 });
 tbPassword.addEventListener("keyup", function (e) {
-  if (e.key == " ") {
+  if (e.key === " ") {
     e.preventDefault();
     warningLabel_pw.innerText = `Spaces not allowed here`;
     let img = document.createElement("img");
@@ -1299,6 +1299,19 @@ class DATABASE {
     });
   }
 
+  getUsers() {
+    return new Promise((resolve, reject) => {
+      this.connector.query("SELECT * FROM `users`", (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        resolve(result);
+      });
+    });
+  }
+
 } //FUNCTIONS
 
 
@@ -1310,7 +1323,6 @@ function verifyPassword(userName, incomingPassword, storedPassword) {
       resolve(true);
     } else {
       resolve(false);
-      console.log(incomingPassword, decrypted);
     }
   });
 }

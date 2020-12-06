@@ -84,13 +84,16 @@
         align-items: center;
         transition: .3s;
         position: relative;
+        color: $primary_black;
 
         &:nth-child(odd) {
-            background-color: $WHITE;
+            // background-color: $WHITE;
+            color: $primary_black;
         }
 
         &:nth-child(even){
-            background-color: $OFFWHITE;
+            // background-color: $OFFWHITE;
+            color: $primary_black;
         }
 
 

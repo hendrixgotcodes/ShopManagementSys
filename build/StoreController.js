@@ -2655,6 +2655,19 @@ class DATABASE {
     });
   }
 
+  getUsers() {
+    return new Promise((resolve, reject) => {
+      this.connector.query("SELECT * FROM `users`", (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        resolve(result);
+      });
+    });
+  }
+
 } //FUNCTIONS
 
 
@@ -2666,7 +2679,6 @@ function verifyPassword(userName, incomingPassword, storedPassword) {
       resolve(true);
     } else {
       resolve(false);
-      console.log(incomingPassword, decrypted);
     }
   });
 }

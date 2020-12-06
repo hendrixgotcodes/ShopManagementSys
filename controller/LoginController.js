@@ -121,7 +121,7 @@ tbUserName.addEventListener("keyup", function(e){
 
 tbPassword.addEventListener("keyup", function(e){
 
-    if(e.key == " "){
+    if(e.key === " "){
         e.preventDefault()
 
         warningLabel_pw.innerText = `Spaces not allowed here`
