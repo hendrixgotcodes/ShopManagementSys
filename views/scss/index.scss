@@ -234,6 +234,7 @@ body {
         padding-top: 20px;
         text-decoration: none;
         transition: .5s;
+        outline: none;
 
         &:hover{
             text-decoration: underline;
@@ -276,6 +277,7 @@ body {
     align-items: center;
     flex-direction: column;
     box-shadow: 2px 5px 5px rgba($color: #000000, $alpha: 0.5);
+    outline: none;
 
     .mainHeader{
 
@@ -293,6 +295,7 @@ body {
         padding: .5rem;
         z-index: 1;
         background-color: $OFFWHITE;  
+        outline: none;
 
 
     }
@@ -306,7 +309,7 @@ body {
         background-color: $OFFWHITE;  
         border-bottom-left-radius: 10px;
         border-bottom-right-radius: 10px;   
-        
+        outline: none;
 
         .confirmationLabel{
 
@@ -330,6 +333,7 @@ body {
             font-size: 1rem;
             cursor: pointer;
             transition: .3s;
+            outline: none;
 
             &:hover{
                 background-color: lighten($color: $primary_green, $amount: 10);
