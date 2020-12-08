@@ -1,12 +1,16 @@
 "use strict";
 
 const { ipcRenderer } = require("electron");
+import DATABASE from '../model/DATABASE';
 import STORE from '../model/STORE';
 
 
+const database = new DATABASE();
+
+
 //Program Variables
-let userName;
-let userType;
+let UserName;
+let UserType;
 let isFullScreen = false;
 let logOutTimeOut = 30000;
 let timeOutValue;
@@ -38,10 +42,10 @@ const toolBar_tb = document.querySelector('.toolBar_tb');
 
 
 ipcRenderer.on("loadUserInfo", (e, array)=>{
-    [userName, userType] = array;
+    [UserName, UserType] = array;
 
 
-    if(userType === 'Admin'){
+    if(UserType === 'Admin'){
 
         const store = new STORE({
             configName: 'userPrefs',
@@ -66,8 +70,6 @@ ipcRenderer.on("loadUserInfo", (e, array)=>{
 
             let date = new Date();
 
-            console.log("implemented ", date.getSeconds(), date.getMilliseconds());
-
 
         })
         
@@ -78,7 +80,7 @@ ipcRenderer.on("loadUserInfo", (e, array)=>{
 
 ipcRenderer.on("setUserParams", (e, paramsArray)=>{
 
-    [userName, userType] = paramsArray;
+    [UserName, UserType] = paramsArray;
 
 })
 
@@ -115,12 +117,15 @@ if(toolBar_tb !== null){
 
 window.addEventListener('click', (e)=>{
     modifySectionTime(e)
+    updateUserLastSeen()
 });
 window.addEventListener('mouseover', (e)=>{
     modifySectionTime(e)
+    updateUserLastSeen()
 });
 window.addEventListener('keypress', (e)=>{
     modifySectionTime(e)
+    updateUserLastSeen();
 });
 
 
@@ -153,15 +158,15 @@ function sendCloseEvent() {
 
 //Triggers an event to load the pages in the  ipcMain
 function loadStore(){
-    ipcRenderer.send('loadStore', [userName, userType])
+    ipcRenderer.send('loadStore', [UserName, UserType])
 }
 
 function loadInventory(){
-    ipcRenderer.send('loadInventory', [userName, userType])
+    ipcRenderer.send('loadInventory', [UserName, UserType])
 }
 
 function loadAnalytics(){
-    ipcRenderer.send('loadAnalytics', [userName, userType])
+    ipcRenderer.send('loadAnalytics', [UserName, UserType])
 }
 
 function loadLoginPage(){
@@ -253,3 +258,34 @@ function modifySectionTime(e){
     timeOutValue = setTimeout(loadLoginPage, logOutTimeOut)
 
 }
+
+function updateUserLastSeen(){
+
+     //Setting updating user's last seen  
+     const now = new Date();
+     const lastSeen = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`
+ 
+ 
+     database.setUserLastSeen(UserName, lastSeen);
+
+}
+
+ipcRenderer.on("setUserParams", (e, userParamsArray)=>{
+
+
+    [UserName, UserType] = userParamsArray
+
+    let windowTitile = document.querySelector(".titleBar_userName");
+    windowTitile.innerText = UserName
+
+    //Setting updating user's last seen  
+    const now = new Date();
+    const lastSeen = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`
+
+
+    database.setUserLastSeen(UserName, lastSeen)
+    .then((result)=>{
+        console.log(result);
+    })
+
+})

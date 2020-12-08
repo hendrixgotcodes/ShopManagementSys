@@ -313,9 +313,6 @@ class DATABASE{
     
                    
                 }
-                else{
-                    console.log("Db connectected successfully.....");
-                }
     
             })
 
@@ -442,7 +439,7 @@ class DATABASE{
         
                                                             let auditTrailValues = 
                                                             {
-                                                                Date: `${Today.getFullYear()}-${Today.getMonth()}-${Today.getDate()} ${Today.getHours()}:${Today.getMinutes()}:${Today.getSeconds()}`,
+                                                                Date: `${Today.getFullYear()}-${Today.getMonth()+1}-${Today.getDate()} ${Today.getHours()}:${Today.getMinutes()}:${Today.getSeconds()}`,
                                                                 User: user.id,
                                                                 Operation: "Creation",
                                                                 Item: itemId
@@ -649,7 +646,7 @@ class DATABASE{
 
                                             let auditTrailValues = 
                                             {
-                                                Date: `${Today.getFullYear()}-${Today.getMonth()}-${Today.getDate()} ${Today.getHours()}:${Today.getMinutes()}:${Today.getSeconds()}`,
+                                                Date: `${Today.getFullYear()}-${Today.getMonth()+1}-${Today.getDate()} ${Today.getHours()}:${Today.getMinutes()}:${Today.getSeconds()}`,
                                                 User: userId,
                                                 Operation: "Edit",
                                                 Item: itemId
@@ -698,8 +695,6 @@ class DATABASE{
                                                                     throw error
                                                                 }
                                 
-                                                                console.log(result);
-                                        
                                                                 resolve(true)
                                 
                                 
@@ -934,15 +929,7 @@ class DATABASE{
 
        
 
-        return new Promise((resolve, reject)=>{
-
-            let today = new Date();
-            let year = today.getFullYear();
-            let month = today.getMonth();
-            let day = today.getDate();
-            let hour = today.getHours();
-            let minutes = today.getMinutes();
-            let seconds = today.getSeconds();
+        return new Promise((resolve, reject)=>{           
 
             let inDb = [];
 
@@ -977,6 +964,11 @@ class DATABASE{
             itemArray.forEach((item)=>{
 
                 this.connector.beginTransaction((error)=>{
+
+                    if(error){
+                        reject(error)
+                        throw error
+                    }
 
                     this.connector.query(`INSERT INTO duffykids.itemBrands SET Name = '${item.Brand}'`, (error)=>{
 
@@ -1037,7 +1029,7 @@ class DATABASE{
 
                                                     let auditTrailValues = 
                                                     {
-                                                        Date: `${Today.getFullYear()}-${Today.getMonth()}-${Today.getDate()} ${Today.getHours()}:${Today.getMinutes()}:${Today.getSeconds()}`,
+                                                        Date: `${Today.getFullYear()}-${Today.getMonth()+1}-${Today.getDate()} ${Today.getHours()}:${Today.getMinutes()}:${Today.getSeconds()}`,
                                                         User: userId,
                                                         Operation: "Creation",
                                                         Item: itemId
@@ -1247,11 +1239,11 @@ class DATABASE{
                 let [itemName, itemBrand, itemCategory] = [sale.Item.Name, sale.Item.Brand, sale.Item.Category];
 
 
-                sale.Date = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
+                sale.Date = `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`;
 
                 let finalSaleValue = {
 
-                    Date: `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`,
+                    Date: `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`,
                     Purchased: sale.Purchased,
                     Revenue: sale.Revenue,
                     Profit: sale.Profit,
@@ -1317,8 +1309,6 @@ class DATABASE{
                                             }
                                             else{
 
-                                                console.log(result);
-    
                                                 let userSaleValue = {
                                                     User: userId,
                                                     Sales: result.insertId
@@ -1423,12 +1413,13 @@ class DATABASE{
                         verifyPassword(userName, incomingPassword, storedPassword)
                         .then((result)=>{
 
-                            if(result === true && user.User_Name === userName){
+
+                            if(result === true){
                                 
                                 if(user.IsAdmin === 1){
                                     resolve([user.User_Name, "Admin"])
                                 }
-                                else if(user.IsAdmin === 1){
+                                else if(user.IsAdmin !== 1){
                                     resolve([user.User_Name, "Employee"])
                                 }  
 
@@ -1563,11 +1554,30 @@ class DATABASE{
 
         return new Promise((resolve, reject)=>{
 
-            this.connector.query("SELECT * FROM `users`", (error, result)=>{
+            this.connector.query('SELECT First_Name, Last_Name, User_Name, TIMEDIFF(NOW(), Last_Seen) Last_Seen FROM `users`', (error, result)=>{
 
                 if(error){
                     reject(error)
                     throw error
+                }
+
+                resolve(result);
+
+            })
+
+        })
+
+    }
+
+    setUserLastSeen(userName, lastSeen){
+
+        return new Promise((resolve, reject)=>{
+
+            this.connector.query("UPDATE `users` SET Last_Seen = ? WHERE User_Name =?", [lastSeen, userName], (error, result)=>{
+
+                if(error){
+                    reject("error");
+                    throw error;
                 }
 
                 resolve(result);
@@ -1591,6 +1601,8 @@ function verifyPassword(userName, incomingPassword, storedPassword){
     return new Promise((resolve, reject)=>{
 
         const decrypted = cryptoJS.AES.decrypt(storedPassword, userName).toString(cryptoJS.enc.Utf8)
+
+        console.log(decrypted, incomingPassword);
 
         if(incomingPassword === decrypted){
 

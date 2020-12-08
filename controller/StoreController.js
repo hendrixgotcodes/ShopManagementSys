@@ -81,15 +81,25 @@ toolBarBtn.addEventListener('click',(e)=>{
 })
 
 //Sets user parameters
-ipcRenderer.on("setUserParams", (e, userParamsArray)=>{
+// ipcRenderer.on("setUserParams", (e, userParamsArray)=>{
 
 
-    [UserName, UserType] = userParamsArray
+//     [UserName, UserType] = userParamsArray
 
-    let windowTitile = document.querySelector(".titleBar_userName");
-    windowTitile.innerText = UserName
+//     let windowTitile = document.querySelector(".titleBar_userName");
+//     windowTitile.innerText = UserName
 
-})
+//     //Setting updating user's last seen  
+//     const now = new Date();
+//     const lastSeen = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`
+
+
+//     database.setUserLastSeen(UserName, lastSeen)
+//     .then((result)=>{
+//         console.log(result);
+//     })
+
+// })
 
 // btnCart_sell
 btnCart_sell.addEventListener("click", checkout)

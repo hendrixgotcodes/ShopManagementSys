@@ -166,7 +166,7 @@ function loadConfirmationBox(){
         
             <label class="confirmationLabel" for="confirmationBox">
 
-                A report will be sent to the administrator to reset your password.
+                A report will be sent to your administrator to reset your password.
                 Do you wish to continue with this process?
             
             </label>

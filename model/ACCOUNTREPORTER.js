@@ -13,12 +13,16 @@ class ACCOUNTREPORTER extends STORE{
 
     }
 
-    get(key){
+    get(){
 
-        super.get("LostAccounts")
-        .then((data)=>{
+        return new Promise((resolve, reject)=>{
 
-            return data;
+            super.get("LostAccounts")
+            .then((data)=>{
+
+                resolve(data);
+
+            })
 
         })
 

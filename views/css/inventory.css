@@ -831,6 +831,9 @@ body {
                   .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .addEmployeePage .alertSuccess {
                     background-color: #12A89D;
                     top: 15%; }
+                  .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .addEmployeePage .alertInfo {
+                    background-color: #EFB526;
+                    top: 15%; }
                   .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .addEmployeePage .newEmployeeForm {
                     width: 100%;
                     height: 65%;

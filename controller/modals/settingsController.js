@@ -3,7 +3,9 @@
 const { ipcRenderer } = require("electron");
 const DATABASE = require("../../model/DATABASE");
 const STORE = require("../../model/STORE");
-const cryptoJS = require("crypto-js")
+const cryptoJS = require("crypto-js");
+const timeDiff = require("timediff");
+const ACCOUNTREPORTER = require("../../model/ACCOUNTREPORTER");
 
 const database = new DATABASE();
 
@@ -225,16 +227,15 @@ store.get("timeOutPref")
 /***********************************FUNCTIONS**************************************** */
 function initializeEmployeeTable(){
 
-    console.log("initializing...");
-
     database.getUsers()
     .then((users)=>{
 
-        console.log(users);
 
         users.forEach((user)=>{
 
             let userStatus = "Regular"
+
+            console.log(user.Last_Seen);
 
             if(user.IsAdmin === 1){
                 userStatus = "Admin"
@@ -245,7 +246,7 @@ function initializeEmployeeTable(){
                 <td>${user.First_Name} ${user.Last_Name}</td>
                 <td>${user.User_Name}</td>
                 <td>${userStatus}</td>
-                <td>${user.Last_Seen}</td>
+                <td>${getRelativeTime(user.Last_Seen)}</td>
             `
 
             const tableRow = document.createElement("tr");
@@ -258,6 +259,112 @@ function initializeEmployeeTable(){
         })
 
     })
+
+    function getRelativeTime(time){
+
+        if(time === null || time===undefined){
+            return "Not available"
+        }
+
+        let finalTime;
+        let [hours, minutes, seconds] = time.split(":");
+
+        [hours, minutes, seconds] = [parseInt(hours), parseInt(minutes), parseInt(seconds)]
+
+
+        if(hours == 0 && minutes > 60){
+
+            let hours = parseInt(minutes);
+
+            if(hours === 1){
+
+                return `An hour ago`
+
+            }
+
+            return `${hours} hours ago ${minutes} minutes ago`
+
+
+        }
+        else if(hours > 24){
+            let days = parseInt(hours/24);
+            
+            if(days === 1){
+                return `${days} day ago`
+            }
+
+            return `${days} days ago`
+
+        }
+        else if(hours > 168){
+
+            let week = parseInt(hours/168);
+
+            if(week === 1){
+                return `${week} week ago`
+            }
+
+            return `${week} weeks ago`
+
+        }
+        else if(hours > 8760){
+            
+            let yearMonth = parseFloat(hours/8760).toPrecision(2);
+
+            let [year, month] = yearMonth.split(".");
+
+            if(year === 1){
+                
+                if(month === 1){
+                    return `A year and a month ago`
+                }
+                else{
+                    return `A year and ${month} months ago`
+                }
+
+            }
+            else{
+
+                if(month === 1){
+                    return `${year} years and 1 month ago`
+                }
+                else{
+                    return `${year} years and ${month} months ago`
+                }
+
+            }
+
+        }
+        else{
+
+            if(!(minutes > 1) && hours === 0){
+
+
+                return "Online"
+
+            }
+            else if(hours === 1){
+
+                if(minutes === 1){
+
+                    return `An hour and a minute ago`
+
+                }
+                else{
+                    return `${hours} hour ${minutes} minutes ago`
+                }
+
+
+            }
+            else{
+                return `${hours} hours ${minutes} minutes ago`
+            }
+
+
+
+        }
+
+    }
 
 }
 
@@ -567,6 +674,8 @@ function openEmployeeForm(){
         </form>
 
         <button id="btn_employ">Employ</button>
+
+        <div class="lostAccountsCount lostAccountsCount---shown">0</div>
         
 
     `
@@ -705,6 +814,34 @@ function openEmployeeForm(){
 
 
     }
+
+    //checking for lost accounts
+    const accountReporter = new ACCOUNTREPORTER();
+
+    setTimeout(()=>{
+
+        accountReporter.get()
+        .then((lostAccounts)=>{
+
+            if(lostAccounts.length > 0)
+            {
+                let word = "report";
+
+                if(lostAccounts.length > 1){
+                    word = "reports"
+                }
+
+                alertBanner.innerText = `${lostAccounts.length} users have lost have lost their passwords. Click to resolve them now?`
+                alertBanner.classList.add("alertInfo");
+
+                setTimeout(()=>{
+                    alertBanner.classList.remove("alertInfo")
+                }, 10000)
+            }
+
+        })
+
+    }, 2000)
 
 }
 

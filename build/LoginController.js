@@ -209,7 +209,7 @@ function loadConfirmationBox() {
         
             <label class="confirmationLabel" for="confirmationBox">
 
-                A report will be sent to the administrator to reset your password.
+                A report will be sent to your administrator to reset your password.
                 Do you wish to continue with this process?
             
             </label>
@@ -344,9 +344,11 @@ class ACCOUNTREPORTER extends STORE {
     });
   }
 
-  get(key) {
-    super.get("LostAccounts").then(data => {
-      return data;
+  get() {
+    return new Promise((resolve, reject) => {
+      super.get("LostAccounts").then(data => {
+        resolve(data);
+      });
     });
   }
 
@@ -628,8 +630,6 @@ class DATABASE {
             });
           }
         });
-      } else {
-        console.log("Db connectected successfully.....");
       }
     });
   }
@@ -700,7 +700,7 @@ class DATABASE {
                           let item = result;
                           const Today = new Date();
                           let auditTrailValues = {
-                            Date: `${Today.getFullYear()}-${Today.getMonth()}-${Today.getDate()} ${Today.getHours()}:${Today.getMinutes()}:${Today.getSeconds()}`,
+                            Date: `${Today.getFullYear()}-${Today.getMonth() + 1}-${Today.getDate()} ${Today.getHours()}:${Today.getMinutes()}:${Today.getSeconds()}`,
                             User: user.id,
                             Operation: "Creation",
                             Item: itemId
@@ -808,7 +808,7 @@ class DATABASE {
                     } else {
                       const Today = new Date();
                       let auditTrailValues = {
-                        Date: `${Today.getFullYear()}-${Today.getMonth()}-${Today.getDate()} ${Today.getHours()}:${Today.getMinutes()}:${Today.getSeconds()}`,
+                        Date: `${Today.getFullYear()}-${Today.getMonth() + 1}-${Today.getDate()} ${Today.getHours()}:${Today.getMinutes()}:${Today.getSeconds()}`,
                         User: userId,
                         Operation: "Edit",
                         Item: itemId
@@ -837,7 +837,6 @@ class DATABASE {
                                   throw error;
                                 }
 
-                                console.log(result);
                                 resolve(true);
                               });
                             }
@@ -956,13 +955,6 @@ class DATABASE {
 
   addItemsBulk(itemArray, User) {
     return new Promise((resolve, reject) => {
-      let today = new Date();
-      let year = today.getFullYear();
-      let month = today.getMonth();
-      let day = today.getDate();
-      let hour = today.getHours();
-      let minutes = today.getMinutes();
-      let seconds = today.getSeconds();
       let inDb = [];
       itemArray.forEach(item => {
         this.connector.query("SELECT * FROM items WHERE Name = ? AND Brand = ? AND Category = ?", [item.Name, item.Brand, item.Category], (error, result) => {
@@ -979,6 +971,11 @@ class DATABASE {
       });
       itemArray.forEach(item => {
         this.connector.beginTransaction(error => {
+          if (error) {
+            reject(error);
+            throw error;
+          }
+
           this.connector.query(`INSERT INTO duffykids.itemBrands SET Name = '${item.Brand}'`, error => {
             if (error === null || error.code === "ER_DUP_ENTRY") {
               this.connector.query(`INSERT INTO duffykids.itemCategories SET Name='${item.Category}' ON DUPLICATE KEY UPDATE Name= '${item.Category}'`, error => {
@@ -1005,7 +1002,7 @@ class DATABASE {
                         let userId = user.id;
                         const Today = new Date();
                         let auditTrailValues = {
-                          Date: `${Today.getFullYear()}-${Today.getMonth()}-${Today.getDate()} ${Today.getHours()}:${Today.getMinutes()}:${Today.getSeconds()}`,
+                          Date: `${Today.getFullYear()}-${Today.getMonth() + 1}-${Today.getDate()} ${Today.getHours()}:${Today.getMinutes()}:${Today.getSeconds()}`,
                           User: userId,
                           Operation: "Creation",
                           Item: itemId
@@ -1115,9 +1112,9 @@ class DATABASE {
       const today = new Date();
       newSale.forEach(sale => {
         let [itemName, itemBrand, itemCategory] = [sale.Item.Name, sale.Item.Brand, sale.Item.Category];
-        sale.Date = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
+        sale.Date = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
         let finalSaleValue = {
-          Date: `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`,
+          Date: `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`,
           Purchased: sale.Purchased,
           Revenue: sale.Revenue,
           Profit: sale.Profit,
@@ -1156,7 +1153,6 @@ class DATABASE {
                           throw error;
                         });
                       } else {
-                        console.log(result);
                         let userSaleValue = {
                           User: userId,
                           Sales: result.insertId
@@ -1214,10 +1210,10 @@ class DATABASE {
           } else if (user) {
             let storedPassword = user.Password;
             verifyPassword(userName, incomingPassword, storedPassword).then(result => {
-              if (result === true && user.User_Name === userName) {
+              if (result === true) {
                 if (user.IsAdmin === 1) {
                   resolve([user.User_Name, "Admin"]);
-                } else if (user.IsAdmin === 1) {
+                } else if (user.IsAdmin !== 1) {
                   resolve([user.User_Name, "Employee"]);
                 }
               } else {
@@ -1301,9 +1297,22 @@ class DATABASE {
 
   getUsers() {
     return new Promise((resolve, reject) => {
-      this.connector.query("SELECT * FROM `users`", (error, result) => {
+      this.connector.query('SELECT First_Name, Last_Name, User_Name, TIMEDIFF(NOW(), Last_Seen) Last_Seen FROM `users`', (error, result) => {
         if (error) {
           reject(error);
+          throw error;
+        }
+
+        resolve(result);
+      });
+    });
+  }
+
+  setUserLastSeen(userName, lastSeen) {
+    return new Promise((resolve, reject) => {
+      this.connector.query("UPDATE `users` SET Last_Seen = ? WHERE User_Name =?", [lastSeen, userName], (error, result) => {
+        if (error) {
+          reject("error");
           throw error;
         }
 
@@ -1318,6 +1327,7 @@ class DATABASE {
 function verifyPassword(userName, incomingPassword, storedPassword) {
   return new Promise((resolve, reject) => {
     const decrypted = cryptoJS.AES.decrypt(storedPassword, userName).toString(cryptoJS.enc.Utf8);
+    console.log(decrypted, incomingPassword);
 
     if (incomingPassword === decrypted) {
       resolve(true);

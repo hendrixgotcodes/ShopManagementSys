@@ -326,6 +326,10 @@
                                 background-color: $secondary_green;
                                 top: 15%;
                             }
+                            .alertInfo{
+                                background-color: $primary_yellow;
+                                top: 15%;
+                            }
 
                             .newEmployeeForm{
                                 
@@ -391,6 +395,17 @@
                                     background-color: $primary_green;
                                     color: $WHITE;
                                 }
+
+                            }
+
+                            .lostAccountsCount{
+
+                                position: absolute;
+                                bottom: 0;
+                                right: 0;
+                                width: 5%;
+                                height: 8%;
+                                background-color: $primaty_yellow;
 
                             }
                         }
