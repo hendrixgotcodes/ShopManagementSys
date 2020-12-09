@@ -609,6 +609,22 @@ body {
                     .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .addEmployeePage #btn_employ:hover, .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .addEmployeePage #btn_employ:focus {
                       background-color: #35594B;
                       color: #fff; }
+                  .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .addEmployeePage .lostAccountsCount {
+                    position: absolute;
+                    bottom: 10%;
+                    right: 2%;
+                    width: 3.8%;
+                    height: 5%;
+                    background-color: #EFB526;
+                    border-radius: 100%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    opacity: 0;
+                    transition: .5s;
+                    color: #fff; }
+                  .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .addEmployeePage .lostAccountsCount---shown {
+                    opacity: 1; }
               .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .accSettings {
                 margin-top: 10%;
                 padding: 1rem; }

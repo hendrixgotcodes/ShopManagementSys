@@ -302,9 +302,9 @@ function openSettings() {
     database.getUsers().then(users => {
       users.forEach(user => {
         let userStatus = "Regular";
-        console.log(user.Last_Seen);
+        console.log(user.IsAdmin);
 
-        if (user.IsAdmin === 1) {
+        if (parseInt(user.IsAdmin) === 1) {
           userStatus = "Admin";
         }
 
@@ -323,10 +323,9 @@ function openSettings() {
 
     function getRelativeTime(time) {
       if (time === null || time === undefined) {
-        return "Not available";
+        return "Never";
       }
 
-      let finalTime;
       let [hours, minutes, seconds] = time.split(":");
       [hours, minutes, seconds] = [parseInt(hours), parseInt(minutes), parseInt(seconds)];
 
@@ -599,6 +598,8 @@ function openEmployeeForm() {
         </form>
 
         <button id="btn_employ">Employ</button>
+
+        <div class="lostAccountsCount">0</div>
         
 
     `;
@@ -613,6 +614,11 @@ function openEmployeeForm() {
   const newPassword = addEmployeePage.querySelector("#tb_newPassword");
   const confirmPassword = addEmployeePage.querySelector("#tb_confirmPassword");
   const accountType = addEmployeePage.querySelector("#tb_empStatus");
+  const lbl_lostAccounts = addEmployeePage.querySelector(".lostAccountsCount"); //checking for lost accounts
+
+  const accountReporter = new ACCOUNTREPORTER();
+  let ReportedAccounts = [];
+  let currentReportedAccount;
   /************EVENT LISTENERS */
 
   formTBs.forEach(textbox => {
@@ -650,22 +656,73 @@ function openEmployeeForm() {
             Password: hash,
             IsAdmin: accountType.value
           };
-          formTBs.forEach(textbox => {
-            textbox.value = "";
-          });
-          database.addNewUser(newUser).then(() => {
-            alertBanner.innerText = "User added successfully";
-            alertBanner.classList.add("alertSuccess");
-            setTimeout(() => {
-              alertBanner.classList.remove("alertSuccess");
-            }, 3000);
-          }).catch(() => {
-            alertBanner.innerText = "Failed to add user. An error occured";
-            alertBanner.classList.add("alertError");
-            setTimeout(() => {
-              alertBanner.classList.remove("alertError");
-            }, 3000);
-          });
+          console.log(currentReportedAccount);
+
+          if (currentReportedAccount !== undefined) {
+            database.deleteReportedAccount(newUser.User_Name).then(() => {
+              database.updateUserInfo(newUser.User_Name, hash).then(() => {
+                formTBs.forEach(textbox => {
+                  textbox.value = "";
+                });
+                alertBanner.innerText = "User added successfully";
+                alertBanner.classList.add("alertSuccess");
+                setTimeout(() => {
+                  alertBanner.classList.remove("alertSuccess");
+                }, 3000);
+                ReportedAccounts.shift();
+                currentReportedAccount = null;
+
+                if (ReportedAccounts.length === 0) {
+                  lbl_lostAccounts.innerText = 0;
+                  lbl_lostAccounts.classList.remove("lostAccountsCount---shown");
+                } else {
+                  initializeNextLostAccount();
+                }
+              }).catch(e => {
+                if (e) {
+                  throw e;
+                }
+
+                alertBanner.innerText = "Failed to add user. An error occured";
+                alertBanner.classList.add("alertError");
+                setTimeout(() => {
+                  alertBanner.classList.remove("alertError");
+                }, 3000);
+              });
+            }).catch(error => {
+              if (error) {
+                throw error;
+              }
+
+              alertBanner.innerText = "Failed to add user. An error occured";
+              alertBanner.classList.add("alertError");
+              setTimeout(() => {
+                alertBanner.classList.remove("alertError");
+              }, 3000);
+            });
+          } else {
+            database.addNewUser(newUser).then(() => {
+              formTBs.forEach(textbox => {
+                textbox.value = "";
+              });
+              alertBanner.innerText = "User added successfully";
+              alertBanner.classList.add("alertSuccess");
+              setTimeout(() => {
+                alertBanner.classList.remove("alertSuccess");
+              }, 3000);
+            }).catch(error => {
+              if (error.code === "ER_DUP_ENTRY") {
+                alertBanner.innerText = "Failed to add user. A user with the same username already exists";
+                alertBanner.classList.add("alertError");
+              }
+
+              alertBanner.innerText = "Failed to add user. An error occured";
+              alertBanner.classList.add("alertError");
+              setTimeout(() => {
+                alertBanner.classList.remove("alertError");
+              }, 3000);
+            });
+          }
         });
       } else {
         alertBanner.innerText = "The two provided passwords do not match";
@@ -682,27 +739,45 @@ function openEmployeeForm() {
       const hash = cryptoJS.AES.encrypt(password, userName).toString();
       resolve(hash);
     });
-  } //checking for lost accounts
+  }
 
+  function initializeNextLostAccount() {
+    if (ReportedAccounts.length > 0) {
+      lbl_lostAccounts.innerText = ReportedAccounts.length;
+      lbl_lostAccounts.classList.add("lostAccountsCount---shown");
+      let ReportedAccountsCopy = ReportedAccounts;
+      let reportedAccount = ReportedAccountsCopy.shift();
+      currentReportedAccount = reportedAccount;
+      firstName.value = reportedAccount.First_Name;
+      secondName.value = reportedAccount.Last_Name;
+      userName.value = reportedAccount.User_Name;
+    }
+  }
 
-  const accountReporter = new ACCOUNTREPORTER();
   setTimeout(() => {
-    accountReporter.get().then(lostAccounts => {
-      if (lostAccounts.length > 0) {
+    database.getReportedAccounts().then(reportedAccounts => {
+      reportedAccounts.forEach(account => {
+        ReportedAccounts.push(account);
+      });
+
+      if (ReportedAccounts.length > 0) {
         let word = "report";
 
-        if (lostAccounts.length > 1) {
+        if (reportedAccounts.length > 1) {
           word = "reports";
         }
 
-        alertBanner.innerText = `${lostAccounts.length} users have lost have lost their passwords. Click to resolve them now?`;
+        alertBanner.innerText = `${reportedAccounts.length} users have lost have lost their passwords. Click to resolve them now?`;
         alertBanner.classList.add("alertInfo");
+        alertBanner.addEventListener("click", initializeNextLostAccount);
+        btnEmploy.innerText = "Modify";
         setTimeout(() => {
           alertBanner.classList.remove("alertInfo");
+          alertBanner.removeEventListener("click", initializeNextLostAccount);
         }, 10000);
       }
     });
-  }, 2000);
+  }, 1000);
 }
 /**********************TIPPJS**************** */
 // import tippy from 'tippy.js'
@@ -775,7 +850,6 @@ class ACCOUNTREPORTER extends STORE {
       let LostAccounts;
       super.get("LostAccounts").then(data => {
         LostAccounts = data;
-        console.log(LostAccounts);
 
         if (LostAccounts === undefined) {
           let array = [userName];
@@ -783,7 +857,6 @@ class ACCOUNTREPORTER extends STORE {
             defaults: array
           };
         } else {
-          console.log(LostAccounts);
           LostAccounts.push(userName);
         }
 
@@ -794,18 +867,20 @@ class ACCOUNTREPORTER extends STORE {
     });
   }
 
-  delete(key) {
-    let LostAccounts = super.get(key);
+  delete(UserName) {
+    super.get("LostAccounts").then(data => {
+      let LostAccounts = data;
 
-    if (LostAccounts !== null) {
-      LostAccounts.defaults.forEach((user, userIndex) => {
-        if (user.UserName === key) {
-          defaults.splice(userIndex, 1);
-        }
-      });
-    }
+      if (LostAccounts !== undefined) {
+        LostAccounts.forEach((userName, currentIndex) => {
+          if (userName === UserName) {
+            LostAccounts.split(currentIndex, 1);
+          }
+        });
+      }
 
-    super.set("LostAccounts", LostAccounts);
+      super.set("LostAccounts", LostAccounts);
+    });
   }
 
 }
@@ -934,6 +1009,13 @@ class DATABASE {
                                 FOREIGN KEY(User) REFERENCES duffykids.users(id) ON DELETE CASCADE ON UPDATE CASCADE,
                                 FOREIGN KEY(Sales) REFERENCES duffykids.sales(id) ON DELETE CASCADE ON UPDATE CASCADE
                             )
+                        `;
+        const createReportedAccountsSQL = `
+                            CREATE TABLE duffykids.ReportedAccounts
+                            (
+                                User_Name VARCHAR(255) NOT NULL,
+                                FOREIGN KEY(User_Name) REFERENCES duffykids.users(User_Name) ON DELETE CASCADE ON UPDATE CASCADE
+                            )
 
                         `;
         this.connector = mariadb.createConnection({
@@ -1019,13 +1101,22 @@ class DATABASE {
                                                         console.log("error");
                                                         throw error;
                                                       });
-                                                    } else {
-                                                      this.connector.commit(err => {
-                                                        if (error) {
-                                                          console.log(err);
-                                                        }
-                                                      });
                                                     }
+
+                                                    this.connector.query(createReportedAccountsSQL, error => {
+                                                      if (error) {
+                                                        this.connector.rollback(() => {
+                                                          console.log("error");
+                                                          throw error;
+                                                        });
+                                                      } else {
+                                                        this.connector.commit(err => {
+                                                          if (error) {
+                                                            console.log(err);
+                                                          }
+                                                        });
+                                                      }
+                                                    });
                                                   });
                                                 }
                                               });
@@ -1515,12 +1606,20 @@ class DATABASE {
     });
   }
 
-  updateUserInfo(userInfo) {
+  updateUserInfo(userName, password) {
     return new Promise((resolve, reject) => {
-      this.db.users.where({
-        Name: userInfo.FirstName,
-        userInfo
-      }).modify(userInfo);
+      this.connector.query("UPDATE `users` SET ? WHERE ?", [{
+        Password: password
+      }, {
+        User_Name: userName
+      }], (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        resolve(result);
+      });
     });
   }
 
@@ -1612,10 +1711,6 @@ class DATABASE {
     // userName = userName.replace(/^\s+|\s+$/g, "")
     // console.log("userName: ", userName, " Password: ", Password);
     return new Promise((resolve, reject) => {
-      let userValue = {
-        User_Name: userName,
-        Password: incomingPassword
-      };
       this.connector.query("SELECT * FROM users WHERE User_Name = ?", userName, (error, result) => {
         if (error) {
           reject(error);
@@ -1637,7 +1732,7 @@ class DATABASE {
               } else {
                 reject("incorrect password");
               }
-            });
+            }); // resolve([user.User_Name, "Admin"])
           }
         }
       });
@@ -1713,15 +1808,74 @@ class DATABASE {
     });
   }
 
-  getUsers() {
+  getUser(userName) {
     return new Promise((resolve, reject) => {
-      this.connector.query('SELECT First_Name, Last_Name, User_Name, TIMEDIFF(NOW(), Last_Seen) Last_Seen FROM `users`', (error, result) => {
+      this.connector.query("SELECT First_Name, Last_Name, User_Name FROM users WHERE ?", {
+        User_Name: userName
+      }, (error, result) => {
         if (error) {
           reject(error);
           throw error;
         }
 
         resolve(result);
+      });
+    });
+  }
+
+  getUsers() {
+    return new Promise((resolve, reject) => {
+      this.connector.query('SELECT First_Name, Last_Name, User_Name, TIMEDIFF(NOW(), Last_Seen) Last_Seen, IsAdmin FROM `users`', (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        resolve(result);
+      });
+    });
+  }
+
+  getReportedAccounts() {
+    return new Promise((resolve, reject) => {
+      let reportedaccounts = [];
+      this.connector.query("SELECT * FROM reportedaccounts", (error, results) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        results.forEach(result => {
+          this.connector.query("SELECT First_Name, Last_Name, User_Name FROM `users` WHERE ?", {
+            User_Name: result.User_Name
+          }, (error, result) => {
+            if (error) {
+              reject(error);
+              throw error;
+            }
+
+            let user = result.shift();
+            reportedaccounts.push(user);
+            resolve(reportedaccounts);
+          });
+        });
+      });
+    });
+  }
+
+  deleteReportedAccount(userName) {
+    return new Promise((resolve, reject) => {
+      console.log(";;", userName);
+      this.connector.query("DELETE FROM `reportedaccounts` WHERE ?", {
+        User_Name: userName
+      }, (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        resolve(result);
+        console.log(result);
       });
     });
   }
@@ -1735,6 +1889,36 @@ class DATABASE {
         }
 
         resolve(result);
+      });
+    });
+  }
+
+  setReportedAccount(userName) {
+    return new Promise((resolve, reject) => {
+      this.connector.query("SELECT User_Name FROM `users` WHERE ?", {
+        User_Name: userName
+      }, (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        let user = result.shift();
+
+        if (user === null || user === undefined) {
+          reject(new Error("invalid user"));
+        } else {
+          this.connector.query("INSERT INTO `reportedaccounts` SET ?", {
+            User_Name: user.User_Name
+          }, (error, result) => {
+            if (error) {
+              reject(error);
+              throw error;
+            }
+
+            resolve(result);
+          });
+        }
       });
     });
   }

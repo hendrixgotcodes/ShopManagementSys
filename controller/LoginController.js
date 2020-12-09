@@ -188,12 +188,13 @@ function loadConfirmationBox(){
 
         e.preventDefault()
 
-        lostAccountReporter.set(tbUserName.value)
+        database.setReportedAccount(tbUserName.value)
         .then(()=>{
 
             closeConfirmationBox();
 
         })
+        
         
 
        
@@ -262,7 +263,6 @@ function loadStore(e) {
         database.validateUser(tbUserName.value, tbPassword.value)
         .then((result)=>{
 
-            console.log(result);
 
 
             if(result[1] === "Admin"){

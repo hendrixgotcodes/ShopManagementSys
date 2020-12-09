@@ -401,12 +401,23 @@
                             .lostAccountsCount{
 
                                 position: absolute;
-                                bottom: 0;
-                                right: 0;
-                                width: 5%;
-                                height: 8%;
-                                background-color: $primaty_yellow;
+                                bottom: 10%;
+                                right: 2%;
+                                width: 3.8%;
+                                height: 5%;
+                                background-color: $primary_yellow;
+                                border-radius: 100%;
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                opacity: 0;
+                                transition: .5s;
+                                color: $WHITE;
 
+                            }
+
+                            .lostAccountsCount---shown{
+                                opacity: 1;
                             }
                         }
 

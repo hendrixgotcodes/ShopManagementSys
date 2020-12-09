@@ -235,9 +235,8 @@ function initializeEmployeeTable(){
 
             let userStatus = "Regular"
 
-            console.log(user.Last_Seen);
 
-            if(user.IsAdmin === 1){
+            if(parseInt(user.IsAdmin) === 1){
                 userStatus = "Admin"
             }
 
@@ -263,10 +262,9 @@ function initializeEmployeeTable(){
     function getRelativeTime(time){
 
         if(time === null || time===undefined){
-            return "Not available"
+            return "Never"
         }
 
-        let finalTime;
         let [hours, minutes, seconds] = time.split(":");
 
         [hours, minutes, seconds] = [parseInt(hours), parseInt(minutes), parseInt(seconds)]
@@ -675,7 +673,7 @@ function openEmployeeForm(){
 
         <button id="btn_employ">Employ</button>
 
-        <div class="lostAccountsCount lostAccountsCount---shown">0</div>
+        <div class="lostAccountsCount">0</div>
         
 
     `
@@ -692,6 +690,14 @@ function openEmployeeForm(){
     const newPassword = addEmployeePage.querySelector("#tb_newPassword")
     const confirmPassword = addEmployeePage.querySelector("#tb_confirmPassword")
     const accountType = addEmployeePage.querySelector("#tb_empStatus")
+
+    const lbl_lostAccounts = addEmployeePage.querySelector(".lostAccountsCount");
+
+    //checking for lost accounts
+    const accountReporter = new ACCOUNTREPORTER();
+    let ReportedAccounts = [];
+    let currentReportedAccount;
+
     
 
     /************EVENT LISTENERS */
@@ -751,33 +757,119 @@ function openEmployeeForm(){
                             IsAdmin: accountType.value
                         }
 
-                        formTBs.forEach((textbox)=>{
+                        console.log(currentReportedAccount);
 
-                            textbox.value = "";
-        
-                        })
+                        if(currentReportedAccount !== undefined){
 
-                        database.addNewUser(newUser)
-                        .then(()=>{
+                            
+                            database.deleteReportedAccount(newUser.User_Name)
+                            .then(()=>{
 
-                            alertBanner.innerText = "User added successfully"
-                            alertBanner.classList.add("alertSuccess");
+                                database.updateUserInfo(newUser.User_Name, hash)
+                                .then(()=>{
 
-                            setTimeout(()=>{
-                                alertBanner.classList.remove("alertSuccess")
-                            }, 3000)
+                                    formTBs.forEach((textbox)=>{
 
-                        })
-                        .catch(()=>{
+                                        textbox.value = "";
+                    
+                                    })
 
-                            alertBanner.innerText = "Failed to add user. An error occured"
-                            alertBanner.classList.add("alertError");
+                                    alertBanner.innerText = "User added successfully"
+                                    alertBanner.classList.add("alertSuccess");
 
-                            setTimeout(()=>{
-                                alertBanner.classList.remove("alertError")
-                            }, 3000)
+                                    setTimeout(()=>{
+                                        alertBanner.classList.remove("alertSuccess")
+                                    }, 3000)
 
-                        })
+                                
+
+                                    ReportedAccounts.shift()
+                                    currentReportedAccount = null;
+
+                                    if(ReportedAccounts.length === 0){
+
+                                        lbl_lostAccounts.innerText = 0;
+                                        lbl_lostAccounts.classList.remove("lostAccountsCount---shown")
+
+                                    }
+                                    else{
+
+                                        initializeNextLostAccount()
+
+                                    }
+                                })
+                                .catch((e)=>{
+
+                                    if(e){
+                                        throw e
+                                    }
+    
+                                    alertBanner.innerText = "Failed to add user. An error occured"
+                                    alertBanner.classList.add("alertError");
+    
+                                    setTimeout(()=>{
+                                            alertBanner.classList.remove("alertError")
+                                    }, 3000)
+    
+                                })
+
+                            })
+                            .catch((error)=>{
+
+                                if(error){
+                                    throw error
+                                }
+
+                                alertBanner.innerText = "Failed to add user. An error occured"
+                                alertBanner.classList.add("alertError");
+
+                                setTimeout(()=>{
+                                    alertBanner.classList.remove("alertError")
+                                }, 3000)
+
+                            })
+                                
+
+                        }
+                        else{
+
+                            database.addNewUser(newUser)
+                            .then(()=>{
+
+                                formTBs.forEach((textbox)=>{
+
+                                    textbox.value = "";
+                
+                                })
+
+                                alertBanner.innerText = "User added successfully"
+                                alertBanner.classList.add("alertSuccess");
+
+                                setTimeout(()=>{
+                                    alertBanner.classList.remove("alertSuccess")
+                                }, 3000)
+
+                            })
+                            .catch((error)=>{
+
+                                if(error.code === "ER_DUP_ENTRY"){
+
+                                    alertBanner.innerText = "Failed to add user. A user with the same username already exists"
+                                    alertBanner.classList.add("alertError");
+
+                                }
+
+                                alertBanner.innerText = "Failed to add user. An error occured"
+                                alertBanner.classList.add("alertError");
+
+                                setTimeout(()=>{
+                                        alertBanner.classList.remove("alertError")
+                                }, 3000)
+
+                            })
+
+                        }
+
 
                     })
                     
@@ -791,7 +883,6 @@ function openEmployeeForm(){
                     setTimeout(()=>{
                         alertBanner.classList.remove("alertError")
                     }, 3000)
-
 
                 }
 
@@ -815,33 +906,67 @@ function openEmployeeForm(){
 
     }
 
-    //checking for lost accounts
-    const accountReporter = new ACCOUNTREPORTER();
+    function initializeNextLostAccount(){
+
+        
+
+        if(ReportedAccounts.length > 0){
+
+            lbl_lostAccounts.innerText = ReportedAccounts.length;
+            lbl_lostAccounts.classList.add("lostAccountsCount---shown")
+
+            let ReportedAccountsCopy  = ReportedAccounts;
+
+            let reportedAccount = ReportedAccountsCopy.shift();
+            currentReportedAccount = reportedAccount;
+
+
+            firstName.value = reportedAccount.First_Name;
+            secondName.value = reportedAccount.Last_Name;
+            userName.value = reportedAccount.User_Name;
+
+
+        }
+
+    }
+
 
     setTimeout(()=>{
 
-        accountReporter.get()
-        .then((lostAccounts)=>{
+        database.getReportedAccounts()
+        .then((reportedAccounts)=>{
 
-            if(lostAccounts.length > 0)
+
+            reportedAccounts.forEach((account)=>{
+
+                ReportedAccounts.push(account)
+
+            })
+
+            if(ReportedAccounts.length > 0)
             {
                 let word = "report";
 
-                if(lostAccounts.length > 1){
+                if(reportedAccounts.length > 1){
                     word = "reports"
                 }
 
-                alertBanner.innerText = `${lostAccounts.length} users have lost have lost their passwords. Click to resolve them now?`
+                alertBanner.innerText = `${reportedAccounts.length} users have lost have lost their passwords. Click to resolve them now?`
                 alertBanner.classList.add("alertInfo");
+                alertBanner.addEventListener("click", initializeNextLostAccount)
+
+                btnEmploy.innerText = "Modify"
 
                 setTimeout(()=>{
                     alertBanner.classList.remove("alertInfo")
+                    alertBanner.removeEventListener("click", initializeNextLostAccount)
                 }, 10000)
             }
 
         })
 
-    }, 2000)
+    }, 1000)
+
 
 }
 

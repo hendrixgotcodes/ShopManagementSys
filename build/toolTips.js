@@ -1020,6 +1020,13 @@ class DATABASE {
                                 FOREIGN KEY(User) REFERENCES duffykids.users(id) ON DELETE CASCADE ON UPDATE CASCADE,
                                 FOREIGN KEY(Sales) REFERENCES duffykids.sales(id) ON DELETE CASCADE ON UPDATE CASCADE
                             )
+                        `;
+        const createReportedAccountsSQL = `
+                            CREATE TABLE duffykids.ReportedAccounts
+                            (
+                                User_Name VARCHAR(255) NOT NULL,
+                                FOREIGN KEY(User_Name) REFERENCES duffykids.users(User_Name) ON DELETE CASCADE ON UPDATE CASCADE
+                            )
 
                         `;
         this.connector = mariadb.createConnection({
@@ -1105,13 +1112,22 @@ class DATABASE {
                                                         console.log("error");
                                                         throw error;
                                                       });
-                                                    } else {
-                                                      this.connector.commit(err => {
-                                                        if (error) {
-                                                          console.log(err);
-                                                        }
-                                                      });
                                                     }
+
+                                                    this.connector.query(createReportedAccountsSQL, error => {
+                                                      if (error) {
+                                                        this.connector.rollback(() => {
+                                                          console.log("error");
+                                                          throw error;
+                                                        });
+                                                      } else {
+                                                        this.connector.commit(err => {
+                                                          if (error) {
+                                                            console.log(err);
+                                                          }
+                                                        });
+                                                      }
+                                                    });
                                                   });
                                                 }
                                               });
@@ -1601,12 +1617,20 @@ class DATABASE {
     });
   }
 
-  updateUserInfo(userInfo) {
+  updateUserInfo(userName, password) {
     return new Promise((resolve, reject) => {
-      this.db.users.where({
-        Name: userInfo.FirstName,
-        userInfo
-      }).modify(userInfo);
+      this.connector.query("UPDATE `users` SET ? WHERE ?", [{
+        Password: password
+      }, {
+        User_Name: userName
+      }], (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        resolve(result);
+      });
     });
   }
 
@@ -1698,10 +1722,6 @@ class DATABASE {
     // userName = userName.replace(/^\s+|\s+$/g, "")
     // console.log("userName: ", userName, " Password: ", Password);
     return new Promise((resolve, reject) => {
-      let userValue = {
-        User_Name: userName,
-        Password: incomingPassword
-      };
       this.connector.query("SELECT * FROM users WHERE User_Name = ?", userName, (error, result) => {
         if (error) {
           reject(error);
@@ -1723,7 +1743,7 @@ class DATABASE {
               } else {
                 reject("incorrect password");
               }
-            });
+            }); // resolve([user.User_Name, "Admin"])
           }
         }
       });
@@ -1799,15 +1819,74 @@ class DATABASE {
     });
   }
 
-  getUsers() {
+  getUser(userName) {
     return new Promise((resolve, reject) => {
-      this.connector.query('SELECT First_Name, Last_Name, User_Name, TIMEDIFF(NOW(), Last_Seen) Last_Seen FROM `users`', (error, result) => {
+      this.connector.query("SELECT First_Name, Last_Name, User_Name FROM users WHERE ?", {
+        User_Name: userName
+      }, (error, result) => {
         if (error) {
           reject(error);
           throw error;
         }
 
         resolve(result);
+      });
+    });
+  }
+
+  getUsers() {
+    return new Promise((resolve, reject) => {
+      this.connector.query('SELECT First_Name, Last_Name, User_Name, TIMEDIFF(NOW(), Last_Seen) Last_Seen, IsAdmin FROM `users`', (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        resolve(result);
+      });
+    });
+  }
+
+  getReportedAccounts() {
+    return new Promise((resolve, reject) => {
+      let reportedaccounts = [];
+      this.connector.query("SELECT * FROM reportedaccounts", (error, results) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        results.forEach(result => {
+          this.connector.query("SELECT First_Name, Last_Name, User_Name FROM `users` WHERE ?", {
+            User_Name: result.User_Name
+          }, (error, result) => {
+            if (error) {
+              reject(error);
+              throw error;
+            }
+
+            let user = result.shift();
+            reportedaccounts.push(user);
+            resolve(reportedaccounts);
+          });
+        });
+      });
+    });
+  }
+
+  deleteReportedAccount(userName) {
+    return new Promise((resolve, reject) => {
+      console.log(";;", userName);
+      this.connector.query("DELETE FROM `reportedaccounts` WHERE ?", {
+        User_Name: userName
+      }, (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        resolve(result);
+        console.log(result);
       });
     });
   }
@@ -1821,6 +1900,36 @@ class DATABASE {
         }
 
         resolve(result);
+      });
+    });
+  }
+
+  setReportedAccount(userName) {
+    return new Promise((resolve, reject) => {
+      this.connector.query("SELECT User_Name FROM `users` WHERE ?", {
+        User_Name: userName
+      }, (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        let user = result.shift();
+
+        if (user === null || user === undefined) {
+          reject(new Error("invalid user"));
+        } else {
+          this.connector.query("INSERT INTO `reportedaccounts` SET ?", {
+            User_Name: user.User_Name
+          }, (error, result) => {
+            if (error) {
+              reject(error);
+              throw error;
+            }
+
+            resolve(result);
+          });
+        }
       });
     });
   }

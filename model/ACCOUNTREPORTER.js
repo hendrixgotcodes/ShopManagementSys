@@ -39,8 +39,6 @@ class ACCOUNTREPORTER extends STORE{
 
                 LostAccounts = data;
 
-                console.log(LostAccounts);
-
                 if(LostAccounts === undefined){
 
                     let array = [userName];
@@ -52,7 +50,6 @@ class ACCOUNTREPORTER extends STORE{
                 }
                 else{
 
-                    console.log(LostAccounts);
 
                     LostAccounts.push(userName)
                 }
@@ -68,24 +65,31 @@ class ACCOUNTREPORTER extends STORE{
 
     } 
 
-    delete(key){
+    delete(UserName){
 
-        let LostAccounts = super.get(key);
+        
 
-        if(LostAccounts !== null){
+        super.get("LostAccounts")
+        .then((data)=>{
 
-            LostAccounts.defaults.forEach((user, userIndex)=>{
+            let LostAccounts = data;
 
-                if(user.UserName === key){
-                    defaults.splice(userIndex, 1)
-                }
+            if(LostAccounts !==undefined)
+            {
 
-            })
-            
+                LostAccounts.forEach((userName, currentIndex)=>{
 
-        }
+                    if(userName === UserName){
+                        LostAccounts.split(currentIndex, 1)
+                    }
 
-        super.set("LostAccounts", LostAccounts)
+                })
+
+            }
+    
+            super.set("LostAccounts", LostAccounts)
+
+        })
 
 
     }
