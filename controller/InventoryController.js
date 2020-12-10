@@ -349,7 +349,6 @@ function editItem(row){
             database.updateItem(values, UserName)
              .then((result)=>{
 
-                console.log(result);
 
                 if(result === true){
 
@@ -397,7 +396,7 @@ function addItem(){
     }
 
 
-    Modal.openItemForm("", false)
+    Modal.openItemForm("", false, true)
     .then((result)=>{
 
         if(result === null){

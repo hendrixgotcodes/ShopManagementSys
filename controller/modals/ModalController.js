@@ -1,10 +1,11 @@
 "use strict";
 
 import DATABASE from "../../model/DATABASE";
-import { showAlert } from "../Alerts/NotificationController";
-import UnitConverter from "../utilities/UnitConverter";
+// import { showAlert } from "../Alerts/NotificationController";
+// import UnitConverter from "../utilities/UnitConverter";
 
-const DOMCONTROLLER = require("../utilities/TableController");
+// const DOMCONTROLLER = require("../utilities/TableController");
+const database = new DATABASE()
 
 
 class Modal {
@@ -154,7 +155,7 @@ class Modal {
 /************************************************************************************************************************************************************************/  
  
 
-    static openItemForm(row="", editForm){
+    static openItemForm(row="", editForm, inInventory = false){
 
         return new Promise((resolve, reject)=>{
 
@@ -188,7 +189,7 @@ class Modal {
                 brand  =  row.querySelector(".td_Brands").innerText;
                 category = row.querySelector(".td_Category").innerText;
                 itemQuantity = row.querySelector(".td_Stock").innerText;
-                sellingPrice = row.querySelector(".td_Price").innerText;
+                sellingPrice = row.querySelector(".td_sellingPrice").innerText;
                 costPrice = row.querySelector(".td_costPrice").innerText
                 discount = row.querySelector(".td_discount").innerText
             }
@@ -206,20 +207,39 @@ class Modal {
     
                     <form class="dialogBody fullwidth" role="body">
     
-                            <input type="text" class="dialogForm_tb fullwidth" ${disableField} value="${itemName}" aria-placeholder="Item Name" placeholder="Item Name" id="name" />
+                        <label id="lbl_name">
+                            Name
+                            <input type="text" class="dialogForm_tb fullwidth" list="itemList" ${disableField} value="${itemName}" aria-placeholder="Item Name" placeholder="Item Name" id="name" />
+                        </label>
     
-                         <div class="flexContainer">   
-                            <select class="dialogForm_tb halfwidth" ${disableField} value="${category}" aria-placeholder="Item Category" placeholder="Item Category" id="category" ></select>
-    
-                            <select class="dialogForm_tb halfwidth" ${disableField} value="${brand}" aria-placeholder="Item Brand" placeholder="Item Brand" id="brand"></select>
-    
-                            <input type="number" class="dialogForm_tb halfwidth" value="${itemQuantity}" aria-placeholder="Total in inventory" placeholder="Total In Inventory" id="total" />
-    
-                            <input type="number" class="dialogForm_tb halfwidth" value="${parseFloat(costPrice)}" aria-placeholder="Cost Price" placeholder="Cost Price (GH₵)" id="costPrice" />
-    
-                            <input type="number" class="dialogForm_tb halfwidth" value="${parseFloat(sellingPrice)}" aria-placeholder="Unit Cost" placeholder="Selling Price (GH₵)" id="sellingPrice" />
+                         <div class="flexContainer"> 
 
-                            <input type="number" class="dialogForm_tb halfwidth" value="${parseFloat(discount)}" aria-placeholder="Discount(%)" placeholder="Discount(%)" id="discount" />
+                            <label id="lbl_category">
+                                <select class="dialogForm_tb halfwidth" ${disableField} value="${category}" aria-placeholder="Item Category" placeholder="Item Category" id="category" ></select>
+                            </label>
+    
+                            <label id="lbl_brand">
+                                <select class="dialogForm_tb halfwidth" ${disableField} value="${brand}" aria-placeholder="Item Brand" placeholder="Item Brand" id="brand"></select>
+                            </label>
+    
+                            <label id="lbl_total">
+                                <input type="number" class="dialogForm_tb halfwidth" value="${itemQuantity}" aria-placeholder="Total in inventory" placeholder="Total In Inventory" id="total" />
+                            </label>
+    
+                            <label id="lbl_costPrice">
+                                Cost Price
+                                <input type="number" class="dialogForm_tb halfwidth" value="${parseFloat(costPrice)}" aria-placeholder="Cost Price" placeholder="Cost Price (GH₵)" id="costPrice" />
+                            </label>
+    
+                            <label id="lbl lbl_sellingPrice">
+                                Selling Price
+                                <input type="number" class="dialogForm_tb halfwidth" value="${parseFloat(sellingPrice)}" aria-placeholder="Unit Cost" placeholder="Selling Price (GH₵)" id="sellingPrice" />
+                            </label>
+
+                            <label class="lbl" id="lbl_discount">
+                                Discount
+                                <input type="number" class="dialogForm_tb halfwidth" value="${parseFloat(discount)}" aria-placeholder="Discount(%)" placeholder="Discount(%)" id="discount" />
+                            </label>
     
                          </div>
 
@@ -229,6 +249,10 @@ class Modal {
 
                          <datalist id="brandList">
                           
+                         </datalist>
+
+                         <datalist id="itemList">
+
                          </datalist>
     
                     </form>
@@ -440,6 +464,78 @@ class Modal {
                 function exitBox(){
                     closeConfirmationBox(resolve, reject)
                 }
+
+
+                if(inInventory === true){
+
+                    const name = itemForm.querySelector("#name");
+                    const brand = itemForm.querySelector("#brand");
+                    const category = itemForm.querySelector("#category");
+                    const costPrice = itemForm.querySelector("#costPrice");
+                    const sellingPrice = itemForm.querySelector("#sellingPrice");
+                    const total = itemForm.querySelector("#total")
+                    const discount = itemForm.querySelector("#discount");
+
+                    //Looks up for existing match in database while a user types
+                    name.addEventListener("keyup", function lookUpForExistingEntry(){
+
+                        const itemList = itemForm.querySelector("#itemList");
+
+                        database.getItem(name.value)
+                        .then((existingItems)=>{
+
+                            existingItems.forEach((item)=>{
+
+                                const newOption = document.createElement("option");
+                                newOption.innerText = item.Name;
+
+                                if( itemList.querySelector("option") !== null && itemList.querySelector("option").innerText !== item.Name){
+
+                                    itemList.appendChild(newOption);
+
+                                }
+                                else if(itemList.querySelector("option") == null){
+
+                                    itemList.appendChild(newOption);
+
+                                }
+
+
+                            })
+
+                        })
+
+                    })
+
+                    name.addEventListener("change", function onChanged(){
+
+                        database.getItem(name.value)
+                        .then((items)=>{
+
+                            items.forEach((item)=>{
+
+                                name.disabled = true;
+
+                                category.value = item.Category;
+                                category.disabled = true;
+
+                                brand.value = item.Brand;
+                                brand.disabled = true;
+
+                                costPrice.value = item.CostPrice;
+                                sellingPrice.value = item.SellingPrice;
+                                total.value = item.InStock;
+                                discount.value = item.Discount;
+
+                            })
+
+                        })
+
+                        
+                    })
+
+                }
+
             
 
 

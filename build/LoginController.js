@@ -1428,6 +1428,19 @@ class DATABASE {
     });
   }
 
+  getItem(itemName) {
+    return new Promise((resolve, reject) => {
+      this.connector.query("SELECT * FROM `items` WHERE Name = ?", itemName, (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        resolve(result);
+      });
+    });
+  }
+
 } //FUNCTIONS
 
 

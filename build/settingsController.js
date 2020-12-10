@@ -302,7 +302,6 @@ function openSettings() {
     database.getUsers().then(users => {
       users.forEach(user => {
         let userStatus = "Regular";
-        console.log(user.IsAdmin);
 
         if (parseInt(user.IsAdmin) === 1) {
           userStatus = "Admin";
@@ -1919,6 +1918,19 @@ class DATABASE {
             resolve(result);
           });
         }
+      });
+    });
+  }
+
+  getItem(itemName) {
+    return new Promise((resolve, reject) => {
+      this.connector.query("SELECT * FROM `items` WHERE Name = ?", itemName, (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        resolve(result);
       });
     });
   }

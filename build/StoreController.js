@@ -525,17 +525,13 @@ function subtractItem(item, inCart = "") {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _model_DATABASE__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../model/DATABASE */ "./model/DATABASE.js");
 /* harmony import */ var _model_DATABASE__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_model_DATABASE__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Alerts/NotificationController */ "./controller/Alerts/NotificationController.js");
-/* harmony import */ var _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _utilities_UnitConverter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utilities/UnitConverter */ "./controller/utilities/UnitConverter.js");
-/* harmony import */ var _utilities_UnitConverter__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_utilities_UnitConverter__WEBPACK_IMPORTED_MODULE_2__);
 
 
+ // import { showAlert } from "../Alerts/NotificationController";
+// import UnitConverter from "../utilities/UnitConverter";
+// const DOMCONTROLLER = require("../utilities/TableController");
 
-
-
-
-const DOMCONTROLLER = __webpack_require__(/*! ../utilities/TableController */ "./controller/utilities/TableController.js");
+const database = new _model_DATABASE__WEBPACK_IMPORTED_MODULE_0___default.a();
 
 class Modal {
   static openPrompt(itemName = "", resolve, reject, justVerify = "", customMessage = "") {
@@ -649,7 +645,7 @@ class Modal {
   /************************************************************************************************************************************************************************/
 
 
-  static openItemForm(row = "", editForm) {
+  static openItemForm(row = "", editForm, inInventory = false) {
     return new Promise((resolve, reject) => {
       let formTitle;
       let disableField;
@@ -675,7 +671,7 @@ class Modal {
         brand = row.querySelector(".td_Brands").innerText;
         category = row.querySelector(".td_Category").innerText;
         itemQuantity = row.querySelector(".td_Stock").innerText;
-        sellingPrice = row.querySelector(".td_Price").innerText;
+        sellingPrice = row.querySelector(".td_sellingPrice").innerText;
         costPrice = row.querySelector(".td_costPrice").innerText;
         discount = row.querySelector(".td_discount").innerText;
       }
@@ -692,7 +688,7 @@ class Modal {
     
                     <form class="dialogBody fullwidth" role="body">
     
-                            <input type="text" class="dialogForm_tb fullwidth" ${disableField} value="${itemName}" aria-placeholder="Item Name" placeholder="Item Name" id="name" />
+                            <input type="text" class="dialogForm_tb fullwidth" list="itemList" ${disableField} value="${itemName}" aria-placeholder="Item Name" placeholder="Item Name" id="name" />
     
                          <div class="flexContainer">   
                             <select class="dialogForm_tb halfwidth" ${disableField} value="${category}" aria-placeholder="Item Category" placeholder="Item Category" id="category" ></select>
@@ -715,6 +711,10 @@ class Modal {
 
                          <datalist id="brandList">
                           
+                         </datalist>
+
+                         <datalist id="itemList">
+
                          </datalist>
     
                     </form>
@@ -838,6 +838,47 @@ class Modal {
 
       function exitBox() {
         closeConfirmationBox(resolve, reject);
+      }
+
+      if (inInventory === true) {
+        const name = itemForm.querySelector("#name");
+        const brand = itemForm.querySelector("#brand");
+        const category = itemForm.querySelector("#category");
+        const costPrice = itemForm.querySelector("#costPrice");
+        const sellingPrice = itemForm.querySelector("#sellingPrice");
+        const total = itemForm.querySelector("#total");
+        const discount = itemForm.querySelector("#discount"); //Looks up for existing match in database while a user types
+
+        name.addEventListener("keyup", function lookUpForExistingEntry() {
+          const itemList = itemForm.querySelector("#itemList");
+          database.getItem(name.value).then(existingItems => {
+            existingItems.forEach(item => {
+              const newOption = document.createElement("option");
+              newOption.innerText = item.Name;
+
+              if (itemList.querySelector("option") !== null && itemList.querySelector("option").innerText !== item.Name) {
+                itemList.appendChild(newOption);
+              } else if (itemList.querySelector("option") == null) {
+                itemList.appendChild(newOption);
+              }
+            });
+          });
+        });
+        name.addEventListener("change", function onChanged() {
+          database.getItem(name.value).then(items => {
+            items.forEach(item => {
+              name.disabled = true;
+              category.value = item.Category;
+              category.disabled = true;
+              brand.value = item.Brand;
+              brand.disabled = true;
+              costPrice.value = item.CostPrice;
+              sellingPrice.value = item.SellingPrice;
+              total.value = item.InStock;
+              discount.value = item.Discount;
+            });
+          });
+        });
       }
     });
   }
@@ -2787,6 +2828,19 @@ class DATABASE {
             resolve(result);
           });
         }
+      });
+    });
+  }
+
+  getItem(itemName) {
+    return new Promise((resolve, reject) => {
+      this.connector.query("SELECT * FROM `items` WHERE Name = ?", itemName, (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        resolve(result);
       });
     });
   }
