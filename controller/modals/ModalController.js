@@ -214,25 +214,28 @@ class Modal {
     
                          <div class="flexContainer"> 
 
-                            <label id="lbl_category">
+                            <label class="lbl" id="lbl_category">
+                                Category
                                 <select class="dialogForm_tb halfwidth" ${disableField} value="${category}" aria-placeholder="Item Category" placeholder="Item Category" id="category" ></select>
                             </label>
     
-                            <label id="lbl_brand">
+                            <label class="lbl" id="lbl_brand">
+                                Brand
                                 <select class="dialogForm_tb halfwidth" ${disableField} value="${brand}" aria-placeholder="Item Brand" placeholder="Item Brand" id="brand"></select>
                             </label>
     
-                            <label id="lbl_total">
+                            <label class="lbl" id="lbl_total">
+                                Total
                                 <input type="number" class="dialogForm_tb halfwidth" value="${itemQuantity}" aria-placeholder="Total in inventory" placeholder="Total In Inventory" id="total" />
                             </label>
     
-                            <label id="lbl_costPrice">
-                                Cost Price
+                            <label class="lbl" id="lbl_costPrice">
+                                <span>Cost Price</span>
                                 <input type="number" class="dialogForm_tb halfwidth" value="${parseFloat(costPrice)}" aria-placeholder="Cost Price" placeholder="Cost Price (GH₵)" id="costPrice" />
                             </label>
     
-                            <label id="lbl lbl_sellingPrice">
-                                Selling Price
+                            <label class="lbl" id="lbl_sellingPrice">
+                                <span>Selling Price</span>
                                 <input type="number" class="dialogForm_tb halfwidth" value="${parseFloat(sellingPrice)}" aria-placeholder="Unit Cost" placeholder="Selling Price (GH₵)" id="sellingPrice" />
                             </label>
 

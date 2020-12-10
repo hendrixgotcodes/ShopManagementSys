@@ -813,20 +813,42 @@ class Modal {
     
                     <form class="dialogBody fullwidth" role="body">
     
+                        <label id="lbl_name">
+                            Name
                             <input type="text" class="dialogForm_tb fullwidth" list="itemList" ${disableField} value="${itemName}" aria-placeholder="Item Name" placeholder="Item Name" id="name" />
+                        </label>
     
-                         <div class="flexContainer">   
-                            <select class="dialogForm_tb halfwidth" ${disableField} value="${category}" aria-placeholder="Item Category" placeholder="Item Category" id="category" ></select>
-    
-                            <select class="dialogForm_tb halfwidth" ${disableField} value="${brand}" aria-placeholder="Item Brand" placeholder="Item Brand" id="brand"></select>
-    
-                            <input type="number" class="dialogForm_tb halfwidth" value="${itemQuantity}" aria-placeholder="Total in inventory" placeholder="Total In Inventory" id="total" />
-    
-                            <input type="number" class="dialogForm_tb halfwidth" value="${parseFloat(costPrice)}" aria-placeholder="Cost Price" placeholder="Cost Price (GH₵)" id="costPrice" />
-    
-                            <input type="number" class="dialogForm_tb halfwidth" value="${parseFloat(sellingPrice)}" aria-placeholder="Unit Cost" placeholder="Selling Price (GH₵)" id="sellingPrice" />
+                         <div class="flexContainer"> 
 
-                            <input type="number" class="dialogForm_tb halfwidth" value="${parseFloat(discount)}" aria-placeholder="Discount(%)" placeholder="Discount(%)" id="discount" />
+                            <label class="lbl" id="lbl_category">
+                                Category
+                                <select class="dialogForm_tb halfwidth" ${disableField} value="${category}" aria-placeholder="Item Category" placeholder="Item Category" id="category" ></select>
+                            </label>
+    
+                            <label class="lbl" id="lbl_brand">
+                                Brand
+                                <select class="dialogForm_tb halfwidth" ${disableField} value="${brand}" aria-placeholder="Item Brand" placeholder="Item Brand" id="brand"></select>
+                            </label>
+    
+                            <label class="lbl" id="lbl_total">
+                                Total
+                                <input type="number" class="dialogForm_tb halfwidth" value="${itemQuantity}" aria-placeholder="Total in inventory" placeholder="Total In Inventory" id="total" />
+                            </label>
+    
+                            <label class="lbl" id="lbl_costPrice">
+                                <span>Cost Price</span>
+                                <input type="number" class="dialogForm_tb halfwidth" value="${parseFloat(costPrice)}" aria-placeholder="Cost Price" placeholder="Cost Price (GH₵)" id="costPrice" />
+                            </label>
+    
+                            <label class="lbl" id="lbl_sellingPrice">
+                                <span>Selling Price</span>
+                                <input type="number" class="dialogForm_tb halfwidth" value="${parseFloat(sellingPrice)}" aria-placeholder="Unit Cost" placeholder="Selling Price (GH₵)" id="sellingPrice" />
+                            </label>
+
+                            <label class="lbl" id="lbl_discount">
+                                Discount
+                                <input type="number" class="dialogForm_tb halfwidth" value="${parseFloat(discount)}" aria-placeholder="Discount(%)" placeholder="Discount(%)" id="discount" />
+                            </label>
     
                          </div>
 
