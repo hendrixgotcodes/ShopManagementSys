@@ -673,22 +673,14 @@ ipcRenderer.on('populateTable',(e, Items)=>{
 
             let notInDb = resolved[0]
 
-            console.log(notInDb);
-
 
            if(notInDb > 0 && inDb.length > 0){
 
                 Notifications.showAlert("success", `${notInDb} Items Have Been Successfully Added. ${inDb.length} existed in database.`)
 
-                notInDb.forEach((item)=>{
-
-                    DOMCONTROLLER.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount,[checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory")
-
-                })
-
                 inDb.forEach((item)=>{
 
-                    DOMCONTROLLER.editItem("", item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.CostPrice, item.Discount,)
+                    DOMCONTROLLER.updateStock(item.Name, item.Brand, item.Category, item.InStock)
 
                 })
 
@@ -699,7 +691,7 @@ ipcRenderer.on('populateTable',(e, Items)=>{
 
                 inDb.forEach((item)=>{
 
-                    DOMCONTROLLER.editItem("", item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.CostPrice, item.Discount,)
+                    DOMCONTROLLER.updateStock(item.Name, item.Brand, item.Category, item.InStock)
 
                 })
 

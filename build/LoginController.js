@@ -979,6 +979,7 @@ class DATABASE {
 
           result.forEach(dbItem => {
             item.InStock = parseInt(dbItem.InStock) + parseInt(item.InStock);
+            dbItem.InStock = item.InStock;
             inDb.push(dbItem);
           });
         });

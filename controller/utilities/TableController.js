@@ -378,35 +378,26 @@ class DOMCONTROLLER{
         return true;
     }
 
-    static updateStock(row, name="", brand="", category="", stock){
+    static updateStock(name, brand, category, stock){
 
+        const tableRows = document.querySelector("tbody").querySelectorAll("tr");
+
+        console.log(name, brand, category, stock);
       
+        tableRows.forEach((row)=>{
 
-        if(row === ""){
+            if(row.querySelector('.td_Name--hidden').innerText === name && row.querySelector('.td_Brand--hidden').innerText === brand && row.querySelector('.td_Category--hidden').innerText === category){
 
-            let tableRows = document.querySelector("tbody").querySelectorAll("tr");
+                // currentRow.querySelector('.td_Names').innerText = name;
+                // currentRow.querySelector('.td_Brands').innerText = brand;
+                // currentRow.querySelector('.td_Category').innerText = category;
+                row.querySelector('.td_Stock').innerText = stock;
 
-            tableRows.forEach((currentRow)=>{
-
-                if(currentRow.querySelector('.td_Names').innerText === name && currentRow.querySelector('.td_Brands').innerText === brand && currentRow.querySelector('.td_Category').innerText === category){
-
-                    currentRow.querySelector('.td_Names').innerText = name;
-                    currentRow.querySelector('.td_Brands').innerText = brand;
-                    currentRow.querySelector('.td_Category').innerText = category;
-                    currentRow.querySelector('.td_Stock').innerText = stock;
-
-                    return;
-                }
-
-            })
+                return;
+            }
 
 
-        }
-        else{
-
-            row.querySelector('.td_Stock').innerText = stock;
-
-        }
+        })
 
 
     }

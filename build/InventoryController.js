@@ -610,20 +610,16 @@ electron__WEBPACK_IMPORTED_MODULE_0__["ipcRenderer"].on('populateTable', (e, Ite
       });
     });
     let notInDb = resolved[0];
-    console.log(notInDb);
 
     if (notInDb > 0 && inDb.length > 0) {
       _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", `${notInDb} Items Have Been Successfully Added. ${inDb.length} existed in database.`);
-      notInDb.forEach(item => {
-        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount, [checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory");
-      });
       inDb.forEach(item => {
-        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.editItem("", item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.CostPrice, item.Discount);
+        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.updateStock(item.Name, item.Brand, item.Category, item.InStock);
       });
     } else if (notInDb.length === 0 && inDb.length > 0) {
       _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", `${inDb.length} have been successfully updated`);
       inDb.forEach(item => {
-        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.editItem("", item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.CostPrice, item.Discount);
+        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.updateStock(item.Name, item.Brand, item.Category, item.InStock);
       });
     } else if (notInDb.length > 0 && inDb.length === 0) {
       _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", `${notInDb.length} items have been successfully added`);
@@ -1542,21 +1538,18 @@ class DOMCONTROLLER {
     return true;
   }
 
-  static updateStock(row, name = "", brand = "", category = "", stock) {
-    if (row === "") {
-      let tableRows = document.querySelector("tbody").querySelectorAll("tr");
-      tableRows.forEach(currentRow => {
-        if (currentRow.querySelector('.td_Names').innerText === name && currentRow.querySelector('.td_Brands').innerText === brand && currentRow.querySelector('.td_Category').innerText === category) {
-          currentRow.querySelector('.td_Names').innerText = name;
-          currentRow.querySelector('.td_Brands').innerText = brand;
-          currentRow.querySelector('.td_Category').innerText = category;
-          currentRow.querySelector('.td_Stock').innerText = stock;
-          return;
-        }
-      });
-    } else {
-      row.querySelector('.td_Stock').innerText = stock;
-    }
+  static updateStock(name, brand, category, stock) {
+    const tableRows = document.querySelector("tbody").querySelectorAll("tr");
+    console.log(name, brand, category, stock);
+    tableRows.forEach(row => {
+      if (row.querySelector('.td_Name--hidden').innerText === name && row.querySelector('.td_Brand--hidden').innerText === brand && row.querySelector('.td_Category--hidden').innerText === category) {
+        // currentRow.querySelector('.td_Names').innerText = name;
+        // currentRow.querySelector('.td_Brands').innerText = brand;
+        // currentRow.querySelector('.td_Category').innerText = category;
+        row.querySelector('.td_Stock').innerText = stock;
+        return;
+      }
+    });
   } // static editMany(Array){
   //     const inTable = [];
   //     const table = document.querySelectorAll("tr");
@@ -2536,6 +2529,7 @@ class DATABASE {
 
           result.forEach(dbItem => {
             item.InStock = parseInt(dbItem.InStock) + parseInt(item.InStock);
+            dbItem.InStock = item.InStock;
             inDb.push(dbItem);
           });
         });

@@ -1415,21 +1415,18 @@ class DOMCONTROLLER {
     return true;
   }
 
-  static updateStock(row, name = "", brand = "", category = "", stock) {
-    if (row === "") {
-      let tableRows = document.querySelector("tbody").querySelectorAll("tr");
-      tableRows.forEach(currentRow => {
-        if (currentRow.querySelector('.td_Names').innerText === name && currentRow.querySelector('.td_Brands').innerText === brand && currentRow.querySelector('.td_Category').innerText === category) {
-          currentRow.querySelector('.td_Names').innerText = name;
-          currentRow.querySelector('.td_Brands').innerText = brand;
-          currentRow.querySelector('.td_Category').innerText = category;
-          currentRow.querySelector('.td_Stock').innerText = stock;
-          return;
-        }
-      });
-    } else {
-      row.querySelector('.td_Stock').innerText = stock;
-    }
+  static updateStock(name, brand, category, stock) {
+    const tableRows = document.querySelector("tbody").querySelectorAll("tr");
+    console.log(name, brand, category, stock);
+    tableRows.forEach(row => {
+      if (row.querySelector('.td_Name--hidden').innerText === name && row.querySelector('.td_Brand--hidden').innerText === brand && row.querySelector('.td_Category--hidden').innerText === category) {
+        // currentRow.querySelector('.td_Names').innerText = name;
+        // currentRow.querySelector('.td_Brands').innerText = brand;
+        // currentRow.querySelector('.td_Category').innerText = category;
+        row.querySelector('.td_Stock').innerText = stock;
+        return;
+      }
+    });
   } // static editMany(Array){
   //     const inTable = [];
   //     const table = document.querySelectorAll("tr");
@@ -2409,6 +2406,7 @@ class DATABASE {
 
           result.forEach(dbItem => {
             item.InStock = parseInt(dbItem.InStock) + parseInt(item.InStock);
+            dbItem.InStock = item.InStock;
             inDb.push(dbItem);
           });
         });

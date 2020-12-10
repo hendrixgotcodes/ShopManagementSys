@@ -970,6 +970,8 @@ class DATABASE{
 
                         item.InStock = parseInt(dbItem.InStock) + parseInt(item.InStock)
 
+                        dbItem.InStock = item.InStock;
+
                         inDb.push(dbItem)
                         
 
