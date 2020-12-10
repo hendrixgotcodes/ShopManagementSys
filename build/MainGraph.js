@@ -1006,7 +1006,6 @@ class DATABASE {
 
   makeSale(newSale, userName) {
     return new Promise((resolve, reject) => {
-      const selectItemQuery = "SELECT * FROM items WHERE Name = ? AND Brand = ? AND Category = ?";
       const today = new Date();
       newSale.forEach(sale => {
         let [itemName, itemBrand, itemCategory] = [sale.Item.Name, sale.Item.Brand, sale.Item.Category];
@@ -1022,7 +1021,7 @@ class DATABASE {
         let userValue = {
           User_Name: userName
         };
-        this.connector.query("SELECT * FROM users WHERE ?", userValue, (error, result, fields) => {
+        this.connector.query("SELECT id FROM `users` WHERE ?", userValue, (error, result) => {
           if (error) {
             reject('unknown error');
             throw error;
@@ -1030,7 +1029,7 @@ class DATABASE {
             const user = result.shift();
             const userId = user.id;
             finalSaleValue.User = userId;
-            this.connector.query(selectItemQuery, [itemName, itemBrand, itemCategory], (error, result) => {
+            this.connector.query("SELECT * FROM `items` WHERE Name = ? AND Category = ? AND Brand = ?", [itemName, itemCategory, itemBrand], (error, result) => {
               if (error) {
                 reject("unknown error");
                 throw error;

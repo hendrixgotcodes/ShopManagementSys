@@ -66,6 +66,9 @@ class DOMCONTROLLER{
                     <td class="td_Price">${parseFloat(sellingPrice)}</td>
                     <td hidden class="td_costPrice">${parseFloat(costPrice)}</td>
                     <td hidden class="td_discount">${parseFloat(discount)}</td>
+                    <td hidden class="td_Name--hidden">${name}</td>
+                    <td hidden class="td_Brand--hidden">${brand}</td>
+                    <td hidden class="td_Category--hidden">${category}</td>
                     <td hidden class="state">visible</td>
                     `;
 
@@ -88,6 +91,9 @@ class DOMCONTROLLER{
                     <td class="td_costPrice">${parseFloat(costPrice)}</td>
                     <td class="td_sellingPrice">${parseFloat(sellingPrice)}</td>
                     <td hidden class="td_discount">${parseFloat(discount)}</td>
+                    <td hidden class="td_Name--hidden">${name}</td>
+                    <td hidden class="td_Brand--hidden">${brand}</td>
+                    <td hidden class="td_Category--hidden">${category}</td>
                     <td hidden class="state">visible</td>
                     `;
 
@@ -687,8 +693,8 @@ class DOMCONTROLLER{
 
         /*-----------------------------------------------------------------------------------------------*/
 
-        let [rowItemName, rowItemBrand,rowItemCategory, rowItemDiscount, rowItemPrice, rowItemStock, rowItemCostPrice] = [row.querySelector(".td_Names").innerText, row.querySelector(".td_Brands").innerText, row.querySelector(".td_Category").innerText,row.querySelector('.td_discount').innerText, row.querySelector(".td_Price").innerText, row.querySelector('.td_Stock').innerText,  row.querySelector('.td_costPrice').innerText]
-        rowItemPrice = parseFloat(rowItemPrice)
+        let [rowItemName, rowItemBrand,rowItemCategory, rowItemDiscount, rowItemSellingPrice, rowItemStock, rowItemCostPrice] = [row.querySelector(".td_Name--hidden").innerText, row.querySelector(".td_Brand--hidden").innerText, row.querySelector(".td_Category--hidden").innerText,row.querySelector('.td_discount').innerText, row.querySelector(".td_Price").innerText, row.querySelector('.td_Stock').innerText,  row.querySelector('.td_costPrice').innerText]
+        rowItemSellingPrice = parseFloat(rowItemSellingPrice)
 
         let itemExists = false;
     
@@ -703,18 +709,18 @@ class DOMCONTROLLER{
 
 
         //Iterate through cart items to remove if already exists
-        cartItems.forEach((item)=>{
+        cartItems.forEach((cartItem)=>{
 
-            if(item.querySelector(".hidden_itemName").innerText === rowItemName && item.querySelector(".hidden_itemBrand").innerText === rowItemBrand && item.querySelector(".hidden_itemCategory").innerText === rowItemCategory ){
+            if(cartItem.querySelector(".hidden_itemName").innerText === rowItemName && cartItem.querySelector(".hidden_itemBrand").innerText === rowItemBrand && cartItem.querySelector(".hidden_itemCategory").innerText === rowItemCategory ){
 
-                item.classList.remove("cartItem--shown")
+                cartItem.classList.remove("cartItem--shown")
                 itemExists = true
 
                 setTimeout(()=>{
-                    item.remove()
+                    cartItem.remove()
                 }, 300)
 
-                subtractItem(item)
+                subtractItem(cartItem)
 
                 if(cartItems.length === 0){
 
@@ -807,7 +813,7 @@ class DOMCONTROLLER{
         const cartItemCost = document.createElement("div");
         cartItemCost.className = "cartItem_cost";
         cartItemCost.innerText = 
-        `GH¢ ${Millify(rowItemPrice,
+        `GH¢ ${Millify(rowItemSellingPrice,
                 {
                     units: ['', 'K', 'M', 'B', 'T', 'P', 'E'],
                     precision: 2
@@ -817,10 +823,10 @@ class DOMCONTROLLER{
 
         let currentSubtotal = parseFloat(subTotal.innerText)
 
-        subTotal.innerText = currentSubtotal + rowItemPrice;
+        subTotal.innerText = currentSubtotal + rowItemSellingPrice;
         mainTotal.innerText = subTotal.innerText;
 
-        let totalItemSellingPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemPrice))
+        let totalItemSellingPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemSellingPrice))
         let totalItemCostPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemCostPrice))
 
 
@@ -861,7 +867,7 @@ class DOMCONTROLLER{
             let [itemName, itemBrand, itemCategory] = [cartItem.querySelector(".hidden_itemName").innerText, cartItem.querySelector(".hidden_itemBrand").innerText, cartItem.querySelector(".hidden_itemCategory").innerText]
             let newRevenue = 0;
 
-            totalItemSellingPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemPrice))
+            totalItemSellingPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemSellingPrice))
             totalItemCostPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemCostPrice))
 
             inCart.forEach((item)=>{
@@ -880,7 +886,7 @@ class DOMCONTROLLER{
 
 
             let itemQuanity = parseInt(itemSelect.value);
-            let totalItemCost = parseFloat(itemQuanity * rowItemPrice).toPrecision(3);
+            let totalItemCost = parseFloat(itemQuanity * rowItemSellingPrice).toPrecision(3);
 
             let currentSubtotal = parseFloat(subTotal.innerText)
             // subTotal.innerText = currentSubtotal + parseFloat(totalItemCost);

@@ -1257,7 +1257,6 @@ class DATABASE{
 
        return new Promise((resolve, reject)=>{
 
-            const selectItemQuery = "SELECT * FROM items WHERE Name = ? AND Brand = ? AND Category = ?";
 
             const today = new Date();
 
@@ -1265,7 +1264,6 @@ class DATABASE{
 
 
                 let [itemName, itemBrand, itemCategory] = [sale.Item.Name, sale.Item.Brand, sale.Item.Category];
-
 
                 sale.Date = `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`;
 
@@ -1281,11 +1279,12 @@ class DATABASE{
                 }
 
 
+
                 let userValue = {
                     User_Name: userName
                 }
 
-                this.connector.query("SELECT * FROM users WHERE ?", userValue ,(error, result, fields)=>{
+                this.connector.query("SELECT id FROM `users` WHERE ?", userValue ,(error, result)=>{
 
         
                     if(error){
@@ -1297,7 +1296,8 @@ class DATABASE{
                         const userId = user.id;
                         finalSaleValue.User = userId;
 
-                        this.connector.query(selectItemQuery, [itemName, itemBrand, itemCategory],(error, result)=>{
+
+                        this.connector.query("SELECT * FROM `items` WHERE Name = ? AND Category = ? AND Brand = ?", [itemName, itemCategory, itemBrand],(error, result)=>{
     
                             if(error){
     

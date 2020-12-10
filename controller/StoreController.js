@@ -81,25 +81,19 @@ toolBarBtn.addEventListener('click',(e)=>{
 })
 
 //Sets user parameters
-// ipcRenderer.on("setUserParams", (e, userParamsArray)=>{
+ipcRenderer.on("setUserParams", (e, userParamsArray)=>{
 
 
-//     [UserName, UserType] = userParamsArray
+    [UserName, UserType] = userParamsArray
 
-//     let windowTitile = document.querySelector(".titleBar_userName");
-//     windowTitile.innerText = UserName
+    let windowTitile = document.querySelector(".titleBar_userName");
+    windowTitile.innerText = UserName
 
-//     //Setting updating user's last seen  
-//     const now = new Date();
-//     const lastSeen = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`
+    //Setting updating user's last seen  
+    const now = new Date();
+    const lastSeen = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`
 
-
-//     database.setUserLastSeen(UserName, lastSeen)
-//     .then((result)=>{
-//         console.log(result);
-//     })
-
-// })
+})
 
 // btnCart_sell
 btnCart_sell.addEventListener("click", checkout)
@@ -353,31 +347,33 @@ function clearAllItems(afterSale){
                     const itemName = itemsInCart[i].querySelector(".hidden_itemName").innerText;
                     const itemBrand = itemsInCart[i].querySelector(".hidden_itemBrand").innerText;
                     const itemCategory = itemsInCart[i].querySelector(".hidden_itemCategory").innerText;
+                    const itemSold = itemsInCart[i].querySelector(".cartItem_count").value
     
     
-                    setTimeout(()=>{
     
     
-                        tableRows.forEach((row)=>{
-    
-                            let rowName = row.querySelector('.td_Names').innerText;
-                            let rowBrand = row.querySelector('.td_Brands').innerText
-                            let rowCategory = row.querySelector('.td_Category').innerText
-                            let checkbox = row.querySelector('.td_cb').querySelector('.selectOne')
-    
-    
-                            if(rowName === itemName && rowBrand === itemBrand && rowCategory === itemCategory){
-                                    checkbox.checked = false;
-                            }
-    
-                        })
-                        
-    
-                        itemsInCart[i].classList.remove("cartItem--shown");
-    
-                        resolve()
+                    tableRows.forEach((row)=>{
+
+                        let rowName = row.querySelector('.td_Name--hidden').innerText;
+                        let rowBrand = row.querySelector('.td_Brand--hidden').innerText
+                        let rowCategory = row.querySelector('.td_Category--hidden').innerText
+                        let checkbox = row.querySelector('.td_cb').querySelector('.selectOne')
+
+                        let InStock = row.querySelector(".td_Stock");
+
+
+                        if(rowName === itemName && rowBrand === itemBrand && rowCategory === itemCategory){
+                                checkbox.checked = false;
+
+                                InStock.innerText = parseInt(InStock.innerText) - parseInt(itemSold); 
+
+                        }
+
+                    })
+                    
+
+                    resolve()
         
-                    }, (i*400))
     
                 })
     
@@ -385,13 +381,11 @@ function clearAllItems(afterSale){
     
                     subtractItem(itemsInCart[i], cart)
     
-                    setTimeout(()=>{
     
-                        itemsInCart[i].remove()
-    
-                        resolve()
+                    itemsInCart[i].remove()
+
+                    resolve()
         
-                    }, (i*500))
     
     
                 })

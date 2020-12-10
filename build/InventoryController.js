@@ -815,39 +815,39 @@ class Modal {
     
                         <label id="lbl_name">
                             Name
-                            <input type="text" class="dialogForm_tb fullwidth" list="itemList" ${disableField} value="${itemName}" aria-placeholder="Item Name" placeholder="Item Name" id="name" />
+                            <input type="text" class="dialogForm_tb fullwidth" list="itemList" ${disableField} value="${itemName}" aria-placeholder="Item Name"  id="name" />
                         </label>
     
                          <div class="flexContainer"> 
 
                             <label class="lbl" id="lbl_category">
                                 Category
-                                <select class="dialogForm_tb halfwidth" ${disableField} value="${category}" aria-placeholder="Item Category" placeholder="Item Category" id="category" ></select>
+                                <select class="dialogForm_tb halfwidth" ${disableField} value="${category}" aria-placeholder="Item Category"  id="category" ></select>
                             </label>
     
                             <label class="lbl" id="lbl_brand">
                                 Brand
-                                <select class="dialogForm_tb halfwidth" ${disableField} value="${brand}" aria-placeholder="Item Brand" placeholder="Item Brand" id="brand"></select>
+                                <select class="dialogForm_tb halfwidth" ${disableField} value="${brand}" aria-placeholder="Item Brand" " id="brand"></select>
                             </label>
     
                             <label class="lbl" id="lbl_total">
                                 Total
-                                <input type="number" class="dialogForm_tb halfwidth" value="${itemQuantity}" aria-placeholder="Total in inventory" placeholder="Total In Inventory" id="total" />
+                                <input type="number" class="dialogForm_tb halfwidth" value="${itemQuantity}" aria-placeholder="Total in inventory"  id="total" />
                             </label>
     
                             <label class="lbl" id="lbl_costPrice">
-                                <span>Cost Price</span>
-                                <input type="number" class="dialogForm_tb halfwidth" value="${parseFloat(costPrice)}" aria-placeholder="Cost Price" placeholder="Cost Price (GH₵)" id="costPrice" />
+                                <span>Cost Price (GH₵)</span>
+                                <input type="number" class="dialogForm_tb halfwidth" value="${parseFloat(costPrice)}" aria-placeholder="Cost Price" id="costPrice" />
                             </label>
     
                             <label class="lbl" id="lbl_sellingPrice">
-                                <span>Selling Price</span>
-                                <input type="number" class="dialogForm_tb halfwidth" value="${parseFloat(sellingPrice)}" aria-placeholder="Unit Cost" placeholder="Selling Price (GH₵)" id="sellingPrice" />
+                                <span>Selling Price (GH₵)</span>
+                                <input type="number" class="dialogForm_tb halfwidth" value="${parseFloat(sellingPrice)}" aria-placeholder="Unit Cost"  id="sellingPrice" />
                             </label>
 
                             <label class="lbl" id="lbl_discount">
-                                Discount
-                                <input type="number" class="dialogForm_tb halfwidth" value="${parseFloat(discount)}" aria-placeholder="Discount(%)" placeholder="Discount(%)" id="discount" />
+                                <span>Discount (%)</span>
+                                <input type="number" class="dialogForm_tb halfwidth" value="${parseFloat(discount)}" aria-placeholder="Discount(%)"  id="discount" />
                             </label>
     
                          </div>
@@ -1336,6 +1336,9 @@ class DOMCONTROLLER {
                     <td class="td_Price">${parseFloat(sellingPrice)}</td>
                     <td hidden class="td_costPrice">${parseFloat(costPrice)}</td>
                     <td hidden class="td_discount">${parseFloat(discount)}</td>
+                    <td hidden class="td_Name--hidden">${name}</td>
+                    <td hidden class="td_Brand--hidden">${brand}</td>
+                    <td hidden class="td_Category--hidden">${category}</td>
                     <td hidden class="state">visible</td>
                     `;
       } else {
@@ -1354,6 +1357,9 @@ class DOMCONTROLLER {
                     <td class="td_costPrice">${parseFloat(costPrice)}</td>
                     <td class="td_sellingPrice">${parseFloat(sellingPrice)}</td>
                     <td hidden class="td_discount">${parseFloat(discount)}</td>
+                    <td hidden class="td_Name--hidden">${name}</td>
+                    <td hidden class="td_Brand--hidden">${brand}</td>
+                    <td hidden class="td_Category--hidden">${category}</td>
                     <td hidden class="state">visible</td>
                     `;
       }
@@ -1742,8 +1748,8 @@ class DOMCONTROLLER {
     const checkbox = cartItemsContainer.querySelector(".cb_cartItem");
     /*-----------------------------------------------------------------------------------------------*/
 
-    let [rowItemName, rowItemBrand, rowItemCategory, rowItemDiscount, rowItemPrice, rowItemStock, rowItemCostPrice] = [row.querySelector(".td_Names").innerText, row.querySelector(".td_Brands").innerText, row.querySelector(".td_Category").innerText, row.querySelector('.td_discount').innerText, row.querySelector(".td_Price").innerText, row.querySelector('.td_Stock').innerText, row.querySelector('.td_costPrice').innerText];
-    rowItemPrice = parseFloat(rowItemPrice);
+    let [rowItemName, rowItemBrand, rowItemCategory, rowItemDiscount, rowItemSellingPrice, rowItemStock, rowItemCostPrice] = [row.querySelector(".td_Name--hidden").innerText, row.querySelector(".td_Brand--hidden").innerText, row.querySelector(".td_Category--hidden").innerText, row.querySelector('.td_discount').innerText, row.querySelector(".td_Price").innerText, row.querySelector('.td_Stock').innerText, row.querySelector('.td_costPrice').innerText];
+    rowItemSellingPrice = parseFloat(rowItemSellingPrice);
     let itemExists = false; //Set "no items in cart yet" invisble
 
     cartInfo.style.display = "none"; //disble buttons
@@ -1751,14 +1757,14 @@ class DOMCONTROLLER {
     btnCart_clear.disabled = false;
     btnCart_sell.disabled = false; //Iterate through cart items to remove if already exists
 
-    cartItems.forEach(item => {
-      if (item.querySelector(".hidden_itemName").innerText === rowItemName && item.querySelector(".hidden_itemBrand").innerText === rowItemBrand && item.querySelector(".hidden_itemCategory").innerText === rowItemCategory) {
-        item.classList.remove("cartItem--shown");
+    cartItems.forEach(cartItem => {
+      if (cartItem.querySelector(".hidden_itemName").innerText === rowItemName && cartItem.querySelector(".hidden_itemBrand").innerText === rowItemBrand && cartItem.querySelector(".hidden_itemCategory").innerText === rowItemCategory) {
+        cartItem.classList.remove("cartItem--shown");
         itemExists = true;
         setTimeout(() => {
-          item.remove();
+          cartItem.remove();
         }, 300);
-        subtractItem(item);
+        subtractItem(cartItem);
 
         if (cartItems.length === 0) {
           btnCart_clear.disabled = false;
@@ -1823,15 +1829,15 @@ class DOMCONTROLLER {
       cartItem.appendChild(itemSelect);
       const cartItemCost = document.createElement("div");
       cartItemCost.className = "cartItem_cost";
-      cartItemCost.innerText = `GH¢ ${Millify(rowItemPrice, {
+      cartItemCost.innerText = `GH¢ ${Millify(rowItemSellingPrice, {
         units: ['', 'K', 'M', 'B', 'T', 'P', 'E'],
         precision: 2
       })}`;
       cartItem.appendChild(cartItemCost);
       let currentSubtotal = parseFloat(subTotal.innerText);
-      subTotal.innerText = currentSubtotal + rowItemPrice;
+      subTotal.innerText = currentSubtotal + rowItemSellingPrice;
       mainTotal.innerText = subTotal.innerText;
-      let totalItemSellingPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemPrice));
+      let totalItemSellingPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemSellingPrice));
       let totalItemCostPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemCostPrice));
       inCart.push({
         Item: {
@@ -1857,7 +1863,7 @@ class DOMCONTROLLER {
       itemSelect.addEventListener("change", function modifyCost(e) {
         let [itemName, itemBrand, itemCategory] = [cartItem.querySelector(".hidden_itemName").innerText, cartItem.querySelector(".hidden_itemBrand").innerText, cartItem.querySelector(".hidden_itemCategory").innerText];
         let newRevenue = 0;
-        totalItemSellingPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemPrice));
+        totalItemSellingPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemSellingPrice));
         totalItemCostPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemCostPrice));
         inCart.forEach(item => {
           if (item.Item.Name === itemName && item.Item.Brand === itemBrand && item.Item.Category === itemCategory) {
@@ -1869,7 +1875,7 @@ class DOMCONTROLLER {
           newRevenue = parseFloat(item.Revenue + newRevenue);
         });
         let itemQuanity = parseInt(itemSelect.value);
-        let totalItemCost = parseFloat(itemQuanity * rowItemPrice).toPrecision(3);
+        let totalItemCost = parseFloat(itemQuanity * rowItemSellingPrice).toPrecision(3);
         let currentSubtotal = parseFloat(subTotal.innerText); // subTotal.innerText = currentSubtotal + parseFloat(totalItemCost);
 
         subTotal.innerText = newRevenue;
@@ -2681,7 +2687,6 @@ class DATABASE {
 
   makeSale(newSale, userName) {
     return new Promise((resolve, reject) => {
-      const selectItemQuery = "SELECT * FROM items WHERE Name = ? AND Brand = ? AND Category = ?";
       const today = new Date();
       newSale.forEach(sale => {
         let [itemName, itemBrand, itemCategory] = [sale.Item.Name, sale.Item.Brand, sale.Item.Category];
@@ -2697,7 +2702,7 @@ class DATABASE {
         let userValue = {
           User_Name: userName
         };
-        this.connector.query("SELECT * FROM users WHERE ?", userValue, (error, result, fields) => {
+        this.connector.query("SELECT id FROM `users` WHERE ?", userValue, (error, result) => {
           if (error) {
             reject('unknown error');
             throw error;
@@ -2705,7 +2710,7 @@ class DATABASE {
             const user = result.shift();
             const userId = user.id;
             finalSaleValue.User = userId;
-            this.connector.query(selectItemQuery, [itemName, itemBrand, itemCategory], (error, result) => {
+            this.connector.query("SELECT * FROM `items` WHERE Name = ? AND Category = ? AND Brand = ?", [itemName, itemCategory, itemBrand], (error, result) => {
               if (error) {
                 reject("unknown error");
                 throw error;
