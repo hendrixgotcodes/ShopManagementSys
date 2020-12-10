@@ -367,6 +367,12 @@ function clearAllItems(afterSale){
 
                                 InStock.innerText = parseInt(InStock.innerText) - parseInt(itemSold); 
 
+                                if(parseInt(InStock.innerText) === 0){
+
+                                    row.remove();
+
+                                }
+
                         }
 
                     })

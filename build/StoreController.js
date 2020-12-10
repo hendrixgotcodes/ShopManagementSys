@@ -453,6 +453,10 @@ function clearAllItems(afterSale) {
           if (rowName === itemName && rowBrand === itemBrand && rowCategory === itemCategory) {
             checkbox.checked = false;
             InStock.innerText = parseInt(InStock.innerText) - parseInt(itemSold);
+
+            if (parseInt(InStock.innerText) === 0) {
+              row.remove();
+            }
           }
         });
         resolve();
