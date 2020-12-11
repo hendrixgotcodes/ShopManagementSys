@@ -209,7 +209,7 @@ body {
 
             .cartContainer{
 
-                width: 35%;  
+                width: 42%;  
                 height: 100%;  
                 display: flex;
                 justify-content: center;
@@ -389,12 +389,18 @@ body {
 
                             .cartItem_count{
 
-                                width: 12%;
+                                width: 17%;
                                 height: 50%;
-                                border: 1px solid lighten($color: $primary_black, $amount: 52);
+                                border: 1px solid lighten($color: $primary_black, $amount: 10);
                                 border-radius: 4px;
                                 color: $primary_black;
+                                padding: 0 .5rem;
                                 outline: $primary_yellow;
+
+                                ::placeholder{
+                                    color: lighten($color: $primary_black, $amount: 20);
+                                    background-color: red;
+                                }
                                     
                             }
 
@@ -428,7 +434,7 @@ body {
                         border-radius: 8px;
                         box-shadow: -1px 3px 5px rgba($color: $primary_green, $alpha: 0.15);
                         margin: 6% 0;
-                        padding: .8rem .4rem;
+                        padding: .4rem .5rem;
                         font-size: .85rem;
 
                         .lblExpense{

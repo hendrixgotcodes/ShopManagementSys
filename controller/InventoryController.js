@@ -409,7 +409,7 @@ function addItem(){
             let promisedRow = result;
 
 
-            let [,row, name, brand, category, stock, sellingPrice, costPrice, discount] = promisedRow;
+            let [addNew,row, name, brand, category, stock, sellingPrice, costPrice, discount] = promisedRow;
 
             //Creating a store object to be added to database
             const storeObject = new Object();
@@ -423,36 +423,63 @@ function addItem(){
 
             // console.log([row, name, brand, category, stock, sellingPrice, costPrice]);
 
+            if(addNew === false){
 
-            database.addNewItem(storeObject, UserName)
-            .then((result)=>{
+                console.log("iiin db");
 
-                if(result === true){
+                database.addNewItem(storeObject, UserName)
+                .then(()=>{
 
-                    DOMCONTROLLER.createItem(result.Name, result.Brand, result.Category, result.Stock, result.SellingPrice, result.Discount,[checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "", false, false, "inventory")
-                    .then(()=>{
-    
-                        Notifications.showAlert("success", "Successfuly added to inventory")
-    
-                    })
 
-                }
+        
+                    DOMCONTROLLER.updateItem(name, brand, category, sellingPrice, costPrice, stock, discount)
 
-              
-            })
-            .catch((error)=>{
+                    Notifications.showAlert("success", `Change successfuly made to ${name}`)
+        
 
-                if(error === "duplicate"){
-                    Notifications.showAlert("error", `Sorry, failed to add ${storeObject.Name} of brand ${storeObject.Brand} to inventory. This item already exists`)
-                    return;
-                }
-                else{
 
-                    Notifications.showAlert("error", `Sorry, failed to add ${storeObject.Name} of brand ${storeObject.Brand} to inventory due to an unknown error`)
+                })
+                .catch(()=>{
 
-                }
+                    Notifications.showAlert("error", "Sorry an error occurred.")
 
-            })
+                })
+
+            }
+            else{
+
+                
+                database.addNewItem(storeObject, UserName)
+                .then((result)=>{
+
+                    if(result === true){
+
+                        DOMCONTROLLER.createItem(result.Name, result.Brand, result.Category, result.Stock, result.SellingPrice, result.Discount,[checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "", false, false, "inventory")
+                        .then(()=>{
+        
+                            Notifications.showAlert("success", "Successfuly added to inventory")
+        
+                        })
+
+                    }
+
+                
+                })
+                .catch((error)=>{
+
+                    if(error === "duplicate"){
+                        Notifications.showAlert("error", `Sorry, failed to add ${storeObject.Name} of brand ${storeObject.Brand} to inventory. This item already exists`)
+                        return;
+                    }
+                    else{
+
+                        Notifications.showAlert("error", `Sorry, failed to add ${storeObject.Name} of brand ${storeObject.Brand} to inventory due to an unknown error`)
+
+                    }
+
+                })
+
+            }
 
 
     })

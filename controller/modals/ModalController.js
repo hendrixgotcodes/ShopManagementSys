@@ -291,10 +291,8 @@ class Modal {
 
                  //Intializing DataLists
 
-                 const db = new DATABASE();
-                
                  //Category
-                 db.getAllItemCategories()
+                 database.getAllItemCategories()
                  .then((categories)=>{
 
 
@@ -361,7 +359,7 @@ class Modal {
 
                  
                  //Brands
-                 db.getAllItemBrands()
+                 database.getAllItemBrands()
                  .then((brands)=>{
 
 
@@ -452,12 +450,24 @@ class Modal {
 
                     if(name !== "" && category !== "" && brand !== "" && stock !== "" && sellingPrice !== ""){
 
+                        if(inInventory === true){
 
-                        closeModal(itemForm);
+                            closeModal(itemForm);
 
-                        // openPrompt("",resolve,reject, [true, row, name, brand, category, stock, sellingPrice])
+                            // openPrompt("",resolve,reject, [true, row, name, brand, category, stock, sellingPrice])
 
-                        resolve([true, row, name, brand, category, stock, sellingPrice, costPrice, discount]);
+                            resolve([false, row, name, brand, category, stock, sellingPrice, costPrice, discount]);
+
+                        }
+                        else{
+
+                            closeModal(itemForm);
+
+                            // openPrompt("",resolve,reject, [true, row, name, brand, category, stock, sellingPrice])
+
+                            resolve([true, row, name, brand, category, stock, sellingPrice, costPrice, discount]);
+
+                        }
 
 
                     }

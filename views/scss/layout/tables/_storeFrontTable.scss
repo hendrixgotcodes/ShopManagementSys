@@ -1,5 +1,5 @@
 .contentTable {
-    width: 97%;
+    width: 90%;
     border-collapse: collapse;
     color: $WHITE;
     height: 97%;
@@ -94,6 +94,7 @@
         align-items: center;
         transition: .3s;
         position: relative;
+        outline: none;
 
         &:nth-child(odd) {
             background-color: $WHITE;
@@ -248,7 +249,7 @@
 .tb_Names,
 .tb_Brands,
 .tb_Category {
-    width: 22%;
+    width: 25.5%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -257,7 +258,7 @@
 
 .tb_Stock,
 .tb_Price {
-    width: 15.5%;
+    width: 20%;
 }
 
 
@@ -268,7 +269,7 @@
 .td_Names,
 .td_Brands,
 .td_Category {
-    width: 21.5%;
+    width: 25%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -279,6 +280,6 @@
 
 .td_Stock,
 .td_Price {
-    width: 15.5%;
+    width: 20%;
     text-align: center;
 }

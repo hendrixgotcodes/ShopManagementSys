@@ -157,6 +157,7 @@ ipcRenderer.on("setUserParams", (e, paramsArray) => {
 window.addEventListener("load", () => {
   //Alert ipcMain of readiness
   ipcRenderer.send("ready");
+  toolBar_tb.focus();
 });
 controlBoxMinimize.addEventListener('click', sendMinimizeEvent);
 controlBoxMaximize.addEventListener('click', sendMaximizeEvent);
@@ -568,7 +569,7 @@ class DATABASE {
       let brandValues = {
         Name: brand
       };
-      let insertItemSQL = "INSERT INTO duffykids.items SET ?";
+      let insertItemSQL = "INSERT INTO duffykids.items SET ? ON DUPLICATE KEY UPDATE ?";
       let values = {
         Name: name,
         Brand: brand,
@@ -579,6 +580,12 @@ class DATABASE {
         Discount: discount,
         Deleted: false
       };
+      let updateValues = {
+        InStock: stock,
+        CostPrice: costPrice,
+        SellingPrice: sellingPrice,
+        Discount: discount
+      };
       this.connector.beginTransaction(error => {
         if (error) {
           throw error;
@@ -587,7 +594,7 @@ class DATABASE {
             if (error === null || error.code === "ER_DUP_ENTRY") {
               this.connector.query(insertBrandSQL, brandValues, (error, result) => {
                 if (error === null || error.code === "ER_DUP_ENTRY") {
-                  this.connector.query(insertItemSQL, values, (error, result) => {
+                  this.connector.query(insertItemSQL, [values, updateValues], (error, result) => {
                     let itemId = result.insertId;
 
                     if (error) {

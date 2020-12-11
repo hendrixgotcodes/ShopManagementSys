@@ -359,7 +359,7 @@ class DATABASE{
                 Name: brand
             }
         
-            let insertItemSQL = "INSERT INTO duffykids.items SET ?";
+            let insertItemSQL = "INSERT INTO duffykids.items SET ? ON DUPLICATE KEY UPDATE ?";
             let values = 
             {
                     Name: name,
@@ -372,6 +372,13 @@ class DATABASE{
                     Deleted: false
             }
             ;
+
+            let updateValues ={
+                InStock: stock,
+                CostPrice: costPrice,
+                SellingPrice: sellingPrice,
+                Discount: discount
+            }
                 
             
             this.connector.beginTransaction((error)=>{
@@ -392,7 +399,7 @@ class DATABASE{
                                         
                                         if( error === null || error.code === "ER_DUP_ENTRY"){
         
-                                            this.connector.query(insertItemSQL, values, (error, result)=>{
+                                            this.connector.query(insertItemSQL, [values, updateValues], (error, result)=>{
         
                                                 let itemId = result.insertId;
         

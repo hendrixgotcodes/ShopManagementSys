@@ -62,7 +62,7 @@ class DOMCONTROLLER{
                     <td class="td_Names">${clip(name, 23)}</td>
                     <td class="td_Brands">${clip(brand, 23)}</td>
                     <td class="td_Category">${clip(category, 23)}</td>
-                    <td class="td_Stock">${stock}</td>
+                    <td hidden class="td_Stock">${stock}</td>
                     <td class="td_Price">${parseFloat(sellingPrice)}</td>
                     <td hidden class="td_costPrice">${parseFloat(costPrice)}</td>
                     <td hidden class="td_discount">${parseFloat(discount)}</td>
@@ -102,7 +102,8 @@ class DOMCONTROLLER{
 
                 row.innerHTML = rowContent;
                 row.id = tableROWS.length + 1;
-                row.className = "bodyRow";                
+                row.className = "bodyRow";  
+                row.tabIndex = "0";              
 
                 if(hasItems === true){
 
@@ -402,6 +403,39 @@ class DOMCONTROLLER{
 
     }
 
+    static updateItem(name, brand, category, sellingPrice, costPrice, discount){
+
+        const tableRows = document.querySelector("tbody").querySelectorAll("tr");
+
+        console.log(name, brand, category, stock);
+      
+        tableRows.forEach((row)=>{
+
+            if(row.querySelector('.td_Name--hidden').innerText === name && row.querySelector('.td_Brand--hidden').innerText === brand && row.querySelector('.td_Category--hidden').innerText === category){
+
+                row.querySelector('.td_Names').innerText = name;
+                row.querySelector('.td_Name--hidden').innerText = name;
+
+                row.querySelector('.td_Brands').innerText = brand;
+                row.querySelector('.td_Brand--hidden').innerText = brand;
+
+                row.querySelector('.td_Category').innerText = category;
+                row.querySelector('.td_Category--hidden').innerText = category;
+
+                row.querySelector(".td_sellingPrice").innerText = sellingPrice;
+                row.querySelector(".td_costPrice").innerText = costPrice;
+                row.querySelector(".td_discount").innerText = discount;
+
+                row.querySelector('.td_Stock').innerText = stock;
+
+                return;
+            }
+
+
+        })
+
+    }
+
     // static editMany(Array){
 
     //     const inTable = [];
@@ -667,7 +701,8 @@ class DOMCONTROLLER{
      *
      */
 
-        const tableRows = document.querySelector("tbody").querySelectorAll("tr");
+        const toolBar_tb = document.querySelector(".toolBar_tb")
+
 
         //Cart Content
         const cart = document.querySelector(".cart");
@@ -676,8 +711,6 @@ class DOMCONTROLLER{
         const cartItemsContainer = document.querySelector(".cart").querySelector(".cartItems");
         const cartInfo = cartItemsContainer.querySelector(".cartInfo");
         const cartItems = cartItemsContainer.querySelectorAll(".cartItem");
-
-        const checkbox = cartItemsContainer.querySelector(".cb_cartItem");
 
 
 
@@ -747,7 +780,7 @@ class DOMCONTROLLER{
         const cartItemTemplate = 
         `
             <div class="cartItem_details">
-                <div class="cartItem_Name">${clip(rowItemName, 10)}</div>
+                <div class="cartItem_Name">${clip(rowItemName, 18)}</div>
                 <div class="cartItem_Brand">${clip(rowItemBrand, 10)}</div>
                 <div hidden class="hidden_itemCategory">${rowItemCategory}</div>
                 <div hidden class="hidden_itemName">${rowItemName}</div>
@@ -785,21 +818,19 @@ class DOMCONTROLLER{
 
         let itemCount = parseInt(rowItemStock);
         
-        const itemSelect = document.createElement("select");
-        itemSelect.className = "cartItem_count";
-
-        for(let i = 1; i <= itemCount; i++){
-
-            let option = document.createElement("option")
-            option.value = i;
-            option.innerText = i;
-
-            itemSelect.appendChild(option)
+        const tb_itemCount = document.createElement("input");
+        // tb_itemCount.setAttribute("type", "");
+        tb_itemCount.type = "number";
+        tb_itemCount.placeholder = "Qty."
+        tb_itemCount.className = "cartItem_count";
 
 
-        }
+        cartItem.appendChild(tb_itemCount)
 
-        cartItem.appendChild(itemSelect)
+        setTimeout(()=>{
+            tb_itemCount.focus();
+        }, 500)
+    
 
         const cartItemCost = document.createElement("div");
         cartItemCost.className = "cartItem_cost";
@@ -817,8 +848,8 @@ class DOMCONTROLLER{
         subTotal.innerText = currentSubtotal + rowItemSellingPrice;
         mainTotal.innerText = subTotal.innerText;
 
-        let totalItemSellingPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemSellingPrice))
-        let totalItemCostPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemCostPrice))
+        let totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemSellingPrice))
+        let totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemCostPrice))
 
 
 
@@ -829,11 +860,11 @@ class DOMCONTROLLER{
                 Brand: rowItemBrand,
                 Category: rowItemCategory
             },
-            Purchased: parseInt(itemSelect.value),
+            Purchased: parseInt(tb_itemCount.value),
             Revenue: totalItemSellingPrice,
             Profit: totalItemSellingPrice - totalItemCostPrice,
             UnitDiscount: rowItemDiscount,
-            TotalDiscount: parseFloat(rowItemDiscount) * parseInt(itemSelect.value)
+            TotalDiscount: parseFloat(rowItemDiscount) * parseInt(tb_itemCount.value)
         })
 
         const checkbox = cartItem.querySelector(".cartCheckBox");
@@ -853,19 +884,19 @@ class DOMCONTROLLER{
 
         })
 
-        itemSelect.addEventListener("change", function modifyCost(e){
+        tb_itemCount.addEventListener("change", function modifyCost(e){
 
             let [itemName, itemBrand, itemCategory] = [cartItem.querySelector(".hidden_itemName").innerText, cartItem.querySelector(".hidden_itemBrand").innerText, cartItem.querySelector(".hidden_itemCategory").innerText]
             let newRevenue = 0;
 
-            totalItemSellingPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemSellingPrice))
-            totalItemCostPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemCostPrice))
+            totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemSellingPrice))
+            totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemCostPrice))
 
             inCart.forEach((item)=>{
 
                 if(item.Item.Name === itemName && item.Item.Brand === itemBrand && item.Item.Category === itemCategory){
 
-                    item.Purchased = parseInt(itemSelect.value);
+                    item.Purchased = parseInt(tb_itemCount.value);
                     item.Revenue = totalItemSellingPrice;
                     item.Profit = totalItemSellingPrice - totalItemCostPrice
 
@@ -876,14 +907,16 @@ class DOMCONTROLLER{
             })
 
 
-            let itemQuanity = parseInt(itemSelect.value);
-            let totalItemCost = parseFloat(itemQuanity * rowItemSellingPrice).toPrecision(3);
+            let itemQuanity = parseInt(tb_itemCount.value);
+            // let totalItemCost = parseFloat(itemQuanity * rowItemSellingPrice).toPrecision(3);
 
-            let currentSubtotal = parseFloat(subTotal.innerText)
+            // let currentSubtotal = parseFloat(subTotal.innerText)
             // subTotal.innerText = currentSubtotal + parseFloat(totalItemCost);
             subTotal.innerText = newRevenue;
 
             mainTotal.innerText = newRevenue
+
+            toolBar_tb.focus()
 
         })
 

@@ -89,6 +89,8 @@ window.addEventListener("load", ()=>{
 
     //Alert ipcMain of readiness
     ipcRenderer.send("ready");
+
+    toolBar_tb.focus();
 })
 
 

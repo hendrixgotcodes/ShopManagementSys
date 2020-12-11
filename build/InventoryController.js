@@ -457,7 +457,7 @@ function addItem() {
 
 
     let promisedRow = result;
-    let [, row, name, brand, category, stock, sellingPrice, costPrice, discount] = promisedRow; //Creating a store object to be added to database
+    let [addNew, row, name, brand, category, stock, sellingPrice, costPrice, discount] = promisedRow; //Creating a store object to be added to database
 
     const storeObject = new Object();
     storeObject.Name = name;
@@ -468,20 +468,30 @@ function addItem() {
     storeObject.CostPrice = costPrice;
     storeObject.Discount = discount; // console.log([row, name, brand, category, stock, sellingPrice, costPrice]);
 
-    database.addNewItem(storeObject, UserName).then(result => {
-      if (result === true) {
-        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(result.Name, result.Brand, result.Category, result.Stock, result.SellingPrice, result.Discount, [checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "", false, false, "inventory").then(() => {
-          _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", "Successfuly added to inventory");
-        });
-      }
-    }).catch(error => {
-      if (error === "duplicate") {
-        _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("error", `Sorry, failed to add ${storeObject.Name} of brand ${storeObject.Brand} to inventory. This item already exists`);
-        return;
-      } else {
-        _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("error", `Sorry, failed to add ${storeObject.Name} of brand ${storeObject.Brand} to inventory due to an unknown error`);
-      }
-    });
+    if (addNew === false) {
+      console.log("iiin db");
+      database.addNewItem(storeObject, UserName).then(() => {
+        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.updateItem(name, brand, category, sellingPrice, costPrice, stock, discount);
+        _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", `Change successfuly made to ${name}`);
+      }).catch(() => {
+        _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("error", "Sorry an error occurred.");
+      });
+    } else {
+      database.addNewItem(storeObject, UserName).then(result => {
+        if (result === true) {
+          _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(result.Name, result.Brand, result.Category, result.Stock, result.SellingPrice, result.Discount, [checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "", false, false, "inventory").then(() => {
+            _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", "Successfuly added to inventory");
+          });
+        }
+      }).catch(error => {
+        if (error === "duplicate") {
+          _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("error", `Sorry, failed to add ${storeObject.Name} of brand ${storeObject.Brand} to inventory. This item already exists`);
+          return;
+        } else {
+          _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("error", `Sorry, failed to add ${storeObject.Name} of brand ${storeObject.Brand} to inventory due to an unknown error`);
+        }
+      });
+    }
   });
 } //---------------------------------------------------------------------------------------------------------------
 // Adds and removes shop items to rowBucket on checkbox tick and untick respectively
@@ -882,10 +892,9 @@ class Modal {
       setTimeout(() => {
         mainBodyContent.querySelector(".dialog--itemFormBox").classList.add("dialog--shown");
       }, 100); //Intializing DataLists
+      //Category
 
-      const db = new _model_DATABASE__WEBPACK_IMPORTED_MODULE_0___default.a(); //Category
-
-      db.getAllItemCategories().then(categories => {
+      database.getAllItemCategories().then(categories => {
         const categorySelect = itemForm.querySelector("#category");
         let placeholder = document.createElement("option");
         placeholder.value = null;
@@ -922,7 +931,7 @@ class Modal {
         });
       }); //Brands
 
-      db.getAllItemBrands().then(brands => {
+      database.getAllItemBrands().then(brands => {
         const brandSelect = itemForm.querySelector("#brand");
         let placeholder = document.createElement("option");
         placeholder.value = null;
@@ -973,9 +982,15 @@ class Modal {
         discount = itemForm.querySelector('#discount').value; // console.log(name, category, brand, stock, price);
 
         if (name !== "" && category !== "" && brand !== "" && stock !== "" && sellingPrice !== "") {
-          closeModal(itemForm); // openPrompt("",resolve,reject, [true, row, name, brand, category, stock, sellingPrice])
+          if (inInventory === true) {
+            closeModal(itemForm); // openPrompt("",resolve,reject, [true, row, name, brand, category, stock, sellingPrice])
 
-          resolve([true, row, name, brand, category, stock, sellingPrice, costPrice, discount]);
+            resolve([false, row, name, brand, category, stock, sellingPrice, costPrice, discount]);
+          } else {
+            closeModal(itemForm); // openPrompt("",resolve,reject, [true, row, name, brand, category, stock, sellingPrice])
+
+            resolve([true, row, name, brand, category, stock, sellingPrice, costPrice, discount]);
+          }
         }
       }
 
@@ -1328,7 +1343,7 @@ class DOMCONTROLLER {
                     <td class="td_Names">${clip(name, 23)}</td>
                     <td class="td_Brands">${clip(brand, 23)}</td>
                     <td class="td_Category">${clip(category, 23)}</td>
-                    <td class="td_Stock">${stock}</td>
+                    <td hidden class="td_Stock">${stock}</td>
                     <td class="td_Price">${parseFloat(sellingPrice)}</td>
                     <td hidden class="td_costPrice">${parseFloat(costPrice)}</td>
                     <td hidden class="td_discount">${parseFloat(discount)}</td>
@@ -1363,6 +1378,7 @@ class DOMCONTROLLER {
       row.innerHTML = rowContent;
       row.id = tableROWS.length + 1;
       row.className = "bodyRow";
+      row.tabIndex = "0";
 
       if (hasItems === true) {
         tableROWS.forEach(tableRow => {
@@ -1550,6 +1566,26 @@ class DOMCONTROLLER {
         return;
       }
     });
+  }
+
+  static updateItem(name, brand, category, sellingPrice, costPrice, discount) {
+    const tableRows = document.querySelector("tbody").querySelectorAll("tr");
+    console.log(name, brand, category, stock);
+    tableRows.forEach(row => {
+      if (row.querySelector('.td_Name--hidden').innerText === name && row.querySelector('.td_Brand--hidden').innerText === brand && row.querySelector('.td_Category--hidden').innerText === category) {
+        row.querySelector('.td_Names').innerText = name;
+        row.querySelector('.td_Name--hidden').innerText = name;
+        row.querySelector('.td_Brands').innerText = brand;
+        row.querySelector('.td_Brand--hidden').innerText = brand;
+        row.querySelector('.td_Category').innerText = category;
+        row.querySelector('.td_Category--hidden').innerText = category;
+        row.querySelector(".td_sellingPrice").innerText = sellingPrice;
+        row.querySelector(".td_costPrice").innerText = costPrice;
+        row.querySelector(".td_discount").innerText = discount;
+        row.querySelector('.td_Stock').innerText = stock;
+        return;
+      }
+    });
   } // static editMany(Array){
   //     const inTable = [];
   //     const table = document.querySelectorAll("tr");
@@ -1730,7 +1766,7 @@ class DOMCONTROLLER {
      *
      *
      */
-    const tableRows = document.querySelector("tbody").querySelectorAll("tr"); //Cart Content
+    const toolBar_tb = document.querySelector(".toolBar_tb"); //Cart Content
 
     const cart = document.querySelector(".cart");
     const subTotal = cart.querySelector(".subTotal").querySelector(".value");
@@ -1738,7 +1774,6 @@ class DOMCONTROLLER {
     const cartItemsContainer = document.querySelector(".cart").querySelector(".cartItems");
     const cartInfo = cartItemsContainer.querySelector(".cartInfo");
     const cartItems = cartItemsContainer.querySelectorAll(".cartItem");
-    const checkbox = cartItemsContainer.querySelector(".cb_cartItem");
     /*-----------------------------------------------------------------------------------------------*/
 
     let [rowItemName, rowItemBrand, rowItemCategory, rowItemDiscount, rowItemSellingPrice, rowItemStock, rowItemCostPrice] = [row.querySelector(".td_Name--hidden").innerText, row.querySelector(".td_Brand--hidden").innerText, row.querySelector(".td_Category--hidden").innerText, row.querySelector('.td_discount').innerText, row.querySelector(".td_Price").innerText, row.querySelector('.td_Stock').innerText, row.querySelector('.td_costPrice').innerText];
@@ -1780,7 +1815,7 @@ class DOMCONTROLLER {
     function addToCart() {
       const cartItemTemplate = `
             <div class="cartItem_details">
-                <div class="cartItem_Name">${clip(rowItemName, 10)}</div>
+                <div class="cartItem_Name">${clip(rowItemName, 18)}</div>
                 <div class="cartItem_Brand">${clip(rowItemBrand, 10)}</div>
                 <div hidden class="hidden_itemCategory">${rowItemCategory}</div>
                 <div hidden class="hidden_itemName">${rowItemName}</div>
@@ -1809,17 +1844,15 @@ class DOMCONTROLLER {
         });
       }, 100);
       let itemCount = parseInt(rowItemStock);
-      const itemSelect = document.createElement("select");
-      itemSelect.className = "cartItem_count";
+      const tb_itemCount = document.createElement("input"); // tb_itemCount.setAttribute("type", "");
 
-      for (let i = 1; i <= itemCount; i++) {
-        let option = document.createElement("option");
-        option.value = i;
-        option.innerText = i;
-        itemSelect.appendChild(option);
-      }
-
-      cartItem.appendChild(itemSelect);
+      tb_itemCount.type = "number";
+      tb_itemCount.placeholder = "Qty.";
+      tb_itemCount.className = "cartItem_count";
+      cartItem.appendChild(tb_itemCount);
+      setTimeout(() => {
+        tb_itemCount.focus();
+      }, 500);
       const cartItemCost = document.createElement("div");
       cartItemCost.className = "cartItem_cost";
       cartItemCost.innerText = `GH¢ ${Millify(rowItemSellingPrice, {
@@ -1830,19 +1863,19 @@ class DOMCONTROLLER {
       let currentSubtotal = parseFloat(subTotal.innerText);
       subTotal.innerText = currentSubtotal + rowItemSellingPrice;
       mainTotal.innerText = subTotal.innerText;
-      let totalItemSellingPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemSellingPrice));
-      let totalItemCostPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemCostPrice));
+      let totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemSellingPrice));
+      let totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemCostPrice));
       inCart.push({
         Item: {
           Name: rowItemName,
           Brand: rowItemBrand,
           Category: rowItemCategory
         },
-        Purchased: parseInt(itemSelect.value),
+        Purchased: parseInt(tb_itemCount.value),
         Revenue: totalItemSellingPrice,
         Profit: totalItemSellingPrice - totalItemCostPrice,
         UnitDiscount: rowItemDiscount,
-        TotalDiscount: parseFloat(rowItemDiscount) * parseInt(itemSelect.value)
+        TotalDiscount: parseFloat(rowItemDiscount) * parseInt(tb_itemCount.value)
       });
       const checkbox = cartItem.querySelector(".cartCheckBox"); //Evt Listeners
 
@@ -1853,26 +1886,27 @@ class DOMCONTROLLER {
           cartItemsContainer.querySelector(`#cart_discount${cartItems.length + 1}`).classList.add("cartItem_discount--disabled");
         }
       });
-      itemSelect.addEventListener("change", function modifyCost(e) {
+      tb_itemCount.addEventListener("change", function modifyCost(e) {
         let [itemName, itemBrand, itemCategory] = [cartItem.querySelector(".hidden_itemName").innerText, cartItem.querySelector(".hidden_itemBrand").innerText, cartItem.querySelector(".hidden_itemCategory").innerText];
         let newRevenue = 0;
-        totalItemSellingPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemSellingPrice));
-        totalItemCostPrice = parseFloat(parseInt(itemSelect.value) * parseInt(rowItemCostPrice));
+        totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemSellingPrice));
+        totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemCostPrice));
         inCart.forEach(item => {
           if (item.Item.Name === itemName && item.Item.Brand === itemBrand && item.Item.Category === itemCategory) {
-            item.Purchased = parseInt(itemSelect.value);
+            item.Purchased = parseInt(tb_itemCount.value);
             item.Revenue = totalItemSellingPrice;
             item.Profit = totalItemSellingPrice - totalItemCostPrice;
           }
 
           newRevenue = parseFloat(item.Revenue + newRevenue);
         });
-        let itemQuanity = parseInt(itemSelect.value);
-        let totalItemCost = parseFloat(itemQuanity * rowItemSellingPrice).toPrecision(3);
-        let currentSubtotal = parseFloat(subTotal.innerText); // subTotal.innerText = currentSubtotal + parseFloat(totalItemCost);
+        let itemQuanity = parseInt(tb_itemCount.value); // let totalItemCost = parseFloat(itemQuanity * rowItemSellingPrice).toPrecision(3);
+        // let currentSubtotal = parseFloat(subTotal.innerText)
+        // subTotal.innerText = currentSubtotal + parseFloat(totalItemCost);
 
         subTotal.innerText = newRevenue;
         mainTotal.innerText = newRevenue;
+        toolBar_tb.focus();
       });
     }
   }
@@ -2212,7 +2246,7 @@ class DATABASE {
       let brandValues = {
         Name: brand
       };
-      let insertItemSQL = "INSERT INTO duffykids.items SET ?";
+      let insertItemSQL = "INSERT INTO duffykids.items SET ? ON DUPLICATE KEY UPDATE ?";
       let values = {
         Name: name,
         Brand: brand,
@@ -2223,6 +2257,12 @@ class DATABASE {
         Discount: discount,
         Deleted: false
       };
+      let updateValues = {
+        InStock: stock,
+        CostPrice: costPrice,
+        SellingPrice: sellingPrice,
+        Discount: discount
+      };
       this.connector.beginTransaction(error => {
         if (error) {
           throw error;
@@ -2231,7 +2271,7 @@ class DATABASE {
             if (error === null || error.code === "ER_DUP_ENTRY") {
               this.connector.query(insertBrandSQL, brandValues, (error, result) => {
                 if (error === null || error.code === "ER_DUP_ENTRY") {
-                  this.connector.query(insertItemSQL, values, (error, result) => {
+                  this.connector.query(insertItemSQL, [values, updateValues], (error, result) => {
                     let itemId = result.insertId;
 
                     if (error) {
