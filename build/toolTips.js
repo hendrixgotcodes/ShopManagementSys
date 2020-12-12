@@ -102,11 +102,7 @@ const {
   default: Millify
 } = __webpack_require__(/*! millify */ "./node_modules/millify/dist/millify.js");
 
-const millify = __webpack_require__(/*! millify */ "./node_modules/millify/dist/millify.js");
-
-const DATABASE = __webpack_require__(/*! ../../model/DATABASE */ "./model/DATABASE.js");
-
-const ToolTipsController = __webpack_require__(/*! ../utilities/ToolTipsController */ "./controller/utilities/ToolTipsController.js"); // import ToolTipsConTroller from '../utilities/UnitConverter';
+const DATABASE = __webpack_require__(/*! ../../model/DATABASE */ "./model/DATABASE.js"); // import ToolTipsConTroller from '../utilities/UnitConverter';
 
 
 const database = new DATABASE();
@@ -187,8 +183,8 @@ class DOMCONTROLLER {
             document.querySelector('.tableBody').replaceChild(row, tableRow);
             returnedValue = 1;
           } else {
-            document.querySelector(".tableBody").appendChild(row);
-            ToolTipsController.generateToolTip('row.id', name);
+            document.querySelector(".tableBody").appendChild(row); // ToolTipsController.generateToolTip('row.id', name);
+
             console.log('not matched');
           }
         });
@@ -211,7 +207,7 @@ class DOMCONTROLLER {
           */
 
 
-      if (destinationPage.toLocaleLowerCase() === "inventory") {
+      if (destinationPage.toLowerCase() === "inventory") {
         //Destructing functions
         let checkCB = functions[0];
         let editItem = functions[1];
@@ -539,7 +535,6 @@ class DOMCONTROLLER {
 
   static uncheckRows(name, brand, category) {
     const tRows = document.querySelector('tbody').querySelectorAll('tr');
-    console.log(name, brand);
     tRows.forEach(row => {
       let rowName = row.querySelector('.td_Names').innerText;
       let rowBrand = row.querySelector('.td_Brands').innerText;
@@ -579,6 +574,12 @@ class DOMCONTROLLER {
 
     let [rowItemName, rowItemBrand, rowItemCategory, rowItemDiscount, rowItemSellingPrice, rowItemStock, rowItemCostPrice] = [row.querySelector(".td_Name--hidden").innerText, row.querySelector(".td_Brand--hidden").innerText, row.querySelector(".td_Category--hidden").innerText, row.querySelector('.td_discount').innerText, row.querySelector(".td_Price").innerText, row.querySelector('.td_Stock').innerText, row.querySelector('.td_costPrice').innerText];
     rowItemSellingPrice = parseFloat(rowItemSellingPrice);
+    let itemQuanityDB = 0;
+    database.getItemQuantity(rowItemName, rowItemBrand, rowItemCategory).then(result => {
+      result = result.pop();
+      itemQuanityDB = parseInt(result.InStock);
+      console.log(itemQuanityDB);
+    });
     let itemExists = false; //Set "no items in cart yet" invisble
 
     cartInfo.style.display = "none"; //disble buttons
@@ -631,6 +632,10 @@ class DOMCONTROLLER {
 
             <input type="checkbox" class="cb_cartItem cartCheckBox" />
 
+            <div class="cartItem_toolTip">
+                Empty
+            </div>
+
 
 
         `;
@@ -650,6 +655,7 @@ class DOMCONTROLLER {
       tb_itemCount.type = "number";
       tb_itemCount.placeholder = "Qty.";
       tb_itemCount.className = "cartItem_count";
+      tb_itemCount.id = cartItemsContainer.length + 1;
       cartItem.appendChild(tb_itemCount);
       setTimeout(() => {
         tb_itemCount.focus();
@@ -688,6 +694,16 @@ class DOMCONTROLLER {
         }
       });
       tb_itemCount.addEventListener("change", function modifyCost(e) {
+        if (tb_itemCount.value > itemQuanityDB) {
+          let toolTip = document.querySelector(".cartItem_toolTip");
+          toolTip.innerText = "Qty exceeded";
+          toolTip.classList.add("cartItem_toolTip--shown");
+          setTimeout(() => {
+            toolTip.classList.remove("cartItem_toolTip--shown");
+          }, 3000);
+          return;
+        }
+
         let [itemName, itemBrand, itemCategory] = [cartItem.querySelector(".hidden_itemName").innerText, cartItem.querySelector(".hidden_itemBrand").innerText, cartItem.querySelector(".hidden_itemCategory").innerText];
         let newRevenue = 0;
         totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemSellingPrice));
@@ -700,8 +716,7 @@ class DOMCONTROLLER {
           }
 
           newRevenue = parseFloat(item.Revenue + newRevenue);
-        });
-        let itemQuanity = parseInt(tb_itemCount.value); // let totalItemCost = parseFloat(itemQuanity * rowItemSellingPrice).toPrecision(3);
+        }); // let totalItemCost = parseFloat(itemQuanity * rowItemSellingPrice).toPrecision(3);
         // let currentSubtotal = parseFloat(subTotal.innerText)
         // subTotal.innerText = currentSubtotal + parseFloat(totalItemCost);
 
@@ -891,34 +906,6 @@ function setToolTips() {
     placement: 'bottom'
   });
 }
-
-/***/ }),
-
-/***/ "./controller/utilities/ToolTipsController.js":
-/*!****************************************************!*\
-  !*** ./controller/utilities/ToolTipsController.js ***!
-  \****************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-const tippy = __webpack_require__(/*! tippy.js */ "./node_modules/tippy.js/dist/tippy.esm.js").default; // import 'tippy.js/themes/light.css'
-
-
-class ToolTipsController {
-  static generateToolTip(elementId, content) {
-    tippy(`#${elementId}`, {
-      content: content,
-      delay: 100 // theme: 'light'
-
-    });
-  }
-
-}
-
-module.exports = ToolTipsController;
 
 /***/ }),
 
@@ -1813,6 +1800,19 @@ class DATABASE {
       max = Math.floor(max);
       return Math.floor(Math.random() * (max - min) + min);
     }
+  }
+
+  getItemQuantity(itemName, itemBrand, itemCategory) {
+    return new Promise((resolve, reject) => {
+      this.connector.query("SELECT InStock FROM `items` WHERE Name = ? AND Brand = ? AND Category = ?", [itemName, itemBrand, itemCategory], (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        resolve(result);
+      });
+    });
   }
 
   getTopItems(from, to) {

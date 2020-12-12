@@ -26,6 +26,8 @@ let UserName, UserType;
 let cart = [];     // Array of store objects
 let salesMade = 0;       //Total sold Items
 
+let ctrlPressed = false;
+
 //Holds the amount of table rows selected so that disabling and enabling of elements can be done based on that amount
 let totalSelectedRows = 0;
 
@@ -64,6 +66,7 @@ let sellingItem = {     // Represents an instance of a store item being added to
 
 /*********************************EVent Listeners********************* */
 window.addEventListener("load", initialzeStoreItems)
+
 
 
 tip_default.addEventListener('click',()=>{
@@ -172,6 +175,17 @@ function initialzeStoreItems(){
             row.addEventListener('click',(e)=>{
                 toggleRowCB(row);
                 setSellingItemProperties(row);
+            })
+
+            row.addEventListener('keydown',(e)=>{
+
+                if(e.code === "Enter"){
+
+                    toggleRowCB(row);
+                    setSellingItemProperties(row);
+
+                }
+
             })
         
         })
@@ -322,7 +336,7 @@ function checkout(){
 
 }
 
-function clearAllItems(afterSale){
+function clearAllItems(){
 
    /** 
     * Since this function "clearAllItems", can be called after a sale or just to clear the cart the afterSale boolean is there to indicate which situation 
@@ -470,9 +484,25 @@ function subtractItem(item, inCart=""){
 
 }
 
-//-----------------------------------------------------------------------------------------------
+//---------------------------------------Main Process Event Listeners-------------------------------------
+ipcRenderer.on("ctrlS_pressed", (e)=>{
 
+    if(cart.length > 0){
 
+        checkout();
+
+    }
+    else{
+        Notifications.showNotification("Nothing to sell")
+    }
+
+})
+
+ipcRenderer.on("ctrlC_pressed",(e)=>{
+
+    clearAllItems();
+
+})
 
 //-----------------------------------------------------------------------------------------------
 

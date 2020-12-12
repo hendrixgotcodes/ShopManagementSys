@@ -1781,6 +1781,19 @@ class DATABASE {
     }
   }
 
+  getItemQuantity(itemName, itemBrand, itemCategory) {
+    return new Promise((resolve, reject) => {
+      this.connector.query("SELECT InStock FROM `items` WHERE Name = ? AND Brand = ? AND Category = ?", [itemName, itemBrand, itemCategory], (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        resolve(result);
+      });
+    });
+  }
+
   getTopItems(from, to) {
     return new Promise((resolve, reject) => {
       const items = [];

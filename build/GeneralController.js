@@ -171,6 +171,9 @@ content_cover.addEventListener("click", removeModal); // toolBar_btn.addEventLis
 
 if (toolBar_tb !== null) {
   toolBar_tb.addEventListener("keyup", seekItem);
+  toolBar_tb.addEventListener("focus", () => {
+    toolBar_tb.value = "";
+  });
 }
 
 window.addEventListener('click', e => {
@@ -240,7 +243,7 @@ function seekItem() {
   searchtimeOutValue = setTimeout(() => {
     let itemName = toolBar_tb.value;
 
-    if (itemName === "" || itemName === " ") {
+    if (itemName === "" || itemName === " " || !(itemName.length > 1)) {
       return;
     }
 
@@ -252,18 +255,17 @@ function seekItem() {
       const currentItem = row.querySelector(".td_Names").innerText.toLowerCase();
 
       if (currentItem.includes(itemName)) {
-        row.style.backgroundColor = 'rgba(53, 89, 75, 0.711)';
-        row.style.color = "#fff";
         row.scrollIntoView({
           behavior: 'smooth'
         });
+        row.focus();
         setTimeout(() => {
           row.style.backgroundColor = initBGcolor;
           row.style.color = initColor;
-        }, 5000);
+        }, 2000);
       }
     });
-  }, 1500);
+  }, 500);
 }
 
 function startTimeOutCounter() {
@@ -1192,6 +1194,19 @@ class DATABASE {
       max = Math.floor(max);
       return Math.floor(Math.random() * (max - min) + min);
     }
+  }
+
+  getItemQuantity(itemName, itemBrand, itemCategory) {
+    return new Promise((resolve, reject) => {
+      this.connector.query("SELECT InStock FROM `items` WHERE Name = ? AND Brand = ? AND Category = ?", [itemName, itemBrand, itemCategory], (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        resolve(result);
+      });
+    });
   }
 
   getTopItems(from, to) {

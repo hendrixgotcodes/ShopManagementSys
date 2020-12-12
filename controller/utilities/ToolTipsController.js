@@ -1,18 +1,25 @@
 "use strict"
-const tippy = require('tippy.js').default;
-// import 'tippy.js/themes/light.css'
+
+import tippy from 'tippy.js'
+
+
 
 
 class ToolTipsController{
 
     static generateToolTip(elementId, content){
 
-        tippy(`#${elementId}`,
+        let newToolTip = tippy(`#${elementId}`,
         {
-            content: content,
-            delay: 100,
+            content: content
+            // delay: 300,
             // theme: 'light'
         })
+
+        console.log(newToolTip);
+
+        return newToolTip;
+
 
     }
 

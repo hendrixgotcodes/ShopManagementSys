@@ -484,8 +484,7 @@ body {
           padding: 0 .5rem;
           align-items: center;
           transition: .3s;
-          position: relative;
-          outline: none; }
+          position: relative; }
           .main_body .mainBody_content .contentContainer .tableBody .bodyRow:nth-child(odd) {
             background-color: #fff; }
           .main_body .mainBody_content .contentContainer .tableBody .bodyRow:nth-child(even) {
@@ -704,6 +703,36 @@ body {
                 .main_body .mainBody_content .contentContainer .cartContainer .cart .cartItems .cartItem .cartItem_details .cartItem_Brand {
                   color: #b1b3b2;
                   font-size: .87rem; }
+              .main_body .mainBody_content .contentContainer .cartContainer .cart .cartItems .cartItem .cartItem_toolTip {
+                min-width: 15%;
+                height: 35%;
+                background-color: #12A89D;
+                position: absolute;
+                bottom: -20%;
+                left: 53.5%;
+                color: #fff;
+                padding: .5rem .2rem;
+                text-align: center;
+                border-radius: 4px;
+                font-size: .8rem;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                transition: .3s;
+                opacity: 0; }
+                .main_body .mainBody_content .contentContainer .cartContainer .cart .cartItems .cartItem .cartItem_toolTip::after {
+                  content: "";
+                  position: absolute;
+                  border-radius: 3px;
+                  width: 20%;
+                  height: 40%;
+                  background-color: #12A89D;
+                  top: -7%;
+                  transform: rotate(45deg);
+                  z-index: -1; }
+              .main_body .mainBody_content .contentContainer .cartContainer .cart .cartItems .cartItem .cartItem_toolTip--shown {
+                opacity: 1; }
               .main_body .mainBody_content .contentContainer .cartContainer .cart .cartItems .cartItem .cartItem_discount {
                 width: 12%;
                 height: 50%;

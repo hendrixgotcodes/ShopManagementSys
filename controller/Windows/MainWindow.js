@@ -142,6 +142,18 @@ class MainWWindow extends BrowserWindow {
         })
 
 
+/************************EVENT SENDERS********************************/
+        globalShortcut.register("ctrl+s", ()=>{
+
+            this.webContents.send("ctrlS_pressed")
+
+        })
+
+        globalShortcut.register("ctrl+c", ()=>{
+
+            this.webContents.send("ctrlC_pressed")
+
+        })
     }
 
 

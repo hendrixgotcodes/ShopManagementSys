@@ -2,9 +2,7 @@
 
 const clip = require('text-clipper').default;
 const { default: Millify } = require('millify');
-const millify = require('millify');
 const DATABASE = require('../../model/DATABASE');
-const ToolTipsController = require('../utilities/ToolTipsController')
 // import ToolTipsConTroller from '../utilities/UnitConverter';
 
 const database = new DATABASE();
@@ -119,7 +117,7 @@ class DOMCONTROLLER{
                         else{
                             document.querySelector(".tableBody").appendChild(row);
 
-                            ToolTipsController.generateToolTip('row.id', name);
+                            // ToolTipsController.generateToolTip('row.id', name);
 
                             console.log('not matched');
 
@@ -152,7 +150,7 @@ class DOMCONTROLLER{
                 /**
                      * Destination Page determines which page is requesting for a table row to be created
                     */
-                if(destinationPage.toLocaleLowerCase() === "inventory"){
+                if(destinationPage.toLowerCase() === "inventory"){
 
 
                     //Destructing functions
@@ -665,7 +663,6 @@ class DOMCONTROLLER{
 
         const tRows = document.querySelector('tbody').querySelectorAll('tr');
 
-        console.log(name, brand);
 
         tRows.forEach((row)=>{
 
@@ -720,7 +717,22 @@ class DOMCONTROLLER{
         let [rowItemName, rowItemBrand,rowItemCategory, rowItemDiscount, rowItemSellingPrice, rowItemStock, rowItemCostPrice] = [row.querySelector(".td_Name--hidden").innerText, row.querySelector(".td_Brand--hidden").innerText, row.querySelector(".td_Category--hidden").innerText,row.querySelector('.td_discount').innerText, row.querySelector(".td_Price").innerText, row.querySelector('.td_Stock').innerText,  row.querySelector('.td_costPrice').innerText]
         rowItemSellingPrice = parseFloat(rowItemSellingPrice)
 
+        let itemQuanityDB = 0;
+        
+        database.getItemQuantity(rowItemName, rowItemBrand, rowItemCategory)
+        .then((result)=>{
+
+            result = result.pop();
+
+            itemQuanityDB =  parseInt(result.InStock)
+
+            console.log(itemQuanityDB);
+
+        })
+
+
         let itemExists = false;
+
     
       
 
@@ -795,6 +807,10 @@ class DOMCONTROLLER{
 
             <input type="checkbox" class="cb_cartItem cartCheckBox" />
 
+            <div class="cartItem_toolTip">
+                Empty
+            </div>
+
 
 
         `
@@ -823,6 +839,7 @@ class DOMCONTROLLER{
         tb_itemCount.type = "number";
         tb_itemCount.placeholder = "Qty."
         tb_itemCount.className = "cartItem_count";
+        tb_itemCount.id = cartItemsContainer.length + 1;
 
 
         cartItem.appendChild(tb_itemCount)
@@ -886,6 +903,22 @@ class DOMCONTROLLER{
 
         tb_itemCount.addEventListener("change", function modifyCost(e){
 
+            if(tb_itemCount.value > itemQuanityDB){
+
+                let toolTip = document.querySelector(".cartItem_toolTip");
+                toolTip.innerText = "Qty exceeded";
+                toolTip.classList.add("cartItem_toolTip--shown")
+
+                setTimeout(()=>{
+
+                    toolTip.classList.remove("cartItem_toolTip--shown")
+
+                },3000)
+
+                return
+
+            }
+
             let [itemName, itemBrand, itemCategory] = [cartItem.querySelector(".hidden_itemName").innerText, cartItem.querySelector(".hidden_itemBrand").innerText, cartItem.querySelector(".hidden_itemCategory").innerText]
             let newRevenue = 0;
 
@@ -907,7 +940,6 @@ class DOMCONTROLLER{
             })
 
 
-            let itemQuanity = parseInt(tb_itemCount.value);
             // let totalItemCost = parseFloat(itemQuanity * rowItemSellingPrice).toPrecision(3);
 
             // let currentSubtotal = parseFloat(subTotal.innerText)
@@ -919,6 +951,63 @@ class DOMCONTROLLER{
             toolBar_tb.focus()
 
         })
+
+        tb_itemCount.addEventListener("keyup", (e)=>{
+
+            if(e.code === "Enter"){
+
+                
+                if(tb_itemCount.value > itemQuanityDB){
+
+                    let toolTip = document.querySelector(".cartItem_toolTip");
+                    toolTip.innerText = "Qty exceeded";
+                    toolTip.classList.add("cartItem_toolTip--shown")
+
+                    setTimeout(()=>{
+
+                        toolTip.classList.remove("cartItem_toolTip--shown")
+
+                    },3000)
+
+                    return
+
+                }
+
+                let [itemName, itemBrand, itemCategory] = [cartItem.querySelector(".hidden_itemName").innerText, cartItem.querySelector(".hidden_itemBrand").innerText, cartItem.querySelector(".hidden_itemCategory").innerText]
+                let newRevenue = 0;
+
+                totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemSellingPrice))
+                totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemCostPrice))
+
+                inCart.forEach((item)=>{
+
+                    if(item.Item.Name === itemName && item.Item.Brand === itemBrand && item.Item.Category === itemCategory){
+
+                        item.Purchased = parseInt(tb_itemCount.value);
+                        item.Revenue = totalItemSellingPrice;
+                        item.Profit = totalItemSellingPrice - totalItemCostPrice
+
+                    }
+
+                    newRevenue = parseFloat(item.Revenue + newRevenue);
+
+                })
+
+
+                // let totalItemCost = parseFloat(itemQuanity * rowItemSellingPrice).toPrecision(3);
+
+                // let currentSubtotal = parseFloat(subTotal.innerText)
+                // subTotal.innerText = currentSubtotal + parseFloat(totalItemCost);
+                subTotal.innerText = newRevenue;
+
+                mainTotal.innerText = newRevenue
+
+                toolBar_tb.focus()
+
+            }
+
+        })
+
 
     
 

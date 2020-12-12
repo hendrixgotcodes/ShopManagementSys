@@ -112,6 +112,9 @@ content_cover.addEventListener("click", removeModal)
 if(toolBar_tb !== null){
 
     toolBar_tb.addEventListener("keyup", seekItem)
+    toolBar_tb.addEventListener("focus", ()=>{
+        toolBar_tb.value = "";
+    })
 
 
 }
@@ -196,17 +199,11 @@ function seekItem(){
 
         let itemName = toolBar_tb.value;
 
-        if(itemName === "" || itemName === " "){
+        if(itemName === "" || itemName === " " || !(itemName.length > 1)){
             return;
         }
 
         itemName = itemName.toLowerCase();
-
-        
-
-
-
-
 
         const tableROWS = document.querySelector('.tableBody').querySelectorAll('.bodyRow');
 
@@ -219,21 +216,18 @@ function seekItem(){
 
             if(currentItem.includes(itemName)){
 
-                row.style.backgroundColor = 'rgba(53, 89, 75, 0.711)'
-                row.style.color = "#fff"
-
-            
                 row.scrollIntoView({behavior: 'smooth'})
+                row.focus()
 
                 setTimeout(()=>{
                     row.style.backgroundColor = initBGcolor;
                     row.style.color = initColor;
-                },5000)
+                },2000)
             
             }
         })
 
-    } ,1500)
+    } ,500)
   
 
 
