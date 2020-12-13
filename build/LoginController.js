@@ -123,7 +123,8 @@ const warningLabel_pw = document.querySelector(".warningLabel_pw");
 const forgottenPassword = document.querySelector(".forgottenPassword"); //Program Variables
 
 let isFullScreen = false;
-let verifiedFields = false; //Adding event listeners to trigger minimize, maximize and events in the mainWindow Controller
+let verifiedFields = false;
+let faileLoginCount = 0; //Adding event listeners to trigger minimize, maximize and events in the mainWindow Controller
 
 controlBoxMinimize.addEventListener('click', sendMinimizeEvent);
 controlBoxMaximize.addEventListener('click', sendMaximizeEvent);
@@ -227,6 +228,7 @@ function loadConfirmationBox() {
     e.preventDefault();
     database.setReportedAccount(tbUserName.value).then(() => {
       closeConfirmationBox();
+      forgottenPassword.classList.remove("forgottenPassword--shown");
     });
   });
 
@@ -301,6 +303,11 @@ function loadStore(e) {
         warningLabel_pw.appendChild(img);
         warningLabel_pw.hidden = false;
         tbPassword.value = "";
+        faileLoginCount = faileLoginCount + 1;
+
+        if (faileLoginCount === 3) {
+          forgottenPassword.classList.add("forgottenPassword--shown");
+        }
       }
     });
   }
@@ -1149,6 +1156,7 @@ class DATABASE {
           UnitDiscount: sale.UnitDiscount,
           TotalDiscount: sale.TotalDiscount
         };
+        console.log(finalSaleValue);
         let userValue = {
           User_Name: userName
         };

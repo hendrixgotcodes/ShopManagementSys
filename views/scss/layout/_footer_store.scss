@@ -129,5 +129,45 @@
         }
     }
 
+    .footerBell{
+
+        width: 2.5%;
+        height: 70%;
+        // background-color: lighten($color: $primary_black, $amount: 30);
+        border-radius: 100%;
+        box-shadow: -1px 3px 7px rgba($color: $primary_black, $alpha: 0.3);
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .footerBell_notIcon{
+
+            width: 35%;
+            height: 35%;
+            background-color: $secondary_red;
+            border-radius: 100%;
+            color: $WHITE;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: .5rem;
+            position: absolute;
+            top: 0%;
+            right: 0;
+            opacity: 0;
+
+        }
+
+        .footerBell_icon{
+
+            width: 70%;
+            opacity: .8;
+
+        }
+
+
+    }
+
 
 }

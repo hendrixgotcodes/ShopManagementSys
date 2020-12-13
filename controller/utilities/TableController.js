@@ -726,8 +726,6 @@ class DOMCONTROLLER{
 
             itemQuanityDB =  parseInt(result.InStock)
 
-            console.log(itemQuanityDB);
-
         })
 
 
@@ -816,6 +814,8 @@ class DOMCONTROLLER{
         `
         const cartItem = document.createElement("div");
         cartItem.className = "cartItem";
+        cartItem.id = "toolTip"+cartItems.length + 1 
+        let cartItemID = cartItem.id;
 
         cartItem.innerHTML = cartItemTemplate;
         
@@ -859,6 +859,7 @@ class DOMCONTROLLER{
                 })
             }`;
         cartItem.appendChild(cartItemCost)
+        
 
         let currentSubtotal = parseFloat(subTotal.innerText)
 
@@ -881,7 +882,8 @@ class DOMCONTROLLER{
             Revenue: totalItemSellingPrice,
             Profit: totalItemSellingPrice - totalItemCostPrice,
             UnitDiscount: rowItemDiscount,
-            TotalDiscount: parseFloat(rowItemDiscount) * parseInt(tb_itemCount.value)
+            // TotalDiscount: parseFloat(rowItemDiscount) * parseInt(tb_itemCount.value)
+            TotalDiscount: 0 
         })
 
         const checkbox = cartItem.querySelector(".cartCheckBox");
@@ -903,9 +905,11 @@ class DOMCONTROLLER{
 
         tb_itemCount.addEventListener("change", function modifyCost(e){
 
+
             if(tb_itemCount.value > itemQuanityDB){
 
-                let toolTip = document.querySelector(".cartItem_toolTip");
+
+                let toolTip = document.querySelector(`#${cartItemID}`).querySelector(".cartItem_toolTip");
                 toolTip.innerText = "Qty exceeded";
                 toolTip.classList.add("cartItem_toolTip--shown")
 
@@ -954,12 +958,13 @@ class DOMCONTROLLER{
 
         tb_itemCount.addEventListener("keyup", (e)=>{
 
+
             if(e.code === "Enter"){
 
                 
                 if(tb_itemCount.value > itemQuanityDB){
 
-                    let toolTip = document.querySelector(".cartItem_toolTip");
+                    let toolTip = document.querySelector(`#${cartItemID}`).querySelector(".cartItem_toolTip");
                     toolTip.innerText = "Qty exceeded";
                     toolTip.classList.add("cartItem_toolTip--shown")
 

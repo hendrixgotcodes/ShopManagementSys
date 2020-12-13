@@ -578,7 +578,6 @@ class DOMCONTROLLER {
     database.getItemQuantity(rowItemName, rowItemBrand, rowItemCategory).then(result => {
       result = result.pop();
       itemQuanityDB = parseInt(result.InStock);
-      console.log(itemQuanityDB);
     });
     let itemExists = false; //Set "no items in cart yet" invisble
 
@@ -641,6 +640,8 @@ class DOMCONTROLLER {
         `;
       const cartItem = document.createElement("div");
       cartItem.className = "cartItem";
+      cartItem.id = "toolTip" + cartItems.length + 1;
+      let cartItemID = cartItem.id;
       cartItem.innerHTML = cartItemTemplate;
       cartItemsContainer.appendChild(cartItem);
       setTimeout(() => {
@@ -682,7 +683,8 @@ class DOMCONTROLLER {
         Revenue: totalItemSellingPrice,
         Profit: totalItemSellingPrice - totalItemCostPrice,
         UnitDiscount: rowItemDiscount,
-        TotalDiscount: parseFloat(rowItemDiscount) * parseInt(tb_itemCount.value)
+        // TotalDiscount: parseFloat(rowItemDiscount) * parseInt(tb_itemCount.value)
+        TotalDiscount: 0
       });
       const checkbox = cartItem.querySelector(".cartCheckBox"); //Evt Listeners
 
@@ -695,7 +697,7 @@ class DOMCONTROLLER {
       });
       tb_itemCount.addEventListener("change", function modifyCost(e) {
         if (tb_itemCount.value > itemQuanityDB) {
-          let toolTip = document.querySelector(".cartItem_toolTip");
+          let toolTip = document.querySelector(`#${cartItemID}`).querySelector(".cartItem_toolTip");
           toolTip.innerText = "Qty exceeded";
           toolTip.classList.add("cartItem_toolTip--shown");
           setTimeout(() => {
@@ -723,6 +725,39 @@ class DOMCONTROLLER {
         subTotal.innerText = newRevenue;
         mainTotal.innerText = newRevenue;
         toolBar_tb.focus();
+      });
+      tb_itemCount.addEventListener("keyup", e => {
+        if (e.code === "Enter") {
+          if (tb_itemCount.value > itemQuanityDB) {
+            let toolTip = document.querySelector(`#${cartItemID}`).querySelector(".cartItem_toolTip");
+            toolTip.innerText = "Qty exceeded";
+            toolTip.classList.add("cartItem_toolTip--shown");
+            setTimeout(() => {
+              toolTip.classList.remove("cartItem_toolTip--shown");
+            }, 3000);
+            return;
+          }
+
+          let [itemName, itemBrand, itemCategory] = [cartItem.querySelector(".hidden_itemName").innerText, cartItem.querySelector(".hidden_itemBrand").innerText, cartItem.querySelector(".hidden_itemCategory").innerText];
+          let newRevenue = 0;
+          totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemSellingPrice));
+          totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemCostPrice));
+          inCart.forEach(item => {
+            if (item.Item.Name === itemName && item.Item.Brand === itemBrand && item.Item.Category === itemCategory) {
+              item.Purchased = parseInt(tb_itemCount.value);
+              item.Revenue = totalItemSellingPrice;
+              item.Profit = totalItemSellingPrice - totalItemCostPrice;
+            }
+
+            newRevenue = parseFloat(item.Revenue + newRevenue);
+          }); // let totalItemCost = parseFloat(itemQuanity * rowItemSellingPrice).toPrecision(3);
+          // let currentSubtotal = parseFloat(subTotal.innerText)
+          // subTotal.innerText = currentSubtotal + parseFloat(totalItemCost);
+
+          subTotal.innerText = newRevenue;
+          mainTotal.innerText = newRevenue;
+          toolBar_tb.focus();
+        }
       });
     }
   }
@@ -1664,6 +1699,7 @@ class DATABASE {
           UnitDiscount: sale.UnitDiscount,
           TotalDiscount: sale.TotalDiscount
         };
+        console.log(finalSaleValue);
         let userValue = {
           User_Name: userName
         };

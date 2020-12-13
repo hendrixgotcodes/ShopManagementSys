@@ -235,10 +235,19 @@ body {
         text-decoration: none;
         transition: .5s;
         outline: none;
+        opacity: 0;
+        pointer-events: none;
 
         &:hover{
             text-decoration: underline;
         }
+    }
+
+    .forgottenPassword--shown{
+
+        opacity: 1;
+        pointer-events: all;
+
     }
 
 }

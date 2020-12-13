@@ -1287,6 +1287,8 @@ class DATABASE{
 
                 }
 
+                console.log(finalSaleValue);
+
 
 
                 let userValue = {

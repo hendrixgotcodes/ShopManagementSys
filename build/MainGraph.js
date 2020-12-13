@@ -1025,6 +1025,7 @@ class DATABASE {
           UnitDiscount: sale.UnitDiscount,
           TotalDiscount: sale.TotalDiscount
         };
+        console.log(finalSaleValue);
         let userValue = {
           User_Name: userName
         };

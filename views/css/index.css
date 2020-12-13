@@ -294,9 +294,14 @@ body {
     padding-top: 20px;
     text-decoration: none;
     transition: .5s;
-    outline: none; }
+    outline: none;
+    opacity: 0;
+    pointer-events: none; }
     .loginForm_center .forgottenPassword:hover {
       text-decoration: underline; }
+  .loginForm_center .forgottenPassword--shown {
+    opacity: 1;
+    pointer-events: all; }
 
 .contentCover {
   position: absolute;

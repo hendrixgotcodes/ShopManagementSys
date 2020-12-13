@@ -48,10 +48,13 @@ let tableRows;
 
 const mainBodyContent = document.querySelector('.mainBody_content');
 const domCart = document.querySelector(".cart")
+const mainTotal = document.querySelector(".mainTotal").querySelector(".value")
+const salesMadeAmount = document.querySelector("#salesMade_amount")
 
 //Buttons
 const btnCart_sell = domCart.querySelector(".btnCart_sell")
 const btnCart_clear = domCart.querySelector(".btnCart_clear")
+
 
 
 
@@ -318,6 +321,10 @@ function checkout(){
     .then((result)=>{
 
         if(result === true){
+
+            salesMadeAmount.innerText = parseFloat(salesMadeAmount.innerText) + parseFloat(mainTotal.innerText)
+
+            salesMadeAmount.innerText = parseFloat(salesMadeAmount.innerText).toPrecision(3);
 
             clearAllItems()
             Notifications.showAlert("success", "Sale successful")

@@ -1517,3 +1517,29 @@ body {
       position: absolute; }
     .main_body .footer .footer_clock .clock_min {
       margin-left: .3rem; }
+    .main_body .footer .footerBell {
+      width: 2.5%;
+      height: 70%;
+      border-radius: 100%;
+      box-shadow: -1px 3px 7px rgba(100, 103, 102, 0.3);
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center; }
+      .main_body .footer .footerBell .footerBell_notIcon {
+        width: 35%;
+        height: 35%;
+        background-color: #e16161;
+        border-radius: 100%;
+        color: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: .5rem;
+        position: absolute;
+        top: 0%;
+        right: 0;
+        opacity: 0; }
+      .main_body .footer .footerBell .footerBell_icon {
+        width: 70%;
+        opacity: .8; }

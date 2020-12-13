@@ -30,6 +30,7 @@ const forgottenPassword = document.querySelector(".forgottenPassword");
 //Program Variables
 let isFullScreen = false;
 let verifiedFields = false;
+let faileLoginCount = 0;
 
 
 
@@ -193,6 +194,8 @@ function loadConfirmationBox(){
 
             closeConfirmationBox();
 
+            forgottenPassword.classList.remove("forgottenPassword--shown");
+
         })
         
         
@@ -308,6 +311,16 @@ function loadStore(e) {
                 warningLabel_pw.hidden = false
 
                 tbPassword.value = "";
+
+                faileLoginCount = faileLoginCount + 1;
+
+
+                if(faileLoginCount === 3){
+
+
+                    forgottenPassword.classList.add("forgottenPassword--shown");
+
+                }
 
             }
 
