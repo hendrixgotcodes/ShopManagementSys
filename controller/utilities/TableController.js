@@ -840,6 +840,8 @@ class DOMCONTROLLER{
         tb_itemCount.placeholder = "Qty."
         tb_itemCount.className = "cartItem_count";
         tb_itemCount.id = cartItemsContainer.length + 1;
+        tb_itemCount.value = 1;
+        tb_itemCount.min = 1;
 
 
         cartItem.appendChild(tb_itemCount)
@@ -922,61 +924,41 @@ class DOMCONTROLLER{
                 return
 
             }
+            else if(tb_itemCount.value === ""){
 
-            let [itemName, itemBrand, itemCategory] = [cartItem.querySelector(".hidden_itemName").innerText, cartItem.querySelector(".hidden_itemBrand").innerText, cartItem.querySelector(".hidden_itemCategory").innerText]
-            let newRevenue = 0;
+                tb_itemCount.focus();
 
-            totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemSellingPrice))
-            totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemCostPrice))
+                let toolTip = document.querySelector(`#${cartItemID}`).querySelector(".cartItem_toolTip");
+                toolTip.innerText = "Qty can't be empty";
+                toolTip.classList.add("cartItem_toolTip--shown")
 
-            inCart.forEach((item)=>{
+                setTimeout(()=>{
 
-                if(item.Item.Name === itemName && item.Item.Brand === itemBrand && item.Item.Category === itemCategory){
+                    toolTip.classList.remove("cartItem_toolTip--shown")
 
-                    item.Purchased = parseInt(tb_itemCount.value);
-                    item.Revenue = totalItemSellingPrice;
-                    item.Profit = totalItemSellingPrice - totalItemCostPrice
+                },3000)
 
-                }
+                return
 
-                newRevenue = parseFloat(item.Revenue + newRevenue);
+            }
+            else if(tb_itemCount.value <= 0){
 
-            })
+                tb_itemCount.focus();
 
+                let toolTip = document.querySelector(`#${cartItemID}`).querySelector(".cartItem_toolTip");
+                toolTip.innerText = "Invalid Qty";
+                toolTip.classList.add("cartItem_toolTip--shown")
 
-            // let totalItemCost = parseFloat(itemQuanity * rowItemSellingPrice).toPrecision(3);
+                setTimeout(()=>{
 
-            // let currentSubtotal = parseFloat(subTotal.innerText)
-            // subTotal.innerText = currentSubtotal + parseFloat(totalItemCost);
-            subTotal.innerText = newRevenue;
+                    toolTip.classList.remove("cartItem_toolTip--shown")
 
-            mainTotal.innerText = newRevenue
+                },3000)
 
-            toolBar_tb.focus()
+                return
 
-        })
-
-        tb_itemCount.addEventListener("keyup", (e)=>{
-
-
-            if(e.code === "Enter"){
-
-                
-                if(tb_itemCount.value > itemQuanityDB){
-
-                    let toolTip = document.querySelector(`#${cartItemID}`).querySelector(".cartItem_toolTip");
-                    toolTip.innerText = "Qty exceeded";
-                    toolTip.classList.add("cartItem_toolTip--shown")
-
-                    setTimeout(()=>{
-
-                        toolTip.classList.remove("cartItem_toolTip--shown")
-
-                    },3000)
-
-                    return
-
-                }
+            }
+            else{
 
                 let [itemName, itemBrand, itemCategory] = [cartItem.querySelector(".hidden_itemName").innerText, cartItem.querySelector(".hidden_itemBrand").innerText, cartItem.querySelector(".hidden_itemCategory").innerText]
                 let newRevenue = 0;
@@ -1011,9 +993,194 @@ class DOMCONTROLLER{
 
             }
 
+
+            
+
         })
 
+        tb_itemCount.addEventListener("keyup", (e)=>{
 
+            if(e.code === "Enter"){
+
+                if(tb_itemCount.value > itemQuanityDB){
+
+
+                    let toolTip = document.querySelector(`#${cartItemID}`).querySelector(".cartItem_toolTip");
+                    toolTip.innerText = "Qty exceeded";
+                    toolTip.classList.add("cartItem_toolTip--shown")
+    
+                    setTimeout(()=>{
+    
+                        toolTip.classList.remove("cartItem_toolTip--shown")
+    
+                    },3000)
+    
+                    return
+    
+                }
+                else if(tb_itemCount.value === ""){
+    
+                    tb_itemCount.focus();
+    
+                    let toolTip = document.querySelector(`#${cartItemID}`).querySelector(".cartItem_toolTip");
+                    toolTip.innerText = "Qty can't be empty";
+                    toolTip.classList.add("cartItem_toolTip--shown")
+    
+                    setTimeout(()=>{
+    
+                        toolTip.classList.remove("cartItem_toolTip--shown")
+    
+                    },3000)
+    
+                    return
+    
+                }
+                else if(tb_itemCount.value <= 0){
+    
+                    tb_itemCount.focus();
+    
+                    let toolTip = document.querySelector(`#${cartItemID}`).querySelector(".cartItem_toolTip");
+                    toolTip.innerText = "Invalid Qty";
+                    toolTip.classList.add("cartItem_toolTip--shown")
+    
+                    setTimeout(()=>{
+    
+                        toolTip.classList.remove("cartItem_toolTip--shown")
+    
+                    },3000)
+    
+                    return
+    
+                }
+                else{
+    
+                    let [itemName, itemBrand, itemCategory] = [cartItem.querySelector(".hidden_itemName").innerText, cartItem.querySelector(".hidden_itemBrand").innerText, cartItem.querySelector(".hidden_itemCategory").innerText]
+                    let newRevenue = 0;
+    
+                    totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemSellingPrice))
+                    totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemCostPrice))
+    
+                    inCart.forEach((item)=>{
+    
+                        if(item.Item.Name === itemName && item.Item.Brand === itemBrand && item.Item.Category === itemCategory){
+    
+                            item.Purchased = parseInt(tb_itemCount.value);
+                            item.Revenue = totalItemSellingPrice;
+                            item.Profit = totalItemSellingPrice - totalItemCostPrice
+    
+                        }
+    
+                        newRevenue = parseFloat(item.Revenue + newRevenue);
+    
+                    })
+    
+    
+                    // let totalItemCost = parseFloat(itemQuanity * rowItemSellingPrice).toPrecision(3);
+    
+                    // let currentSubtotal = parseFloat(subTotal.innerText)
+                    // subTotal.innerText = currentSubtotal + parseFloat(totalItemCost);
+                    subTotal.innerText = newRevenue;
+    
+                    mainTotal.innerText = newRevenue
+    
+                    toolBar_tb.focus()
+    
+                }
+    
+
+            }
+ 
+        })
+
+        tb_itemCount.addEventListener("blur", ()=>{
+
+            if(tb_itemCount.value > itemQuanityDB){
+
+
+                let toolTip = document.querySelector(`#${cartItemID}`).querySelector(".cartItem_toolTip");
+                toolTip.innerText = "Qty exceeded";
+                toolTip.classList.add("cartItem_toolTip--shown")
+
+                setTimeout(()=>{
+
+                    toolTip.classList.remove("cartItem_toolTip--shown")
+
+                },3000)
+
+                return
+
+            }
+            else if(tb_itemCount.value === ""){
+
+                tb_itemCount.focus();
+
+                let toolTip = document.querySelector(`#${cartItemID}`).querySelector(".cartItem_toolTip");
+                toolTip.innerText = "Qty can't be empty";
+                toolTip.classList.add("cartItem_toolTip--shown")
+
+                setTimeout(()=>{
+
+                    toolTip.classList.remove("cartItem_toolTip--shown")
+
+                },3000)
+
+                return
+
+            }
+            else if(tb_itemCount.value <= 0){
+
+                tb_itemCount.focus();
+
+                let toolTip = document.querySelector(`#${cartItemID}`).querySelector(".cartItem_toolTip");
+                toolTip.innerText = "Invalid Qty";
+                toolTip.classList.add("cartItem_toolTip--shown")
+
+                setTimeout(()=>{
+
+                    toolTip.classList.remove("cartItem_toolTip--shown")
+
+                },3000)
+
+                return
+
+            }
+            else{
+
+                let [itemName, itemBrand, itemCategory] = [cartItem.querySelector(".hidden_itemName").innerText, cartItem.querySelector(".hidden_itemBrand").innerText, cartItem.querySelector(".hidden_itemCategory").innerText]
+                let newRevenue = 0;
+
+                totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemSellingPrice))
+                totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemCostPrice))
+
+                inCart.forEach((item)=>{
+
+                    if(item.Item.Name === itemName && item.Item.Brand === itemBrand && item.Item.Category === itemCategory){
+
+                        item.Purchased = parseInt(tb_itemCount.value);
+                        item.Revenue = totalItemSellingPrice;
+                        item.Profit = totalItemSellingPrice - totalItemCostPrice
+
+                    }
+
+                    newRevenue = parseFloat(item.Revenue + newRevenue);
+
+                })
+
+
+                // let totalItemCost = parseFloat(itemQuanity * rowItemSellingPrice).toPrecision(3);
+
+                // let currentSubtotal = parseFloat(subTotal.innerText)
+                // subTotal.innerText = currentSubtotal + parseFloat(totalItemCost);
+                subTotal.innerText = newRevenue;
+
+                mainTotal.innerText = newRevenue
+
+                toolBar_tb.focus()
+
+            }
+
+
+        })
     
 
     }

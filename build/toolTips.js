@@ -657,6 +657,8 @@ class DOMCONTROLLER {
       tb_itemCount.placeholder = "Qty.";
       tb_itemCount.className = "cartItem_count";
       tb_itemCount.id = cartItemsContainer.length + 1;
+      tb_itemCount.value = 1;
+      tb_itemCount.min = 1;
       cartItem.appendChild(tb_itemCount);
       setTimeout(() => {
         tb_itemCount.focus();
@@ -704,27 +706,45 @@ class DOMCONTROLLER {
             toolTip.classList.remove("cartItem_toolTip--shown");
           }, 3000);
           return;
+        } else if (tb_itemCount.value === "") {
+          tb_itemCount.focus();
+          let toolTip = document.querySelector(`#${cartItemID}`).querySelector(".cartItem_toolTip");
+          toolTip.innerText = "Qty can't be empty";
+          toolTip.classList.add("cartItem_toolTip--shown");
+          setTimeout(() => {
+            toolTip.classList.remove("cartItem_toolTip--shown");
+          }, 3000);
+          return;
+        } else if (tb_itemCount.value <= 0) {
+          tb_itemCount.focus();
+          let toolTip = document.querySelector(`#${cartItemID}`).querySelector(".cartItem_toolTip");
+          toolTip.innerText = "Invalid Qty";
+          toolTip.classList.add("cartItem_toolTip--shown");
+          setTimeout(() => {
+            toolTip.classList.remove("cartItem_toolTip--shown");
+          }, 3000);
+          return;
+        } else {
+          let [itemName, itemBrand, itemCategory] = [cartItem.querySelector(".hidden_itemName").innerText, cartItem.querySelector(".hidden_itemBrand").innerText, cartItem.querySelector(".hidden_itemCategory").innerText];
+          let newRevenue = 0;
+          totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemSellingPrice));
+          totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemCostPrice));
+          inCart.forEach(item => {
+            if (item.Item.Name === itemName && item.Item.Brand === itemBrand && item.Item.Category === itemCategory) {
+              item.Purchased = parseInt(tb_itemCount.value);
+              item.Revenue = totalItemSellingPrice;
+              item.Profit = totalItemSellingPrice - totalItemCostPrice;
+            }
+
+            newRevenue = parseFloat(item.Revenue + newRevenue);
+          }); // let totalItemCost = parseFloat(itemQuanity * rowItemSellingPrice).toPrecision(3);
+          // let currentSubtotal = parseFloat(subTotal.innerText)
+          // subTotal.innerText = currentSubtotal + parseFloat(totalItemCost);
+
+          subTotal.innerText = newRevenue;
+          mainTotal.innerText = newRevenue;
+          toolBar_tb.focus();
         }
-
-        let [itemName, itemBrand, itemCategory] = [cartItem.querySelector(".hidden_itemName").innerText, cartItem.querySelector(".hidden_itemBrand").innerText, cartItem.querySelector(".hidden_itemCategory").innerText];
-        let newRevenue = 0;
-        totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemSellingPrice));
-        totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemCostPrice));
-        inCart.forEach(item => {
-          if (item.Item.Name === itemName && item.Item.Brand === itemBrand && item.Item.Category === itemCategory) {
-            item.Purchased = parseInt(tb_itemCount.value);
-            item.Revenue = totalItemSellingPrice;
-            item.Profit = totalItemSellingPrice - totalItemCostPrice;
-          }
-
-          newRevenue = parseFloat(item.Revenue + newRevenue);
-        }); // let totalItemCost = parseFloat(itemQuanity * rowItemSellingPrice).toPrecision(3);
-        // let currentSubtotal = parseFloat(subTotal.innerText)
-        // subTotal.innerText = currentSubtotal + parseFloat(totalItemCost);
-
-        subTotal.innerText = newRevenue;
-        mainTotal.innerText = newRevenue;
-        toolBar_tb.focus();
       });
       tb_itemCount.addEventListener("keyup", e => {
         if (e.code === "Enter") {
@@ -736,8 +756,75 @@ class DOMCONTROLLER {
               toolTip.classList.remove("cartItem_toolTip--shown");
             }, 3000);
             return;
-          }
+          } else if (tb_itemCount.value === "") {
+            tb_itemCount.focus();
+            let toolTip = document.querySelector(`#${cartItemID}`).querySelector(".cartItem_toolTip");
+            toolTip.innerText = "Qty can't be empty";
+            toolTip.classList.add("cartItem_toolTip--shown");
+            setTimeout(() => {
+              toolTip.classList.remove("cartItem_toolTip--shown");
+            }, 3000);
+            return;
+          } else if (tb_itemCount.value <= 0) {
+            tb_itemCount.focus();
+            let toolTip = document.querySelector(`#${cartItemID}`).querySelector(".cartItem_toolTip");
+            toolTip.innerText = "Invalid Qty";
+            toolTip.classList.add("cartItem_toolTip--shown");
+            setTimeout(() => {
+              toolTip.classList.remove("cartItem_toolTip--shown");
+            }, 3000);
+            return;
+          } else {
+            let [itemName, itemBrand, itemCategory] = [cartItem.querySelector(".hidden_itemName").innerText, cartItem.querySelector(".hidden_itemBrand").innerText, cartItem.querySelector(".hidden_itemCategory").innerText];
+            let newRevenue = 0;
+            totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemSellingPrice));
+            totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemCostPrice));
+            inCart.forEach(item => {
+              if (item.Item.Name === itemName && item.Item.Brand === itemBrand && item.Item.Category === itemCategory) {
+                item.Purchased = parseInt(tb_itemCount.value);
+                item.Revenue = totalItemSellingPrice;
+                item.Profit = totalItemSellingPrice - totalItemCostPrice;
+              }
 
+              newRevenue = parseFloat(item.Revenue + newRevenue);
+            }); // let totalItemCost = parseFloat(itemQuanity * rowItemSellingPrice).toPrecision(3);
+            // let currentSubtotal = parseFloat(subTotal.innerText)
+            // subTotal.innerText = currentSubtotal + parseFloat(totalItemCost);
+
+            subTotal.innerText = newRevenue;
+            mainTotal.innerText = newRevenue;
+            toolBar_tb.focus();
+          }
+        }
+      });
+      tb_itemCount.addEventListener("blur", () => {
+        if (tb_itemCount.value > itemQuanityDB) {
+          let toolTip = document.querySelector(`#${cartItemID}`).querySelector(".cartItem_toolTip");
+          toolTip.innerText = "Qty exceeded";
+          toolTip.classList.add("cartItem_toolTip--shown");
+          setTimeout(() => {
+            toolTip.classList.remove("cartItem_toolTip--shown");
+          }, 3000);
+          return;
+        } else if (tb_itemCount.value === "") {
+          tb_itemCount.focus();
+          let toolTip = document.querySelector(`#${cartItemID}`).querySelector(".cartItem_toolTip");
+          toolTip.innerText = "Qty can't be empty";
+          toolTip.classList.add("cartItem_toolTip--shown");
+          setTimeout(() => {
+            toolTip.classList.remove("cartItem_toolTip--shown");
+          }, 3000);
+          return;
+        } else if (tb_itemCount.value <= 0) {
+          tb_itemCount.focus();
+          let toolTip = document.querySelector(`#${cartItemID}`).querySelector(".cartItem_toolTip");
+          toolTip.innerText = "Invalid Qty";
+          toolTip.classList.add("cartItem_toolTip--shown");
+          setTimeout(() => {
+            toolTip.classList.remove("cartItem_toolTip--shown");
+          }, 3000);
+          return;
+        } else {
           let [itemName, itemBrand, itemCategory] = [cartItem.querySelector(".hidden_itemName").innerText, cartItem.querySelector(".hidden_itemBrand").innerText, cartItem.querySelector(".hidden_itemCategory").innerText];
           let newRevenue = 0;
           totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemSellingPrice));
@@ -955,6 +1042,10 @@ function setToolTips() {
 const mariadb = __webpack_require__(/*! mysql2 */ "./node_modules/mysql2/index.js");
 
 const cryptoJS = __webpack_require__(/*! crypto-js */ "./node_modules/crypto-js/index.js");
+
+const {
+  offset
+} = __webpack_require__(/*! @popperjs/core */ "./node_modules/@popperjs/core/lib/index.js");
 
 class DATABASE {
   constructor() {
@@ -1461,6 +1552,22 @@ class DATABASE {
   fetchItems() {
     return new Promise((resolve, reject) => {
       this.connector.query("SELECT * FROM duffykids.items ORDER BY Name ASC", (error, results) => {
+        if (error) {
+          if (error.code === "ECONNREFUSED") {
+            reject(error.code);
+          } else {
+            reject(new Error("database not found"));
+          }
+        } else {
+          resolve(results);
+        }
+      });
+    });
+  }
+
+  fetchItemsRecursive(offset) {
+    return new Promise((resolve, reject) => {
+      this.connector.query(`SELECT * FROM duffykids.items ORDER BY Name ASC LIMIT ${offset}, 200`, (error, results) => {
         if (error) {
           if (error.code === "ECONNREFUSED") {
             reject(error.code);

@@ -282,6 +282,10 @@ const mariadb = __webpack_require__(/*! mysql2 */ "./node_modules/mysql2/index.j
 
 const cryptoJS = __webpack_require__(/*! crypto-js */ "./node_modules/crypto-js/index.js");
 
+const {
+  offset
+} = __webpack_require__(/*! @popperjs/core */ "./node_modules/@popperjs/core/lib/index.js");
+
 class DATABASE {
   constructor() {
     this.connector = mariadb.createConnection({
@@ -787,6 +791,22 @@ class DATABASE {
   fetchItems() {
     return new Promise((resolve, reject) => {
       this.connector.query("SELECT * FROM duffykids.items ORDER BY Name ASC", (error, results) => {
+        if (error) {
+          if (error.code === "ECONNREFUSED") {
+            reject(error.code);
+          } else {
+            reject(new Error("database not found"));
+          }
+        } else {
+          resolve(results);
+        }
+      });
+    });
+  }
+
+  fetchItemsRecursive(offset) {
+    return new Promise((resolve, reject) => {
+      this.connector.query(`SELECT * FROM duffykids.items ORDER BY Name ASC LIMIT ${offset}, 200`, (error, results) => {
         if (error) {
           if (error.code === "ECONNREFUSED") {
             reject(error.code);

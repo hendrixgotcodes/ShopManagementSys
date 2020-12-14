@@ -1,6 +1,7 @@
 // const Dexie = require('dexie').default
 const mariadb = require('mysql2');
 const cryptoJS = require('crypto-js');
+const { offset } = require('@popperjs/core');
 
 class DATABASE{
 
@@ -856,6 +857,37 @@ class DATABASE{
 
 
         })
+
+    }
+
+    fetchItemsRecursive(offset){
+
+        return new Promise((resolve, reject)=>{
+
+
+            this.connector.query(`SELECT * FROM duffykids.items ORDER BY Name ASC LIMIT ${offset}, 200`, (error, results)=>{
+                
+                if(error){
+
+                    if(error.code === "ECONNREFUSED"){
+                        reject(error.code)
+                    }
+                    else{
+
+                        reject(new Error("database not found"))
+
+                    }
+
+                }
+                else{
+                    resolve(results)
+                }
+
+            })
+
+
+        })
+
 
     }
 

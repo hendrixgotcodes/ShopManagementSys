@@ -10,10 +10,7 @@
 const { ipcRenderer } = require("electron");
 import Notifications from '../controller/Alerts/NotificationController'
 import DATABASE from '../model/DATABASE';
-import STORE from '../model/STORE';
-import Modal from './modals/ModalController';
 import DOMCONTROLLER from './utilities/TableController';
-import UnitConverter from './utilities/UnitConverter';
 
 
 
@@ -24,11 +21,9 @@ let UserName, UserType;
 /*********************************PROGRAM CONSTANTS********************* */
 
 let cart = [];     // Array of store objects
-let salesMade = 0;       //Total sold Items
 let lostAccounts = []
 
 
-let ctrlPressed = false;
 
 //Holds the amount of table rows selected so that disabling and enabling of elements can be done based on that amount
 let totalSelectedRows = 0;
@@ -237,6 +232,35 @@ function initializeTodaySales(){
 
 }
 
+function fetchItemsRecursive(){
+
+    let offset = 200;
+
+    database.fetchItemsRecursive(offset)
+    .then(([totalItemsAvailable, storeItems])=>{
+
+
+        storeItems.forEach((storeItem)=>{
+
+            //T his will only add items which "InStock" is greater than zero
+            if(parseInt(storeItem.InStock) > 0){
+
+                if(storeItem.Deleted !== 1){
+
+                    DOMCONTROLLER.createItem(storeItem.Name, storeItem.Brand, storeItem.Category, storeItem.InStock, storeItem.SellingPrice, storeItem.Discount,"", false, storeItem.CostPrice, "", true, false,"Store", false)
+                }
+
+            }
+
+
+        })
+
+        offset = offset + 200;
+
+
+    })
+
+}
 
 
 //-----------------------------------------------------------------------------------------------
@@ -562,6 +586,8 @@ function getAllIssue(){
 
 function showIssues(){
 
+    let modalOpened = false;
+
     contentCover.classList.add("contentCover--shown");
 
     let notificationContainer = document.createElement("div");
@@ -610,6 +636,68 @@ function showIssues(){
             `
 
             notificationContainer.querySelector(".notifications").appendChild(newNotification)
+
+            newNotification.addEventListener("click", (e)=>{
+
+                if(modalOpened === true){
+                    return;
+                }
+
+                let confirmNewPasswordBox = document.createElement("div");
+                confirmNewPasswordBox.className = "confirmNewPasswordBox";
+                confirmNewPasswordBox.innerHTML =
+                `
+                    <label for="passwordBox" id="lbl_container">
+                        <label>This will be your employee's new password. Please copy and confirm.</label>
+                        <input type="text" id="passwordBox">
+                        <button id="copy">
+                            <img src="../Icons/modals/clipboard.svg"/>
+                        </button>
+                    </label>
+            
+                    <button id="confirm">Confirm</button>
+            
+                `
+                modalOpened = true;
+                confirmNewPasswordBox.style.display = "none";
+                confirmNewPasswordBox.tabIndex = "1";
+            
+                notificationContainer.appendChild(confirmNewPasswordBox)
+                confirmNewPasswordBox.focus();
+
+                confirmNewPasswordBox.style.top = e.pageY + "px";
+                confirmNewPasswordBox.style.left = e.pageX + "px";
+
+                confirmNewPasswordBox.style.display = "block";
+
+                let textbox = confirmNewPasswordBox.querySelector("#passwordBox");
+                textbox.value = Math.random().toString(36).slice(-8);
+                // textbox.disabled = true;
+
+                //Even Listeners
+                confirmNewPasswordBox.addEventListener("blur", ()=>{
+
+                    confirmNewPasswordBox.remove();
+                    modalOpened = false;
+
+                })
+
+                let copy = confirmNewPasswordBox.querySelector("#copy");
+                copy.addEventListener("click", ()=>{
+
+                    textbox.select();
+                    document.execCommand("copy")
+                    // textbox.execCommand("")
+
+                    confirmNewPasswordBox.querySelector("#lbl_container").querySelector("label").innerText = "Copied";
+
+                })
+
+                let btnConfirm = confirmNewPasswordBox.querySelector("#confirm");
+
+                btnConfirm.addEventListener("click")
+
+            })
 
 
 

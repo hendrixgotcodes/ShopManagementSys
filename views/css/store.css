@@ -814,7 +814,8 @@ body {
         border-radius: 8px;
         box-shadow: 1px 3px 5px rgba(100, 103, 102, 0.3);
         z-index: 20;
-        transition: .5s; }
+        transition: .5s;
+        box-shadow: -3px 5px 5px rgba(100, 103, 102, 0.3); }
         .main_body .mainBody_content .contentContainer .notificationsContainer .notifHeader {
           width: 100%;
           height: 10%;
@@ -920,6 +921,64 @@ body {
             display: flex;
             justify-content: center;
             align-items: center; }
+        .main_body .mainBody_content .contentContainer .notificationsContainer .confirmNewPasswordBox {
+          position: fixed;
+          bottom: 0;
+          right: -10%;
+          height: 15%;
+          width: 25%;
+          background-color: #fff;
+          color: #7d8180;
+          border: none;
+          border-radius: 8px;
+          padding: .5rem;
+          display: flex;
+          flex-flow: column;
+          justify-content: space-between;
+          align-items: center;
+          box-shadow: -3px 5px 7px rgba(0, 0, 0, 0.3), 1px -1px 1px rgba(0, 0, 0, 0.2); }
+          .main_body .mainBody_content .contentContainer .notificationsContainer .confirmNewPasswordBox label {
+            display: block;
+            width: 100%;
+            height: 68%;
+            text-align: center;
+            position: relative;
+            padding: .2rem 0; }
+            .main_body .mainBody_content .contentContainer .notificationsContainer .confirmNewPasswordBox label label {
+              display: block;
+              width: 100%; }
+            .main_body .mainBody_content .contentContainer .notificationsContainer .confirmNewPasswordBox label #passwordBox {
+              width: 100%;
+              height: 40%;
+              border-radius: 3px;
+              border: 1px solid #EFB526;
+              border-radius: 3px;
+              padding: .5rem; }
+              .main_body .mainBody_content .contentContainer .notificationsContainer .confirmNewPasswordBox label #passwordBox:disabled {
+                width: 100%;
+                height: 40%;
+                border-radius: 3px;
+                border: 1px solid #EFB526;
+                border-radius: 3px;
+                padding: .5rem; }
+            .main_body .mainBody_content .contentContainer .notificationsContainer .confirmNewPasswordBox label #copy {
+              display: block;
+              width: 20%;
+              position: absolute;
+              bottom: -2%;
+              right: 0%;
+              height: 35%;
+              border: 1px solid #EFB526;
+              border-top-right-radius: 3px;
+              border-bottom-right-radius: 3px;
+              background-color: #fff; }
+          .main_body .mainBody_content .contentContainer .notificationsContainer .confirmNewPasswordBox #confirm {
+            background-color: #35594B;
+            height: 24%;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            width: 100%; }
       .main_body .mainBody_content .contentContainer .notificationsContainer--shown {
         bottom: 50%; }
     .main_body .mainBody_content .modal_hide {
