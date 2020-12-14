@@ -246,6 +246,7 @@ let cart = []; // Array of store objects
 
 let salesMade = 0; //Total sold Items
 
+let lostAccounts = [];
 let ctrlPressed = false; //Holds the amount of table rows selected so that disabling and enabling of elements can be done based on that amount
 
 let totalSelectedRows = 0; //Intitalizing DB
@@ -258,6 +259,8 @@ const selectValue_span = document.querySelector('.selectValue_span');
 const toolBarTB = document.querySelector('.toolBar_tb');
 const toolBarBtn = document.querySelector('.toolBar_btn');
 let tableRows;
+const contentContainer = document.querySelector(".contentContainer");
+const contentCover = document.querySelector(".contentCover");
 const mainBodyContent = document.querySelector('.mainBody_content');
 const domCart = document.querySelector(".cart");
 const mainTotal = document.querySelector(".mainTotal").querySelector(".value");
@@ -265,13 +268,18 @@ const salesMadeAmount = document.querySelector("#salesMade_amount"); //Buttons
 
 const btnCart_sell = domCart.querySelector(".btnCart_sell");
 const btnCart_clear = domCart.querySelector(".btnCart_clear");
+const footerBell = document.querySelector(".footerBell");
 /***********************************OBJECTS**************/
 
 let sellingItem = {// Represents an instance of a store item being added to cart
 };
 /*********************************EVent Listeners********************* */
 
-window.addEventListener("load", initialzeStoreItems);
+window.addEventListener("load", () => {
+  initializeStoreItems();
+  getAllIssue();
+  initializeTodaySales();
+});
 tip_default.addEventListener('click', () => {
   selectValue_span.innerHTML = "Filter By:";
   selectValue_span.setAttribute("value", "default");
@@ -294,6 +302,7 @@ ipcRenderer.on("setUserParams", (e, userParamsArray) => {
 
 btnCart_sell.addEventListener("click", checkout);
 btnCart_clear.addEventListener("click", clearAllItems);
+footerBell.addEventListener("click", showIssues);
 /*************************************FUNCTIONS********************* */
 
 /*************************************FUNCTIONS********************* */
@@ -306,7 +315,7 @@ btnCart_clear.addEventListener("click", clearAllItems);
 //-----------------------------------------------------------------------------------------------
 //Function to load store items
 
-function initialzeStoreItems() {
+function initializeStoreItems() {
   ipcRenderer.send("sendUserParams");
   _utilities_TableController__WEBPACK_IMPORTED_MODULE_4___default.a.showLoadingBanner("Please wait. Attempting to fetch items from database...");
   database.fetchItems().then(fetchedItems => {
@@ -352,6 +361,15 @@ function initialzeStoreItems() {
       _utilities_TableController__WEBPACK_IMPORTED_MODULE_4___default.a.showErrorBanner("Failed to connect to database. Please try reloading or contacting us");
     }
   });
+}
+
+function initializeTodaySales() {
+  setTimeout(() => {
+    database.getUserTotalSaleToday(UserName).then(sale => {
+      sale = sale.pop();
+      salesMadeAmount.innerText = sale.Revenue;
+    });
+  }, 1000);
 } //-----------------------------------------------------------------------------------------------
 // Searchs for an element in the Table
 
@@ -427,12 +445,11 @@ function checkout() {
   database.makeSale(cart, UserName).then(result => {
     if (result === true) {
       salesMadeAmount.innerText = parseFloat(salesMadeAmount.innerText) + parseFloat(mainTotal.innerText);
-      salesMadeAmount.innerText = parseFloat(salesMadeAmount.innerText).toPrecision(3);
+      salesMadeAmount.innerText = parseFloat(salesMadeAmount.innerText);
       clearAllItems();
       _controller_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_0___default.a.showAlert("success", "Sale successful");
     }
   }).catch(error => {
-    console.log(error);
     _controller_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_0___default.a.showAlert("error", "Sorry. Failed to make sale due to an unknown error");
   });
 }
@@ -519,9 +536,79 @@ function subtractItem(item, inCart = "") {
   }
 
   cart.splice(cart.findIndex(item => item.Item.Name === itemName), 1);
+}
+
+function getAllIssue() {
+  let issueCount = document.querySelector(".footerBell_notIcon");
+  database.getReportedAccounts().then(accounts => {
+    console.log(accounts);
+
+    if (accounts !== null || accounts !== undefined || accounts.length !== 0) {
+      lostAccounts = accounts;
+    }
+  }).then(() => {
+    database.getNumberOfReportedAccount().then(result => {
+      result = result.pop();
+      issueCount.innerText = result.Total;
+      issueCount.style.opacity = "1";
+    });
+  });
+}
+
+function showIssues() {
+  contentCover.classList.add("contentCover--shown");
+  let notificationContainer = document.createElement("div");
+  notificationContainer.className = "notificationsContainer modal";
+  notificationContainer.innerHTML = `
+        <header class="notifHeader">
+            <b>Notifications</b>
+            <img src="../Icons/modals/close--green.svg" alt="">
+        </header>
+
+        <main class="notifications">
+
+
+        </main>
+
+
+    `;
+  contentContainer.appendChild(notificationContainer); //Event Listeners
+
+  let btnClose = notificationContainer.querySelector(".notifHeader").querySelector("img");
+
+  if (lostAccounts.length > 0) {
+    lostAccounts.forEach(account => {
+      let newNotification = document.createElement("div");
+      newNotification.className = "notification employees";
+      newNotification.innerHTML = `
+                <div class="icon">
+                    <img src="../Icons/modals/person_white.svg" alt="">
+                </div>
+                <div class="main">
+                    <label for="" class="title">Employee Issues</label>
+                    <label for="" class="message"><span class="userName">${account.First_Name} ${account.Last_Name}</span> has forgotten his password. Click here to solve this issue.</label>
+                </div>
+
+            `;
+      notificationContainer.querySelector(".notifications").appendChild(newNotification);
+    });
+  } else {
+    let message = document.createElement("label");
+    message.innerText = "No issues to solve yet.";
+    notificationContainer.querySelector(".notifications").appendChild(message);
+  }
+
+  btnClose.addEventListener("click", function removeIssuesModal() {
+    btnClose.removeEventListener("click", removeIssuesModal);
+    notificationContainer.remove();
+    contentCover.classList.remove("contentCover--shown");
+  });
 } //---------------------------------------Main Process Event Listeners-------------------------------------
 
 
+ipcRenderer.on("setUserParams", (e, paramsArray) => {
+  [UserName, UserType] = paramsArray;
+});
 ipcRenderer.on("ctrlS_pressed", e => {
   if (cart.length > 0) {
     checkout();
@@ -2857,6 +2944,31 @@ class DATABASE {
     });
   }
 
+  getUserTotalSaleToday(user) {
+    return new Promise((resolve, reject) => {
+      this.connector.query("SELECT id FROM `users` WHERE ?", {
+        User_Name: user
+      }, (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        result = result.pop();
+        this.connector.query("SELECT SUM(Revenue) Revenue FROM `sales` WHERE ? AND Date BETWEEN TIMESTAMP(CURRENT_DATE) AND TIMESTAMP(CURRENT_TIME)", {
+          User: result.id
+        }, (error, result) => {
+          if (error) {
+            reject(error);
+            throw error;
+          }
+
+          resolve(result);
+        });
+      });
+    });
+  }
+
   getReportedAccounts() {
     return new Promise((resolve, reject) => {
       let reportedaccounts = [];
@@ -2880,6 +2992,19 @@ class DATABASE {
             resolve(reportedaccounts);
           });
         });
+      });
+    });
+  }
+
+  getNumberOfReportedAccount() {
+    return new Promise((resolve, reject) => {
+      this.connector.query("SELECT COUNT(User_Name) Total FROM `reportedaccounts`", (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        resolve(result);
       });
     });
   }

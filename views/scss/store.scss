@@ -520,6 +520,194 @@ body {
                 }
     
             }
+
+            .notificationsContainer{
+
+                position: absolute;
+                width: 32%;
+                bottom: 15%;
+                right: 38%;
+                padding: 1rem;
+                // background-color: red;
+                background-color: $WHITE;
+                height: 70%;
+                border-radius: 8px;
+                box-shadow: 1px 3px 5px rgba($color: $primary_black, $alpha: 0.3);
+                z-index: 20;
+                transition: .5s;
+
+
+                .notifHeader{
+
+                    width: 100%;
+                    height: 10%;
+                    color: $secondary_green;
+                    font-size: 1.1rem;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: flex-start;
+
+                    img{
+                        transition: .3s;
+                        border-radius: 4px;
+
+                        &:hover{
+                            box-shadow: -1px 3px 5px rgba($color: $primary_black, $alpha: 0.3);
+                        }
+                    }
+
+                }
+
+                .notifications{
+                    width: 100%;
+                    height: 90%;
+                    padding: .5rem .1rem;
+                    overflow: auto;
+                    // background-color: lighten($color: $primary_black, $amount: 60);
+
+                    &::-webkit-scrollbar{
+                        display: none;
+                    }
+
+                    .notification{
+
+                        width: 100%;
+                        height: 20%;
+                        border-radius: 6px;
+                        padding: .5rem 1.2rem;
+                        position: relative;
+                        margin-bottom: 1.2rem;
+                        box-shadow: -1px 3px 5px rgba($color: $primary_black, $alpha: 0.2), 0px -1px 2px rgba($color: $primary_black, $alpha: 0.2);
+                        background-color: lighten($color: $primary_black, $amount: 80);
+                        color: $primary_black;
+                        display: flex;
+                        justify-content: left;
+                        align-items: center;
+                        transition: .3s;
+                        cursor: pointer;
+
+                        &:hover{
+                            transform: translateY(-5px);
+                        }
+
+                        .main{
+                            cursor: pointer;
+
+                            label{
+                                display: block
+                            }
+
+                            .title{
+                                font-weight: 500;
+                                font-size: 1.1rem;
+                                color: lighten($color: $primary_black, $amount: 10);
+                            }
+                            .message{
+                                font-weight: 400;
+                                color: lighten($color: $primary_black, $amount: 20);
+                                font-size: .9rem;
+
+                                .userName{
+                                    color: $primary_yellow;
+                                }
+                            }
+                        }
+
+                    }
+
+                    .general{
+
+                        &::before{
+                            content: "";
+                            position: absolute;
+                            top: 18%;
+                            left: 1.5%;
+                            width: 1%;
+                            height: 70%;
+                            background-color: $primary_yellow;
+                            border-radius: 4px;
+                        }
+
+                        .icon{
+
+                            width: 8%;
+                            height: 45%;
+                            border-radius: 100%;
+                            background-color: $primary_yellow;
+                            margin-right: .6rem;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+
+                        }
+
+
+                    }
+
+                    .employees{
+
+                        &::before{
+                            content: "";
+                            position: absolute;
+                            top: 18%;
+                            left: 1.5%;
+                            width: 1%;
+                            height: 70%;
+                            background-color: #86aee9;
+                            border-radius: 4px;
+                        }
+
+                        .icon{
+
+                            width: 37px;
+                            height: 30px;
+                            border-radius: 100%;
+                            background-color: #86aee9;
+                            margin-right: .6rem;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+
+                        }
+
+
+                    }
+
+                    .error{
+
+                        &::before{
+                            content: "";
+                            position: absolute;
+                            top: 18%;
+                            left: 1.5%;
+                            width: 1%;
+                            height: 70%;
+                            background-color: $secondary_red;
+                            border-radius: 4px;
+                        }
+
+                        .icon{
+
+                            width: 8%;
+                            height: 45%;
+                            border-radius: 100%;
+                            background-color: $secondary_red;
+                            margin-right: .6rem;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+
+                        }
+
+
+                    }
+                }
+
+            }
+
+            .notificationsContainer--shown{
+                bottom: 50%;
+            }
     
 
         }

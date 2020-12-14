@@ -58,11 +58,9 @@ ipcRenderer.on("loadUserInfo", (e, array)=>{
         let timeOutPref;
 
         store.get("timeOutPref")
-        .then((userPref)=>{
+        .then((TimeOutPref)=>{
             
-            timeOutPref = parseInt(userPref)
-
-            console.log(timeOutPref);
+            timeOutPref = parseInt(TimeOutPref)
 
             logOutTimeOut = 60000 * timeOutPref;
 
@@ -91,6 +89,14 @@ window.addEventListener("load", ()=>{
     ipcRenderer.send("ready");
 
     toolBar_tb.focus();
+})
+
+window.addEventListener("keyup", (e)=>{
+
+    if(e.code === "F1"){
+        toolBar_tb.focus();
+    }
+
 })
 
 

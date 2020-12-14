@@ -25,6 +25,8 @@ let UserName, UserType;
 
 let cart = [];     // Array of store objects
 let salesMade = 0;       //Total sold Items
+let lostAccounts = []
+
 
 let ctrlPressed = false;
 
@@ -46,6 +48,8 @@ const toolBarTB = document.querySelector('.toolBar_tb');
 const toolBarBtn = document.querySelector('.toolBar_btn')
 let tableRows;
 
+const contentContainer = document.querySelector(".contentContainer");
+const contentCover = document.querySelector(".contentCover");
 const mainBodyContent = document.querySelector('.mainBody_content');
 const domCart = document.querySelector(".cart")
 const mainTotal = document.querySelector(".mainTotal").querySelector(".value")
@@ -54,6 +58,7 @@ const salesMadeAmount = document.querySelector("#salesMade_amount")
 //Buttons
 const btnCart_sell = domCart.querySelector(".btnCart_sell")
 const btnCart_clear = domCart.querySelector(".btnCart_clear")
+const footerBell = document.querySelector(".footerBell");
 
 
 
@@ -68,7 +73,15 @@ let sellingItem = {     // Represents an instance of a store item being added to
 
 
 /*********************************EVent Listeners********************* */
-window.addEventListener("load", initialzeStoreItems)
+window.addEventListener("load", ()=>{
+
+    initializeStoreItems();
+    getAllIssue();
+    initializeTodaySales();
+
+})
+
+
 
 
 
@@ -102,9 +115,11 @@ ipcRenderer.on("setUserParams", (e, userParamsArray)=>{
 })
 
 // btnCart_sell
-btnCart_sell.addEventListener("click", checkout)
+btnCart_sell.addEventListener("click", checkout);
 
-btnCart_clear.addEventListener("click", clearAllItems)
+btnCart_clear.addEventListener("click", clearAllItems);
+
+footerBell.addEventListener("click", showIssues);
 
 
 
@@ -117,7 +132,7 @@ btnCart_clear.addEventListener("click", clearAllItems)
 
 //-----------------------------------------------------------------------------------------------
 //Function to load store items
-function initialzeStoreItems(){
+function initializeStoreItems(){
 
     ipcRenderer.send("sendUserParams")
 
@@ -202,6 +217,23 @@ function initialzeStoreItems(){
         }
 
     })
+
+}
+
+function initializeTodaySales(){
+
+    setTimeout(()=>{
+
+        database.getUserTotalSaleToday(UserName)
+        .then((sale)=>{
+
+            sale = sale.pop();
+
+            salesMadeAmount.innerText = sale.Revenue;
+
+        })
+
+    }, 1000)
 
 }
 
@@ -324,7 +356,7 @@ function checkout(){
 
             salesMadeAmount.innerText = parseFloat(salesMadeAmount.innerText) + parseFloat(mainTotal.innerText)
 
-            salesMadeAmount.innerText = parseFloat(salesMadeAmount.innerText).toPrecision(3);
+            salesMadeAmount.innerText = parseFloat(salesMadeAmount.innerText);
 
             clearAllItems()
             Notifications.showAlert("success", "Sale successful")
@@ -491,7 +523,126 @@ function subtractItem(item, inCart=""){
 
 }
 
+function getAllIssue(){
+
+    let issueCount = document.querySelector(".footerBell_notIcon");
+
+    database.getReportedAccounts()
+    .then((accounts)=>{
+
+        console.log(accounts);
+
+
+        if(accounts !== null || accounts !== undefined || accounts.length !== 0){
+
+           lostAccounts = accounts
+
+        }
+            
+
+
+    })
+    .then(()=>{
+
+        database.getNumberOfReportedAccount()
+        .then((result)=>{
+
+            result = result.pop();
+
+            issueCount.innerText = result.Total
+            issueCount.style.opacity = "1";
+
+        })
+
+      
+
+    })
+
+}
+
+function showIssues(){
+
+    contentCover.classList.add("contentCover--shown");
+
+    let notificationContainer = document.createElement("div");
+    notificationContainer.className = "notificationsContainer modal";
+
+    notificationContainer.innerHTML = 
+    `
+        <header class="notifHeader">
+            <b>Notifications</b>
+            <img src="../Icons/modals/close--green.svg" alt="">
+        </header>
+
+        <main class="notifications">
+
+
+        </main>
+
+
+    `
+
+
+    contentContainer.appendChild(notificationContainer);
+
+
+
+
+    //Event Listeners
+    let btnClose = notificationContainer.querySelector(".notifHeader").querySelector("img");
+
+   if(lostAccounts.length > 0){
+
+        lostAccounts.forEach((account)=>{
+
+            let newNotification = document.createElement("div");
+            newNotification.className = "notification employees";
+            newNotification.innerHTML = 
+            `
+                <div class="icon">
+                    <img src="../Icons/modals/person_white.svg" alt="">
+                </div>
+                <div class="main">
+                    <label for="" class="title">Employee Issues</label>
+                    <label for="" class="message"><span class="userName">${account.First_Name} ${account.Last_Name}</span> has forgotten his password. Click here to solve this issue.</label>
+                </div>
+
+            `
+
+            notificationContainer.querySelector(".notifications").appendChild(newNotification)
+
+
+
+        })
+
+   }
+   else{
+
+        let message = document.createElement("label");
+        message.innerText = "No issues to solve yet."
+        notificationContainer.querySelector(".notifications").appendChild(message)
+
+   }
+
+    btnClose.addEventListener("click",function removeIssuesModal(){
+
+        btnClose.removeEventListener("click", removeIssuesModal)
+
+        notificationContainer.remove();
+
+        contentCover.classList.remove("contentCover--shown");
+
+    })
+
+}
+
 //---------------------------------------Main Process Event Listeners-------------------------------------
+ipcRenderer.on("setUserParams", (e, paramsArray)=>{
+
+    [UserName, UserType] = paramsArray;
+
+})
+
 ipcRenderer.on("ctrlS_pressed", (e)=>{
 
     if(cart.length > 0){

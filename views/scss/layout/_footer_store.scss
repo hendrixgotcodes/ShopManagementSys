@@ -135,11 +135,12 @@
         height: 70%;
         // background-color: lighten($color: $primary_black, $amount: 30);
         border-radius: 100%;
-        box-shadow: -1px 3px 7px rgba($color: $primary_black, $alpha: 0.3);
+        box-shadow: -1px 3px 7px rgba($color: $primary_black, $alpha: 0.3), 1px -3px 7px rgba($color: $primary_black, $alpha: 0.1);
         position: relative;
         display: flex;
         justify-content: center;
         align-items: center;
+        cursor: pointer;
 
         .footerBell_notIcon{
 
@@ -153,19 +154,27 @@
             align-items: center;
             font-size: .5rem;
             position: absolute;
-            top: 0%;
-            right: 0;
+            top: 1%;
+            right: -10%;
             opacity: 0;
 
         }
 
         .footerBell_icon{
 
-            width: 70%;
+            width: 63%;
             opacity: .8;
 
         }
 
+
+    }
+
+    .footerBell--active{
+
+        .footerBell_notIcon{
+            opacity: 1;
+        }
 
     }
 

@@ -140,9 +140,8 @@ ipcRenderer.on("loadUserInfo", (e, array) => {
       }
     });
     let timeOutPref;
-    store.get("timeOutPref").then(userPref => {
-      timeOutPref = parseInt(userPref);
-      console.log(timeOutPref);
+    store.get("timeOutPref").then(TimeOutPref => {
+      timeOutPref = parseInt(TimeOutPref);
       logOutTimeOut = 60000 * timeOutPref;
       startTimeOutCounter();
       let date = new Date();
@@ -158,6 +157,11 @@ window.addEventListener("load", () => {
   //Alert ipcMain of readiness
   ipcRenderer.send("ready");
   toolBar_tb.focus();
+});
+window.addEventListener("keyup", e => {
+  if (e.code === "F1") {
+    toolBar_tb.focus();
+  }
 });
 controlBoxMinimize.addEventListener('click', sendMinimizeEvent);
 controlBoxMaximize.addEventListener('click', sendMaximizeEvent);
@@ -1270,6 +1274,31 @@ class DATABASE {
     });
   }
 
+  getUserTotalSaleToday(user) {
+    return new Promise((resolve, reject) => {
+      this.connector.query("SELECT id FROM `users` WHERE ?", {
+        User_Name: user
+      }, (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        result = result.pop();
+        this.connector.query("SELECT SUM(Revenue) Revenue FROM `sales` WHERE ? AND Date BETWEEN TIMESTAMP(CURRENT_DATE) AND TIMESTAMP(CURRENT_TIME)", {
+          User: result.id
+        }, (error, result) => {
+          if (error) {
+            reject(error);
+            throw error;
+          }
+
+          resolve(result);
+        });
+      });
+    });
+  }
+
   getReportedAccounts() {
     return new Promise((resolve, reject) => {
       let reportedaccounts = [];
@@ -1293,6 +1322,19 @@ class DATABASE {
             resolve(reportedaccounts);
           });
         });
+      });
+    });
+  }
+
+  getNumberOfReportedAccount() {
+    return new Promise((resolve, reject) => {
+      this.connector.query("SELECT COUNT(User_Name) Total FROM `reportedaccounts`", (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        resolve(result);
       });
     });
   }

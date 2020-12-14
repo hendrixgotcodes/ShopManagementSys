@@ -803,6 +803,125 @@ body {
             .main_body .mainBody_content .contentContainer .cartContainer .cart .btnCart_sell:disabled {
               background-color: #f6d585;
               cursor: default; }
+      .main_body .mainBody_content .contentContainer .notificationsContainer {
+        position: absolute;
+        width: 32%;
+        bottom: 15%;
+        right: 38%;
+        padding: 1rem;
+        background-color: #fff;
+        height: 70%;
+        border-radius: 8px;
+        box-shadow: 1px 3px 5px rgba(100, 103, 102, 0.3);
+        z-index: 20;
+        transition: .5s; }
+        .main_body .mainBody_content .contentContainer .notificationsContainer .notifHeader {
+          width: 100%;
+          height: 10%;
+          color: #12A89D;
+          font-size: 1.1rem;
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start; }
+          .main_body .mainBody_content .contentContainer .notificationsContainer .notifHeader img {
+            transition: .3s;
+            border-radius: 4px; }
+            .main_body .mainBody_content .contentContainer .notificationsContainer .notifHeader img:hover {
+              box-shadow: -1px 3px 5px rgba(100, 103, 102, 0.3); }
+        .main_body .mainBody_content .contentContainer .notificationsContainer .notifications {
+          width: 100%;
+          height: 90%;
+          padding: .5rem .1rem;
+          overflow: auto; }
+          .main_body .mainBody_content .contentContainer .notificationsContainer .notifications::-webkit-scrollbar {
+            display: none; }
+          .main_body .mainBody_content .contentContainer .notificationsContainer .notifications .notification {
+            width: 100%;
+            height: 20%;
+            border-radius: 6px;
+            padding: .5rem 1.2rem;
+            position: relative;
+            margin-bottom: 1.2rem;
+            box-shadow: -1px 3px 5px rgba(100, 103, 102, 0.2), 0px -1px 2px rgba(100, 103, 102, 0.2);
+            background-color: white;
+            color: #646766;
+            display: flex;
+            justify-content: left;
+            align-items: center;
+            transition: .3s;
+            cursor: pointer; }
+            .main_body .mainBody_content .contentContainer .notificationsContainer .notifications .notification:hover {
+              transform: translateY(-5px); }
+            .main_body .mainBody_content .contentContainer .notificationsContainer .notifications .notification .main {
+              cursor: pointer; }
+              .main_body .mainBody_content .contentContainer .notificationsContainer .notifications .notification .main label {
+                display: block; }
+              .main_body .mainBody_content .contentContainer .notificationsContainer .notifications .notification .main .title {
+                font-weight: 500;
+                font-size: 1.1rem;
+                color: #7d8180; }
+              .main_body .mainBody_content .contentContainer .notificationsContainer .notifications .notification .main .message {
+                font-weight: 400;
+                color: #979a99;
+                font-size: .9rem; }
+                .main_body .mainBody_content .contentContainer .notificationsContainer .notifications .notification .main .message .userName {
+                  color: #EFB526; }
+          .main_body .mainBody_content .contentContainer .notificationsContainer .notifications .general::before {
+            content: "";
+            position: absolute;
+            top: 18%;
+            left: 1.5%;
+            width: 1%;
+            height: 70%;
+            background-color: #EFB526;
+            border-radius: 4px; }
+          .main_body .mainBody_content .contentContainer .notificationsContainer .notifications .general .icon {
+            width: 8%;
+            height: 45%;
+            border-radius: 100%;
+            background-color: #EFB526;
+            margin-right: .6rem;
+            display: flex;
+            justify-content: center;
+            align-items: center; }
+          .main_body .mainBody_content .contentContainer .notificationsContainer .notifications .employees::before {
+            content: "";
+            position: absolute;
+            top: 18%;
+            left: 1.5%;
+            width: 1%;
+            height: 70%;
+            background-color: #86aee9;
+            border-radius: 4px; }
+          .main_body .mainBody_content .contentContainer .notificationsContainer .notifications .employees .icon {
+            width: 37px;
+            height: 30px;
+            border-radius: 100%;
+            background-color: #86aee9;
+            margin-right: .6rem;
+            display: flex;
+            justify-content: center;
+            align-items: center; }
+          .main_body .mainBody_content .contentContainer .notificationsContainer .notifications .error::before {
+            content: "";
+            position: absolute;
+            top: 18%;
+            left: 1.5%;
+            width: 1%;
+            height: 70%;
+            background-color: #e16161;
+            border-radius: 4px; }
+          .main_body .mainBody_content .contentContainer .notificationsContainer .notifications .error .icon {
+            width: 8%;
+            height: 45%;
+            border-radius: 100%;
+            background-color: #e16161;
+            margin-right: .6rem;
+            display: flex;
+            justify-content: center;
+            align-items: center; }
+      .main_body .mainBody_content .contentContainer .notificationsContainer--shown {
+        bottom: 50%; }
     .main_body .mainBody_content .modal_hide {
       transition: .3s;
       transform: scale(0); }
@@ -1805,11 +1924,12 @@ body {
       width: 2.5%;
       height: 70%;
       border-radius: 100%;
-      box-shadow: -1px 3px 7px rgba(100, 103, 102, 0.3);
+      box-shadow: -1px 3px 7px rgba(100, 103, 102, 0.3), 1px -3px 7px rgba(100, 103, 102, 0.1);
       position: relative;
       display: flex;
       justify-content: center;
-      align-items: center; }
+      align-items: center;
+      cursor: pointer; }
       .main_body .footer .footerBell .footerBell_notIcon {
         width: 35%;
         height: 35%;
@@ -1821,9 +1941,11 @@ body {
         align-items: center;
         font-size: .5rem;
         position: absolute;
-        top: 0%;
-        right: 0;
+        top: 1%;
+        right: -10%;
         opacity: 0; }
       .main_body .footer .footerBell .footerBell_icon {
-        width: 70%;
+        width: 63%;
         opacity: .8; }
+    .main_body .footer .footerBell--active .footerBell_notIcon {
+      opacity: 1; }
