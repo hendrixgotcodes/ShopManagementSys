@@ -649,7 +649,7 @@ function showIssues(){
                 confirmNewPasswordBox.innerHTML =
                 `
                     <label for="passwordBox" id="lbl_container">
-                        <label>This will be your employee's new password. Please copy and confirm.</label>
+                        <label>This will be your ${account.First_Name}'s new password. Please copy and confirm.</label>
                         <input type="text" id="passwordBox">
                         <button id="copy">
                             <img src="../Icons/modals/clipboard.svg"/>
@@ -709,13 +709,23 @@ function showIssues(){
                     generateHashOf(generatedPassword, account.User_Name)
                     .then((newPassword)=>{
 
-                        console.log(newPassword);
 
                         database.updateUserInfo(account.User_Name, newPassword)
                         .then(()=>{
 
-                            confirmNewPasswordBox.remove();
-                            modalOpened = false;
+                            database.deleteReportedAccount(account.User_Name)
+                            .then(()=>{
+
+                                confirmNewPasswordBox.remove();
+                                modalOpened = false;
+
+                                newNotification.remove();
+
+                                let footerBell_notIcon = document.querySelector(".footerBell_notIcon");
+                                footerBell_notIcon.innerText = parseInt(footerBell_notIcon.innerText) - 1;
+
+                            })
+
 
                         })
 
