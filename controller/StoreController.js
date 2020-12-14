@@ -43,6 +43,7 @@ const selectValue_span = document.querySelector('.selectValue_span');
 const toolBarTB = document.querySelector('.toolBar_tb');
 const toolBarBtn = document.querySelector('.toolBar_btn')
 let tableRows;
+let tdNames;
 
 const contentContainer = document.querySelector(".contentContainer");
 const contentCover = document.querySelector(".contentCover");
@@ -116,6 +117,8 @@ btnCart_sell.addEventListener("click", checkout);
 btnCart_clear.addEventListener("click", clearAllItems);
 
 footerBell.addEventListener("click", showIssues);
+
+
 
 
 
@@ -201,8 +204,34 @@ function initializeStoreItems(){
                 }
 
             })
+
+            //Adding to array of tdName
+            const tdName = row.querySelector(".td_Names");
+
+
+            let timeoutId;
+        
+            tdName.addEventListener("mouseenter", ()=>{
+        
+                timeoutId = setTimeout(function showToolTip(){
+        
+                    tdName.querySelector(".td_toolTip").style.display = "block";
+        
+                }, 2000)
+        
+            });
+        
+            tdName.addEventListener("mouseleave", ()=>{
+        
+                clearTimeout(timeoutId);
+
+                tdName.querySelector(".td_toolTip").style.display = "none";
+        
+            })
+            
         
         })
+
 
     })
     .catch((e)=>{

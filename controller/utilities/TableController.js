@@ -32,8 +32,6 @@ class DOMCONTROLLER{
                 //Removing Empty Banner Before Addition of new row
                 const emptyBanner = document.querySelector('.contentContainer').querySelector('.emptyBanner');
 
-                let returnedValue = true;
-
                 //Check if Default Banner is attached to the contentContainer
                 if(emptyBanner !== null){
                     emptyBanner.remove();
@@ -57,8 +55,12 @@ class DOMCONTROLLER{
                     <td class="td_cb">
                         <input disabled type="checkbox" class="selectOne" aria-placeholder="select one">
                     </td>
-                    <td class="td_Names">${clip(name, 23)}</td>
+                    <td class="td_Names">
+                        ${clip(name, 23)}
+                        <div class ="td_toolTip" id="tp_Name">${name}</div>
+                    </td>
                     <td class="td_Brands">${clip(brand, 23)}</td>
+                   <!--- <td class ="td_toolTip" id="tp_brand">${name}</td> -->
                     <td class="td_Category">${clip(category, 23)}</td>
                     <td hidden class="td_Stock">${stock}</td>
                     <td class="td_Price">${parseFloat(sellingPrice)}</td>
@@ -119,8 +121,6 @@ class DOMCONTROLLER{
 
                             // ToolTipsController.generateToolTip('row.id', name);
 
-                            console.log('not matched');
-
                         }
                     })
 
@@ -128,7 +128,7 @@ class DOMCONTROLLER{
                 else if(hasItems !== true) {
 
                     document.querySelector(".tableBody").appendChild(row);
-                    returnedValue = true;
+                    // returnedValue = true;
                 }
 
                 

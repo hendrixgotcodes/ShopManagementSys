@@ -104,6 +104,7 @@
         }
 
 
+
         // input[type= "checkbox"]{
         //     background-color: red;
         //     width: 5%;
@@ -253,6 +254,11 @@
     justify-content: center;
     align-items: center;
     overflow: hidden;
+
+}
+
+.td_Names{
+    transition-delay: 3s;
 }
 
 .tb_Stock,
@@ -281,4 +287,24 @@
 .td_Price {
     width: 20%;
     text-align: center;
+}
+
+.td_toolTip{
+
+    position: absolute;
+    // top: 0;
+    background-color: $WHITE;
+    border: 1px solid lighten($color: $primary_black, $amount: 20);
+    border-radius: 3px;
+    padding: .1rem;
+    display: none;
+    transition: .3s;
+
+}
+
+#tp_Name{
+
+    bottom: 25%;
+    left: 12%;
+
 }
