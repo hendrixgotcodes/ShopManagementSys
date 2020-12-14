@@ -1177,7 +1177,7 @@ class DATABASE {
               } else {
                 reject("incorrect password");
               }
-            }); // resolve([user.User_Name, "Admin"])
+            });
           }
         }
       });

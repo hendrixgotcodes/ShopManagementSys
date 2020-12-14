@@ -229,7 +229,10 @@ const {
 
 
 
+
+const cryptoJS = __webpack_require__(/*! crypto-js */ "./node_modules/crypto-js/index.js");
 /*********************************User Params */
+
 
 let UserName, UserType;
 /*********************************PROGRAM CONSTANTS********************* */
@@ -617,15 +620,16 @@ function showIssues() {
                 `;
         modalOpened = true;
         confirmNewPasswordBox.style.display = "none";
-        confirmNewPasswordBox.tabIndex = "1";
+        confirmNewPasswordBox.tabIndex = "0";
         notificationContainer.appendChild(confirmNewPasswordBox);
         confirmNewPasswordBox.focus();
         confirmNewPasswordBox.style.top = e.pageY + "px";
         confirmNewPasswordBox.style.left = e.pageX + "px";
         confirmNewPasswordBox.style.display = "block";
         let textbox = confirmNewPasswordBox.querySelector("#passwordBox");
-        textbox.value = Math.random().toString(36).slice(-8); // textbox.disabled = true;
-        //Even Listeners
+        textbox.value = Math.random().toString(36).slice(-8);
+        textbox.disabled = true;
+        let generatedPassword = textbox.value; //Even Listeners
 
         confirmNewPasswordBox.addEventListener("blur", () => {
           confirmNewPasswordBox.remove();
@@ -633,10 +637,23 @@ function showIssues() {
         });
         let copy = confirmNewPasswordBox.querySelector("#copy");
         copy.addEventListener("click", () => {
+          textbox.disabled = false;
           textbox.select();
           document.execCommand("copy"); // textbox.execCommand("")
 
+          textbox.disabled = true;
           confirmNewPasswordBox.querySelector("#lbl_container").querySelector("label").innerText = "Copied";
+        });
+        let btnConfirm = confirmNewPasswordBox.querySelector("#confirm");
+        btnConfirm.addEventListener("click", () => {
+          let passwordBox = confirmNewPasswordBox.querySelector("#passwordBox");
+          generateHashOf(generatedPassword, account.User_Name).then(newPassword => {
+            console.log(newPassword);
+            database.updateUserInfo(account.User_Name, newPassword).then(() => {
+              confirmNewPasswordBox.remove();
+              modalOpened = false;
+            });
+          });
         });
       });
     });
@@ -651,6 +668,14 @@ function showIssues() {
     notificationContainer.remove();
     contentCover.classList.remove("contentCover--shown");
   });
+  /**************Functions */
+
+  function generateHashOf(password, userName) {
+    return new Promise((resolve, reject) => {
+      const encrypted = cryptoJS.AES.encrypt(password, userName).toString();
+      resolve(encrypted);
+    });
+  }
 } //---------------------------------------Main Process Event Listeners-------------------------------------
 
 
@@ -2309,7 +2334,7 @@ class DATABASE {
               } else {
                 reject("incorrect password");
               }
-            }); // resolve([user.User_Name, "Admin"])
+            });
           }
         }
       });

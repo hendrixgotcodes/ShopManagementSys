@@ -284,7 +284,6 @@ function loadStore(e) {
     }).catch(error => {
       btnLoader.removeAttribute("src");
       btnLoader.classList.remove("img_shown");
-      console.log(error.code);
 
       if (error === "incorrect username") {
         warningLabel_tb.innerText = `Incorrect username`;
@@ -1271,7 +1270,7 @@ class DATABASE {
               } else {
                 reject("incorrect password");
               }
-            }); // resolve([user.User_Name, "Admin"])
+            });
           }
         }
       });

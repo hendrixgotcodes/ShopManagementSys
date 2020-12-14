@@ -11,6 +11,7 @@ const { ipcRenderer } = require("electron");
 import Notifications from '../controller/Alerts/NotificationController'
 import DATABASE from '../model/DATABASE';
 import DOMCONTROLLER from './utilities/TableController';
+const cryptoJS = require("crypto-js")
 
 
 
@@ -660,7 +661,7 @@ function showIssues(){
                 `
                 modalOpened = true;
                 confirmNewPasswordBox.style.display = "none";
-                confirmNewPasswordBox.tabIndex = "1";
+                confirmNewPasswordBox.tabIndex = "0";
             
                 notificationContainer.appendChild(confirmNewPasswordBox)
                 confirmNewPasswordBox.focus();
@@ -672,7 +673,9 @@ function showIssues(){
 
                 let textbox = confirmNewPasswordBox.querySelector("#passwordBox");
                 textbox.value = Math.random().toString(36).slice(-8);
-                // textbox.disabled = true;
+                textbox.disabled = true;
+
+                let generatedPassword = textbox.value;
 
                 //Even Listeners
                 confirmNewPasswordBox.addEventListener("blur", ()=>{
@@ -682,12 +685,16 @@ function showIssues(){
 
                 })
 
+
                 let copy = confirmNewPasswordBox.querySelector("#copy");
                 copy.addEventListener("click", ()=>{
 
+                    textbox.disabled = false;
+
                     textbox.select();
-                    document.execCommand("copy")
+                    document.execCommand("copy");
                     // textbox.execCommand("")
+                    textbox.disabled = true;
 
                     confirmNewPasswordBox.querySelector("#lbl_container").querySelector("label").innerText = "Copied";
 
@@ -695,7 +702,26 @@ function showIssues(){
 
                 let btnConfirm = confirmNewPasswordBox.querySelector("#confirm");
 
-                btnConfirm.addEventListener("click")
+                btnConfirm.addEventListener("click", ()=>{
+
+                    let passwordBox = confirmNewPasswordBox.querySelector("#passwordBox");
+
+                    generateHashOf(generatedPassword, account.User_Name)
+                    .then((newPassword)=>{
+
+                        console.log(newPassword);
+
+                        database.updateUserInfo(account.User_Name, newPassword)
+                        .then(()=>{
+
+                            confirmNewPasswordBox.remove();
+                            modalOpened = false;
+
+                        })
+
+                    })
+
+                })
 
             })
 
@@ -721,6 +747,19 @@ function showIssues(){
         contentCover.classList.remove("contentCover--shown");
 
     })
+
+    /**************Functions */
+    function generateHashOf(password, userName){
+
+        return new Promise((resolve, reject)=>{
+
+            const encrypted = cryptoJS.AES.encrypt(password, userName).toString()
+
+            resolve(encrypted);
+
+        })
+
+    }
 
 }
 

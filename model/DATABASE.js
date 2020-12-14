@@ -1495,8 +1495,6 @@ class DATABASE{
 
                         })
 
-                        // resolve([user.User_Name, "Admin"])
-
 
                     }
                     
