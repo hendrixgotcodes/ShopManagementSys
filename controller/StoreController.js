@@ -74,7 +74,6 @@ window.addEventListener("load", ()=>{
 
     initializeStoreItems();
     getAllIssue();
-    initializeTodaySales();
 
 })
 
@@ -787,6 +786,8 @@ function showIssues(){
 ipcRenderer.on("setUserParams", (e, paramsArray)=>{
 
     [UserName, UserType] = paramsArray;
+
+    initializeTodaySales();
 
 })
 

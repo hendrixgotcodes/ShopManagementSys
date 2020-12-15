@@ -267,6 +267,10 @@ function seekItem() {
           row.style.backgroundColor = initBGcolor;
           row.style.color = initColor;
         }, 2000);
+      } else {
+        database.getItem(itemName).then(returedItem => {
+          returedItem.forEach(item => {});
+        });
       }
     });
   }, 500);

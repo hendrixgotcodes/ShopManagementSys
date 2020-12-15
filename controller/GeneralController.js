@@ -231,6 +231,20 @@ function seekItem(){
                 },2000)
             
             }
+            else{
+
+                database.getItem(itemName)
+                .then((returedItem)=>{
+
+                    returedItem.forEach((item)=>{
+
+                        
+
+                    })
+
+                })
+
+            }
         })
 
     } ,500)

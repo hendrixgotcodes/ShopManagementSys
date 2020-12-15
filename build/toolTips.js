@@ -606,7 +606,8 @@ class DOMCONTROLLER {
 
     let [rowItemName, rowItemBrand, rowItemCategory, rowItemDiscount, rowItemSellingPrice, rowItemStock, rowItemCostPrice] = [row.querySelector(".td_Name--hidden").innerText, row.querySelector(".td_Brand--hidden").innerText, row.querySelector(".td_Category--hidden").innerText, row.querySelector('.td_discount').innerText, row.querySelector(".td_Price").innerText, row.querySelector('.td_Stock').innerText, row.querySelector('.td_costPrice').innerText];
     rowItemSellingPrice = parseFloat(rowItemSellingPrice);
-    let itemQuanityDB = 0;
+    let itemQuanityDB = 0; //Getting total quantity left. User's input will be checked against this to prevent sale of quantity more than what is actually left.
+
     database.getItemQuantity(rowItemName, rowItemBrand, rowItemCategory).then(result => {
       result = result.pop();
       itemQuanityDB = parseInt(result.InStock);
@@ -705,8 +706,8 @@ class DOMCONTROLLER {
       let currentSubtotal = parseFloat(subTotal.innerText);
       subTotal.innerText = currentSubtotal + rowItemSellingPrice;
       mainTotal.innerText = subTotal.innerText;
-      let totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemSellingPrice));
-      let totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemCostPrice));
+      let totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemSellingPrice));
+      let totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemCostPrice));
       inCart.push({
         Item: {
           Name: rowItemName,
@@ -759,8 +760,9 @@ class DOMCONTROLLER {
         } else {
           let [itemName, itemBrand, itemCategory] = [cartItem.querySelector(".hidden_itemName").innerText, cartItem.querySelector(".hidden_itemBrand").innerText, cartItem.querySelector(".hidden_itemCategory").innerText];
           let newRevenue = 0;
-          totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemSellingPrice));
-          totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemCostPrice));
+          totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemSellingPrice));
+          totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemCostPrice));
+          console.log(totalItemSellingPrice, totalItemCostPrice);
           inCart.forEach(item => {
             if (item.Item.Name === itemName && item.Item.Brand === itemBrand && item.Item.Category === itemCategory) {
               item.Purchased = parseInt(tb_itemCount.value);
@@ -769,10 +771,9 @@ class DOMCONTROLLER {
             }
 
             newRevenue = parseFloat(item.Revenue + newRevenue);
-          }); // let totalItemCost = parseFloat(itemQuanity * rowItemSellingPrice).toPrecision(3);
-          // let currentSubtotal = parseFloat(subTotal.innerText)
-          // subTotal.innerText = currentSubtotal + parseFloat(totalItemCost);
-
+            console.log(newRevenue);
+          });
+          console.log(newRevenue);
           subTotal.innerText = newRevenue;
           mainTotal.innerText = newRevenue;
           toolBar_tb.focus();
@@ -809,8 +810,8 @@ class DOMCONTROLLER {
           } else {
             let [itemName, itemBrand, itemCategory] = [cartItem.querySelector(".hidden_itemName").innerText, cartItem.querySelector(".hidden_itemBrand").innerText, cartItem.querySelector(".hidden_itemCategory").innerText];
             let newRevenue = 0;
-            totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemSellingPrice));
-            totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemCostPrice));
+            totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemSellingPrice));
+            totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemCostPrice));
             inCart.forEach(item => {
               if (item.Item.Name === itemName && item.Item.Brand === itemBrand && item.Item.Category === itemCategory) {
                 item.Purchased = parseInt(tb_itemCount.value);
@@ -859,8 +860,8 @@ class DOMCONTROLLER {
         } else {
           let [itemName, itemBrand, itemCategory] = [cartItem.querySelector(".hidden_itemName").innerText, cartItem.querySelector(".hidden_itemBrand").innerText, cartItem.querySelector(".hidden_itemCategory").innerText];
           let newRevenue = 0;
-          totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemSellingPrice));
-          totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemCostPrice));
+          totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemSellingPrice));
+          totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemCostPrice));
           inCart.forEach(item => {
             if (item.Item.Name === itemName && item.Item.Brand === itemBrand && item.Item.Category === itemCategory) {
               item.Purchased = parseInt(tb_itemCount.value);
@@ -906,20 +907,24 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _TableController__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_TableController__WEBPACK_IMPORTED_MODULE_5__);
 /* harmony import */ var electron__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! electron */ "electron");
 /* harmony import */ var electron__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(electron__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _model_DATABASE__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../model/DATABASE */ "./model/DATABASE.js");
+/* harmony import */ var _model_DATABASE__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(_model_DATABASE__WEBPACK_IMPORTED_MODULE_7__);
 
 
 const STORE = __webpack_require__(/*! ../../model/STORE */ "./model/STORE.js");
 
-const items_in_Categories = ["Books", "Tissues"];
-const items_in_Brands = ["Ghana Schools", "N/A"];
-let userName, userType; //ToolTip will be shown based on this
+const database = new _model_DATABASE__WEBPACK_IMPORTED_MODULE_7___default.a();
+let userName, userType;
+const Categories = [];
+const Brands = []; //ToolTip will be shown based on this
 
 let showToolTips;
 electron__WEBPACK_IMPORTED_MODULE_6__["ipcRenderer"].on("loadUserInfo", (e, array) => {
-  return new Promise((resolve, reject) => {
+  let newPromise = new Promise((resolve, reject) => {
     [userName, userType] = array;
     resolve();
-  }).then(() => {
+  });
+  newPromise.then(() => {
     if (userType === 'Admin') {
       const store = new STORE({
         configName: 'userPrefs',
@@ -952,6 +957,7 @@ const selectValue_span = document.querySelector('.selectValue_span');
 
 
 
+
 /************************Popup Menu for "FilterBy"**************************/
 //Unordered lists which will be passed into tippyJS
 
@@ -960,46 +966,52 @@ const ul_brands = document.createElement('ul');
 ul_categories.setAttribute("tabIndex", "0");
 ul_brands.setAttribute("tabIndex", "0"); // Dynamically adding list items based on categories and brands respectively
 
-items_in_Categories.forEach(item => {
-  let newItem = document.createElement('li');
-  newItem.innerHTML = item;
-  newItem.className = "selectDropdown_value";
-  newItem.setAttribute("tabIndex", "0");
-  newItem.addEventListener("click", () => {
-    _TableController__WEBPACK_IMPORTED_MODULE_5___default.a.filterItems("Category", newItem.innerText);
-    const wrapped = wrapText(newItem.innerHTML);
-    selectValue_span.innerHTML = wrapped;
-    selectValue_span.setAttribute("value", wrapped);
+database.getAllItemCategories().then(Categories => {
+  Categories.forEach(category => {
+    let newItem = document.createElement('li');
+    newItem.innerHTML = category.Name;
+    newItem.className = "selectDropdown_value";
+    newItem.setAttribute("tabIndex", "0");
+    newItem.addEventListener("click", () => {
+      _TableController__WEBPACK_IMPORTED_MODULE_5___default.a.filterItems("Category", newItem.innerText);
+      const wrapped = wrapText(newItem.innerHTML);
+      selectValue_span.innerHTML = wrapped;
+      selectValue_span.setAttribute("value", wrapped);
+    });
+    ul_categories.appendChild(newItem);
   });
-  ul_categories.appendChild(newItem);
-});
-items_in_Brands.forEach(item => {
-  let newItem = document.createElement('li');
-  newItem.innerText = item;
-  newItem.className = "selectDropdown_value";
-  newItem.setAttribute("tabIndex", "0");
-  ul_brands.appendChild(newItem);
-  newItem.addEventListener("click", () => {
-    _TableController__WEBPACK_IMPORTED_MODULE_5___default.a.filterItems("Brand", newItem.innerText);
-    const wrapped = wrapText(newItem.innerHTML);
-    selectValue_span.innerHTML = wrapped;
-    selectValue_span.setAttribute("value", wrapped);
+}).then(() => {
+  Object(tippy_js__WEBPACK_IMPORTED_MODULE_0__["default"])('.tip_category', {
+    content: ul_categories,
+    placement: 'right-start',
+    theme: 'white',
+    arrow: false,
+    offset: [0, 0],
+    animation: 'perspective'
   });
 });
-Object(tippy_js__WEBPACK_IMPORTED_MODULE_0__["default"])('.tip_category', {
-  content: ul_categories,
-  placement: 'right-start',
-  theme: 'white',
-  arrow: false,
-  offset: [0, 0],
-  animation: 'perspective'
-});
-Object(tippy_js__WEBPACK_IMPORTED_MODULE_0__["default"])('.tip_brand', {
-  content: ul_brands,
-  placement: 'right-start',
-  theme: 'white',
-  arrow: false,
-  offset: [0, 0]
+database.getAllItemBrands().then(Brands => {
+  Brands.forEach(brand => {
+    let newItem = document.createElement('li');
+    newItem.innerText = brand.Name;
+    newItem.className = "selectDropdown_value";
+    newItem.setAttribute("tabIndex", "0");
+    ul_brands.appendChild(newItem);
+    newItem.addEventListener("click", () => {
+      _TableController__WEBPACK_IMPORTED_MODULE_5___default.a.filterItems("Brand", newItem.innerText);
+      const wrapped = wrapText(newItem.innerHTML);
+      selectValue_span.innerHTML = wrapped;
+      selectValue_span.setAttribute("value", wrapped);
+    });
+  });
+}).then(() => {
+  Object(tippy_js__WEBPACK_IMPORTED_MODULE_0__["default"])('.tip_brand', {
+    content: ul_brands,
+    placement: 'right-start',
+    theme: 'white',
+    arrow: false,
+    offset: [0, 0]
+  });
 });
 /*******************************************FUNCTIONS**********************************/
 

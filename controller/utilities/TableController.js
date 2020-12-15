@@ -778,6 +778,7 @@ class DOMCONTROLLER{
 
         let itemQuanityDB = 0;
         
+        //Getting total quantity left. User's input will be checked against this to prevent sale of quantity more than what is actually left.
         database.getItemQuantity(rowItemName, rowItemBrand, rowItemCategory)
         .then((result)=>{
 
@@ -927,8 +928,8 @@ class DOMCONTROLLER{
         subTotal.innerText = currentSubtotal + rowItemSellingPrice;
         mainTotal.innerText = subTotal.innerText;
 
-        let totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemSellingPrice))
-        let totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemCostPrice))
+        let totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemSellingPrice))
+        let totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemCostPrice))
 
 
 
@@ -1022,8 +1023,10 @@ class DOMCONTROLLER{
                 let [itemName, itemBrand, itemCategory] = [cartItem.querySelector(".hidden_itemName").innerText, cartItem.querySelector(".hidden_itemBrand").innerText, cartItem.querySelector(".hidden_itemCategory").innerText]
                 let newRevenue = 0;
 
-                totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemSellingPrice))
-                totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemCostPrice))
+                totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemSellingPrice))
+                totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemCostPrice))
+
+                console.log(totalItemSellingPrice, totalItemCostPrice);
 
                 inCart.forEach((item)=>{
 
@@ -1037,13 +1040,12 @@ class DOMCONTROLLER{
 
                     newRevenue = parseFloat(item.Revenue + newRevenue);
 
+                    console.log(newRevenue);
+
                 })
 
+                console.log(newRevenue);
 
-                // let totalItemCost = parseFloat(itemQuanity * rowItemSellingPrice).toPrecision(3);
-
-                // let currentSubtotal = parseFloat(subTotal.innerText)
-                // subTotal.innerText = currentSubtotal + parseFloat(totalItemCost);
                 subTotal.innerText = newRevenue;
 
                 mainTotal.innerText = newRevenue
@@ -1116,8 +1118,8 @@ class DOMCONTROLLER{
                     let [itemName, itemBrand, itemCategory] = [cartItem.querySelector(".hidden_itemName").innerText, cartItem.querySelector(".hidden_itemBrand").innerText, cartItem.querySelector(".hidden_itemCategory").innerText]
                     let newRevenue = 0;
     
-                    totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemSellingPrice))
-                    totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemCostPrice))
+                    totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemSellingPrice))
+                    totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemCostPrice))
     
                     inCart.forEach((item)=>{
     
@@ -1208,8 +1210,8 @@ class DOMCONTROLLER{
                 let [itemName, itemBrand, itemCategory] = [cartItem.querySelector(".hidden_itemName").innerText, cartItem.querySelector(".hidden_itemBrand").innerText, cartItem.querySelector(".hidden_itemCategory").innerText]
                 let newRevenue = 0;
 
-                totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemSellingPrice))
-                totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemCostPrice))
+                totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemSellingPrice))
+                totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemCostPrice))
 
                 inCart.forEach((item)=>{
 

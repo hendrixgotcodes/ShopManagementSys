@@ -1,74 +1,5 @@
 "use strict";
 
-const STORE = require('../../model/STORE');
-
-const items_in_Categories = ["Books","Tissues"];
-const items_in_Brands = ["Ghana Schools", "N/A"];
-
-
-let userName, userType;
-
-
-//ToolTip will be shown based on this
-let showToolTips;
-
-
-ipcRenderer.on("loadUserInfo", (e, array)=>{
-
-  return new Promise((resolve, reject)=>{
-
-        [userName, userType] = array;
-
-        resolve();
-
-  }).then(()=>{
-
-        if(userType === 'Admin'){
-        
-        
-          const store = new STORE({
-              configName: 'userPrefs',
-              defaults: {
-                  toolTipsPref: 'show',
-                  timeOutPref: '1',
-              }
-          });
-        
-          store.get("toolTipsPref")
-          .then((userPrefered)=>{
-
-              if(userPrefered === "show"){
-                  showToolTips = true;
-              }
-              else if(userPrefered === "hide"){
-                showToolTips = false;
-            
-              }
-
-          })
-        
-          
-        }
-
-  }).then(()=>{
-
-      if(showToolTips === true){
-
-        setToolTips();
-
-      }
-
-  })
-
-  
-})
-
-
-
-
-const selectValue_span = document.querySelector('.selectValue_span');
-
-
 import tippy, {
   roundArrow
 } from 'tippy.js';
@@ -80,6 +11,24 @@ import 'tippy.js/themes/light.css';
 import 'tippy.js/animations/perspective.css'
 import TableController from './TableController';
 import { ipcRenderer } from 'electron';
+import DATABASE from '../../model/DATABASE';
+
+
+const STORE = require('../../model/STORE');
+const database = new DATABASE();
+
+
+
+
+let userName, userType;
+let showToolTips;   //ToolTip will be shown based on this
+
+
+
+
+const selectValue_span = document.querySelector('.selectValue_span');
+
+
 
 
 
@@ -95,68 +44,89 @@ ul_brands.setAttribute("tabIndex", "0");
 
 
 // Dynamically adding list items based on categories and brands respectively
-items_in_Categories.forEach((item) => {
+database.getAllItemCategories()
+.then((Categories)=>{
 
-  let newItem = document.createElement('li');
-  newItem.innerHTML = item;
-  newItem.className = "selectDropdown_value";
-  newItem.setAttribute("tabIndex", "0");
+  Categories.forEach((category) => {
 
-  newItem.addEventListener("click", () => {
+    let newItem = document.createElement('li');
+    newItem.innerHTML = category.Name;
+    newItem.className = "selectDropdown_value";
+    newItem.setAttribute("tabIndex", "0");
+  
+    newItem.addEventListener("click", () => {
+  
+      TableController.filterItems("Category", newItem.innerText)
+  
+      const wrapped =  wrapText(newItem.innerHTML)
+  
+      selectValue_span.innerHTML = wrapped;
+      selectValue_span.setAttribute("value", wrapped)
+    })
+  
+    ul_categories.appendChild(newItem);
+  
+  });  
 
-    TableController.filterItems("Category", newItem.innerText)
+})
+.then(()=>{
 
-    const wrapped =  wrapText(newItem.innerHTML)
-
-    selectValue_span.innerHTML = wrapped;
-    selectValue_span.setAttribute("value", wrapped)
+  tippy('.tip_category', {
+    content: ul_categories,
+    placement: 'right-start',
+    theme: 'white',
+    arrow: false,
+    offset: [0, 0],
+    animation: 'perspective',
   })
 
-  ul_categories.appendChild(newItem);
-
-});
-
-items_in_Brands.forEach((item) => {
-
-  let newItem = document.createElement('li');
-  newItem.innerText = item;
-  newItem.className = "selectDropdown_value";
-  newItem.setAttribute("tabIndex", "0");
-
-
-  ul_brands.appendChild(newItem);
-
-  newItem.addEventListener("click", () => {
-
-    TableController.filterItems("Brand", newItem.innerText)
-
-    const wrapped =  wrapText(newItem.innerHTML)
-
-    selectValue_span.innerHTML = wrapped;
-    selectValue_span.setAttribute("value", wrapped)
-  })
-
-});
-
-
-
-
-tippy('.tip_category', {
-  content: ul_categories,
-  placement: 'right-start',
-  theme: 'white',
-  arrow: false,
-  offset: [0, 0],
-  animation: 'perspective',
 })
 
-tippy('.tip_brand', {
-  content: ul_brands,
-  placement: 'right-start',
-  theme: 'white',
-  arrow: false,
-  offset: [0, 0]
+database.getAllItemBrands()
+.then((Brands)=>{
+
+  Brands.forEach((brand) => {
+
+    let newItem = document.createElement('li');
+    newItem.innerText = brand.Name;
+    newItem.className = "selectDropdown_value";
+    newItem.setAttribute("tabIndex", "0");
+  
+  
+    ul_brands.appendChild(newItem);
+  
+    newItem.addEventListener("click", () => {
+  
+      TableController.filterItems("Brand", newItem.innerText)
+  
+      const wrapped =  wrapText(newItem.innerHTML)
+  
+      selectValue_span.innerHTML = wrapped;
+      selectValue_span.setAttribute("value", wrapped)
+    })
+  
+  });
+
 })
+.then(()=>{
+
+    tippy('.tip_brand', {
+      content: ul_brands,
+      placement: 'right-start',
+      theme: 'white',
+      arrow: false,
+      offset: [0, 0]
+    })
+
+})
+
+
+
+
+
+
+
+
 
 
 
@@ -241,3 +211,58 @@ function setToolTips(){
 
 
 }
+
+
+
+/****************Events From Main Process */
+ipcRenderer.on("loadUserInfo", (e, array)=>{
+
+  let newPromise =  new Promise((resolve, reject)=>{
+
+        [userName, userType] = array;
+
+        resolve();
+
+  })
+  
+  newPromise.then(()=>{
+
+        if(userType === 'Admin'){
+        
+        
+          const store = new STORE({
+              configName: 'userPrefs',
+              defaults: {
+                  toolTipsPref: 'show',
+                  timeOutPref: '1',
+              }
+          });
+        
+          store.get("toolTipsPref")
+          .then((userPrefered)=>{
+
+              if(userPrefered === "show"){
+                  showToolTips = true;
+              }
+              else if(userPrefered === "hide"){
+                showToolTips = false;
+            
+              }
+
+          })
+        
+          
+        }
+
+  }).then(()=>{
+
+      if(showToolTips === true){
+
+        setToolTips();
+
+      }
+
+  })
+
+  
+})

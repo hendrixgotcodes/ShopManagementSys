@@ -100,9 +100,20 @@
   color: #646766;
   border-radius: 3px;
   box-shadow: -1px 1px 3px rgba(0, 0, 0, 0.17);
-  padding: 0rem; }
+  padding: 0rem;
+  position: absolute;
+  right: -5rem;
+  height: 10rem;
+  width: 10rem;
+  overflow-y: auto;
+  z-index: 100; }
   .tippy-box[data-theme~='white'] .tippy-content {
-    padding: 0; }
+    list-style: none;
+    z-index: 1; }
+    .tippy-box[data-theme~='white'] .tippy-content ul {
+      list-style: none; }
+      .tippy-box[data-theme~='white'] .tippy-content ul li {
+        padding: .2rem 0; }
 
 body {
   height: 100vh;

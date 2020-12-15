@@ -1805,7 +1805,8 @@ class DOMCONTROLLER {
 
     let [rowItemName, rowItemBrand, rowItemCategory, rowItemDiscount, rowItemSellingPrice, rowItemStock, rowItemCostPrice] = [row.querySelector(".td_Name--hidden").innerText, row.querySelector(".td_Brand--hidden").innerText, row.querySelector(".td_Category--hidden").innerText, row.querySelector('.td_discount').innerText, row.querySelector(".td_Price").innerText, row.querySelector('.td_Stock').innerText, row.querySelector('.td_costPrice').innerText];
     rowItemSellingPrice = parseFloat(rowItemSellingPrice);
-    let itemQuanityDB = 0;
+    let itemQuanityDB = 0; //Getting total quantity left. User's input will be checked against this to prevent sale of quantity more than what is actually left.
+
     database.getItemQuantity(rowItemName, rowItemBrand, rowItemCategory).then(result => {
       result = result.pop();
       itemQuanityDB = parseInt(result.InStock);
@@ -1904,8 +1905,8 @@ class DOMCONTROLLER {
       let currentSubtotal = parseFloat(subTotal.innerText);
       subTotal.innerText = currentSubtotal + rowItemSellingPrice;
       mainTotal.innerText = subTotal.innerText;
-      let totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemSellingPrice));
-      let totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemCostPrice));
+      let totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemSellingPrice));
+      let totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemCostPrice));
       inCart.push({
         Item: {
           Name: rowItemName,
@@ -1958,8 +1959,9 @@ class DOMCONTROLLER {
         } else {
           let [itemName, itemBrand, itemCategory] = [cartItem.querySelector(".hidden_itemName").innerText, cartItem.querySelector(".hidden_itemBrand").innerText, cartItem.querySelector(".hidden_itemCategory").innerText];
           let newRevenue = 0;
-          totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemSellingPrice));
-          totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemCostPrice));
+          totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemSellingPrice));
+          totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemCostPrice));
+          console.log(totalItemSellingPrice, totalItemCostPrice);
           inCart.forEach(item => {
             if (item.Item.Name === itemName && item.Item.Brand === itemBrand && item.Item.Category === itemCategory) {
               item.Purchased = parseInt(tb_itemCount.value);
@@ -1968,10 +1970,9 @@ class DOMCONTROLLER {
             }
 
             newRevenue = parseFloat(item.Revenue + newRevenue);
-          }); // let totalItemCost = parseFloat(itemQuanity * rowItemSellingPrice).toPrecision(3);
-          // let currentSubtotal = parseFloat(subTotal.innerText)
-          // subTotal.innerText = currentSubtotal + parseFloat(totalItemCost);
-
+            console.log(newRevenue);
+          });
+          console.log(newRevenue);
           subTotal.innerText = newRevenue;
           mainTotal.innerText = newRevenue;
           toolBar_tb.focus();
@@ -2008,8 +2009,8 @@ class DOMCONTROLLER {
           } else {
             let [itemName, itemBrand, itemCategory] = [cartItem.querySelector(".hidden_itemName").innerText, cartItem.querySelector(".hidden_itemBrand").innerText, cartItem.querySelector(".hidden_itemCategory").innerText];
             let newRevenue = 0;
-            totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemSellingPrice));
-            totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemCostPrice));
+            totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemSellingPrice));
+            totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemCostPrice));
             inCart.forEach(item => {
               if (item.Item.Name === itemName && item.Item.Brand === itemBrand && item.Item.Category === itemCategory) {
                 item.Purchased = parseInt(tb_itemCount.value);
@@ -2058,8 +2059,8 @@ class DOMCONTROLLER {
         } else {
           let [itemName, itemBrand, itemCategory] = [cartItem.querySelector(".hidden_itemName").innerText, cartItem.querySelector(".hidden_itemBrand").innerText, cartItem.querySelector(".hidden_itemCategory").innerText];
           let newRevenue = 0;
-          totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemSellingPrice));
-          totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseInt(rowItemCostPrice));
+          totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemSellingPrice));
+          totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemCostPrice));
           inCart.forEach(item => {
             if (item.Item.Name === itemName && item.Item.Brand === itemBrand && item.Item.Category === itemCategory) {
               item.Purchased = parseInt(tb_itemCount.value);
