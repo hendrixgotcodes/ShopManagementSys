@@ -309,7 +309,7 @@ class DOMCONTROLLER{
             if(dontHighlightAfterCreate === true){
 
 
-                resolve();
+                resolve(row);
                 return
 
             }

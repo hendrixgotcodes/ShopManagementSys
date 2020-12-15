@@ -377,19 +377,31 @@ function initializeTodaySales() {
   }, 1000);
 }
 
-function fetchItemsRecursive(offset = 2) {
+function fetchItemsRecursive(offset = 200) {
   let timeOutId = setTimeout(() => {
     database.paginateRemainingItems(offset).then(storeItems => {
       if (storeItems.length === 0) {
         clearTimeout(timeOutId);
         return;
       } else {
-        offset = offset + 2;
+        offset = offset + 200;
         storeItems.forEach(storeItem => {
           //T his will only add items which "InStock" is greater than zero
           if (parseInt(storeItem.InStock) > 0) {
             if (storeItem.Deleted !== 1) {
-              _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.createItem(storeItem.Name, storeItem.Brand, storeItem.Category, storeItem.InStock, storeItem.SellingPrice, storeItem.Discount, "", false, storeItem.CostPrice, "", true, false, "Store", false);
+              _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.createItem(storeItem.Name, storeItem.Brand, storeItem.Category, storeItem.InStock, storeItem.SellingPrice, storeItem.Discount, "", false, storeItem.CostPrice, "", true, false, "Store", false).then(row => {
+                //For "tableBody"
+                row.addEventListener('click', e => {
+                  toggleRowCB(row);
+                  setSellingItemProperties(row);
+                });
+                row.addEventListener('keydown', e => {
+                  if (e.code === "Enter") {
+                    toggleRowCB(row);
+                    setSellingItemProperties(row);
+                  }
+                });
+              });
             }
           }
         });
@@ -936,7 +948,7 @@ class DOMCONTROLLER {
 
 
       if (dontHighlightAfterCreate === true) {
-        resolve();
+        resolve(row);
         return;
       }
 
@@ -2055,7 +2067,7 @@ class DATABASE {
 
   fetchItems() {
     return new Promise((resolve, reject) => {
-      this.connector.query("SELECT * FROM duffykids.items ORDER BY Name ASC LIMIT 2", (error, results) => {
+      this.connector.query("SELECT * FROM duffykids.items ORDER BY Name ASC LIMIT 200", (error, results) => {
         if (error) {
           if (error.code === "ECONNREFUSED") {
             reject(error.code);
@@ -2071,7 +2083,7 @@ class DATABASE {
 
   paginateRemainingItems(offset) {
     return new Promise((resolve, reject) => {
-      this.connector.query(`SELECT * FROM duffykids.items ORDER BY Name ASC LIMIT ${offset}, 2`, (error, results) => {
+      this.connector.query(`SELECT * FROM duffykids.items ORDER BY Name ASC LIMIT ${offset}, 200`, (error, results) => {
         if (error) {
           if (error.code === "ECONNREFUSED") {
             reject(error.code);

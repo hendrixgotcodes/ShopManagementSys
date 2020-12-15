@@ -844,7 +844,7 @@ class DATABASE {
 
   fetchItems() {
     return new Promise((resolve, reject) => {
-      this.connector.query("SELECT * FROM duffykids.items ORDER BY Name ASC LIMIT 2", (error, results) => {
+      this.connector.query("SELECT * FROM duffykids.items ORDER BY Name ASC LIMIT 200", (error, results) => {
         if (error) {
           if (error.code === "ECONNREFUSED") {
             reject(error.code);
@@ -860,7 +860,7 @@ class DATABASE {
 
   paginateRemainingItems(offset) {
     return new Promise((resolve, reject) => {
-      this.connector.query(`SELECT * FROM duffykids.items ORDER BY Name ASC LIMIT ${offset}, 2`, (error, results) => {
+      this.connector.query(`SELECT * FROM duffykids.items ORDER BY Name ASC LIMIT ${offset}, 200`, (error, results) => {
         if (error) {
           if (error.code === "ECONNREFUSED") {
             reject(error.code);

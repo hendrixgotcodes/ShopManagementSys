@@ -257,12 +257,15 @@ function initializeTodaySales(){
 
 }
 
-function fetchItemsRecursive(offset = 2){
+function fetchItemsRecursive(offset = 200){
+
 
     let timeOutId = setTimeout(()=>{
 
+
         database.paginateRemainingItems(offset)
         .then((storeItems)=>{
+
 
             if(storeItems.length === 0){
                 clearTimeout(timeOutId)
@@ -270,7 +273,7 @@ function fetchItemsRecursive(offset = 2){
             }
             else{
 
-                offset = offset+2
+                offset = offset+200
 
                 storeItems.forEach((storeItem)=>{
 
@@ -280,6 +283,29 @@ function fetchItemsRecursive(offset = 2){
                         if(storeItem.Deleted !== 1){
 
                             DOMCONTROLLER.createItem(storeItem.Name, storeItem.Brand, storeItem.Category, storeItem.InStock, storeItem.SellingPrice, storeItem.Discount,"", false, storeItem.CostPrice, "", true, false,"Store", false)
+                            .then((row)=>{    
+
+                                
+    
+                                //For "tableBody"
+                                row.addEventListener('click',(e)=>{
+                                    toggleRowCB(row);
+                                    setSellingItemProperties(row);
+                                })
+                    
+                                row.addEventListener('keydown',(e)=>{
+                    
+                                    if(e.code === "Enter"){
+                    
+                                        toggleRowCB(row);
+                                        setSellingItemProperties(row);
+                    
+                                    }
+                    
+                                })                                    
+                                
+
+                            })
                             
                         }
 
