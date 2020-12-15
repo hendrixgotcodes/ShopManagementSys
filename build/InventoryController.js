@@ -216,10 +216,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _utilities_TableController__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./utilities/TableController */ "./controller/utilities/TableController.js");
 /* harmony import */ var _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_utilities_TableController__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _utilities_UnitConverter__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./utilities/UnitConverter */ "./controller/utilities/UnitConverter.js");
-/* harmony import */ var _utilities_UnitConverter__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_utilities_UnitConverter__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _model_DATABASE_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../model/DATABASE.js */ "./model/DATABASE.js");
-/* harmony import */ var _model_DATABASE_js__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_model_DATABASE_js__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _model_DATABASE_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../model/DATABASE.js */ "./model/DATABASE.js");
+/* harmony import */ var _model_DATABASE_js__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_model_DATABASE_js__WEBPACK_IMPORTED_MODULE_4__);
 
 
 
@@ -227,12 +225,11 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-
  //Importing ItemDB operations
 
  // const Modal = require('../controller/modals/ModalController')
 
-/************DOM ELEMENTS */
+/************DOM ELEMENTS************/
 
 const toolBar_btn = document.querySelector('.toolBar_btn--alpha');
 const toolBar_btn_icon = document.querySelector('.ico_btn_add');
@@ -249,7 +246,7 @@ let UserType;
 const listItemForm = document.querySelector(".dd_listItem--form");
 let rowBucket = []; //Initializing Database
 
-const database = new _model_DATABASE_js__WEBPACK_IMPORTED_MODULE_5___default.a();
+const database = new _model_DATABASE_js__WEBPACK_IMPORTED_MODULE_4___default.a();
 /**********************EVENT LISTENERS *************************/
 
 window.addEventListener("load", initialzeStoreItems);
@@ -601,23 +598,12 @@ function fetchItemsRecursive(offset = 200) {
         return;
       } else {
         offset = offset + offset;
-        storeItems.forEach(storeItem => {
-          //T his will only add items which "InStock" is greater than zero
-          if (parseInt(storeItem.InStock) > 0) {
-            if (storeItem.Deleted !== 1) {
-              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(storeItem.Name, storeItem.Brand, storeItem.Category, storeItem.InStock, storeItem.SellingPrice, storeItem.Discount, "", false, storeItem.CostPrice, "", true, false, "Store", false).then(row => {
-                //For "tableBody"
-                row.addEventListener('click', e => {
-                  toggleRowCB(row);
-                  setSellingItemProperties(row);
-                });
-                row.addEventListener('keydown', e => {
-                  if (e.code === "Enter") {
-                    toggleRowCB(row);
-                    setSellingItemProperties(row);
-                  }
-                });
-              });
+        storeItems.forEach(fetchedItem => {
+          if (parseInt(fetchedItem.InStock) > 0) {
+            if (fetchedItem.Deleted === 1) {
+              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory", false);
+            } else {
+              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, false, "Inventory", false);
             }
           }
         });
@@ -2121,39 +2107,6 @@ class DOMCONTROLLER {
 }
 
 module.exports = DOMCONTROLLER;
-
-/***/ }),
-
-/***/ "./controller/utilities/UnitConverter.js":
-/*!***********************************************!*\
-  !*** ./controller/utilities/UnitConverter.js ***!
-  \***********************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-class UnitConverter {
-  static convert(value) {
-    value = Number.parseFloat(value);
-
-    if (value >= 1000) {
-      value = (value / 1000).toFixed(2) + ' K';
-    } else if (value >= 1000000) {
-      value = (value / 1000000).toFixed(2) + ' M';
-      console.log(value);
-    } else if (value >= 1000000000) {
-      value = (value / 1000000000).toFixed(2) + ' B';
-      console.log(value);
-    } else {
-      value = value.toFixed(2);
-      console.log(value);
-    }
-
-    return value;
-  }
-
-}
-
-module.exports = UnitConverter;
 
 /***/ }),
 

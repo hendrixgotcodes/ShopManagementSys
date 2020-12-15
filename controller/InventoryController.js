@@ -6,14 +6,13 @@ import { ipcRenderer } from 'electron';
 import Modal from '../controller/modals/ModalController';
 import Notifications from './Alerts/NotificationController';
 import DOMCONTROLLER from './utilities/TableController';
-import UnitConverter from './utilities/UnitConverter';
 
 //Importing ItemDB operations
 import DATABASE from '../model/DATABASE.js';
 
 // const Modal = require('../controller/modals/ModalController')
 
-/************DOM ELEMENTS */
+/************DOM ELEMENTS************/
 const toolBar_btn = document.querySelector('.toolBar_btn--alpha');
 const toolBar_btn_icon = document.querySelector('.ico_btn_add')
 
