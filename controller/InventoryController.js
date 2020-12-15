@@ -673,38 +673,19 @@ function fetchItemsRecursive(offset = 200){
 
                 offset = offset + offset;
 
-                storeItems.forEach((storeItem)=>{
+                storeItems.forEach((fetchedItem)=>{
 
-                    //T his will only add items which "InStock" is greater than zero
-                    if(parseInt(storeItem.InStock) > 0){
+                    if(parseInt(fetchedItem.InStock) > 0){
 
-                        if(storeItem.Deleted !== 1){
+                        if(fetchedItem.Deleted === 1){
 
-                            DOMCONTROLLER.createItem(storeItem.Name, storeItem.Brand, storeItem.Category, storeItem.InStock, storeItem.SellingPrice, storeItem.Discount,"", false, storeItem.CostPrice, "", true, false,"Store", false)
-                            .then((row)=>{    
-
-                                
-    
-                                //For "tableBody"
-                                row.addEventListener('click',(e)=>{
-                                    toggleRowCB(row);
-                                    setSellingItemProperties(row);
-                                })
-                    
-                                row.addEventListener('keydown',(e)=>{
-                    
-                                    if(e.code === "Enter"){
-                    
-                                        toggleRowCB(row);
-                                        setSellingItemProperties(row);
-                    
-                                    }
-                    
-                                })                                    
-                                
-
-                            })
-                            
+                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,[checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory", false)
+        
+                        }
+                        else{
+        
+                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,[checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true,false , "Inventory", false)
+        
                         }
 
                     }

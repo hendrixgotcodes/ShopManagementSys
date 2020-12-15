@@ -214,13 +214,12 @@ class DOMCONTROLLER {
         let checkCB = functions[0];
         let editItem = functions[1];
         let deleteItem = functions[2];
-        let showRowControls = functions[3]; // row.addEventListener("blur", ()=>{
-        //     if(row.classList.contains("controlShown")){
-        //         row.style.transform = "translateX(0px)"
-        //         row.classList.remove("controlShown");
-        //     }
-        //     console.log(row.classList);
-        // })
+        let showRowControls = functions[3];
+
+        if (parseInt(stock) === 0) {
+          row.style.backgroundColor = "rgba(241, 26, 26, 0.2)";
+          row.querySelector(".td_Stock").style.color = "rgb(241, 26, 26)";
+        }
 
         row.addEventListener("click", toggleCB);
         row.querySelector(".controls").querySelector(".edit").addEventListener("click", function editRow(e) {
@@ -692,6 +691,10 @@ class DOMCONTROLLER {
       tb_itemCount.id = cartItemsContainer.length + 1;
       tb_itemCount.value = 1;
       tb_itemCount.min = 1;
+      database.getItemQuantity(rowItemName, rowItemBrand, rowItemCategory).then(item => {
+        item = item.pop();
+        tb_itemCount.max = parseInt(item.InStock);
+      });
       cartItem.appendChild(tb_itemCount);
       setTimeout(() => {
         tb_itemCount.focus();
@@ -771,12 +774,10 @@ class DOMCONTROLLER {
             }
 
             newRevenue = parseFloat(item.Revenue + newRevenue);
-            console.log(newRevenue);
           });
           console.log(newRevenue);
           subTotal.innerText = newRevenue;
-          mainTotal.innerText = newRevenue;
-          toolBar_tb.focus();
+          mainTotal.innerText = newRevenue; // toolBar_tb.focus()
         }
       });
       tb_itemCount.addEventListener("keyup", e => {
