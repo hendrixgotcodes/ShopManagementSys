@@ -911,53 +911,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _model_DATABASE__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(_model_DATABASE__WEBPACK_IMPORTED_MODULE_7__);
 
 
+
+
+
+
+
+
+
+
+
+
 const STORE = __webpack_require__(/*! ../../model/STORE */ "./model/STORE.js");
 
 const database = new _model_DATABASE__WEBPACK_IMPORTED_MODULE_7___default.a();
 let userName, userType;
-const Categories = [];
-const Brands = []; //ToolTip will be shown based on this
+let showToolTips; //ToolTip will be shown based on this
 
-let showToolTips;
-electron__WEBPACK_IMPORTED_MODULE_6__["ipcRenderer"].on("loadUserInfo", (e, array) => {
-  let newPromise = new Promise((resolve, reject) => {
-    [userName, userType] = array;
-    resolve();
-  });
-  newPromise.then(() => {
-    if (userType === 'Admin') {
-      const store = new STORE({
-        configName: 'userPrefs',
-        defaults: {
-          toolTipsPref: 'show',
-          timeOutPref: '1'
-        }
-      });
-      store.get("toolTipsPref").then(userPrefered => {
-        if (userPrefered === "show") {
-          showToolTips = true;
-        } else if (userPrefered === "hide") {
-          showToolTips = false;
-        }
-      });
-    }
-  }).then(() => {
-    if (showToolTips === true) {
-      setToolTips();
-    }
-  });
-});
 const selectValue_span = document.querySelector('.selectValue_span');
-
-
-
-
-
-
-
-
-
-
 /************************Popup Menu for "FilterBy"**************************/
 //Unordered lists which will be passed into tippyJS
 
@@ -1072,6 +1042,37 @@ function setToolTips() {
     placement: 'bottom'
   });
 }
+/****************Events From Main Process */
+
+
+electron__WEBPACK_IMPORTED_MODULE_6__["ipcRenderer"].on("loadUserInfo", (e, array) => {
+  let newPromise = new Promise((resolve, reject) => {
+    [userName, userType] = array;
+    resolve();
+  });
+  newPromise.then(() => {
+    if (userType === 'Admin') {
+      const store = new STORE({
+        configName: 'userPrefs',
+        defaults: {
+          toolTipsPref: 'show',
+          timeOutPref: '1'
+        }
+      });
+      store.get("toolTipsPref").then(userPrefered => {
+        if (userPrefered === "show") {
+          showToolTips = true;
+        } else if (userPrefered === "hide") {
+          showToolTips = false;
+        }
+      });
+    }
+  }).then(() => {
+    if (showToolTips === true) {
+      setToolTips();
+    }
+  });
+});
 
 /***/ }),
 
@@ -1593,9 +1594,22 @@ class DATABASE {
     });
   }
 
+  getTotalItems() {
+    return new Promise((resolve, reject) => {
+      this.connector.query("SELECT COUNT(*) FROM `items`", (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        resolve(result);
+      });
+    });
+  }
+
   fetchItems() {
     return new Promise((resolve, reject) => {
-      this.connector.query("SELECT * FROM duffykids.items ORDER BY Name ASC", (error, results) => {
+      this.connector.query("SELECT * FROM duffykids.items ORDER BY Name ASC LIMIT 2", (error, results) => {
         if (error) {
           if (error.code === "ECONNREFUSED") {
             reject(error.code);
@@ -1609,9 +1623,9 @@ class DATABASE {
     });
   }
 
-  fetchItemsRecursive(offset) {
+  paginateRemainingItems(offset) {
     return new Promise((resolve, reject) => {
-      this.connector.query(`SELECT * FROM duffykids.items ORDER BY Name ASC LIMIT ${offset}, 200`, (error, results) => {
+      this.connector.query(`SELECT * FROM duffykids.items ORDER BY Name ASC LIMIT ${offset}, 2`, (error, results) => {
         if (error) {
           if (error.code === "ECONNREFUSED") {
             reject(error.code);

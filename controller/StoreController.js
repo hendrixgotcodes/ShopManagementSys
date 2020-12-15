@@ -12,7 +12,8 @@ import Notifications from '../controller/Alerts/NotificationController'
 import DATABASE from '../model/DATABASE';
 import DOMCONTROLLER from './utilities/TableController';
 const cryptoJS = require("crypto-js")
-
+//Intitalizing DB
+const database = new DATABASE();
 
 
 /*********************************User Params */
@@ -21,8 +22,10 @@ let UserName, UserType;
 
 /*********************************PROGRAM CONSTANTS********************* */
 
+let TotalItems;
 let cart = [];     // Array of store objects
-let lostAccounts = []
+let lostAccounts = [];
+
 
 
 
@@ -30,8 +33,7 @@ let lostAccounts = []
 let totalSelectedRows = 0;
 
 
-//Intitalizing DB
-const database = new DATABASE();
+
 
 
 
@@ -43,7 +45,6 @@ const selectValue_span = document.querySelector('.selectValue_span');
 const toolBarTB = document.querySelector('.toolBar_tb');
 const toolBarBtn = document.querySelector('.toolBar_btn')
 let tableRows;
-let tdNames;
 
 const contentContainer = document.querySelector(".contentContainer");
 const contentCover = document.querySelector(".contentCover");
@@ -137,84 +138,98 @@ function initializeStoreItems(){
     DOMCONTROLLER.showLoadingBanner("Please wait. Attempting to fetch items from database...")
 
 
-    database.fetchItems()
-    .then((fetchedItems)=>{
+    database.getTotalItems()
+    .then((totalItems)=>{
 
+        totalItems = totalItems.pop();
 
-        //If returned array contains any store item
-        if(fetchedItems.length > 0){
+        TotalItems = totalItems.Total;
 
-            //Remove loading banner
-            DOMCONTROLLER.removeOldBanners();
-            
-            //then add each item to the table in the DOM
-            fetchedItems.forEach((fetchedItem)=>{
-
-                //T his will only add items which "InStock" is greater than zero
-                if(parseInt(fetchedItem.InStock) > 0){
-
-                    if(fetchedItem.Deleted === 1){
-
-                        DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,"", false, fetchedItem.CostPrice, "", true, true,"Store", false)
+        database.fetchItems()
+        .then((fetchedItems)=>{
     
-                    }
-                    else
-                    {
-                        DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,"", false, fetchedItem.CostPrice, "", true, false,"Store", false)
-                    }
-
-                }
-
-
-            })
-            
-
-        }
-        else{
-
+    
+            //If returned array contains any store item
+            if(fetchedItems.length > 0){
+    
                 //Remove loading banner
                 DOMCONTROLLER.removeOldBanners();
+                
+                //then add each item to the table in the DOM
+                fetchedItems.forEach((fetchedItem)=>{
+    
+                    //T his will only add items which "InStock" is greater than zero
+                    if(parseInt(fetchedItem.InStock) > 0){
+    
+                        if(fetchedItem.Deleted === 1){
+    
+                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,"", false, fetchedItem.CostPrice, "", true, true,"Store", false)
+        
+                        }
+                        else
+                        {
+                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,"", false, fetchedItem.CostPrice, "", true, false,"Store", false)
+                        }
+    
+                    }
+    
+    
+                })
+                
+    
+            }
+            else{
+    
+                    //Remove loading banner
+                    DOMCONTROLLER.removeOldBanners();
+    
+                    // Show isEmpty banner
+                    DOMCONTROLLER.showIsEmpty();
+    
+            }
+    
+        })
+        .then(()=>{
 
-                // Show isEmpty banner
-                DOMCONTROLLER.showIsEmpty();
-
-        }
-
-    })
-    .then(()=>{
-
-        tableRows = document.querySelector('.tableBody').querySelectorAll('.bodyRow');
-
-
-        //For "tableBody"
-        tableRows.forEach((row)=>{
-            row.addEventListener('click',(e)=>{
-                toggleRowCB(row);
-                setSellingItemProperties(row);
-            })
-
-            row.addEventListener('keydown',(e)=>{
-
-                if(e.code === "Enter"){
-
+            TotalItems - 2;
+    
+            tableRows = document.querySelector('.tableBody').querySelectorAll('.bodyRow');
+    
+    
+            //For "tableBody"
+            tableRows.forEach((row)=>{
+                row.addEventListener('click',(e)=>{
                     toggleRowCB(row);
                     setSellingItemProperties(row);
-
-                }
-
-            })
+                })
+    
+                row.addEventListener('keydown',(e)=>{
+    
+                    if(e.code === "Enter"){
+    
+                        toggleRowCB(row);
+                        setSellingItemProperties(row);
+    
+                    }
+    
+                })
+                
             
-        
+            })
+    
+    
         })
-
-
-    })
-    .catch((e)=>{
-       
-        if(e === "ECONNREFUSED"){
-            DOMCONTROLLER.removeOldBanners();
-            DOMCONTROLLER.showErrorBanner("Failed to connect to database. Please try reloading or contacting us");
-        }
+        .then(()=>{
+            fetchItemsRecursive()
+        })
+        .catch((e)=>{
+           
+            if(e === "ECONNREFUSED"){
+                DOMCONTROLLER.removeOldBanners();
+                DOMCONTROLLER.showErrorBanner("Failed to connect to database. Please try reloading or contacting us");
+            }
+    
+        })
 
     })
 
@@ -242,33 +257,50 @@ function initializeTodaySales(){
 
 }
 
-function fetchItemsRecursive(){
+function fetchItemsRecursive(offset = 2){
 
-    let offset = 200;
+    let timeOutId = setTimeout(()=>{
 
-    database.fetchItemsRecursive(offset)
-    .then(([totalItemsAvailable, storeItems])=>{
+        database.paginateRemainingItems(offset)
+        .then((storeItems)=>{
+
+            if(storeItems.length === 0){
+                clearTimeout(timeOutId)
+                return
+            }
+            else{
+
+                offset = offset+2
+
+                storeItems.forEach((storeItem)=>{
+
+                    //T his will only add items which "InStock" is greater than zero
+                    if(parseInt(storeItem.InStock) > 0){
+
+                        if(storeItem.Deleted !== 1){
+
+                            DOMCONTROLLER.createItem(storeItem.Name, storeItem.Brand, storeItem.Category, storeItem.InStock, storeItem.SellingPrice, storeItem.Discount,"", false, storeItem.CostPrice, "", true, false,"Store", false)
+                            
+                        }
+
+                    }
 
 
-        storeItems.forEach((storeItem)=>{
+                 })
 
-            //T his will only add items which "InStock" is greater than zero
-            if(parseInt(storeItem.InStock) > 0){
-
-                if(storeItem.Deleted !== 1){
-
-                    DOMCONTROLLER.createItem(storeItem.Name, storeItem.Brand, storeItem.Category, storeItem.InStock, storeItem.SellingPrice, storeItem.Discount,"", false, storeItem.CostPrice, "", true, false,"Store", false)
-                }
+                fetchItemsRecursive(offset)
 
             }
 
 
+            
+
+
+
+
         })
 
-        offset = offset + 200;
-
-
-    })
+    }, 5000)
 
 }
 

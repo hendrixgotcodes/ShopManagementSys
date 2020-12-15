@@ -1,10 +1,7 @@
 "use strict";
 
-import tippy, {
-  roundArrow
-} from 'tippy.js';
+import tippy from 'tippy.js';
 import '../../node_modules/tippy.js/dist/tippy-bundle.umd';
-import tippyBundleUmd from '../../node_modules/tippy.js/dist/tippy-bundle.umd';
 import '../../node_modules/tippy.js/themes/material.css';
 import "../../node_modules/tippy.js/themes/light.css";
 import 'tippy.js/themes/light.css';

@@ -230,20 +230,21 @@ const {
 
 
 
-const cryptoJS = __webpack_require__(/*! crypto-js */ "./node_modules/crypto-js/index.js");
-/*********************************User Params */
+const cryptoJS = __webpack_require__(/*! crypto-js */ "./node_modules/crypto-js/index.js"); //Intitalizing DB
 
+
+const database = new _model_DATABASE__WEBPACK_IMPORTED_MODULE_1___default.a();
+/*********************************User Params */
 
 let UserName, UserType;
 /*********************************PROGRAM CONSTANTS********************* */
 
+let TotalItems;
 let cart = []; // Array of store objects
 
 let lostAccounts = []; //Holds the amount of table rows selected so that disabling and enabling of elements can be done based on that amount
 
-let totalSelectedRows = 0; //Intitalizing DB
-
-const database = new _model_DATABASE__WEBPACK_IMPORTED_MODULE_1___default.a();
+let totalSelectedRows = 0;
 /*********************************DOM ELEMENTS********************* */
 
 const tip_default = document.querySelector('.tip_default');
@@ -251,7 +252,6 @@ const selectValue_span = document.querySelector('.selectValue_span');
 const toolBarTB = document.querySelector('.toolBar_tb');
 const toolBarBtn = document.querySelector('.toolBar_btn');
 let tableRows;
-let tdNames;
 const contentContainer = document.querySelector(".contentContainer");
 const contentCover = document.querySelector(".contentCover");
 const mainBodyContent = document.querySelector('.mainBody_content');
@@ -310,48 +310,55 @@ footerBell.addEventListener("click", showIssues);
 function initializeStoreItems() {
   ipcRenderer.send("sendUserParams");
   _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.showLoadingBanner("Please wait. Attempting to fetch items from database...");
-  database.fetchItems().then(fetchedItems => {
-    //If returned array contains any store item
-    if (fetchedItems.length > 0) {
-      //Remove loading banner
-      _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.removeOldBanners(); //then add each item to the table in the DOM
+  database.getTotalItems().then(totalItems => {
+    totalItems = totalItems.pop();
+    TotalItems = totalItems.Total;
+    database.fetchItems().then(fetchedItems => {
+      //If returned array contains any store item
+      if (fetchedItems.length > 0) {
+        //Remove loading banner
+        _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.removeOldBanners(); //then add each item to the table in the DOM
 
-      fetchedItems.forEach(fetchedItem => {
-        //T his will only add items which "InStock" is greater than zero
-        if (parseInt(fetchedItem.InStock) > 0) {
-          if (fetchedItem.Deleted === 1) {
-            _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, "", false, fetchedItem.CostPrice, "", true, true, "Store", false);
-          } else {
-            _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, "", false, fetchedItem.CostPrice, "", true, false, "Store", false);
+        fetchedItems.forEach(fetchedItem => {
+          //T his will only add items which "InStock" is greater than zero
+          if (parseInt(fetchedItem.InStock) > 0) {
+            if (fetchedItem.Deleted === 1) {
+              _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, "", false, fetchedItem.CostPrice, "", true, true, "Store", false);
+            } else {
+              _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, "", false, fetchedItem.CostPrice, "", true, false, "Store", false);
+            }
           }
-        }
-      });
-    } else {
-      //Remove loading banner
-      _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.removeOldBanners(); // Show isEmpty banner
+        });
+      } else {
+        //Remove loading banner
+        _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.removeOldBanners(); // Show isEmpty banner
 
-      _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.showIsEmpty();
-    }
-  }).then(() => {
-    tableRows = document.querySelector('.tableBody').querySelectorAll('.bodyRow'); //For "tableBody"
+        _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.showIsEmpty();
+      }
+    }).then(() => {
+      TotalItems - 2;
+      tableRows = document.querySelector('.tableBody').querySelectorAll('.bodyRow'); //For "tableBody"
 
-    tableRows.forEach(row => {
-      row.addEventListener('click', e => {
-        toggleRowCB(row);
-        setSellingItemProperties(row);
-      });
-      row.addEventListener('keydown', e => {
-        if (e.code === "Enter") {
+      tableRows.forEach(row => {
+        row.addEventListener('click', e => {
           toggleRowCB(row);
           setSellingItemProperties(row);
-        }
+        });
+        row.addEventListener('keydown', e => {
+          if (e.code === "Enter") {
+            toggleRowCB(row);
+            setSellingItemProperties(row);
+          }
+        });
       });
+    }).then(() => {
+      fetchItemsRecursive();
+    }).catch(e => {
+      if (e === "ECONNREFUSED") {
+        _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.removeOldBanners();
+        _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.showErrorBanner("Failed to connect to database. Please try reloading or contacting us");
+      }
     });
-  }).catch(e => {
-    if (e === "ECONNREFUSED") {
-      _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.removeOldBanners();
-      _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.showErrorBanner("Failed to connect to database. Please try reloading or contacting us");
-    }
   });
 }
 
@@ -370,19 +377,26 @@ function initializeTodaySales() {
   }, 1000);
 }
 
-function fetchItemsRecursive() {
-  let offset = 200;
-  database.fetchItemsRecursive(offset).then(([totalItemsAvailable, storeItems]) => {
-    storeItems.forEach(storeItem => {
-      //T his will only add items which "InStock" is greater than zero
-      if (parseInt(storeItem.InStock) > 0) {
-        if (storeItem.Deleted !== 1) {
-          _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.createItem(storeItem.Name, storeItem.Brand, storeItem.Category, storeItem.InStock, storeItem.SellingPrice, storeItem.Discount, "", false, storeItem.CostPrice, "", true, false, "Store", false);
-        }
+function fetchItemsRecursive(offset = 2) {
+  let timeOutId = setTimeout(() => {
+    database.paginateRemainingItems(offset).then(storeItems => {
+      if (storeItems.length === 0) {
+        clearTimeout(timeOutId);
+        return;
+      } else {
+        offset = offset + 2;
+        storeItems.forEach(storeItem => {
+          //T his will only add items which "InStock" is greater than zero
+          if (parseInt(storeItem.InStock) > 0) {
+            if (storeItem.Deleted !== 1) {
+              _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.createItem(storeItem.Name, storeItem.Brand, storeItem.Category, storeItem.InStock, storeItem.SellingPrice, storeItem.Discount, "", false, storeItem.CostPrice, "", true, false, "Store", false);
+            }
+          }
+        });
+        fetchItemsRecursive(offset);
       }
     });
-    offset = offset + 200;
-  });
+  }, 5000);
 } //-----------------------------------------------------------------------------------------------
 // Searchs for an element in the Table
 
@@ -2026,9 +2040,22 @@ class DATABASE {
     });
   }
 
+  getTotalItems() {
+    return new Promise((resolve, reject) => {
+      this.connector.query("SELECT COUNT(*) FROM `items`", (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        resolve(result);
+      });
+    });
+  }
+
   fetchItems() {
     return new Promise((resolve, reject) => {
-      this.connector.query("SELECT * FROM duffykids.items ORDER BY Name ASC", (error, results) => {
+      this.connector.query("SELECT * FROM duffykids.items ORDER BY Name ASC LIMIT 2", (error, results) => {
         if (error) {
           if (error.code === "ECONNREFUSED") {
             reject(error.code);
@@ -2042,9 +2069,9 @@ class DATABASE {
     });
   }
 
-  fetchItemsRecursive(offset) {
+  paginateRemainingItems(offset) {
     return new Promise((resolve, reject) => {
-      this.connector.query(`SELECT * FROM duffykids.items ORDER BY Name ASC LIMIT ${offset}, 200`, (error, results) => {
+      this.connector.query(`SELECT * FROM duffykids.items ORDER BY Name ASC LIMIT ${offset}, 2`, (error, results) => {
         if (error) {
           if (error.code === "ECONNREFUSED") {
             reject(error.code);
