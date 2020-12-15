@@ -1340,7 +1340,6 @@ class DOMCONTROLLER {
                         <div class ="td_toolTip" id="tp_Name">${name}</div>
                     </td>
                     <td class="td_Brands">${clip(brand, 23)}</td>
-                   <!--- <td class ="td_toolTip" id="tp_brand">${name}</td> -->
                     <td class="td_Category">${clip(category, 23)}</td>
                     <td hidden class="td_Stock">${stock}</td>
                     <td class="td_Price">${parseFloat(sellingPrice)}</td>
@@ -1360,7 +1359,10 @@ class DOMCONTROLLER {
                     <td class="td_cb">
                         <input disabled type="checkbox" class="selectOne" aria-placeholder="select one">
                     </td>
-                    <td class="td_Names">${clip(name, 23)}</td>
+                    <td class="td_Names">
+                        ${clip(name, 23)}
+                        <div class ="td_toolTip" id="tp_Name">${name}</div>
+                    </td>
                     <td class="td_Brands">${clip(brand, 23)}</td>
                     <td class="td_Category">${clip(category, 23)}</td>
                     <td class="td_Stock">${stock}</td>
@@ -1437,6 +1439,21 @@ class DOMCONTROLLER {
           }
         });
         row.addEventListener("contextmenu", toggleRowControls);
+        /*******************************************************************/
+
+        const tdName = row.querySelector(".td_Names");
+        let timeoutId;
+        tdName.addEventListener("mouseenter", () => {
+          timeoutId = setTimeout(function showToolTip() {
+            tdName.querySelector(".td_toolTip").style.display = "block";
+          }, 1500);
+        });
+        tdName.addEventListener("mouseleave", () => {
+          clearTimeout(timeoutId);
+          tdName.querySelector(".td_toolTip").style.display = "none";
+        });
+        /*******************************************************************/
+
         /**************FUNCTIONS**********************************/
 
         function toggleCB() {
@@ -1464,6 +1481,21 @@ class DOMCONTROLLER {
         if (rowCount === 0) {
           this.showIsEmpty();
         }
+        /*******************************************************************/
+
+
+        const tdName = row.querySelector(".td_Names");
+        let timeoutId;
+        tdName.addEventListener("mouseenter", () => {
+          timeoutId = setTimeout(function showToolTip() {
+            tdName.querySelector(".td_toolTip").style.display = "block";
+          }, 1500);
+        });
+        tdName.addEventListener("mouseleave", () => {
+          clearTimeout(timeoutId);
+          tdName.querySelector(".td_toolTip").style.display = "none";
+        });
+        /*******************************************************************/
       }
       /**_____________________________________________________________________________________________________________________________________________ */
 

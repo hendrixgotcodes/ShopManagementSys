@@ -578,8 +578,6 @@ body {
         justify-content: center;
         align-items: center;
         overflow: hidden; }
-      .main_body .mainBody_content .contentContainer .td_Names {
-        transition-delay: 3s; }
       .main_body .mainBody_content .contentContainer .tb_Stock,
       .main_body .mainBody_content .contentContainer .tb_Price {
         width: 20%; }

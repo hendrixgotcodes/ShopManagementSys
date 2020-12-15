@@ -204,30 +204,6 @@ function initializeStoreItems(){
                 }
 
             })
-
-            //Adding to array of tdName
-            const tdName = row.querySelector(".td_Names");
-
-
-            let timeoutId;
-        
-            tdName.addEventListener("mouseenter", ()=>{
-        
-                timeoutId = setTimeout(function showToolTip(){
-        
-                    tdName.querySelector(".td_toolTip").style.display = "block";
-        
-                }, 1500)
-        
-            });
-        
-            tdName.addEventListener("mouseleave", ()=>{
-        
-                clearTimeout(timeoutId);
-
-                tdName.querySelector(".td_toolTip").style.display = "none";
-        
-            })
             
         
         })
