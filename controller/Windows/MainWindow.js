@@ -69,32 +69,30 @@ class MainWWindow extends BrowserWindow {
             });
 
             ipcMain.on('loadInventory',(e, [userName, userType])=>{
+
                 this.loadFile('./views/html/inventory.html');
-
-                // this.userName = userName;
-                // this.userType = userType;
-
+                
             });
 
             ipcMain.on('loadAnalytics',(e, [userName, userType])=>{
-                this.loadFile('./views/html/analytics.html');  
                 
-                // this.userName = userName;
-                // this.userType = userType;
+                this.loadFile('./views/html/analytics.html');  
+            
             });
 
             ipcMain.on('loadProfits',(e, [userName, userType])=>{
+                
                 this.loadFile('./views/html/profits.html');    
                 
-                // this.userName = userName;
-                // this.userType = userType;
             });
 
             ipcMain.on('loadLogin',()=>{
+                
                 this.loadFile('./views/html/index.html')
             })
 
             ipcMain.on('loadGrowthRate',()=>{
+                
                 this.loadFile('./views/html/maingraph.html')
             })
 
