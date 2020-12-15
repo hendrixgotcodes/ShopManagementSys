@@ -617,11 +617,14 @@ function fetchItemsRecursive(offset = 200) {
 
 
 electron__WEBPACK_IMPORTED_MODULE_0__["ipcRenderer"].on('populateTable', (e, Items) => {
-  const itemsArray = []; //Renaming Object Keys
+  const itemsArray = [];
+  console.log(Items); //Renaming Object Keys
 
   Items.forEach(item => {
     let newArray = Object.values(item);
-    let [name, brand, category, stock, costPrice, sellingPrice, reOrderLevel] = newArray;
+    console.log(newArray);
+    let [name, brand, category, stock, costPrice, sellingPrice, discount, reOrderLevel] = newArray;
+    console.log(name, brand, category, stock, costPrice, sellingPrice, reOrderLevel);
     itemsArray.push({
       Name: name,
       Brand: brand,
@@ -629,6 +632,7 @@ electron__WEBPACK_IMPORTED_MODULE_0__["ipcRenderer"].on('populateTable', (e, Ite
       InStock: stock,
       SellingPrice: sellingPrice,
       CostPrice: costPrice,
+      Discount: discount,
       Deleted: "false",
       ReOrderLevel: reOrderLevel
     });

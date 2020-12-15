@@ -718,12 +718,15 @@ function fetchItemsRecursive(offset = 200){
 ipcRenderer.on('populateTable',(e, Items)=>{
 
         const itemsArray = [];
+
         //Renaming Object Keys
         Items.forEach((item)=>{
 
             let newArray = Object.values(item);
 
-            let [name, brand, category, stock, costPrice, sellingPrice, reOrderLevel] = newArray;
+
+            let [name, brand, category, stock, costPrice, sellingPrice, discount, reOrderLevel] = newArray;
+
 
             itemsArray.push({
                 Name: name,
@@ -732,6 +735,7 @@ ipcRenderer.on('populateTable',(e, Items)=>{
                 InStock: stock,
                 SellingPrice: sellingPrice,
                 CostPrice: costPrice,
+                Discount: discount,
                 Deleted : "false",
                 ReOrderLevel: reOrderLevel
             })
