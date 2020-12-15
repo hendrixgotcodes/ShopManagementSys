@@ -617,14 +617,11 @@ function fetchItemsRecursive(offset = 200) {
 
 
 electron__WEBPACK_IMPORTED_MODULE_0__["ipcRenderer"].on('populateTable', (e, Items) => {
-  const itemsArray = [];
-  console.log(Items); //Renaming Object Keys
+  const itemsArray = []; //Renaming Object Keys
 
   Items.forEach(item => {
     let newArray = Object.values(item);
-    console.log(newArray);
     let [name, brand, category, stock, costPrice, sellingPrice, discount, reOrderLevel] = newArray;
-    console.log(name, brand, category, stock, costPrice, sellingPrice, reOrderLevel);
     itemsArray.push({
       Name: name,
       Brand: brand,
@@ -1444,8 +1441,15 @@ class DOMCONTROLLER {
         let showRowControls = functions[3];
 
         if (parseInt(stock) === 0) {
-          row.style.backgroundColor = "rgba(241, 26, 26, 0.2)";
-          row.querySelector(".td_Stock").style.color = "rgb(241, 26, 26)";
+          setTimeout(() => {
+            row.style.backgroundColor = "rgba(241, 26, 26, 0.2)";
+            row.querySelector(".td_Stock").style.color = "rgb(241, 26, 26)";
+          }, 1000);
+        } else if (parseInt(stock) <= parseInt(reOrderLevel)) {
+          setTimeout(() => {
+            row.style.backgroundColor = "rgba(239, 181, 38, 0.3)";
+            row.querySelector(".td_Stock").style.color = "rgb(239, 181, 38, 56)";
+          }, 1000);
         }
 
         row.addEventListener("click", toggleCB);

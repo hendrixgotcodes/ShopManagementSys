@@ -611,7 +611,8 @@ body {
         justify-content: center;
         align-items: center;
         text-align: center;
-        overflow: hidden; }
+        overflow: hidden;
+        transition: .3s; }
       .main_body .mainBody_content .contentContainer .td_Stock,
       .main_body .mainBody_content .contentContainer .td_costPrice, .main_body .mainBody_content .contentContainer .td_sellingPrice, .main_body .mainBody_content .contentContainer .td_ReOrderLevel {
         width: 18.5%;

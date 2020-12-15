@@ -864,8 +864,15 @@ class DOMCONTROLLER {
         let showRowControls = functions[3];
 
         if (parseInt(stock) === 0) {
-          row.style.backgroundColor = "rgba(241, 26, 26, 0.2)";
-          row.querySelector(".td_Stock").style.color = "rgb(241, 26, 26)";
+          setTimeout(() => {
+            row.style.backgroundColor = "rgba(241, 26, 26, 0.2)";
+            row.querySelector(".td_Stock").style.color = "rgb(241, 26, 26)";
+          }, 1000);
+        } else if (parseInt(stock) <= parseInt(reOrderLevel)) {
+          setTimeout(() => {
+            row.style.backgroundColor = "rgba(239, 181, 38, 0.3)";
+            row.querySelector(".td_Stock").style.color = "rgb(239, 181, 38, 56)";
+          }, 1000);
         }
 
         row.addEventListener("click", toggleCB);
