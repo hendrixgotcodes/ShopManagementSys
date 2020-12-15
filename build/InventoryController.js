@@ -321,6 +321,8 @@ function initialzeStoreItems() {
 
       _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.showIsEmpty();
     }
+  }).then(() => {
+    fetchItemsRecursive();
   }).catch(e => {
     console.log("ee", e);
 
@@ -589,6 +591,40 @@ function deleteMultiple() {
       rowBucket = [];
     }
   });
+}
+
+function fetchItemsRecursive(offset = 200) {
+  let timeOutId = setTimeout(() => {
+    database.paginateRemainingItems(offset).then(storeItems => {
+      if (storeItems.length === 0) {
+        clearTimeout(timeOutId);
+        return;
+      } else {
+        offset = offset + offset;
+        storeItems.forEach(storeItem => {
+          //T his will only add items which "InStock" is greater than zero
+          if (parseInt(storeItem.InStock) > 0) {
+            if (storeItem.Deleted !== 1) {
+              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(storeItem.Name, storeItem.Brand, storeItem.Category, storeItem.InStock, storeItem.SellingPrice, storeItem.Discount, "", false, storeItem.CostPrice, "", true, false, "Store", false).then(row => {
+                //For "tableBody"
+                row.addEventListener('click', e => {
+                  toggleRowCB(row);
+                  setSellingItemProperties(row);
+                });
+                row.addEventListener('keydown', e => {
+                  if (e.code === "Enter") {
+                    toggleRowCB(row);
+                    setSellingItemProperties(row);
+                  }
+                });
+              });
+            }
+          }
+        });
+        fetchItemsRecursive(offset);
+      }
+    });
+  }, 5000);
 }
 /*********************EVENT LISTENERS FROM MAIN*******************/
 //Responds to event triggered by the main process when store items are added by excel sheet

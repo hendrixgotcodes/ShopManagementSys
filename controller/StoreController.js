@@ -508,6 +508,7 @@ function clearAllItems(){
 
 
                         if(rowName === itemName && rowBrand === itemBrand && rowCategory === itemCategory){
+
                                 checkbox.checked = false;
 
                                 InStock.innerText = parseInt(InStock.innerText) - parseInt(itemSold); 
@@ -575,9 +576,9 @@ function subtractItem(item, inCart=""){
 
     tableRows.forEach((row)=>{
 
-        const rowName = row.querySelector(".td_Names").innerText;
-        const rowBrand = row.querySelector(".td_Brands").innerText ;
-        const rowCategory = row.querySelector(".td_Category").innerText ;
+        const rowName = row.querySelector(".td_Name--hidden").innerText;
+        const rowBrand = row.querySelector(".td_Brand--hidden").innerText ;
+        const rowCategory = row.querySelector(".td_Category--hidden").innerText ;
 
         if( rowName=== itemName && rowBrand=== itemBrand && rowCategory=== itemCategory)
         {

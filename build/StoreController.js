@@ -384,7 +384,7 @@ function fetchItemsRecursive(offset = 200) {
         clearTimeout(timeOutId);
         return;
       } else {
-        offset = offset + 200;
+        offset = offset + offset;
         storeItems.forEach(storeItem => {
           //T his will only add items which "InStock" is greater than zero
           if (parseInt(storeItem.InStock) > 0) {
@@ -553,9 +553,9 @@ function subtractItem(item, inCart = "") {
   let itemTotalCost;
   let initSubTotal = parseFloat(subTotal.innerText);
   tableRows.forEach(row => {
-    const rowName = row.querySelector(".td_Names").innerText;
-    const rowBrand = row.querySelector(".td_Brands").innerText;
-    const rowCategory = row.querySelector(".td_Category").innerText;
+    const rowName = row.querySelector(".td_Name--hidden").innerText;
+    const rowBrand = row.querySelector(".td_Brand--hidden").innerText;
+    const rowCategory = row.querySelector(".td_Category--hidden").innerText;
 
     if (rowName === itemName && rowBrand === itemBrand && rowCategory === itemCategory) {
       rowItemPrice = row.querySelector(".td_Price").innerText; // row.querySelector(".selectOne").checked = false
