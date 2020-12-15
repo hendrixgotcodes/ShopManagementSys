@@ -83,6 +83,10 @@ function parseExcelOutput(formTitle, JSON){
                             Category
                         </div>
 
+                        <div class="long">
+                            Reorder Level
+                        </div>
+
                         <div class="Short">
                             In Stock
                         </div>
@@ -144,7 +148,7 @@ function parseExcelOutput(formTitle, JSON){
 
             JSON.forEach((item)=>{
 
-                if(isNaN(parseInt(item.QUANTITY)) || isNaN(parseInt(item.COSTPRICE)) || isNaN(parseInt(item.SELLINGPRICE))){
+                if(isNaN(parseInt(item.QUANTITY)) || isNaN(parseInt(item.COSTPRICE)) || isNaN(parseInt(item.SELLINGPRICE)) || isNaN(item.REORDER_LEVEL)){
 
                     showAlert('error', "Your excel sheet is invalid! Please check, correct all fields and try again")
 
@@ -175,6 +179,10 @@ function parseExcelOutput(formTitle, JSON){
 
                         <div class="long td" id="names">
                             ${item.CATEGORY}
+                        </div>
+
+                        <div class="long td" id="names">
+                            ${item.REORDER_LEVEL}
                         </div>
 
                         <div class="Short td" id="quantity">
@@ -336,17 +344,17 @@ function showAlert(errorType, message){
 
 function isValidForm(item){
 
-    if(item.NAMES === null || item.BRAND === null || item.CATEGORY === null || item.QUANTITY === null || item.COSTPRICE === null || item.SELLINGPRICE ===null || item.DISCOUNT === null){
+    if(item.NAMES === null || item.BRAND === null || item.CATEGORY === null || item.QUANTITY === null || item.COSTPRICE === null || item.SELLINGPRICE ===null || item.DISCOUNT === null || item.REORDER_LEVEL === null){
 
         return false
 
     }
-    else if(item.NAMES === undefined || item.BRAND === undefined || item.CATEGORY === undefined || item.QUANTITY === undefined || item.COSTPRICE === undefined || item.SELLINGPRICE === undefined || item.DISCOUNT === undefined){
+    else if(item.NAMES === undefined || item.BRAND === undefined || item.CATEGORY === undefined || item.QUANTITY === undefined || item.COSTPRICE === undefined || item.SELLINGPRICE === undefined || item.DISCOUNT === undefined || item.REORDER_LEVEL === undefined){
 
         return false
 
     }
-    else if((typeof item.QUANTITY) !== "number" || (typeof item.COSTPRICE) !== "number" || (typeof item.SELLINGPRICE) !== "number" || (typeof item.DISCOUNT) !== "number"){
+    else if((typeof item.QUANTITY) !== "number" || (typeof item.COSTPRICE) !== "number" || (typeof item.SELLINGPRICE) !== "number" || (typeof item.DISCOUNT) !== "number" || (typeof item.REORDER_LEVEL) !== "number"){
 
         return false
 

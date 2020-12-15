@@ -1574,6 +1574,7 @@ class DATABASE {
                             InStock INT NOT NULL,
                             Discount INT NOT NULL,
                             Deleted BOOLEAN NOT NULL,
+                            ReOrderLevel INT NOT NULL,
                             UNIQUE(Name, Brand, Category),
                             PRIMARY KEY (id),
                             FOREIGN KEY (Brand) REFERENCES duffykids.itemBrands(Name),

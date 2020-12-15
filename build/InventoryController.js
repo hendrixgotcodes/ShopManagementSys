@@ -621,7 +621,7 @@ electron__WEBPACK_IMPORTED_MODULE_0__["ipcRenderer"].on('populateTable', (e, Ite
 
   Items.forEach(item => {
     let newArray = Object.values(item);
-    let [name, brand, category, stock, costPrice, sellingPrice] = newArray;
+    let [name, brand, category, stock, costPrice, sellingPrice, reOrderLevel] = newArray;
     itemsArray.push({
       Name: name,
       Brand: brand,
@@ -629,7 +629,8 @@ electron__WEBPACK_IMPORTED_MODULE_0__["ipcRenderer"].on('populateTable', (e, Ite
       InStock: stock,
       SellingPrice: sellingPrice,
       CostPrice: costPrice,
-      Deleted: "false"
+      Deleted: "false",
+      ReOrderLevel: reOrderLevel
     });
   });
   database.addItemsBulk(itemsArray, UserName).then(resolved => {
@@ -2149,6 +2150,7 @@ class DATABASE {
                             InStock INT NOT NULL,
                             Discount INT NOT NULL,
                             Deleted BOOLEAN NOT NULL,
+                            ReOrderLevel INT NOT NULL,
                             UNIQUE(Name, Brand, Category),
                             PRIMARY KEY (id),
                             FOREIGN KEY (Brand) REFERENCES duffykids.itemBrands(Name),

@@ -723,7 +723,7 @@ ipcRenderer.on('populateTable',(e, Items)=>{
 
             let newArray = Object.values(item);
 
-            let [name, brand, category, stock, costPrice, sellingPrice] = newArray;
+            let [name, brand, category, stock, costPrice, sellingPrice, reOrderLevel] = newArray;
 
             itemsArray.push({
                 Name: name,
@@ -732,7 +732,8 @@ ipcRenderer.on('populateTable',(e, Items)=>{
                 InStock: stock,
                 SellingPrice: sellingPrice,
                 CostPrice: costPrice,
-                Deleted : "false"
+                Deleted : "false",
+                ReOrderLevel: reOrderLevel
             })
 
         })
