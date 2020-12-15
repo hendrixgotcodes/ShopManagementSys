@@ -613,7 +613,7 @@ body {
         text-align: center;
         overflow: hidden; }
       .main_body .mainBody_content .contentContainer .td_Stock,
-      .main_body .mainBody_content .contentContainer .td_costPrice, .main_body .mainBody_content .contentContainer .td_sellingPrice {
+      .main_body .mainBody_content .contentContainer .td_costPrice, .main_body .mainBody_content .contentContainer .td_sellingPrice, .main_body .mainBody_content .contentContainer .td_ReOrderLevel {
         width: 18.5%;
         text-align: center; }
       .main_body .mainBody_content .contentContainer .td_toolTip {

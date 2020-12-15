@@ -150,12 +150,12 @@ function initialzeStoreItems(){
 
                 if(fetchedItem.Deleted === 1){
 
-                    DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,[checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory", false)
+                    DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,[checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory", false)
 
                 }
                 else{
 
-                    DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,[checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true,false , "Inventory", false)
+                    DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,[checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true,false , "Inventory", false)
 
                 }
 
@@ -458,7 +458,7 @@ function addItem(){
 
                     if(result === true){
 
-                        DOMCONTROLLER.createItem(result.Name, result.Brand, result.Category, result.Stock, result.SellingPrice, result.Discount,[checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "", false, false, "inventory")
+                        DOMCONTROLLER.createItem(result.Name, result.Brand, result.Category, result.Stock, result.SellingPrice, result.Discount,result.ReOrderLevel,[checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "", false, false, "inventory")
                         .then(()=>{
         
                             Notifications.showAlert("success", "Successfuly added to inventory")
@@ -678,12 +678,12 @@ function fetchItemsRecursive(offset = 200){
 
                         if(fetchedItem.Deleted === 1){
 
-                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,[checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory", false)
+                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,[checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory", false)
         
                         }
                         else{
         
-                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,[checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true,false , "Inventory", false)
+                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,[checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true,false , "Inventory", false)
         
                         }
 
@@ -789,7 +789,7 @@ ipcRenderer.on('populateTable',(e, Items)=>{
 
                 notInDb.forEach((item)=>{
 
-                    DOMCONTROLLER.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount,[checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory")
+                    DOMCONTROLLER.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount,item.ReOrderLevel,[checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory")
 
                 })
 

@@ -307,9 +307,9 @@ function initialzeStoreItems() {
 
       fetchedItems.forEach(fetchedItem => {
         if (fetchedItem.Deleted === 1) {
-          _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory", false);
+          _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory", false);
         } else {
-          _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, false, "Inventory", false);
+          _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, false, "Inventory", false);
         }
       });
     } else {
@@ -478,7 +478,7 @@ function addItem() {
     } else {
       database.addNewItem(storeObject, UserName).then(result => {
         if (result === true) {
-          _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(result.Name, result.Brand, result.Category, result.Stock, result.SellingPrice, result.Discount, [checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "", false, false, "inventory").then(() => {
+          _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(result.Name, result.Brand, result.Category, result.Stock, result.SellingPrice, result.Discount, result.ReOrderLevel, [checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "", false, false, "inventory").then(() => {
             _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", "Successfuly added to inventory");
           });
         }
@@ -601,9 +601,9 @@ function fetchItemsRecursive(offset = 200) {
         storeItems.forEach(fetchedItem => {
           if (parseInt(fetchedItem.InStock) > 0) {
             if (fetchedItem.Deleted === 1) {
-              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory", false);
+              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory", false);
             } else {
-              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, false, "Inventory", false);
+              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, false, "Inventory", false);
             }
           }
         });
@@ -657,7 +657,7 @@ electron__WEBPACK_IMPORTED_MODULE_0__["ipcRenderer"].on('populateTable', (e, Ite
     } else if (notInDb.length > 0 && inDb.length === 0) {
       _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", `${notInDb.length} items have been successfully added`);
       notInDb.forEach(item => {
-        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount, [checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory");
+        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount, item.ReOrderLevel, [checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory");
       });
     }
   }).catch(error => {
@@ -1330,7 +1330,7 @@ const DATABASE = __webpack_require__(/*! ../../model/DATABASE */ "./model/DATABA
 const database = new DATABASE();
 
 class DOMCONTROLLER {
-  static createItem(name, brand, category, stock, sellingPrice, discount, functions, hasItems, costPrice = "", purchased = "", dontHighlightAfterCreate = false, isdeletedItem = false, destinationPage = "", Scroll = true) {
+  static createItem(name, brand, category, stock, sellingPrice, discount, reOrderLevel, functions, hasItems, costPrice = "", purchased = "", dontHighlightAfterCreate = false, isdeletedItem = false, destinationPage = "", Scroll = true) {
     return new Promise((resolve, reject) => {
       const tableROWS = document.querySelectorAll('tr');
       tableROWS.forEach(row => {
@@ -1389,6 +1389,7 @@ class DOMCONTROLLER {
                     <td class="td_Brands">${clip(brand, 23)}</td>
                     <td class="td_Category">${clip(category, 23)}</td>
                     <td class="td_Stock">${stock}</td>
+                    <td class="td_ReOrderLevel">${reOrderLevel}</td>
                     <td class="td_costPrice">${parseFloat(costPrice)}</td>
                     <td class="td_sellingPrice">${parseFloat(sellingPrice)}</td>
                     <td hidden class="td_discount">${parseFloat(discount)}</td>

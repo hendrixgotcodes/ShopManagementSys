@@ -323,9 +323,9 @@ function initializeStoreItems() {
           //T his will only add items which "InStock" is greater than zero
           if (parseInt(fetchedItem.InStock) > 0) {
             if (fetchedItem.Deleted === 1) {
-              _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, "", false, fetchedItem.CostPrice, "", true, true, "Store", false);
+              _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, "", false, fetchedItem.CostPrice, "", true, true, "Store", false);
             } else {
-              _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, "", false, fetchedItem.CostPrice, "", true, false, "Store", false);
+              _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, "", false, fetchedItem.CostPrice, "", true, false, "Store", false);
             }
           }
         });
@@ -389,7 +389,7 @@ function fetchItemsRecursive(offset = 200) {
           //T his will only add items which "InStock" is greater than zero
           if (parseInt(storeItem.InStock) > 0) {
             if (storeItem.Deleted !== 1) {
-              _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.createItem(storeItem.Name, storeItem.Brand, storeItem.Category, storeItem.InStock, storeItem.SellingPrice, storeItem.Discount, "", false, storeItem.CostPrice, "", true, false, "Store", false).then(row => {
+              _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.createItem(storeItem.Name, storeItem.Brand, storeItem.Category, storeItem.InStock, storeItem.SellingPrice, storeItem.Discount, storeItem.ReOrderLevel, "", false, storeItem.CostPrice, "", true, false, "Store", false).then(row => {
                 //For "tableBody"
                 row.addEventListener('click', e => {
                   toggleRowCB(row);
@@ -754,7 +754,7 @@ const DATABASE = __webpack_require__(/*! ../../model/DATABASE */ "./model/DATABA
 const database = new DATABASE();
 
 class DOMCONTROLLER {
-  static createItem(name, brand, category, stock, sellingPrice, discount, functions, hasItems, costPrice = "", purchased = "", dontHighlightAfterCreate = false, isdeletedItem = false, destinationPage = "", Scroll = true) {
+  static createItem(name, brand, category, stock, sellingPrice, discount, reOrderLevel, functions, hasItems, costPrice = "", purchased = "", dontHighlightAfterCreate = false, isdeletedItem = false, destinationPage = "", Scroll = true) {
     return new Promise((resolve, reject) => {
       const tableROWS = document.querySelectorAll('tr');
       tableROWS.forEach(row => {
@@ -813,6 +813,7 @@ class DOMCONTROLLER {
                     <td class="td_Brands">${clip(brand, 23)}</td>
                     <td class="td_Category">${clip(category, 23)}</td>
                     <td class="td_Stock">${stock}</td>
+                    <td class="td_ReOrderLevel">${reOrderLevel}</td>
                     <td class="td_costPrice">${parseFloat(costPrice)}</td>
                     <td class="td_sellingPrice">${parseFloat(sellingPrice)}</td>
                     <td hidden class="td_discount">${parseFloat(discount)}</td>

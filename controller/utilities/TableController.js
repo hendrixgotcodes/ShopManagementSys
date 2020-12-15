@@ -9,7 +9,7 @@ const database = new DATABASE();
 
 class DOMCONTROLLER{
 
-    static createItem(name, brand, category, stock, sellingPrice, discount,functions, hasItems,costPrice="", purchased="", dontHighlightAfterCreate = false, isdeletedItem=false, destinationPage="", Scroll=true){
+    static createItem(name, brand, category, stock, sellingPrice, discount,reOrderLevel,functions, hasItems,costPrice="", purchased="", dontHighlightAfterCreate = false, isdeletedItem=false, destinationPage="", Scroll=true){
 
 
 
@@ -90,6 +90,7 @@ class DOMCONTROLLER{
                     <td class="td_Brands">${clip(brand, 23)}</td>
                     <td class="td_Category">${clip(category, 23)}</td>
                     <td class="td_Stock">${stock}</td>
+                    <td class="td_ReOrderLevel">${reOrderLevel}</td>
                     <td class="td_costPrice">${parseFloat(costPrice)}</td>
                     <td class="td_sellingPrice">${parseFloat(sellingPrice)}</td>
                     <td hidden class="td_discount">${parseFloat(discount)}</td>
