@@ -2243,6 +2243,10 @@ class DATABASE {
                             )
 
                         `;
+        const addNewUserSQL = `
+                            INSERT INTO users SET ?        
+
+                        `;
         this.connector = mariadb.createConnection({
           host: 'localhost',
           user: 'root',
@@ -2335,10 +2339,22 @@ class DATABASE {
                                                           throw error;
                                                         });
                                                       } else {
-                                                        this.connector.commit(err => {
+                                                        this.connector.query(addNewUserSQL, {
+                                                          First_Name: "Duffy",
+                                                          Last_Name: "Kids",
+                                                          User_Name: "admin",
+                                                          Password: "U2FsdGVkX1+1/HhsPvFWOKBvsPBE1J0Re3XDWquuZeU=",
+                                                          IsAdmin: 1
+                                                        }, (error, result) => {
                                                           if (error) {
-                                                            console.log(err);
+                                                            throw error;
                                                           }
+
+                                                          this.connector.commit(error => {
+                                                            if (error) {
+                                                              throw error;
+                                                            }
+                                                          });
                                                         });
                                                       }
                                                     });
