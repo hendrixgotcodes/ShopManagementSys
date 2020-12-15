@@ -175,6 +175,11 @@ function initialzeStoreItems(){
         }
 
     })
+    .then(()=>{
+
+        fetchItemsRecursive();
+
+    })
     .catch((e)=>{
 
         console.log("ee", e);
@@ -647,6 +652,79 @@ function deleteMultiple(){
             }
         }
     )
+
+}
+
+function fetchItemsRecursive(offset = 200){
+
+
+    let timeOutId = setTimeout(()=>{
+
+
+        database.paginateRemainingItems(offset)
+        .then((storeItems)=>{
+
+
+            if(storeItems.length === 0){
+                clearTimeout(timeOutId)
+                return
+            }
+            else{
+
+                offset = offset + offset;
+
+                storeItems.forEach((storeItem)=>{
+
+                    //T his will only add items which "InStock" is greater than zero
+                    if(parseInt(storeItem.InStock) > 0){
+
+                        if(storeItem.Deleted !== 1){
+
+                            DOMCONTROLLER.createItem(storeItem.Name, storeItem.Brand, storeItem.Category, storeItem.InStock, storeItem.SellingPrice, storeItem.Discount,"", false, storeItem.CostPrice, "", true, false,"Store", false)
+                            .then((row)=>{    
+
+                                
+    
+                                //For "tableBody"
+                                row.addEventListener('click',(e)=>{
+                                    toggleRowCB(row);
+                                    setSellingItemProperties(row);
+                                })
+                    
+                                row.addEventListener('keydown',(e)=>{
+                    
+                                    if(e.code === "Enter"){
+                    
+                                        toggleRowCB(row);
+                                        setSellingItemProperties(row);
+                    
+                                    }
+                    
+                                })                                    
+                                
+
+                            })
+                            
+                        }
+
+                    }
+
+
+                 })
+
+                fetchItemsRecursive(offset)
+
+            }
+
+
+            
+
+
+
+
+        })
+
+    }, 5000)
 
 }
 

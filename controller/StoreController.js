@@ -273,7 +273,7 @@ function fetchItemsRecursive(offset = 200){
             }
             else{
 
-                offset = offset+200
+                offset = offset+offset;
 
                 storeItems.forEach((storeItem)=>{
 
