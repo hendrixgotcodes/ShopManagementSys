@@ -495,9 +495,9 @@ body {
           position: relative;
           color: #646766; }
           .main_body .mainBody_content .contentContainer .tableBody .bodyRow:nth-child(odd) {
-            color: #646766; }
+            background-color: #fff; }
           .main_body .mainBody_content .contentContainer .tableBody .bodyRow:nth-child(even) {
-            color: #646766; }
+            background-color: #F1F2F2; }
           .main_body .mainBody_content .contentContainer .tableBody .bodyRow .td_cb {
             width: 1%;
             height: 15%;

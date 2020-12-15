@@ -87,13 +87,11 @@
         color: $primary_black;
 
         &:nth-child(odd) {
-            // background-color: $WHITE;
-            color: $primary_black;
+            background-color: $WHITE;
         }
 
         &:nth-child(even){
-            // background-color: $OFFWHITE;
-            color: $primary_black;
+            background-color: $OFFWHITE;
         }
 
 

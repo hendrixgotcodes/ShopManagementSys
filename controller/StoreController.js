@@ -217,7 +217,7 @@ function initializeStoreItems(){
         
                     tdName.querySelector(".td_toolTip").style.display = "block";
         
-                }, 2000)
+                }, 1500)
         
             });
         
@@ -247,12 +247,17 @@ function initializeStoreItems(){
 
 function initializeTodaySales(){
 
+    //Placed this in a one second timeout because, it has to wait for the main thread to set the "UserName" variable first
     setTimeout(()=>{
 
         database.getUserTotalSaleToday(UserName)
         .then((sale)=>{
 
             sale = sale.pop();
+
+            if(sale.Revenue === null || sale.Revenue === undefined){
+                sale.Revenue = "0.00";
+            }
 
             salesMadeAmount.innerText = sale.Revenue;
 
