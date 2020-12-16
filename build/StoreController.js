@@ -272,7 +272,7 @@ let sellingItem = {// Represents an instance of a store item being added to cart
 
 window.addEventListener("load", () => {
   initializeStoreItems();
-  getAllIssue();
+  getUserIssues();
 });
 tip_default.addEventListener('click', () => {
   selectValue_span.innerHTML = "Filter By:";
@@ -617,18 +617,16 @@ function subtractItem(item, inCart = "") {
   cart.splice(cart.findIndex(item => item.Item.Name === itemName), 1);
 }
 
-function getAllIssue() {
+function getUserIssues() {
   let issueCount = document.querySelector(".footerBell_notIcon");
   database.getReportedAccounts().then(accounts => {
-    console.log(accounts);
-
     if (accounts !== null || accounts !== undefined || accounts.length !== 0) {
       lostAccounts = accounts;
     }
   }).then(() => {
     database.getNumberOfReportedAccount().then(result => {
       result = result.pop();
-      issueCount.innerText = result.Total;
+      issueCount.innerText = parseInt(issueCount.innerText) + result.Total;
       issueCount.style.opacity = "1";
     });
   });

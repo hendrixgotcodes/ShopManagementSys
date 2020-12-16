@@ -307,6 +307,10 @@ function loadStore(e) {
         if (faileLoginCount === 3) {
           forgottenPassword.classList.add("forgottenPassword--shown");
         }
+      } else {
+        warningLabel_tb.innerText = `Sorry. An error occurred.`;
+        warningLabel_tb.appendChild(img);
+        warningLabel_tb.hidden = false;
       }
     });
   }

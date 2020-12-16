@@ -76,7 +76,7 @@ let sellingItem = {     // Represents an instance of a store item being added to
 window.addEventListener("load", ()=>{
 
     initializeStoreItems();
-    getAllIssue();
+    getUserIssues();
 
 })
 
@@ -683,14 +683,12 @@ function subtractItem(item, inCart=""){
 
 }
 
-function getAllIssue(){
+function getUserIssues(){
 
     let issueCount = document.querySelector(".footerBell_notIcon");
 
     database.getReportedAccounts()
     .then((accounts)=>{
-
-        console.log(accounts);
 
 
         if(accounts !== null || accounts !== undefined || accounts.length !== 0){
@@ -709,7 +707,7 @@ function getAllIssue(){
 
             result = result.pop();
 
-            issueCount.innerText = result.Total
+            issueCount.innerText = parseInt(issueCount.innerText) + result.Total
             issueCount.style.opacity = "1";
 
         })

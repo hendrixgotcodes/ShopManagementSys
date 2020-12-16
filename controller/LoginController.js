@@ -322,6 +322,14 @@ function loadStore(e) {
                 }
 
             }
+            else{
+
+                warningLabel_tb.innerText = `Sorry. An error occurred.`;
+                warningLabel_tb.appendChild(img);
+
+                warningLabel_tb.hidden = false;
+
+            }
 
 
         })

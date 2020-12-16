@@ -1514,7 +1514,6 @@ class DATABASE{
                         verifyPassword(userName, incomingPassword, storedPassword)
                         .then((result)=>{
 
-
                             if(result === true){
                                 
                                 if(user.IsAdmin === 1){
