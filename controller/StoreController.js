@@ -183,6 +183,21 @@ function initializeStoreItems(){
                         }
     
                     }
+
+                    if(parseInt(fetchedItem.InStock) <= parseInt(fetchedItem.ReOrderLevel)){
+
+                        itemsOnReOrderLevels.push({
+                            Name: fetchedItem.Name,
+                            Brand: fetchedItem.Brand,
+                            Category: fetchedItem.Category
+                        })
+
+                        const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached")
+
+                        footerBell.dispatchEvent(ReOrderLevel_Reached);    
+
+
+                    }
     
     
                 })
@@ -286,14 +301,14 @@ function fetchItemsRecursive(offset = 200){
 
                 offset = offset+offset;
 
-                storeItems.forEach((storeItem)=>{
+                storeItems.forEach((fetchedItem)=>{
 
                     //T his will only add items which "InStock" is greater than zero
-                    if(parseInt(storeItem.InStock) > 0){
+                    if(parseInt(fetchedItem.InStock) > 0){
 
-                        if(storeItem.Deleted !== 1){
+                        if(fetchedItem.Deleted !== 1){
 
-                            DOMCONTROLLER.createItem(storeItem.Name, storeItem.Brand, storeItem.Category, storeItem.InStock, storeItem.SellingPrice, storeItem.Discount,storeItem.ReOrderLevel,"", false, storeItem.CostPrice, "", true, false,"Store", false)
+                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,"", false, fetchedItem.CostPrice, "", true, false,"Store", false)
                             .then((row)=>{    
 
                                 
@@ -318,6 +333,21 @@ function fetchItemsRecursive(offset = 200){
 
                             })
                             
+                        }
+
+                        if(parseInt(fetchedItem.InStock) <= parseInt(fetchedItem.ReOrderLevel)){
+
+                            itemsOnReOrderLevels.push({
+                                Name: fetchedItem.Name,
+                                Brand: fetchedItem.Brand,
+                                Category: fetchedItem.Category
+                            })
+    
+                            const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached")
+    
+                            footerBell.dispatchEvent(ReOrderLevel_Reached);    
+    
+    
                         }
 
                     }
@@ -506,10 +536,6 @@ function clearAllItems(){
                     const itemSold = itemsInCart[i].querySelector(".cartItem_count").value;
                     const reOrderLevel = itemsInCart[i].querySelector(".hidden_reOrderLevel").innerText;
 
-                    console.log(reOrderLevel);
-    
-    
-    
     
                     tableRows.forEach((row)=>{
 
@@ -535,17 +561,26 @@ function clearAllItems(){
 
                                 if(parseInt(InStock.innerText) <= parseInt(reOrderLevel)){
 
-                                    itemsOnReOrderLevels.push(
-                                        {
-                                            Name: rowName,
-                                            Brand: rowBrand,
-                                            Category: rowCategory
-                                        }
-                                    );
+                                    itemsOnReOrderLevels.forEach((item)=>{
 
-                                    const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached")
+                                        itemsOnReOrderLevels.push(
+                                            {
+                                                Name: rowName,
+                                                Brand: rowBrand,
+                                                Category: rowCategory
+                                            }
+                                        );
+                                            
+                                        const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached")
 
-                                    footerBell.dispatchEvent(ReOrderLevel_Reached);
+                                        footerBell.dispatchEvent(ReOrderLevel_Reached);    
+
+
+                                    })
+
+                                    
+
+                                    
 
                                 }
 
@@ -846,14 +881,14 @@ function showIssues(){
         itemsOnReOrderLevels.forEach((item)=>{
 
             let newNotification = document.createElement("div");
-            newNotification.className = "notification employees";
+            newNotification.className = "notification general";
             newNotification.innerHTML = 
             `
                 <div class="icon">
-                    <img src="../Icons/modals/person_white.svg" alt="">
+                    <img src="../Icons/modals/priority_high-white-18dp.svg" alt="">
                 </div>
                 <div class="main">
-                    <label for="" class="title">ReOrder Level Reached</label>
+                    <label for="" class="title">Reorder level reached</label>
                     <label for="" class="message"><span class="userName">${item.Name}</span> of brand ${item.Brand} and category ${item.Category} has reached its reorder level.</label>
                 </div>
 

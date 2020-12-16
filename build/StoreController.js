@@ -335,6 +335,16 @@ function initializeStoreItems() {
               _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, "", false, fetchedItem.CostPrice, "", true, false, "Store", false);
             }
           }
+
+          if (parseInt(fetchedItem.InStock) <= parseInt(fetchedItem.ReOrderLevel)) {
+            itemsOnReOrderLevels.push({
+              Name: fetchedItem.Name,
+              Brand: fetchedItem.Brand,
+              Category: fetchedItem.Category
+            });
+            const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached");
+            footerBell.dispatchEvent(ReOrderLevel_Reached);
+          }
         });
       } else {
         //Remove loading banner
@@ -392,11 +402,11 @@ function fetchItemsRecursive(offset = 200) {
         return;
       } else {
         offset = offset + offset;
-        storeItems.forEach(storeItem => {
+        storeItems.forEach(fetchedItem => {
           //T his will only add items which "InStock" is greater than zero
-          if (parseInt(storeItem.InStock) > 0) {
-            if (storeItem.Deleted !== 1) {
-              _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.createItem(storeItem.Name, storeItem.Brand, storeItem.Category, storeItem.InStock, storeItem.SellingPrice, storeItem.Discount, storeItem.ReOrderLevel, "", false, storeItem.CostPrice, "", true, false, "Store", false).then(row => {
+          if (parseInt(fetchedItem.InStock) > 0) {
+            if (fetchedItem.Deleted !== 1) {
+              _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, "", false, fetchedItem.CostPrice, "", true, false, "Store", false).then(row => {
                 //For "tableBody"
                 row.addEventListener('click', e => {
                   toggleRowCB(row);
@@ -409,6 +419,16 @@ function fetchItemsRecursive(offset = 200) {
                   }
                 });
               });
+            }
+
+            if (parseInt(fetchedItem.InStock) <= parseInt(fetchedItem.ReOrderLevel)) {
+              itemsOnReOrderLevels.push({
+                Name: fetchedItem.Name,
+                Brand: fetchedItem.Brand,
+                Category: fetchedItem.Category
+              });
+              const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached");
+              footerBell.dispatchEvent(ReOrderLevel_Reached);
             }
           }
         });
@@ -519,7 +539,6 @@ function clearAllItems() {
         const itemCategory = itemsInCart[i].querySelector(".hidden_itemCategory").innerText;
         const itemSold = itemsInCart[i].querySelector(".cartItem_count").value;
         const reOrderLevel = itemsInCart[i].querySelector(".hidden_reOrderLevel").innerText;
-        console.log(reOrderLevel);
         tableRows.forEach(row => {
           let rowName = row.querySelector('.td_Name--hidden').innerText;
           let rowBrand = row.querySelector('.td_Brand--hidden').innerText;
@@ -536,13 +555,15 @@ function clearAllItems() {
             }
 
             if (parseInt(InStock.innerText) <= parseInt(reOrderLevel)) {
-              itemsOnReOrderLevels.push({
-                Name: rowName,
-                Brand: rowBrand,
-                Category: rowCategory
+              itemsOnReOrderLevels.forEach(item => {
+                itemsOnReOrderLevels.push({
+                  Name: rowName,
+                  Brand: rowBrand,
+                  Category: rowCategory
+                });
+                const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached");
+                footerBell.dispatchEvent(ReOrderLevel_Reached);
               });
-              const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached");
-              footerBell.dispatchEvent(ReOrderLevel_Reached);
             }
           }
         });
@@ -717,13 +738,13 @@ function showIssues() {
   if (itemsOnReOrderLevels.length !== 0) {
     itemsOnReOrderLevels.forEach(item => {
       let newNotification = document.createElement("div");
-      newNotification.className = "notification employees";
+      newNotification.className = "notification general";
       newNotification.innerHTML = `
                 <div class="icon">
-                    <img src="../Icons/modals/person_white.svg" alt="">
+                    <img src="../Icons/modals/priority_high-white-18dp.svg" alt="">
                 </div>
                 <div class="main">
-                    <label for="" class="title">ReOrder Level Reached</label>
+                    <label for="" class="title">Reorder level reached</label>
                     <label for="" class="message"><span class="userName">${item.Name}</span> of brand ${item.Brand} and category ${item.Category} has reached its reorder level.</label>
                 </div>
 
