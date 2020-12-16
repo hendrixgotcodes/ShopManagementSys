@@ -25,6 +25,7 @@ let UserName, UserType;
 let TotalItems;
 let cart = [];     // Array of store objects
 let lostAccounts = [];
+let itemsOnReOrderLevels = [];
 
 
 
@@ -57,6 +58,7 @@ const salesMadeAmount = document.querySelector("#salesMade_amount")
 const btnCart_sell = domCart.querySelector(".btnCart_sell")
 const btnCart_clear = domCart.querySelector(".btnCart_clear")
 const footerBell = document.querySelector(".footerBell");
+const footerBell_notIcon = footerBell.querySelector(".footerBell_notIcon")
 
 
 
@@ -117,6 +119,15 @@ btnCart_sell.addEventListener("click", checkout);
 btnCart_clear.addEventListener("click", clearAllItems);
 
 footerBell.addEventListener("click", showIssues);
+footerBell.addEventListener("ReOrderLevel_Reached", function alertUserReOrderLevel(){
+
+    console.log("evt dispatched");
+
+    footerBell_notIcon.innerText = parseInt(footerBell_notIcon.innerText) + 1;
+    footerBell_notIcon.style.opacity = "1";
+
+
+})
 
 
 
@@ -492,7 +503,10 @@ function clearAllItems(){
                     const itemName = itemsInCart[i].querySelector(".hidden_itemName").innerText;
                     const itemBrand = itemsInCart[i].querySelector(".hidden_itemBrand").innerText;
                     const itemCategory = itemsInCart[i].querySelector(".hidden_itemCategory").innerText;
-                    const itemSold = itemsInCart[i].querySelector(".cartItem_count").value
+                    const itemSold = itemsInCart[i].querySelector(".cartItem_count").value;
+                    const reOrderLevel = itemsInCart[i].querySelector(".hidden_reOrderLevel").innerText;
+
+                    console.log(reOrderLevel);
     
     
     
@@ -500,8 +514,8 @@ function clearAllItems(){
                     tableRows.forEach((row)=>{
 
                         let rowName = row.querySelector('.td_Name--hidden').innerText;
-                        let rowBrand = row.querySelector('.td_Brand--hidden').innerText
-                        let rowCategory = row.querySelector('.td_Category--hidden').innerText
+                        let rowBrand = row.querySelector('.td_Brand--hidden').innerText;
+                        let rowCategory = row.querySelector('.td_Category--hidden').innerText;
                         let checkbox = row.querySelector('.td_cb').querySelector('.selectOne')
 
                         let InStock = row.querySelector(".td_Stock");
@@ -518,6 +532,24 @@ function clearAllItems(){
                                     row.remove();
 
                                 }
+
+                                if(parseInt(InStock.innerText) <= parseInt(reOrderLevel)){
+
+                                    itemsOnReOrderLevels.push(
+                                        {
+                                            Name: rowName,
+                                            Brand: rowBrand,
+                                            Category: rowCategory
+                                        }
+                                    );
+
+                                    const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached")
+
+                                    footerBell.dispatchEvent(ReOrderLevel_Reached);
+
+                                }
+
+
 
                         }
 
@@ -686,7 +718,7 @@ function showIssues(){
     //Event Listeners
     let btnClose = notificationContainer.querySelector(".notifHeader").querySelector("img");
 
-   if(lostAccounts.length > 0){
+   if(lostAccounts.length > 0 && UserType === "Admin"){
 
         lostAccounts.forEach((account)=>{
 
@@ -804,6 +836,30 @@ function showIssues(){
             })
 
 
+
+        })
+
+   }
+
+   if(itemsOnReOrderLevels.length !== 0){
+
+        itemsOnReOrderLevels.forEach((item)=>{
+
+            let newNotification = document.createElement("div");
+            newNotification.className = "notification employees";
+            newNotification.innerHTML = 
+            `
+                <div class="icon">
+                    <img src="../Icons/modals/person_white.svg" alt="">
+                </div>
+                <div class="main">
+                    <label for="" class="title">ReOrder Level Reached</label>
+                    <label for="" class="message"><span class="userName">${item.Name}</span> of brand ${item.Brand} and category ${item.Category} has reached its reorder level.</label>
+                </div>
+
+            `
+
+            notificationContainer.querySelector(".notifications").appendChild(newNotification)
 
         })
 

@@ -68,6 +68,7 @@ class DOMCONTROLLER{
                     <td hidden class="td_Name--hidden">${name}</td>
                     <td hidden class="td_Brand--hidden">${brand}</td>
                     <td hidden class="td_Category--hidden">${category}</td>
+                    <td hidden class="td_ReOrderLevel--hidden">${reOrderLevel}</td>
                     <td hidden class="state">visible</td>
                     `;
 
@@ -790,7 +791,7 @@ class DOMCONTROLLER{
 
         /*-----------------------------------------------------------------------------------------------*/
 
-        let [rowItemName, rowItemBrand,rowItemCategory, rowItemDiscount, rowItemSellingPrice, rowItemStock, rowItemCostPrice] = [row.querySelector(".td_Name--hidden").innerText, row.querySelector(".td_Brand--hidden").innerText, row.querySelector(".td_Category--hidden").innerText,row.querySelector('.td_discount').innerText, row.querySelector(".td_Price").innerText, row.querySelector('.td_Stock').innerText,  row.querySelector('.td_costPrice').innerText]
+        let [rowItemName, rowItemBrand,rowItemCategory, rowItemDiscount, rowItemSellingPrice, rowItemStock, rowItemCostPrice, reOrderLevel] = [row.querySelector(".td_Name--hidden").innerText, row.querySelector(".td_Brand--hidden").innerText, row.querySelector(".td_Category--hidden").innerText,row.querySelector('.td_discount').innerText, row.querySelector(".td_Price").innerText, row.querySelector('.td_Stock').innerText,  row.querySelector('.td_costPrice').innerText, row.querySelector(".td_ReOrderLevel--hidden").innerText]
         rowItemSellingPrice = parseFloat(rowItemSellingPrice)
 
         let itemQuanityDB = 0;
@@ -864,6 +865,8 @@ class DOMCONTROLLER{
     /****************************FUNCTIONS***********************/
     function addToCart(){
 
+        console.log(reOrderLevel);
+
         const cartItemTemplate = 
         `
             <div class="cartItem_details">
@@ -872,6 +875,7 @@ class DOMCONTROLLER{
                 <div hidden class="hidden_itemCategory">${rowItemCategory}</div>
                 <div hidden class="hidden_itemName">${rowItemName}</div>
                 <div hidden class="hidden_itemBrand">${rowItemBrand}</div>
+                <div hidden class="hidden_reOrderLevel">${reOrderLevel}</div>
             </div>
 
             <button class="cartItem_discount cartItem_discount--disabled" id="cart_discount${cartItems.length+1}">
@@ -1055,7 +1059,6 @@ class DOMCONTROLLER{
                 totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemSellingPrice))
                 totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemCostPrice))
 
-                console.log(totalItemSellingPrice, totalItemCostPrice);
 
                 inCart.forEach((item)=>{
 
@@ -1071,8 +1074,6 @@ class DOMCONTROLLER{
 
 
                 })
-
-                console.log(newRevenue);
 
                 subTotal.innerText = newRevenue;
 

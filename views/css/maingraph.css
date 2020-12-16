@@ -65,12 +65,6 @@
   box-sizing: border-box;
   font-family: "Roboto", "sans-serif"; }
 
-.tooltip_cb {
-  color: white;
-  font-weight: 500;
-  font-family: "Roboto";
-  font-size: 0.8rem; }
-
 .tippy-box[data-theme~="tomato"] {
   background-color: #EFB526;
   color: #fff; }

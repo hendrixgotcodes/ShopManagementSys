@@ -242,7 +242,8 @@ let UserName, UserType;
 let TotalItems;
 let cart = []; // Array of store objects
 
-let lostAccounts = []; //Holds the amount of table rows selected so that disabling and enabling of elements can be done based on that amount
+let lostAccounts = [];
+let itemsOnReOrderLevels = []; //Holds the amount of table rows selected so that disabling and enabling of elements can be done based on that amount
 
 let totalSelectedRows = 0;
 /*********************************DOM ELEMENTS********************* */
@@ -262,6 +263,7 @@ const salesMadeAmount = document.querySelector("#salesMade_amount"); //Buttons
 const btnCart_sell = domCart.querySelector(".btnCart_sell");
 const btnCart_clear = domCart.querySelector(".btnCart_clear");
 const footerBell = document.querySelector(".footerBell");
+const footerBell_notIcon = footerBell.querySelector(".footerBell_notIcon");
 /***********************************OBJECTS**************/
 
 let sellingItem = {// Represents an instance of a store item being added to cart
@@ -295,6 +297,11 @@ ipcRenderer.on("setUserParams", (e, userParamsArray) => {
 btnCart_sell.addEventListener("click", checkout);
 btnCart_clear.addEventListener("click", clearAllItems);
 footerBell.addEventListener("click", showIssues);
+footerBell.addEventListener("ReOrderLevel_Reached", function alertUserReOrderLevel() {
+  console.log("evt dispatched");
+  footerBell_notIcon.innerText = parseInt(footerBell_notIcon.innerText) + 1;
+  footerBell_notIcon.style.opacity = "1";
+});
 /*************************************FUNCTIONS********************* */
 
 /*************************************FUNCTIONS********************* */
@@ -511,6 +518,8 @@ function clearAllItems() {
         const itemBrand = itemsInCart[i].querySelector(".hidden_itemBrand").innerText;
         const itemCategory = itemsInCart[i].querySelector(".hidden_itemCategory").innerText;
         const itemSold = itemsInCart[i].querySelector(".cartItem_count").value;
+        const reOrderLevel = itemsInCart[i].querySelector(".hidden_reOrderLevel").innerText;
+        console.log(reOrderLevel);
         tableRows.forEach(row => {
           let rowName = row.querySelector('.td_Name--hidden').innerText;
           let rowBrand = row.querySelector('.td_Brand--hidden').innerText;
@@ -524,6 +533,16 @@ function clearAllItems() {
 
             if (parseInt(InStock.innerText) === 0) {
               row.remove();
+            }
+
+            if (parseInt(InStock.innerText) <= parseInt(reOrderLevel)) {
+              itemsOnReOrderLevels.push({
+                Name: rowName,
+                Brand: rowBrand,
+                Category: rowCategory
+              });
+              const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached");
+              footerBell.dispatchEvent(ReOrderLevel_Reached);
             }
           }
         });
@@ -616,7 +635,7 @@ function showIssues() {
 
   let btnClose = notificationContainer.querySelector(".notifHeader").querySelector("img");
 
-  if (lostAccounts.length > 0) {
+  if (lostAccounts.length > 0 && UserType === "Admin") {
     lostAccounts.forEach(account => {
       let newNotification = document.createElement("div");
       newNotification.className = "notification employees";
@@ -692,6 +711,24 @@ function showIssues() {
           });
         });
       });
+    });
+  }
+
+  if (itemsOnReOrderLevels.length !== 0) {
+    itemsOnReOrderLevels.forEach(item => {
+      let newNotification = document.createElement("div");
+      newNotification.className = "notification employees";
+      newNotification.innerHTML = `
+                <div class="icon">
+                    <img src="../Icons/modals/person_white.svg" alt="">
+                </div>
+                <div class="main">
+                    <label for="" class="title">ReOrder Level Reached</label>
+                    <label for="" class="message"><span class="userName">${item.Name}</span> of brand ${item.Brand} and category ${item.Category} has reached its reorder level.</label>
+                </div>
+
+            `;
+      notificationContainer.querySelector(".notifications").appendChild(newNotification);
     });
   } else {
     let message = document.createElement("label");
@@ -795,6 +832,7 @@ class DOMCONTROLLER {
                     <td hidden class="td_Name--hidden">${name}</td>
                     <td hidden class="td_Brand--hidden">${brand}</td>
                     <td hidden class="td_Category--hidden">${category}</td>
+                    <td hidden class="td_ReOrderLevel--hidden">${reOrderLevel}</td>
                     <td hidden class="state">visible</td>
                     `;
       } else {
@@ -1257,7 +1295,7 @@ class DOMCONTROLLER {
     const cartItems = cartItemsContainer.querySelectorAll(".cartItem");
     /*-----------------------------------------------------------------------------------------------*/
 
-    let [rowItemName, rowItemBrand, rowItemCategory, rowItemDiscount, rowItemSellingPrice, rowItemStock, rowItemCostPrice] = [row.querySelector(".td_Name--hidden").innerText, row.querySelector(".td_Brand--hidden").innerText, row.querySelector(".td_Category--hidden").innerText, row.querySelector('.td_discount').innerText, row.querySelector(".td_Price").innerText, row.querySelector('.td_Stock').innerText, row.querySelector('.td_costPrice').innerText];
+    let [rowItemName, rowItemBrand, rowItemCategory, rowItemDiscount, rowItemSellingPrice, rowItemStock, rowItemCostPrice, reOrderLevel] = [row.querySelector(".td_Name--hidden").innerText, row.querySelector(".td_Brand--hidden").innerText, row.querySelector(".td_Category--hidden").innerText, row.querySelector('.td_discount').innerText, row.querySelector(".td_Price").innerText, row.querySelector('.td_Stock').innerText, row.querySelector('.td_costPrice').innerText, row.querySelector(".td_ReOrderLevel--hidden").innerText];
     rowItemSellingPrice = parseFloat(rowItemSellingPrice);
     let itemQuanityDB = 0; //Getting total quantity left. User's input will be checked against this to prevent sale of quantity more than what is actually left.
 
@@ -1300,6 +1338,7 @@ class DOMCONTROLLER {
 
 
     function addToCart() {
+      console.log(reOrderLevel);
       const cartItemTemplate = `
             <div class="cartItem_details">
                 <div class="cartItem_Name">${clip(rowItemName, 18)}</div>
@@ -1307,6 +1346,7 @@ class DOMCONTROLLER {
                 <div hidden class="hidden_itemCategory">${rowItemCategory}</div>
                 <div hidden class="hidden_itemName">${rowItemName}</div>
                 <div hidden class="hidden_itemBrand">${rowItemBrand}</div>
+                <div hidden class="hidden_reOrderLevel">${reOrderLevel}</div>
             </div>
 
             <button class="cartItem_discount cartItem_discount--disabled" id="cart_discount${cartItems.length + 1}">
@@ -1419,7 +1459,6 @@ class DOMCONTROLLER {
           let newRevenue = 0;
           totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemSellingPrice));
           totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemCostPrice));
-          console.log(totalItemSellingPrice, totalItemCostPrice);
           inCart.forEach(item => {
             if (item.Item.Name === itemName && item.Item.Brand === itemBrand && item.Item.Category === itemCategory) {
               item.Purchased = parseInt(tb_itemCount.value);
@@ -1429,7 +1468,6 @@ class DOMCONTROLLER {
 
             newRevenue = parseFloat(item.Revenue + newRevenue);
           });
-          console.log(newRevenue);
           subTotal.innerText = newRevenue;
           mainTotal.innerText = newRevenue; // toolBar_tb.focus()
         }
