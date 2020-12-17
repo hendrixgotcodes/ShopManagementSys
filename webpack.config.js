@@ -10,6 +10,7 @@ const electron ={
         StoreController: './controller/StoreController.js',
         LoginController: './controller/LoginController.js',
         MainGraph: './controller/MainGraph.js',
+        EmployeesController: './controller/EmployeesController.js'
     },
     output: {
         path: path.resolve(__dirname, 'build'),

@@ -136,7 +136,7 @@ function wrapText(text){
 
 /************************TOOLTIP INSTANCES**************/
 // Form check
-let tip_formCheck, tip_storeFront, tip_inventory, tip_analytics, tip_account, tip_settings;
+let tip_formCheck, tip_storeFront, tip_inventory, tip_analytics, tip_account, tip_settings, tip_employees;
 
 
 function setToolTips(){
@@ -173,6 +173,10 @@ function setToolTips(){
         let analytics = document.createElement('span');
         analytics.innerText = 'Analytics';
         analytics.className = 'tooltip_cb';
+
+        let employees = document.createElement('span');
+        employees.innerHTML = "Employees";
+        employees.className = "tooltip_cb";
         
         let info = document.createElement('span');
         info.innerText = 'Info';
@@ -194,6 +198,12 @@ function setToolTips(){
         tip_analytics = tippy('.tip_analytics', {
                           content: analytics
                         })
+
+        tip_employees = tippy('.tip_employees',{
+          content: employees
+        })
+
+
         
         tip_account = tippy('#account', {
                         content: info,
@@ -203,7 +213,9 @@ function setToolTips(){
         tip_settings = tippy('#settings', {
                         content: settings,
                         placement: 'bottom'
-                      })
+                      });
+
+        
 
 
 

@@ -29,6 +29,7 @@ const restoreMaxi = document.getElementById('restore_maxi');
 const goto_Store = document.querySelector('#goto_store')
 const goto_Inventory = document.querySelector('#goto_inventory');
 const goto_Analytics = document.querySelector('#goto_analytics');
+const goto_Employees = document.querySelector("#goto_employees");
 
 const content_cover = document.querySelector('.contentCover')
 const mainBodyContent = document.querySelector('.mainBody_content')
@@ -108,6 +109,7 @@ controlBoxClose.addEventListener('click', sendCloseEvent)
 goto_Store.addEventListener('click',loadStore)
 goto_Inventory.addEventListener('click',loadInventory)
 goto_Analytics.addEventListener('click', loadAnalytics);
+goto_Employees.addEventListener('click', loadEmployees)
 
 //For Content
 content_cover.addEventListener("click", removeModal)
@@ -176,6 +178,14 @@ function loadInventory(){
 
 function loadAnalytics(){
     ipcRenderer.send('loadAnalytics', [UserName, UserType])
+}
+
+function loadEmployees(){
+
+    console.log("...loading employees");
+
+    ipcRenderer.send('loadEmployees')
+
 }
 
 function loadLoginPage(){

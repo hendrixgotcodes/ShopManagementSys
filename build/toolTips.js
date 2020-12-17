@@ -1002,7 +1002,7 @@ function wrapText(text) {
 // Form check
 
 
-let tip_formCheck, tip_storeFront, tip_inventory, tip_analytics, tip_account, tip_settings;
+let tip_formCheck, tip_storeFront, tip_inventory, tip_analytics, tip_account, tip_settings, tip_employees;
 
 function setToolTips() {
   let span = document.createElement('span');
@@ -1028,6 +1028,9 @@ function setToolTips() {
   let analytics = document.createElement('span');
   analytics.innerText = 'Analytics';
   analytics.className = 'tooltip_cb';
+  let employees = document.createElement('span');
+  employees.innerHTML = "Employees";
+  employees.className = "tooltip_cb";
   let info = document.createElement('span');
   info.innerText = 'Info';
   info.className = 'tooltip_cb';
@@ -1042,6 +1045,9 @@ function setToolTips() {
   });
   tip_analytics = Object(tippy_js__WEBPACK_IMPORTED_MODULE_0__["default"])('.tip_analytics', {
     content: analytics
+  });
+  tip_employees = Object(tippy_js__WEBPACK_IMPORTED_MODULE_0__["default"])('.tip_employees', {
+    content: employees
   });
   tip_account = Object(tippy_js__WEBPACK_IMPORTED_MODULE_0__["default"])('#account', {
     content: info,

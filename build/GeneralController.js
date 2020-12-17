@@ -125,6 +125,7 @@ const restoreMaxi = document.getElementById('restore_maxi');
 const goto_Store = document.querySelector('#goto_store');
 const goto_Inventory = document.querySelector('#goto_inventory');
 const goto_Analytics = document.querySelector('#goto_analytics');
+const goto_Employees = document.querySelector("#goto_employees");
 const content_cover = document.querySelector('.contentCover');
 const mainBodyContent = document.querySelector('.mainBody_content');
 const toolBar_tb = document.querySelector('.toolBar_tb');
@@ -144,7 +145,6 @@ ipcRenderer.on("loadUserInfo", (e, array) => {
       timeOutPref = parseInt(TimeOutPref);
       logOutTimeOut = 60000 * timeOutPref;
       startTimeOutCounter();
-      let date = new Date();
     });
   }
 });
@@ -169,7 +169,8 @@ controlBoxClose.addEventListener('click', sendCloseEvent); //For "goto_Inventory
 
 goto_Store.addEventListener('click', loadStore);
 goto_Inventory.addEventListener('click', loadInventory);
-goto_Analytics.addEventListener('click', loadAnalytics); //For Content
+goto_Analytics.addEventListener('click', loadAnalytics);
+goto_Employees.addEventListener('click', loadEmployees); //For Content
 
 content_cover.addEventListener("click", removeModal); // toolBar_btn.addEventListener("click", seekItem)
 
@@ -225,6 +226,11 @@ function loadInventory() {
 
 function loadAnalytics() {
   ipcRenderer.send('loadAnalytics', [UserName, UserType]);
+}
+
+function loadEmployees() {
+  console.log("...loading employees");
+  ipcRenderer.send('loadEmployees');
 }
 
 function loadLoginPage() {
