@@ -240,6 +240,16 @@ function removeModal() {
 }
 
 function seekItem() {
+  const tableROWS = document.querySelector('.tableBody').querySelectorAll('.bodyRow');
+  let filtered = toolBar_tb.value.replace(" ", "");
+
+  if (toolBar_tb.value === "" || filtered === "") {
+    tableROWS.forEach(row => {
+      row.style.display = "flex";
+    });
+    return;
+  }
+
   if (searchtimeOutValue !== 0) {
     clearTimeout(searchtimeOutValue);
   }
@@ -252,11 +262,10 @@ function seekItem() {
     }
 
     itemName = itemName.toLowerCase();
-    const tableROWS = document.querySelector('.tableBody').querySelectorAll('.bodyRow');
     tableROWS.forEach(row => {
       let initBGcolor = row.style.backgroundColor;
       let initColor = row.style.color;
-      const currentItem = row.querySelector(".td_Names").innerText.toLowerCase();
+      let currentItem = row.querySelector(".td_Names").innerText.toLowerCase();
 
       if (currentItem.includes(itemName)) {
         row.scrollIntoView({
@@ -267,13 +276,35 @@ function seekItem() {
           row.style.backgroundColor = initBGcolor;
           row.style.color = initColor;
         }, 2000);
+        clearTimeout(timeOutValue);
       } else {
-        database.getItem(itemName).then(returedItem => {
-          returedItem.forEach(item => {});
-        });
+        currentItem = row.querySelector(".td_Brands").innerText.toLowerCase();
+        console.log(currentItem);
+
+        if (currentItem.includes(itemName)) {
+          row.scrollIntoView({
+            behavior: 'smooth'
+          });
+          row.focus();
+          clearTimeout(timeOutValue);
+        } else {
+          currentItem = row.querySelector(".td_Category").innerText.toLowerCase();
+
+          if (currentItem.includes(itemName)) {
+            row.scrollIntoView({
+              behavior: 'smooth'
+            });
+            row.focus();
+            clearTimeout(timeOutValue);
+          } else {
+            row.style.display = "none";
+          }
+        }
       }
+
+      return;
     });
-  }, 500);
+  }, 2000);
 }
 
 function startTimeOutCounter() {

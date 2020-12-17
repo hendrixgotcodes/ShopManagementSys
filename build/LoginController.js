@@ -128,7 +128,14 @@ let verifiedFields = false;
 let faileLoginCount = 0;
 /*******************EVENT LISTENERS**********************/
 
-window.addEventListener("load", () => [tbUserName.focus()]);
+window.addEventListener("load", () => {
+  tbUserName.focus();
+});
+window.addEventListener("keyup", e => {
+  if (e.code === "F1") {
+    tbUserName.focus();
+  }
+});
 controlBoxMinimize.addEventListener('click', sendMinimizeEvent); //Adding event listeners to trigger minimize, maximize and events in the mainWindow Controller
 
 controlBoxMaximize.addEventListener('click', sendMaximizeEvent);
