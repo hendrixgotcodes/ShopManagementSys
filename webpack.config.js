@@ -5,6 +5,7 @@ const electron ={
     entry:{
         InventoryController: './controller/InventoryController.js',
         GeneralController : './controller/GeneralController.js',
+        GeneralControllerRA: './controller/GeneralControllerRA.js',
         toolTips: './controller/utilities/ToolTipController.js',
         settingsController: './controller/modals/settingsController.js',
         StoreController: './controller/StoreController.js',

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Employees</title>
+  <link rel="stylesheet" href="../../views/css/employees.css">
+</head>
+
+<body>
+
+  <div class="main_menu">
+
+    <div class="menu_a">
+      <label for="" class="lbl_storeName"><img src="../Icons/logo/logo.png" alt=""></label>
+
+      <div class="menu_iconsContainer">
+
+        <div id="goto_store" tabindex="1" class="menu_icons tabItem">
+          <img src="../Icons/menuIcons/storefront.svg" id="storefront" alt="Goto StoreFront" class="menuIcon tip_store">
+        </div>
+        <div id="goto_inventory" tabindex="2" class="menu_icons tabItem" aria-placeholder="Go to Inventory">
+          <img src="../Icons/menuIcons/inventory.png" id="menuIcon_png" alt="Goto Inventory"
+            class="menuIcon tip_inventory">
+        </div>
+        <div id="goto_analytics" tabindex="3" class="menu_icons tabItem" aria-placeholder="Go to analytics">
+          <img src="../Icons/menuIcons/analytics.svg" alt="Goto analytics" class="menuIcon tip_analytics">
+        </div>
+        
+        <div id="goto_employees" tabindex="3" class="menu_icons current tabItem" aria-placeholder="Go to employees">
+          <img src="../Icons/menuIcons/employees.svg" alt="Goto analytics" class="menuIcon tip_employees">
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="menu_b">
+      <center>
+        <img tabindex="4" id="account" src="../Icons/menuIcons/Tray/info.svg" alt="" class="menu_items tabItem">
+        <!-- <input type="checkbox" name="" id="" class="menuB_cb"> -->
+        <img tabindex="5" id="settings" src="../Icons/menuIcons/Tray/settings.svg" alt="" class="menu_items tabItem">
+      </center>
+    </div>
+
+  </div>
+
+  <div class="main_body">
+
+    <div class="titleBar" aria-placeholder="Title Bar">
+
+      <div class="titleBar_location">My Employees</div>
+      <div class="titleBar_userName"></div>
+
+      <div class="titleBar_controlBox">
+        <div class="controlBox_minimize control store" aria-placeholder="minimize">
+          <img src="../Icons/Control_Box/Store/Minimize.png" alt="" />
+        </div>
+        <div class="controlBox_maximize control store" aria-placeholder="maximize">
+          <img src="../Icons/Control_Box/Store/Maximize.png" id="restore_maxi" alt="" />
+        </div>
+        <div class="controlBox_close control store" aria-placeholder="close">
+          <img src="../Icons/Control_Box/Store/Close.png" alt="" />
+        </div>
+      </div>
+
+    </div>
+
+    <div class="mainBody_content">
+      <div class="content_toolBar" aria-placeholder="Tool Bar">
+
+        <label for="searchItem" class="toolBar_lbl">
+          Find:
+          <input tabindex="6" type="text" placeholder="Find your products by name"
+            aria-placeholder="Find your products by name" class="toolBar_tb">
+          <button class="toolBar_btn">
+            <img src="../Icons/toolBar/search.svg" alt="Search">
+          </button>
+        </label>
+
+        <div class="toolBar_select">
+          <div tabindex="7" class="select_value">
+            <center class="selectValue_center">
+              <img src="../Icons/toolBar/funnel.svg" class="selectValue_icon" alt="">
+              <span class="selectValue_span">Filter By:</span>
+            </center>
+            <img src="../Icons/toolBar/play_arrow-black-18dp.svg" alt="" class="selectValue_icon arrow">
+          </div>
+          <div tabindex="0" class="select_dropdown">
+            <span tabindex="0" class="selectDropdown_value tip_category">
+              Category
+            </span>
+            <span tabindex="0" class="selectDropdown_value tip_brand">
+              Brand
+            </span>
+            <span tabindex="0" class="selectDropdown_value tip_default">
+              Default
+            </span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="contentContainer">
+
+        <table class="contentTable">
+          <thead class="tableHeader">
+            <tr class="tableHead">
+              <th class="tableHead_items tb_Cb">
+                <input type="checkbox" hidden name="" id="">
+              </th>
+              <th class="tableHead_items th_sort tb_Names">
+                <img src="../Icons/table/header/sort.png" alt="" class="sortIcon items_pad">
+                <span>Name</span>
+              </th>
+              <th class="tableHead_items th_sort tb_AccountStatus">
+                <img src="../Icons/table/header/sort.png" alt="" class="sortIcon items_pad">
+                <span>Account Status</span>
+              </th>
+              <th class="tableHead_items th_sort tb_LastSeen">
+                <img src="../Icons/table/header/sort.png" alt="" class="sortIcon items_pad">
+                <span>Last Seen</span>
+              </th>
+              <th class="tableHead_items th_sortNumber tb_SalesMade">
+                <img src="../Icons/table/header/sort.png" alt="" class="sortIcon items_pad">
+                <span>Sales Made</span>
+              </th>
+              <th class="tableHead_items th_sortNumber tb_ProfitsMade">
+                <img src="../Icons/table/header/sort.png" alt="" class="sortIcon items_pad">
+                <span>Profits Made</span>
+              </th>
+            </tr>
+          </thead>
+
+          <tbody class="tableBody">
+  
+
+          </tbody>
+        </table>
+
+      </div>
+
+
+    </div>
+
+    <!-- <div class="notification_banner" role="alert">
+      <span></span>
+
+      <div class="banner_arrow"></div>
+    </div> -->
+
+    <div class="footer">
+
+      <div class="footer_clock"">
+        <span class=" clock_hour">6</span>
+        <span id="clock_blinker">: </span>
+        <span class="clock_min"> 15</span>
+        <span class="clock_ampm">PM</span>
+      </div>
+
+      <div class="footerBell">
+
+        <div class="footerBell_notIcon">0</div>
+
+        <img src="../Icons/toolBar/notif_bell.svg" alt="" class="footerBell_icon">
+
+
+      </div>
+      
+    </div>
+
+
+  </div>
+
+   
+    <!--  -->
+
+  <div class="contentCover"></div>
+
+  <script src="../../build/EmployeesController.js"></script>
+  <script src="../../views/js/sortTable.js"></script>
+  <script src="../../build/toolTips.js"></script>
+  <script src="../../views/js/clock.js"></script>
+  <!-- <script src="../../controller/modals/settingsController.js"></script> -->
+  <script src="../../build/settingsController.js"></script>
+  <!-- <script src="../../build/toolTips_Modals.js"></script> -->
+</body>
+
+</html>
