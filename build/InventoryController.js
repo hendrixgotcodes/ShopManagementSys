@@ -1207,6 +1207,197 @@ class Modal {
   // }
 
 
+  static openUserForm(newUser) {
+    let formTitle, disabled;
+
+    if (newUser === true) {
+      formTitle = "New Account";
+      disabled = " ";
+    } else {
+      formTitle = "Edit Account";
+      disabled = "disabled";
+    }
+
+    const contentCover = document.querySelector(".contentCover");
+    const contentContainer = document.querySelector(".contentContainer");
+    contentCover.classList.add("contentCover--shown");
+    const userForm = document.createElement("div");
+    userForm.className = "userForm modal";
+    userForm.innerHTML = `
+            <header class="userForm_header">
+                ${formTitle}
+
+                <img src="../Icons/modals/close.svg"/>
+            </header>
+            <form>
+
+                <label class="formlbl lbl_FirstName" for="tb_FirstName">
+
+                    First Name
+                    <input class="userForm_input" id="tb_FirstName" type="text" placeholder="eg. Adwoa">
+                    <span class="alertSpan"></span>
+
+                </label>
+
+                <label class="formlbl lbl_LastName" for="tb_LastName">
+
+                    Last Name
+                    <input class="userForm_input" id="tb_LastName" type="text" placeholder="eg. Sarpong">
+                    <span class="alertSpan"></span>
+
+                </label>
+
+                <label class="formlbl lbl_UserName" for="tb_UserName">
+
+                    Username
+                    <input class="userForm_input tb_UserName" type="text" placeholder="eg. adwoaSar11"/>
+                    <span class="alertSpan"></span>
+
+                </label>
+
+                <label class="formlbl lbl_Password" for="tb_Password">
+
+                    Password
+                    <input class="userForm_input" id="tb_Password" class="form_Password" type="password" placeholder="eg. eightlengthedpassword"/>
+                    <span class="alertSpan"></span>
+
+                </label>
+
+                <label class="formlbl lbl_Password" for="tb_PasswordRpt">
+
+                    Confirm Password
+                    <input class="userForm_input" id="tb_PasswordRpt" class="form_Password" type="text" placeholder="eg. repeatpassword"/>
+                    <span class="alertSpan"></span>
+
+
+                </label>
+
+                <label class="formlbl lbl_Password" for="tb_PasswordRpt">
+
+                    Account Type
+                   <select class="userForm_input">
+                        <option value="0">Regular</option>
+                        <option value="1">Administrator</option>
+                   </select>
+
+                </label>
+
+
+            </form>
+
+            <button class="btn_employ">Employ</button>
+
+        `;
+    contentContainer.appendChild(userForm);
+    const header = userForm.querySelector(".userForm_header");
+    const btnClose = header.querySelector("img");
+    const btnEmploy = userForm.querySelector(".btn_employ");
+    const tbUserName = userForm.querySelector(".tb_UserName");
+    const userForm_inputs = userForm.querySelectorAll(".userForm_input");
+    let pos1,
+        pos2,
+        pos3,
+        pos4 = 0;
+    let formIsValid = true;
+    /***********Event Listeners************/
+
+    header.addEventListener("mousedown", function dragMouseDown(e) {
+      e.preventDefault();
+      pos3 = e.clientX;
+      pos4 = e.clentY;
+      document.onmouseup = closeDragElement; // call a function whenever the cursor moves:
+
+      document.onmousemove = elementDrag;
+
+      function elementDrag(e) {
+        e = e || window.event;
+        e.preventDefault(); // calculate the new cursor position:
+
+        pos1 = pos3 - e.clientX;
+        pos2 = pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY; // set the element's new position:
+
+        userForm.style.top = userForm.offsetTop - pos2 + "px";
+        userForm.style.left = userForm.offsetLeft - pos1 + "px";
+      }
+
+      function closeDragElement() {
+        // stop moving when mouse button is released:
+        document.onmouseup = null;
+        document.onmousemove = null;
+      }
+    });
+    btnClose.addEventListener("click", e => {
+      userForm.remove();
+      contentCover.classList.remove("contentCover--shown");
+    });
+    btnEmploy.addEventListener("click", e => {
+      const userFormInput = userForm.querySelectorAll(".userForm_input");
+      userFormInput.forEach(inputField => {
+        inputField.classList.add("input_error");
+      });
+    });
+    tbUserName.addEventListener("keyup", e => {
+      const alertSpan = tbUserName.parentElement.querySelector(".alertSpan"); // let tbValue = tbUserName.value.replace(" ","");
+
+      if (e.code === "Space") {
+        tbUserName.value = tbUserName.value.replace(" ", "");
+        tbUserName.classList.add("error");
+        alertSpan.innerText = "No spaces allowed here";
+        formIsValid = false;
+      } else {
+        formIsValid = true;
+        database.getUser(tbUserName.value).then(result => {
+          if (tbUserName.classList.contains("error")) {
+            tbUserName.classList.remove("error");
+          }
+
+          alertSpan.innerText = "";
+
+          if (result.length > 0) {
+            tbUserName.classList.add("error");
+            const alertSpan = tbUserName.parentElement.querySelector(".alertSpan");
+            alertSpan.innerText = "Sorry, username already exists";
+            formIsValid = false;
+          } else {
+            if (tbUserName.classList.contains("error")) {
+              tbUserName.classList.remove("error");
+            }
+
+            alertSpan.innerText = "";
+            formIsValid = true;
+          }
+        });
+      }
+    });
+    userForm_inputs.forEach(userForm_input => {
+      userForm_input.addEventListener("blur", e => {
+        const alertSpan = userForm_input.parentElement.querySelector(".alertSpan");
+
+        if (tbUserName.classList.contains("error")) {
+          tbUserName.classList.remove("error");
+        }
+
+        alertSpan.innerText = "";
+        formIsValid = true;
+
+        if (userForm_input.value === "" || userForm_input.value.replace(" ", "") === "") {
+          alertSpan.innerText = "Entry cannot be empty";
+          userForm_input.classList.add("error");
+          formIsValid = false;
+        } else {
+          if (tbUserName.classList.contains("error")) {
+            tbUserName.classList.remove("error");
+          }
+
+          alertSpan.innerText = "";
+          formIsValid = true;
+        }
+      });
+    });
+  }
+
 }
 /*****************************************************************************FUNCTIONS***************************************************************/
 ///Event Listener Functions
@@ -1548,6 +1739,21 @@ class DOMCONTROLLER {
       resolve();
       /******************************************* */
     });
+  }
+
+  static createEmployeeItem(name, accountStatus, lastSeen, totalSales, totalProfit) {
+    const tableBody = document.querySelector("tbody");
+    const row = document.createElement("tr");
+    row.className = "bodyRow";
+    row.innerHTML = `
+            <td class="td_Names">${name}</td>
+            <td class="td_AccountStatus">${accountStatus}</td>
+            <td class="td_LastSeen">${lastSeen}</td>
+            <td class="td_SalesMade">${totalSales}</td>
+            <td class="td_ProfitsMade">${totalProfit}</td>
+
+        `;
+    tableBody.appendChild(row);
   }
   /***********************************************************************************************************************************/
 
@@ -3105,13 +3311,38 @@ class DATABASE {
 
   getUsers() {
     return new Promise((resolve, reject) => {
-      this.connector.query('SELECT First_Name, Last_Name, User_Name, TIMEDIFF(NOW(), Last_Seen) Last_Seen, IsAdmin FROM `users`', (error, result) => {
-        if (error) {
-          reject(error);
-          throw error;
-        }
+      let promises = [];
+      let allUsers = [];
+      let fetchUser = new Promise((resolve, reject) => {
+        this.connector.query('SELECT id, First_Name, Last_Name, User_Name, TIMEDIFF(NOW(), Last_Seen) Last_Seen, IsAdmin FROM `users`', (error, result) => {
+          if (error) {
+            reject(error);
+            throw error;
+          }
 
-        resolve(result);
+          resolve(result);
+        });
+      });
+      fetchUser.then(users => {
+        users.forEach(user => {
+          promises.push(new Promise((resolve, reject) => [this.connector.query("SELECT COUNT(*) AS Total_Sales, SUM(Profit) AS Total_Profits FROM `sales` WHERE id = ?", user.id, (error, result) => {
+            if (error) {
+              reject(error);
+              throw error;
+            } else {
+              result = result.pop();
+              user.Total_Profits = result.Total_Profits;
+              user.Total_Sales = result.Total_Sales;
+              allUsers.push(user);
+              resolve();
+            }
+          })]));
+          Promise.all(promises).then(() => {
+            resolve(allUsers);
+          }).catch(() => {
+            reject();
+          });
+        });
       });
     });
   }

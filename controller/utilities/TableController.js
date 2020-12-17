@@ -358,6 +358,26 @@ class DOMCONTROLLER{
 
     }
 
+    static createEmployeeItem(name, accountStatus, lastSeen, totalSales, totalProfit){
+
+        const tableBody = document.querySelector("tbody");
+        const row = document.createElement("tr");
+
+        row.className = "bodyRow";
+        row.innerHTML = 
+        `
+            <td class="td_Names">${name}</td>
+            <td class="td_AccountStatus">${accountStatus}</td>
+            <td class="td_LastSeen">${lastSeen}</td>
+            <td class="td_SalesMade">${totalSales}</td>
+            <td class="td_ProfitsMade">${totalProfit}</td>
+
+        `
+
+        tableBody.appendChild(row);
+
+    }
+
     
     
 /***********************************************************************************************************************************/

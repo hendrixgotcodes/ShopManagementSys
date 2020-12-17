@@ -256,8 +256,9 @@
 }
 
 .td_Names,
-.td_Brands,
-.td_Category {
+.td_SalesMade,
+.td_ProfitsMade,
+.td_LastSeen {
     width: 20%;
     display: flex;
     justify-content: center;
@@ -268,8 +269,7 @@
 
 }
 
-.td_Stock,
-.td_costPrice, .td_sellingPrice, .td_ReOrderLevel {
+.td_AccountStatus {
     width: 18.5%;
     text-align: center;
 }

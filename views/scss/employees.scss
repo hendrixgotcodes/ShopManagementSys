@@ -160,6 +160,7 @@ body {
             width: 100%;
             height: 90%;
             position: relative;
+            overflow: hidden;
 
             .emptyBanner{
                 width: 100%;
@@ -191,6 +192,33 @@ body {
             }
 
             @import '../scss/layout/tables/employeesTable';
+
+            .floatCircle{
+
+                position: absolute;
+                bottom: 4%;
+                right: 1%;
+                background-color: $primary_green;
+                width: 4%;
+                height: 8%;
+                border-radius: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                box-shadow: -1px 5px 8px rgba($color: $primary_black, $alpha: 0.3);
+                cursor: pointer;
+                transform: scale(0.9);
+                transition: .3s;
+
+                &:hover{
+                    transform: scale(1);
+                }
+
+                img{
+                    width: 40%
+                }
+
+            }
         }
 
         @import '../scss/utilities/modals';

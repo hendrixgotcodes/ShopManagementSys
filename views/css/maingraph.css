@@ -1379,6 +1379,78 @@ body {
           .main_body .mainBody_content .dialog--cartForm .dialogFooter .dialogConfirm img {
             width: 4%;
             margin-left: .5rem; }
+    .main_body .mainBody_content .userForm {
+      width: 31%;
+      height: 70%;
+      position: absolute;
+      bottom: 15%;
+      left: 31%;
+      background-color: #fff;
+      box-shadow: 3px 5px 8px rgba(100, 103, 102, 0.3);
+      z-index: 11;
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-flow: column; }
+      .main_body .mainBody_content .userForm .userForm_header {
+        height: 12%;
+        display: flex;
+        justify-content: space-between;
+        padding: 0 1rem;
+        align-items: center;
+        font-size: 1.2rem;
+        font-weight: 500;
+        color: #35594B;
+        width: 100%; }
+        .main_body .mainBody_content .userForm .userForm_header img {
+          width: 8%;
+          padding: .3rem;
+          transition: .3s;
+          border-radius: 3px; }
+          .main_body .mainBody_content .userForm .userForm_header img:hover {
+            box-shadow: 1px 3px 5px rgba(100, 103, 102, 0.3); }
+      .main_body .mainBody_content .userForm form {
+        height: 78%;
+        padding: 0 1rem;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        color: #646766; }
+        .main_body .mainBody_content .userForm form .formlbl {
+          display: block;
+          width: 49%;
+          height: 22%; }
+          .main_body .mainBody_content .userForm form .formlbl input, .main_body .mainBody_content .userForm form .formlbl select {
+            width: 100%;
+            display: block;
+            height: 50%;
+            border: 1px solid #646766;
+            border-radius: 3px;
+            margin-top: .1rem;
+            padding: .5rem;
+            color: #646766;
+            position: relative;
+            transition: .3s; }
+          .main_body .mainBody_content .userForm form .formlbl .error {
+            outline-width: .5rem;
+            outline-color: #e16161; }
+            .main_body .mainBody_content .userForm form .formlbl .error + .alertSpan {
+              font-size: .7rem;
+              color: #e16161; }
+        .main_body .mainBody_content .userForm form .lbl_FirstName, .main_body .mainBody_content .userForm form .lbl_LastName {
+          width: 100%; }
+      .main_body .mainBody_content .userForm .btn_employ {
+        width: 100%;
+        background-color: #35594B;
+        height: 10%;
+        border: 1px solid #35594B;
+        border-bottom-right-radius: 8px;
+        border-bottom-left-radius: 8px;
+        font-size: 1.1rem;
+        color: #fff; }
     .main_body .mainBody_content .modal {
       box-shadow: 0px 11px 22px rgba(0, 0, 0, 0.16); }
     .main_body .mainBody_content .dialog--shown {

@@ -3,6 +3,8 @@
 const { ipcRenderer } = require("electron");
 import DATABASE from '../model/DATABASE';
 import STORE from '../model/STORE';
+import Modal from './modals/ModalController';
+const DOMCONTROLLER = require("./utilities/TableController");
 
 
 const database = new DATABASE();
@@ -31,9 +33,10 @@ const goto_Inventory = document.querySelector('#goto_inventory');
 const goto_Analytics = document.querySelector('#goto_analytics');
 const goto_Employees = document.querySelector("#goto_employees");
 
-const content_cover = document.querySelector('.contentCover')
-const mainBodyContent = document.querySelector('.mainBody_content')
+const content_cover = document.querySelector('.contentCover');
+const mainBodyContent = document.querySelector('.mainBody_content');
 const toolBar_tb = document.querySelector('.toolBar_tb');
+const floatCircle = document.querySelector(".floatCircle");
 
 
 
@@ -42,44 +45,7 @@ const toolBar_tb = document.querySelector('.toolBar_tb');
 
 
 
-ipcRenderer.on("loadUserInfo", (e, array)=>{
-    [UserName, UserType] = array;
 
-
-    if(UserType === 'Admin'){
-
-        const store = new STORE({
-            configName: 'userPrefs',
-            defaults: {
-                toolTipsPref: 'show',
-                timeOutPref: '1',
-            }
-        });
-
-        let timeOutPref;
-
-        store.get("timeOutPref")
-        .then((TimeOutPref)=>{
-            
-            timeOutPref = parseInt(TimeOutPref)
-
-            logOutTimeOut = 60000 * timeOutPref;
-
-            startTimeOutCounter();
-
-
-        })
-        
-
-        
-    }
-})
-
-ipcRenderer.on("setUserParams", (e, paramsArray)=>{
-
-    [UserName, UserType] = paramsArray;
-
-})
 
 /**ON LOAD */
 window.addEventListener("load", ()=>{
@@ -88,6 +54,8 @@ window.addEventListener("load", ()=>{
     ipcRenderer.send("ready");
 
     toolBar_tb.focus();
+    initializeEmployees();
+
 })
 
 window.addEventListener("keyup", (e)=>{
@@ -138,6 +106,8 @@ window.addEventListener('keypress', (e)=>{
     modifySectionTime(e)
     updateUserLastSeen();
 });
+
+floatCircle.addEventListener("click", openNewUserForm)
 
 
 
@@ -298,6 +268,184 @@ function updateUserLastSeen(){
      database.setUserLastSeen(UserName, lastSeen);
 
 }
+
+function initializeEmployees(){
+
+    database.getUsers()
+    .then((users)=>{
+
+        users.forEach((user)=>{
+
+            if(parseInt(user.IsAdmin) === 1){
+                user.IsAdmin = "Administrator";
+            }
+            else{
+                user.IsAdmin = "Regular";
+            }
+
+            user.Last_Seen = getRelativeTime(user.Last_Seen);
+
+            DOMCONTROLLER.createEmployeeItem(`${user.First_Name} ${user.Last_Name}`, user.IsAdmin, user.Last_Seen, user.Total_Sales, user.Total_Profits);
+
+        })
+
+    })
+
+}
+
+function getRelativeTime(time){
+
+    if(time === null || time===undefined){
+        return "Never"
+    }
+
+    let [hours, minutes, seconds] = time.split(":");
+
+    [hours, minutes, seconds] = [parseInt(hours), parseInt(minutes), parseInt(seconds)]
+
+
+    if(hours == 0 && minutes > 60){
+
+        let hours = parseInt(minutes);
+
+        if(hours === 1){
+
+            return `An hour ago`
+
+        }
+
+        return `${hours} hours ago ${minutes} minutes ago`
+
+
+    }
+    else if(hours > 24){
+        let days = parseInt(hours/24);
+        
+        if(days === 1){
+            return `${days} day ago`
+        }
+
+        return `${days} days ago`
+
+    }
+    else if(hours > 168){
+
+        let week = parseInt(hours/168);
+
+        if(week === 1){
+            return `${week} week ago`
+        }
+
+        return `${week} weeks ago`
+
+    }
+    else if(hours > 8760){
+        
+        let yearMonth = parseFloat(hours/8760).toPrecision(2);
+
+        let [year, month] = yearMonth.split(".");
+
+        if(year === 1){
+            
+            if(month === 1){
+                return `A year and a month ago`
+            }
+            else{
+                return `A year and ${month} months ago`
+            }
+
+        }
+        else{
+
+            if(month === 1){
+                return `${year} years and 1 month ago`
+            }
+            else{
+                return `${year} years and ${month} months ago`
+            }
+
+        }
+
+    }
+    else{
+
+        if(!(minutes > 1) && hours === 0){
+
+
+            return "Online"
+
+        }
+        else if(hours === 1){
+
+            if(minutes === 1){
+
+                return `An hour and a minute ago`
+
+            }
+            else{
+                return `${hours} hour ${minutes} minutes ago`
+            }
+
+
+        }
+        else{
+            return `${hours} hours ${minutes} minutes ago`
+        }
+
+
+
+    }
+
+}
+
+function openNewUserForm(){
+
+    Modal.openUserForm(true);
+
+}
+
+
+
+
+/*****************************EVENT LISTENERS FOR MAIN PROCESS */
+ipcRenderer.on("loadUserInfo", (e, array)=>{
+    [UserName, UserType] = array;
+
+
+    if(UserType === 'Admin'){
+
+        const store = new STORE({
+            configName: 'userPrefs',
+            defaults: {
+                toolTipsPref: 'show',
+                timeOutPref: '1',
+            }
+        });
+
+        let timeOutPref;
+
+        store.get("timeOutPref")
+        .then((TimeOutPref)=>{
+            
+            timeOutPref = parseInt(TimeOutPref)
+
+            logOutTimeOut = 60000 * timeOutPref;
+
+            startTimeOutCounter();
+
+
+        })
+        
+
+        
+    }
+})
+
+ipcRenderer.on("setUserParams", (e, paramsArray)=>{
+
+    [UserName, UserType] = paramsArray;
+
+})
 
 ipcRenderer.on("setUserParams", (e, userParamsArray)=>{
 

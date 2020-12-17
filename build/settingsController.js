@@ -1872,13 +1872,38 @@ class DATABASE {
 
   getUsers() {
     return new Promise((resolve, reject) => {
-      this.connector.query('SELECT First_Name, Last_Name, User_Name, TIMEDIFF(NOW(), Last_Seen) Last_Seen, IsAdmin FROM `users`', (error, result) => {
-        if (error) {
-          reject(error);
-          throw error;
-        }
+      let promises = [];
+      let allUsers = [];
+      let fetchUser = new Promise((resolve, reject) => {
+        this.connector.query('SELECT id, First_Name, Last_Name, User_Name, TIMEDIFF(NOW(), Last_Seen) Last_Seen, IsAdmin FROM `users`', (error, result) => {
+          if (error) {
+            reject(error);
+            throw error;
+          }
 
-        resolve(result);
+          resolve(result);
+        });
+      });
+      fetchUser.then(users => {
+        users.forEach(user => {
+          promises.push(new Promise((resolve, reject) => [this.connector.query("SELECT COUNT(*) AS Total_Sales, SUM(Profit) AS Total_Profits FROM `sales` WHERE id = ?", user.id, (error, result) => {
+            if (error) {
+              reject(error);
+              throw error;
+            } else {
+              result = result.pop();
+              user.Total_Profits = result.Total_Profits;
+              user.Total_Sales = result.Total_Sales;
+              allUsers.push(user);
+              resolve();
+            }
+          })]));
+          Promise.all(promises).then(() => {
+            resolve(allUsers);
+          }).catch(() => {
+            reject();
+          });
+        });
       });
     });
   }
