@@ -26,6 +26,7 @@ const btnLoader = document.querySelector(".form_btn > img")
 const warningLabel_tb = document.querySelector(".warningLabel_tb");
 const warningLabel_pw = document.querySelector(".warningLabel_pw");
 const forgottenPassword = document.querySelector(".forgottenPassword");
+const loginForm_center = document.querySelector(".loginForm_center");
 
 //Program Variables
 let isFullScreen = false;
@@ -34,12 +35,26 @@ let faileLoginCount = 0;
 
 
 
-//Adding event listeners to trigger minimize, maximize and events in the mainWindow Controller
-controlBoxMinimize.addEventListener('click', sendMinimizeEvent)
-controlBoxMaximize.addEventListener('click', sendMaximizeEvent)
-controlBoxClose.addEventListener('click', sendCloseEvent)
+/*******************EVENT LISTENERS**********************/
+window.addEventListener("load", ()=>[
+
+    tbUserName.focus()
+
+])
+controlBoxMinimize.addEventListener('click', sendMinimizeEvent);//Adding event listeners to trigger minimize, maximize and events in the mainWindow Controller
+controlBoxMaximize.addEventListener('click', sendMaximizeEvent);
+controlBoxClose.addEventListener('click', sendCloseEvent);
 formBtn.addEventListener('click', loadStore);
-formCheck.addEventListener('click', togglePassVisibility)
+formCheck.addEventListener('click', togglePassVisibility);
+loginForm_center.addEventListener("keyup", (e)=>{
+
+    if(e.code === "Enter"){
+
+        loadStore();
+
+    }
+
+})
 
 tbUserName.addEventListener("blur", function verifyInputValues(){
 
@@ -136,7 +151,7 @@ tbPassword.addEventListener("keyup", function(e){
         warningLabel_pw.hidden = false
 
     }
-    if(e.key === "Enter"){
+    if(e.key === "Enter" && tbPassword.value !== ""){
         loadStore(e)
     }
 
