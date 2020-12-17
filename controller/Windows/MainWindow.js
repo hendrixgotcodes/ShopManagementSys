@@ -68,6 +68,16 @@ class MainWWindow extends BrowserWindow {
 
             });
 
+            ipcMain.on('loadStore', (e, [userName, userType]) => {
+                this.loadFile('./views/html/StoreRA.html');
+
+                this.userName = userName;
+                this.userType = userType;
+
+                
+
+            });
+
             ipcMain.on('loadInventory',(e, [userName, userType])=>{
 
                 this.loadFile('./views/html/inventory.html');

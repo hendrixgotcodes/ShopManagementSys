@@ -299,7 +299,7 @@ function loadStore(e) {
 
             }
             else if(result[1] === "Employee"){
-                ipcRenderer.send("loadStore", [result[0], "Employee"])
+                ipcRenderer.send("loadStoreRA", [result[0], "Employee"])
             }
 
         })
