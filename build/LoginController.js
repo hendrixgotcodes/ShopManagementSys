@@ -295,7 +295,7 @@ function loadStore(e) {
       if (result[1] === "Admin") {
         ipcRenderer.send('loadStore', [result[0], "Admin"]);
       } else if (result[1] === "Employee") {
-        ipcRenderer.send("loadStore", [result[0], "Employee"]);
+        ipcRenderer.send("loadStoreRA", [result[0], "Employee"]);
       }
     }).catch(error => {
       btnLoader.removeAttribute("src");
