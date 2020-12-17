@@ -908,252 +908,230 @@ class DATABASE {
   constructor() {
     this.connector = mariadb.createConnection({
       host: 'localhost',
-      user: 'root',
-      password: '',
-      database: 'duffykids'
+      user: 'shop_keeper',
+      password: '341591a9-ce19-4abf-8392-ca463bc6caef',
+      database: 'shop_keeper'
     });
     this.connector.connect(error => {
-      if (error) {
-        console.log(error.code); //Query strings
-
-        let createDBsql = `CREATE DATABASE duffykids`;
-        let createItemsTableSQL = `CREATE TABLE IF NOT EXISTS duffykids.items(
+      let createItemsTableSQL = `CREATE TABLE IF NOT EXISTS items(
+                        id INT AUTO_INCREMENT NOT NULL,
+                        Name VARCHAR(255) NOT NULL ,
+                        Brand VARCHAR(255) NOT NULL,
+                        Category VARCHAR(255) NOT NULL,
+                        CostPrice DECIMAL(8,2) NOT NULL,
+                        SellingPrice DECIMAL(8,2) NOT NULL,
+                        InStock INT NOT NULL,
+                        Discount INT NOT NULL,
+                        Deleted BOOLEAN NOT NULL,
+                        ReOrderLevel INT NOT NULL,
+                        UNIQUE(Name, Brand, Category),
+                        PRIMARY KEY (id),
+                        FOREIGN KEY (Brand) REFERENCES itemBrands(Name),
+                        FOREIGN KEY (Category) REFERENCES  itemCategories(Name)
+                    )`;
+      let createUserTableSQL = `
+                        CREATE TABLE IF NOT EXISTS  users
+                        (
                             id INT AUTO_INCREMENT NOT NULL,
-                            Name VARCHAR(255) NOT NULL ,
-                            Brand VARCHAR(255) NOT NULL,
-                            Category VARCHAR(255) NOT NULL,
-                            CostPrice DECIMAL(8,2) NOT NULL,
-                            SellingPrice DECIMAL(8,2) NOT NULL,
-                            InStock INT NOT NULL,
-                            Discount INT NOT NULL,
-                            Deleted BOOLEAN NOT NULL,
-                            ReOrderLevel INT NOT NULL,
-                            UNIQUE(Name, Brand, Category),
-                            PRIMARY KEY (id),
-                            FOREIGN KEY (Brand) REFERENCES duffykids.itemBrands(Name),
-                            FOREIGN KEY (Category) REFERENCES duffykids.itemCategories(Name)
-                        )`;
-        let createUserTableSQL = `
-                            CREATE TABLE IF NOT EXISTS duffykids.users
+                            First_Name TEXT(255) NOT NULL,
+                            Last_Name TEXT(255) NOT NULL,
+                            User_Name VARCHAR(255) NOT NULL,
+                            Password VARCHAR(255) NOT NULL,
+                            IsAdmin BOOLEAN NOT NULL,
+                            Last_Seen DATETIME,
+                            UNIQUE(User_Name),
+                            PRIMARY KEY (id)
+                        )
+
+                    `;
+      let createBrandTableSQL = `
+                        CREATE TABLE IF NOT EXISTS  itemBrands
+                        (
+                            Name VARCHAR(255) NOT NULL,
+                            PRIMARY KEY(Name)
+                        )
+
+                    `;
+      const createCategoriesSQL = `
+                        CREATE TABLE IF NOT EXISTS  itemCategories
+                        (
+                            Name VARCHAR(255) NOT NULL, 
+                            PRIMARY KEY(Name)
+                        )
+                    `;
+      const createAuditTrailTableSQL = `
+                        CREATE TABLE IF NOT EXISTS  auditTrails
+                        (
+                            id INT AUTO_INCREMENT NOT NULL,
+                            Date DATETIME NOT NULL,
+                            User INT NOT NULL,
+                            Operation VARCHAR(255) NOT NULL,
+                            Item INT NOT NULL,
+                            PRIMARY KEY(id),
+                            FOREIGN KEY (User) REFERENCES  users(id) ON DELETE CASCADE ON UPDATE CASCADE,
+                            FOREIGN KEY (Item) REFERENCES  items(id) ON DELETE CASCADE ON UPDATE CASCADE
+                        )
+
+                    `;
+      const createSalesTableSQL = `
+                        CREATE TABLE IF NOT EXISTS  sales
                             (
                                 id INT AUTO_INCREMENT NOT NULL,
-                                First_Name TEXT(255) NOT NULL,
-                                Last_Name TEXT(255) NOT NULL,
-                                User_Name VARCHAR(255) NOT NULL,
-                                Password VARCHAR(255) NOT NULL,
-                                IsAdmin BOOLEAN NOT NULL,
-                                Last_Seen DATETIME,
-                                UNIQUE(User_Name),
-                                PRIMARY KEY (id)
-                            )
-    
-                        `;
-        let createBrandTableSQL = `
-                            CREATE TABLE IF NOT EXISTS duffykids.itemBrands
-                            (
-                                Name VARCHAR(255) NOT NULL,
-                                PRIMARY KEY(Name)
-                            )
-    
-                        `;
-        const createCategoriesSQL = `
-                            CREATE TABLE IF NOT EXISTS duffykids.itemCategories
-                            (
-                                Name VARCHAR(255) NOT NULL, 
-                                PRIMARY KEY(Name)
-                            )
-                        `;
-        const createAuditTrailTableSQL = `
-                            CREATE TABLE IF NOT EXISTS duffykids.auditTrails
-                            (
-                                id INT AUTO_INCREMENT NOT NULL,
-                                Date DATETIME NOT NULL,
-                                User INT NOT NULL,
-                                Operation VARCHAR(255) NOT NULL,
+                                Date DATE NOT NULL,
+                                User INT NOT NULL, 
                                 Item INT NOT NULL,
+                                Purchased INT NOT NULL,
+                                Revenue DECIMAL(8,2) NOT NULL,
+                                Profit DECIMAL(8,2) NOT NULL,
+                                UnitDiscount DECIMAL(8,2) NOT NULL,
+                                TotalDiscount DECIMAL(8,2) NOT NULL,
                                 PRIMARY KEY(id),
-                                FOREIGN KEY (User) REFERENCES duffykids.users(id) ON DELETE CASCADE ON UPDATE CASCADE,
-                                FOREIGN KEY (Item) REFERENCES duffykids.items(id) ON DELETE CASCADE ON UPDATE CASCADE
-                            )
-    
-                        `;
-        const createSalesTableSQL = `
-                            CREATE TABLE IF NOT EXISTS duffykids.sales
-                                (
-                                    id INT AUTO_INCREMENT NOT NULL,
-                                    Date DATE NOT NULL,
-                                    User INT NOT NULL, 
-                                    Item INT NOT NULL,
-                                    Purchased INT NOT NULL,
-                                    Revenue DECIMAL(8,2) NOT NULL,
-                                    Profit DECIMAL(8,2) NOT NULL,
-                                    UnitDiscount DECIMAL(8,2) NOT NULL,
-                                    TotalDiscount DECIMAL(8,2) NOT NULL,
-                                    PRIMARY KEY(id),
-                                    FOREIGN KEY (User) REFERENCES duffykids.users(id) ON DELETE CASCADE ON UPDATE CASCADE,
-                                    FOREIGN KEY (Item) REFERENCES duffykids.items(id) ON DELETE CASCADE ON UPDATE CASCADE
-                                )
-
-                        `;
-        const createItemAuditTrailSQL = `
-                            CREATE TABLE IF NOT EXISTS duffykids.itemAuditTrails
-                            (
-                                Item INT NOT NULL,
-                                AuditTrail INT NOT NULL,
-                                FOREIGN KEY (AuditTrail) REFERENCES duffykids.AuditTrails(id) ON DELETE CASCADE ON UPDATE CASCADE,
-                                FOREIGN KEY (Item) REFERENCES duffykids.items(id) ON DELETE CASCADE ON UPDATE CASCADE
+                                FOREIGN KEY (User) REFERENCES  users(id) ON DELETE CASCADE ON UPDATE CASCADE,
+                                FOREIGN KEY (Item) REFERENCES  items(id) ON DELETE CASCADE ON UPDATE CASCADE
                             )
 
-                        `;
-        const createUserSalesSQL = `
-                            CREATE TABLE IF NOT EXISTS duffykids.UserSales
-                            (
-                                User INT NOT NULL,
-                                Sales INT NOT NULL,
-                                FOREIGN KEY(User) REFERENCES duffykids.users(id) ON DELETE CASCADE ON UPDATE CASCADE,
-                                FOREIGN KEY(Sales) REFERENCES duffykids.sales(id) ON DELETE CASCADE ON UPDATE CASCADE
-                            )
-                        `;
-        const createReportedAccountsSQL = `
-                            CREATE TABLE duffykids.ReportedAccounts
-                            (
-                                User_Name VARCHAR(255) NOT NULL,
-                                FOREIGN KEY(User_Name) REFERENCES duffykids.users(User_Name) ON DELETE CASCADE ON UPDATE CASCADE
-                            )
+                    `;
+      const createItemAuditTrailSQL = `
+                        CREATE TABLE IF NOT EXISTS  itemAuditTrails
+                        (
+                            Item INT NOT NULL,
+                            AuditTrail INT NOT NULL,
+                            FOREIGN KEY (AuditTrail) REFERENCES  AuditTrails(id) ON DELETE CASCADE ON UPDATE CASCADE,
+                            FOREIGN KEY (Item) REFERENCES  items(id) ON DELETE CASCADE ON UPDATE CASCADE
+                        )
 
-                        `;
-        const addNewUserSQL = `
-                            INSERT INTO users SET ?        
+                    `;
+      const createUserSalesSQL = `
+                        CREATE TABLE IF NOT EXISTS  UserSales
+                        (
+                            User INT NOT NULL,
+                            Sales INT NOT NULL,
+                            FOREIGN KEY(User) REFERENCES  users(id) ON DELETE CASCADE ON UPDATE CASCADE,
+                            FOREIGN KEY(Sales) REFERENCES  sales(id) ON DELETE CASCADE ON UPDATE CASCADE
+                        )
+                    `;
+      const createReportedAccountsSQL = `
+                        CREATE TABLE IF NOT EXISTS  ReportedAccounts
+                        (
+                            User_Name VARCHAR(255) NOT NULL,
+                            FOREIGN KEY(User_Name) REFERENCES  users(User_Name) ON DELETE CASCADE ON UPDATE CASCADE
+                        )
 
-                        `;
-        this.connector = mariadb.createConnection({
-          host: 'localhost',
-          user: 'root',
-          password: ''
-        });
+                    `;
+
+      if (error) {
+        throw error;
+      } else {
         this.connector.beginTransaction(error => {
           if (error) {
             throw error;
           } else {
-            this.connector.connect(err => {
-              if (err) {
-                this.connector.rollback(() => {});
+            this.connector.query(createBrandTableSQL, () => {
+              if (error !== null) {
+                this.connector.rollback(() => {
+                  console.log("error");
+                  throw error;
+                });
               } else {
-                this.connector.query(createDBsql, error => {
-                  if (error) {
-                    this.connector.rollback(() => {});
-                  }
+                this.connector.query(createCategoriesSQL, error => {
+                  if (error !== null) {
+                    this.connector.rollback(() => {
+                      console.log("error");
+                      throw error;
+                    });
+                  } else {
+                    this.connector.query(createUserTableSQL, error => {
+                      if (error !== null) {
+                        this.connector.rollback(() => {
+                          console.log("error");
+                          throw error;
+                        });
+                      } else {
+                        this.connector.query(createItemsTableSQL, error => {
+                          if (error !== null) {
+                            this.connector.rollback(() => {
+                              console.log("error");
+                              throw error;
+                            });
+                          } else {
+                            this.connector.query(createSalesTableSQL, error => {
+                              if (error) {
+                                this.connector.rollback(() => {
+                                  console.log("error");
+                                  throw error;
+                                });
+                              } else {
+                                this.connector.query(createAuditTrailTableSQL, error => {
+                                  if (error) {
+                                    this.connector.rollback(() => {
+                                      console.log("error");
+                                      throw error;
+                                    });
+                                  } else {
+                                    this.connector.query(createItemAuditTrailSQL, error => {
+                                      if (error) {
+                                        this.connector.rollback(() => {
+                                          console.log("error");
+                                          throw error;
+                                        });
+                                      } else {
+                                        this.connector.query(createUserSalesSQL, error => {
+                                          if (error) {
+                                            this.connector.rollback(() => {
+                                              console.log("error");
+                                              throw error;
+                                            });
+                                          }
 
-                  this.connector = mariadb.createConnection({
-                    host: 'localhost',
-                    user: 'root',
-                    password: '',
-                    database: 'duffykids'
-                  });
-                  this.connector.connect(error => {
-                    if (error) {
-                      console.log(error);
-                    } else {
-                      this.connector.query(createBrandTableSQL, () => {
-                        if (error !== null) {
-                          this.connector.rollback(() => {
-                            console.log("error");
-                            throw error;
-                          });
-                        } else {
-                          this.connector.query(createCategoriesSQL, error => {
-                            if (error !== null) {
-                              this.connector.rollback(() => {
-                                console.log("error");
-                                throw error;
-                              });
-                            } else {
-                              this.connector.query(createUserTableSQL, error => {
-                                if (error !== null) {
-                                  this.connector.rollback(() => {
-                                    console.log("error");
-                                    throw error;
-                                  });
-                                } else {
-                                  this.connector.query(createItemsTableSQL, error => {
-                                    if (error !== null) {
-                                      this.connector.rollback(() => {
-                                        console.log("error");
-                                        throw error;
-                                      });
-                                    } else {
-                                      this.connector.query(createSalesTableSQL, error => {
-                                        if (error) {
-                                          this.connector.rollback(() => {
-                                            console.log("error");
-                                            throw error;
-                                          });
-                                        } else {
-                                          this.connector.query(createAuditTrailTableSQL, error => {
+                                          this.connector.query(createReportedAccountsSQL, error => {
                                             if (error) {
                                               this.connector.rollback(() => {
                                                 console.log("error");
                                                 throw error;
                                               });
                                             } else {
-                                              this.connector.query(createItemAuditTrailSQL, error => {
+                                              this.connector.query("SELECT COUNT(*) AS Count FROM `users`", (error, result) => {
                                                 if (error) {
-                                                  this.connector.rollback(() => {
-                                                    console.log("error");
-                                                    throw error;
-                                                  });
+                                                  throw error;
                                                 } else {
-                                                  this.connector.query(createUserSalesSQL, error => {
-                                                    if (error) {
-                                                      this.connector.rollback(() => {
-                                                        console.log("error");
-                                                        throw error;
-                                                      });
-                                                    }
+                                                  console.log(result);
+                                                  result = result.pop();
 
-                                                    this.connector.query(createReportedAccountsSQL, error => {
+                                                  if (result.Count === 0) {
+                                                    this.connector.query("INSERT INTO `users` SET ?", {
+                                                      First_Name: "admin",
+                                                      Last_Name: "admin",
+                                                      User_Name: "admin",
+                                                      Password: "U2FsdGVkX1+1/HhsPvFWOKBvsPBE1J0Re3XDWquuZeU="
+                                                    }, (error, result) => {
                                                       if (error) {
-                                                        this.connector.rollback(() => {
-                                                          console.log("error");
-                                                          throw error;
-                                                        });
+                                                        this.connector.rollback();
+                                                        throw error;
                                                       } else {
-                                                        this.connector.query(addNewUserSQL, {
-                                                          First_Name: "Duffy",
-                                                          Last_Name: "Kids",
-                                                          User_Name: "admin",
-                                                          Password: "U2FsdGVkX1+1/HhsPvFWOKBvsPBE1J0Re3XDWquuZeU=",
-                                                          IsAdmin: 1
-                                                        }, (error, result) => {
+                                                        this.connector.commit(error => {
                                                           if (error) {
                                                             throw error;
                                                           }
-
-                                                          this.connector.commit(error => {
-                                                            if (error) {
-                                                              throw error;
-                                                            }
-                                                          });
                                                         });
                                                       }
                                                     });
-                                                  });
+                                                  }
                                                 }
                                               });
                                             }
                                           });
-                                        }
-                                      });
-                                    }
-                                  });
-                                }
-                              });
-                            }
-                          });
-                        }
-                      });
-                    }
-                  });
+                                        });
+                                      }
+                                    });
+                                  }
+                                });
+                              }
+                            });
+                          }
+                        });
+                      }
+                    });
+                  }
                 });
               }
             });
@@ -1169,15 +1147,15 @@ class DATABASE {
     return new Promise((resolve, reject) => {
       const array = Object.values(shopItem);
       let [name, brand, category, stock, sellingPrice, costPrice, discount] = array;
-      let insertCategorySQL = `INSERT INTO duffykids.itemCategories SET ? `;
+      let insertCategorySQL = `INSERT INTO  itemCategories SET ? `;
       let categoryValues = {
         Name: category
       };
-      let insertBrandSQL = `INSERT INTO duffykids.itemBrands SET ? `;
+      let insertBrandSQL = `INSERT INTO  itemBrands SET ? `;
       let brandValues = {
         Name: brand
       };
-      let insertItemSQL = "INSERT INTO duffykids.items SET ? ON DUPLICATE KEY UPDATE ?";
+      let insertItemSQL = "INSERT INTO  items SET ? ON DUPLICATE KEY UPDATE ?";
       let values = {
         Name: name,
         Brand: brand,
@@ -1218,7 +1196,7 @@ class DATABASE {
                         });
                       }
                     } else {
-                      this.connector.query(`SELECT * FROM duffykids.users WHERE User_Name = '${userName}'`, (error, result) => {
+                      this.connector.query(`SELECT * FROM  users WHERE User_Name = '${userName}'`, (error, result) => {
                         let user = result.shift();
 
                         if (error) {
@@ -1240,7 +1218,7 @@ class DATABASE {
                             Operation: "Creation",
                             Item: itemId
                           };
-                          this.connector.query("INSERT INTO duffykids.auditTrails SET ?", auditTrailValues, (error, result) => {
+                          this.connector.query("INSERT INTO  auditTrails SET ?", auditTrailValues, (error, result) => {
                             if (error) {
                               this.connector.rollback(function () {
                                 reject("unknown error");
@@ -1251,7 +1229,7 @@ class DATABASE {
                                 Item: itemId,
                                 AuditTrail: result.insertId
                               };
-                              this.connector.query("INSERT INTO duffykids.itemAuditTrails SET ?", itemAuditTrailValues, error => {
+                              this.connector.query("INSERT INTO  itemAuditTrails SET ?", itemAuditTrailValues, error => {
                                 if (error) {
                                   this.connector.rollback(() => {
                                     reject("unknown error");
@@ -1297,7 +1275,7 @@ class DATABASE {
         SellingPrice: change.SellingPrice,
         Discount: change.Discount
       };
-      let updateItemSQL = `UPDATE duffykids.items SET ? WHERE Name = '${change.Name}' AND Brand = '${change.Brand}' AND Category = '${change.Category}'`;
+      let updateItemSQL = `UPDATE  items SET ? WHERE Name = '${change.Name}' AND Brand = '${change.Brand}' AND Category = '${change.Category}'`;
       this.connector.beginTransaction(error => {
         if (error) {
           reject("unknown error");
@@ -1316,7 +1294,7 @@ class DATABASE {
               });
             } else {
               console.log(change.Name, change.Brand, change.Category);
-              this.connector.query(`SELECT * FROM duffykids.items WHERE Name = '${change.Name}' AND Brand = '${change.Brand}' AND Category = '${change.Category}'`, (error, result) => {
+              this.connector.query(`SELECT * FROM  items WHERE Name = '${change.Name}' AND Brand = '${change.Brand}' AND Category = '${change.Category}'`, (error, result) => {
                 if (error) {
                   this.connector.rollback(() => {
                     reject("unknown error");
@@ -1326,7 +1304,7 @@ class DATABASE {
                   console.log(result);
                   const item = result.shift();
                   const itemId = item.id;
-                  this.connector.query(`SELECT * FROM duffykids.users WHERE User_Name = '${User}'`, (error, result) => {
+                  this.connector.query(`SELECT * FROM  users WHERE User_Name = '${User}'`, (error, result) => {
                     let user = result.shift();
                     let userId = user.id;
 
@@ -1348,7 +1326,7 @@ class DATABASE {
                         Operation: "Edit",
                         Item: itemId
                       };
-                      this.connector.query("INSERT INTO duffykids.auditTrails SET ?", auditTrailValues, (error, result) => {
+                      this.connector.query("INSERT INTO  auditTrails SET ?", auditTrailValues, (error, result) => {
                         if (error) {
                           this.connector.rollback(() => {
                             reject("unknown error");
@@ -1359,7 +1337,7 @@ class DATABASE {
                             Item: itemId,
                             AuditTrail: result.insertId
                           };
-                          this.connector.query("INSERT INTO duffykids.itemAuditTrails SET ?", itemAuditTrailValues, error => {
+                          this.connector.query("INSERT INTO  itemAuditTrails SET ?", itemAuditTrailValues, error => {
                             if (error) {
                               this.connector.rollback(() => {
                                 reject("unknown error");
@@ -1438,7 +1416,7 @@ class DATABASE {
 
   fetchItems() {
     return new Promise((resolve, reject) => {
-      this.connector.query("SELECT * FROM duffykids.items ORDER BY Name ASC LIMIT 200", (error, results) => {
+      this.connector.query("SELECT * FROM  items ORDER BY Name ASC LIMIT 200", (error, results) => {
         if (error) {
           if (error.code === "ECONNREFUSED") {
             reject(error.code);
@@ -1454,7 +1432,7 @@ class DATABASE {
 
   paginateRemainingItems(offset) {
     return new Promise((resolve, reject) => {
-      this.connector.query(`SELECT * FROM duffykids.items ORDER BY Name ASC LIMIT ${offset}, 200`, (error, results) => {
+      this.connector.query(`SELECT * FROM  items ORDER BY Name ASC LIMIT ${offset}, 200`, (error, results) => {
         if (error) {
           if (error.code === "ECONNREFUSED") {
             reject(error.code);
@@ -1541,10 +1519,10 @@ class DATABASE {
             throw error;
           }
 
-          this.connector.query(`INSERT INTO duffykids.itemBrands SET Name = '${item.Brand}'`, error => {
+          this.connector.query(`INSERT INTO  itemBrands SET Name = '${item.Brand}'`, error => {
             if (error === null || error.code === "ER_DUP_ENTRY") {
-              this.connector.query(`INSERT INTO duffykids.itemCategories SET Name='${item.Category}' ON DUPLICATE KEY UPDATE Name= '${item.Category}'`, error => {
-                this.connector.query("INSERT INTO duffykids.items SET ? ON DUPLICATE KEY UPDATE ?", [item, item], (error, result) => {
+              this.connector.query(`INSERT INTO  itemCategories SET Name='${item.Category}' ON DUPLICATE KEY UPDATE Name= '${item.Category}'`, error => {
+                this.connector.query("INSERT INTO  items SET ? ON DUPLICATE KEY UPDATE ?", [item, item], (error, result) => {
                   if (error) {
                     this.connector.rollback(() => {
                       if (error.code === "ER_DUP_ENTRY") {
@@ -1572,7 +1550,7 @@ class DATABASE {
                           Operation: "Creation",
                           Item: itemId
                         };
-                        this.connector.query("INSERT INTO duffykids.auditTrails SET ?", auditTrailValues, (error, result) => {
+                        this.connector.query("INSERT INTO  auditTrails SET ?", auditTrailValues, (error, result) => {
                           if (error) {
                             this.connector.rollback(() => {
                               reject("unknown error");
@@ -1583,7 +1561,7 @@ class DATABASE {
                               item: itemId,
                               auditTrail: result.insertId
                             };
-                            this.connector.query("INSERT INTO duffykids.itemAuditTrails SET ?", itemAuditTrailValues, error => {
+                            this.connector.query("INSERT INTO  itemAuditTrails SET ?", itemAuditTrailValues, error => {
                               if (error) {
                                 this.connector.rollback(() => {
                                   reject("unknown error");
@@ -1623,7 +1601,7 @@ class DATABASE {
 
   getAllItemCategories() {
     return new Promise((resolve, reject) => {
-      this.connector.query("SELECT * FROM duffykids.itemCategories", (err, result) => {
+      this.connector.query("SELECT * FROM  itemCategories", (err, result) => {
         if (err) {
           console.log(err);
         } else {
@@ -1636,7 +1614,7 @@ class DATABASE {
 
   getAllItemBrands() {
     return new Promise((resolve, reject) => {
-      this.connector.query("SELECT * FROM duffykids.itemBrands", (err, result) => {
+      this.connector.query("SELECT * FROM  itemBrands", (err, result) => {
         if (err) {
           console.log(err);
         } else {
@@ -1719,7 +1697,7 @@ class DATABASE {
                     reject("unknown error");
                     throw error;
                   } else {
-                    this.connector.query("INSERT INTO duffykids.sales SET ?", finalSaleValue, (error, result) => {
+                    this.connector.query("INSERT INTO  sales SET ?", finalSaleValue, (error, result) => {
                       if (error) {
                         this.connector.rollback(() => {
                           reject("unknown error");
@@ -1730,14 +1708,14 @@ class DATABASE {
                           User: userId,
                           Sales: result.insertId
                         };
-                        this.connector.query("INSERT INTO duffykids.UserSales SET ?", userSaleValue, error => {
+                        this.connector.query("INSERT INTO  UserSales SET ?", userSaleValue, error => {
                           if (error) {
                             this.connector.rollback(() => {
                               reject("unknown error");
                               throw error;
                             });
                           } else {
-                            this.connector.query(`UPDATE duffykids.items SET InStock = '${InStock}' WHERE Name='${itemName}' AND Brand='${itemBrand}' AND Category='${itemCategory}'`, error => {
+                            this.connector.query(`UPDATE  items SET InStock = '${InStock}' WHERE Name='${itemName}' AND Brand='${itemBrand}' AND Category='${itemCategory}'`, error => {
                               if (error) {
                                 this.connector.rollback(() => {
                                   reject("unknown error");

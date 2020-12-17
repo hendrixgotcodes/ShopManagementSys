@@ -105,6 +105,7 @@ tbPassword.addEventListener("blur", function verifyInputValues(){
 tbUserName.addEventListener("keyup", function(e){
 
     if(e.key == " "){
+        
         e.preventDefault()
 
         warningLabel_tb.innerText = `Spaces not allowed here`
@@ -325,7 +326,6 @@ function loadStore(e) {
             else{
 
                 warningLabel_tb.innerText = `Sorry. An error occurred.`;
-                warningLabel_tb.appendChild(img);
 
                 warningLabel_tb.hidden = false;
 
