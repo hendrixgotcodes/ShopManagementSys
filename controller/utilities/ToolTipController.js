@@ -185,6 +185,10 @@ function setToolTips(){
         let settings = document.createElement('span');
         settings.innerText = 'General Settings';
         settings.className = 'tooltip_cb';
+
+        let signOut = document.createElement("span");
+        signOut.innerText = "Sign Out";
+        signOut.className = "tooltip_cb"
         
         
         tip_storeFront = tippy('.tip_store', {
@@ -214,6 +218,11 @@ function setToolTips(){
                         content: settings,
                         placement: 'bottom'
                       });
+
+        tippy('#signout',{
+          content: signOut,
+          placement: "bottom"
+        })
 
         
 

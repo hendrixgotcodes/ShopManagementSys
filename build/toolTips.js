@@ -1052,6 +1052,9 @@ function setToolTips() {
   let settings = document.createElement('span');
   settings.innerText = 'General Settings';
   settings.className = 'tooltip_cb';
+  let signOut = document.createElement("span");
+  signOut.innerText = "Sign Out";
+  signOut.className = "tooltip_cb";
   tip_storeFront = Object(tippy_js__WEBPACK_IMPORTED_MODULE_0__["default"])('.tip_store', {
     content: storeFront
   });
@@ -1071,6 +1074,10 @@ function setToolTips() {
   tip_settings = Object(tippy_js__WEBPACK_IMPORTED_MODULE_0__["default"])('#settings', {
     content: settings,
     placement: 'bottom'
+  });
+  Object(tippy_js__WEBPACK_IMPORTED_MODULE_0__["default"])('#signout', {
+    content: signOut,
+    placement: "bottom"
   });
 }
 /****************Events From Main Process */
