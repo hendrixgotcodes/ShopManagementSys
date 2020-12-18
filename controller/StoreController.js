@@ -8,6 +8,7 @@
 
 /**********************************IMPORTED ***************************/
 const { ipcRenderer } = require("electron");
+import clip from 'text-clipper';
 import Notifications from '../controller/Alerts/NotificationController'
 import DATABASE from '../model/DATABASE';
 import DOMCONTROLLER from './utilities/TableController';
@@ -764,7 +765,7 @@ function showIssues(){
                 </div>
                 <div class="main">
                     <label for="" class="title">Employee Issues</label>
-                    <label for="" class="message"><span class="userName">${account.First_Name} ${account.Last_Name}</span> has forgotten his password. Click here to solve this issue.</label>
+                    <label for="" class="message"><span class="userName">${clip(`${account.First_Name} ${account.Last_Name}`, 10)}</span> has forgotten his password. Click here to solve this issue.</label>
                 </div>
 
             `
@@ -782,7 +783,7 @@ function showIssues(){
                 confirmNewPasswordBox.innerHTML =
                 `
                     <label for="passwordBox" id="lbl_container">
-                        <label>This will be your ${account.First_Name}'s new password. Please copy and confirm.</label>
+                        <label>This will be ${clip(account.First_Name, 8)}'s new password. Please copy and confirm.</label>
                         <input type="text" id="passwordBox">
                         <button id="copy">
                             <img src="../Icons/modals/clipboard.svg"/>
@@ -887,7 +888,7 @@ function showIssues(){
                 </div>
                 <div class="main">
                     <label for="" class="title">Reorder level reached</label>
-                    <label for="" class="message"><span class="userName">${item.Name}</span> of brand ${item.Brand} and category ${item.Category} has reached its reorder level.</label>
+                    <label for="" class="message"><span class="userName">${clip(item.Name, 10)}</span> of brand ${clip(item.Brand, 5)} and category ${clip(item.Category, 7)} has reached its reorder level.</label>
                 </div>
 
             `

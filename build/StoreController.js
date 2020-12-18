@@ -209,12 +209,14 @@ module.exports = Notifications;
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _controller_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../controller/Alerts/NotificationController */ "./controller/Alerts/NotificationController.js");
-/* harmony import */ var _controller_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_controller_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _model_DATABASE__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../model/DATABASE */ "./model/DATABASE.js");
-/* harmony import */ var _model_DATABASE__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_model_DATABASE__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _utilities_TableController__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./utilities/TableController */ "./controller/utilities/TableController.js");
-/* harmony import */ var _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_utilities_TableController__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var text_clipper__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! text-clipper */ "./node_modules/text-clipper/dist/index.js");
+/* harmony import */ var text_clipper__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(text_clipper__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _controller_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../controller/Alerts/NotificationController */ "./controller/Alerts/NotificationController.js");
+/* harmony import */ var _controller_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_controller_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _model_DATABASE__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../model/DATABASE */ "./model/DATABASE.js");
+/* harmony import */ var _model_DATABASE__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_model_DATABASE__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _utilities_TableController__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./utilities/TableController */ "./controller/utilities/TableController.js");
+/* harmony import */ var _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_utilities_TableController__WEBPACK_IMPORTED_MODULE_3__);
 
 /**
  * @param {HTMLTableElement} tableEl
@@ -230,10 +232,11 @@ const {
 
 
 
+
 const cryptoJS = __webpack_require__(/*! crypto-js */ "./node_modules/crypto-js/index.js"); //Intitalizing DB
 
 
-const database = new _model_DATABASE__WEBPACK_IMPORTED_MODULE_1___default.a();
+const database = new _model_DATABASE__WEBPACK_IMPORTED_MODULE_2___default.a();
 /*********************************User Params */
 
 let UserName, UserType;
@@ -277,7 +280,7 @@ window.addEventListener("load", () => {
 tip_default.addEventListener('click', () => {
   selectValue_span.innerHTML = "Filter By:";
   selectValue_span.setAttribute("value", "default");
-  _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.resetTable();
+  _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.resetTable();
 }); //For ToolBarBtn
 
 toolBarBtn.addEventListener('click', e => {
@@ -316,7 +319,7 @@ footerBell.addEventListener("ReOrderLevel_Reached", function alertUserReOrderLev
 
 function initializeStoreItems() {
   ipcRenderer.send("sendUserParams");
-  _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.showLoadingBanner("Please wait. Attempting to fetch items from database...");
+  _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.showLoadingBanner("Please wait. Attempting to fetch items from database...");
   database.getTotalItems().then(totalItems => {
     totalItems = totalItems.pop();
     TotalItems = totalItems.Total;
@@ -324,15 +327,15 @@ function initializeStoreItems() {
       //If returned array contains any store item
       if (fetchedItems.length > 0) {
         //Remove loading banner
-        _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.removeOldBanners(); //then add each item to the table in the DOM
+        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.removeOldBanners(); //then add each item to the table in the DOM
 
         fetchedItems.forEach(fetchedItem => {
           //T his will only add items which "InStock" is greater than zero
           if (parseInt(fetchedItem.InStock) > 0) {
             if (fetchedItem.Deleted === 1) {
-              _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, "", false, fetchedItem.CostPrice, "", true, true, "Store", false);
+              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, "", false, fetchedItem.CostPrice, "", true, true, "Store", false);
             } else {
-              _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, "", false, fetchedItem.CostPrice, "", true, false, "Store", false);
+              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, "", false, fetchedItem.CostPrice, "", true, false, "Store", false);
             }
           }
 
@@ -348,9 +351,9 @@ function initializeStoreItems() {
         });
       } else {
         //Remove loading banner
-        _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.removeOldBanners(); // Show isEmpty banner
+        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.removeOldBanners(); // Show isEmpty banner
 
-        _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.showIsEmpty();
+        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.showIsEmpty();
       }
     }).then(() => {
       TotalItems - 2;
@@ -372,8 +375,8 @@ function initializeStoreItems() {
       fetchItemsRecursive();
     }).catch(e => {
       if (e === "ECONNREFUSED") {
-        _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.removeOldBanners();
-        _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.showErrorBanner("Failed to connect to database. Please try reloading or contacting us");
+        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.removeOldBanners();
+        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.showErrorBanner("Failed to connect to database. Please try reloading or contacting us");
       }
     });
   });
@@ -406,7 +409,7 @@ function fetchItemsRecursive(offset = 200) {
           //T his will only add items which "InStock" is greater than zero
           if (parseInt(fetchedItem.InStock) > 0) {
             if (fetchedItem.Deleted !== 1) {
-              _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, "", false, fetchedItem.CostPrice, "", true, false, "Store", false).then(row => {
+              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, "", false, fetchedItem.CostPrice, "", true, false, "Store", false).then(row => {
                 //For "tableBody"
                 row.addEventListener('click', e => {
                   toggleRowCB(row);
@@ -461,7 +464,7 @@ function seek(variable) {
   });
 
   if (notFound === true) {
-    _controller_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_0___default.a.showNotification("Item not found");
+    _controller_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_1___default.a.showNotification("Item not found");
   }
 } //-----------------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------------------
@@ -490,11 +493,11 @@ function toggleRowCB(row) {
       totalSelectedRows = totalSelectedRows - 1;
     }
 
-    _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.addToCart(row, cart, btnCart_sell, btnCart_clear, subtractItem);
+    _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.addToCart(row, cart, btnCart_sell, btnCart_clear, subtractItem);
   } else {
     CB.checked = true;
     totalSelectedRows = totalSelectedRows + 1;
-    _utilities_TableController__WEBPACK_IMPORTED_MODULE_2___default.a.addToCart(row, cart, btnCart_sell, btnCart_clear, subtractItem);
+    _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.addToCart(row, cart, btnCart_sell, btnCart_clear, subtractItem);
   }
 } //-----------------------------------------------------------------------------------------------
 
@@ -513,10 +516,10 @@ function checkout() {
       salesMadeAmount.innerText = parseFloat(salesMadeAmount.innerText) + parseFloat(mainTotal.innerText);
       salesMadeAmount.innerText = parseFloat(salesMadeAmount.innerText);
       clearAllItems();
-      _controller_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_0___default.a.showAlert("success", "Sale successful");
+      _controller_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_1___default.a.showAlert("success", "Sale successful");
     }
   }).catch(error => {
-    _controller_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_0___default.a.showAlert("error", "Sorry. Failed to make sale due to an unknown error");
+    _controller_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_1___default.a.showAlert("error", "Sorry. Failed to make sale due to an unknown error");
   });
 }
 
@@ -664,7 +667,7 @@ function showIssues() {
                 </div>
                 <div class="main">
                     <label for="" class="title">Employee Issues</label>
-                    <label for="" class="message"><span class="userName">${account.First_Name} ${account.Last_Name}</span> has forgotten his password. Click here to solve this issue.</label>
+                    <label for="" class="message"><span class="userName">${text_clipper__WEBPACK_IMPORTED_MODULE_0___default()(`${account.First_Name} ${account.Last_Name}`, 10)}</span> has forgotten his password. Click here to solve this issue.</label>
                 </div>
 
             `;
@@ -678,7 +681,7 @@ function showIssues() {
         confirmNewPasswordBox.className = "confirmNewPasswordBox";
         confirmNewPasswordBox.innerHTML = `
                     <label for="passwordBox" id="lbl_container">
-                        <label>This will be your ${account.First_Name}'s new password. Please copy and confirm.</label>
+                        <label>This will be ${text_clipper__WEBPACK_IMPORTED_MODULE_0___default()(account.First_Name, 8)}'s new password. Please copy and confirm.</label>
                         <input type="text" id="passwordBox">
                         <button id="copy">
                             <img src="../Icons/modals/clipboard.svg"/>
@@ -743,7 +746,7 @@ function showIssues() {
                 </div>
                 <div class="main">
                     <label for="" class="title">Reorder level reached</label>
-                    <label for="" class="message"><span class="userName">${item.Name}</span> of brand ${item.Brand} and category ${item.Category} has reached its reorder level.</label>
+                    <label for="" class="message"><span class="userName">${text_clipper__WEBPACK_IMPORTED_MODULE_0___default()(item.Name, 10)}</span> of brand ${text_clipper__WEBPACK_IMPORTED_MODULE_0___default()(item.Brand, 5)} and category ${text_clipper__WEBPACK_IMPORTED_MODULE_0___default()(item.Category, 7)} has reached its reorder level.</label>
                 </div>
 
             `;
@@ -779,7 +782,7 @@ ipcRenderer.on("ctrlS_pressed", e => {
   if (cart.length > 0) {
     checkout();
   } else {
-    _controller_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_0___default.a.showNotification("Nothing to sell");
+    _controller_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_1___default.a.showNotification("Nothing to sell");
   }
 });
 ipcRenderer.on("ctrlC_pressed", e => {
