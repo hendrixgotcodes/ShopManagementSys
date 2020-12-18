@@ -118,14 +118,22 @@ body {
         justify-content: center;
         width: 100%;
         height: 100%;
+        position: relative;
 
         & .menu_items {
             height: 13%;
             cursor: pointer;
 
             &:nth-child(1) {
-                margin-right: 13%;
+                margin-right: 18%;
             }
+        }
+
+        #signout{
+            position: absolute;
+            bottom: 25%;
+            left: 41%;
+            transform: rotate(180deg);
         }
     }
 
