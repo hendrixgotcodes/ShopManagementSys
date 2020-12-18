@@ -496,6 +496,10 @@ const database = new _model_DATABASE__WEBPACK_IMPORTED_MODULE_0___default.a();
 
 class Modal {
   static openPrompt(itemName = "", resolve, reject, justVerify = "", customMessage = "") {
+    if (document.querySelector("dialog--promptBox") !== null) {
+      return;
+    }
+
     let defaultMessage = "Please Enter Your Password To Continue";
 
     if (customMessage !== "") {
@@ -543,13 +547,16 @@ class Modal {
   }
 
   static openExitPrompt() {
-    return new Promise((resolve, reject) => {
-      const contentCover = document.querySelector(".contentCover");
-      const contentContainer = document.querySelector(".contentContainer");
-      contentCover.classList.add("contentCover--shown");
-      const exitPromptBox = document.createElement("div");
-      exitPromptBox.className = "exitPromptBox";
-      exitPromptBox.innerHTML = `
+    if (document.querySelector(".exitPromptBox") !== null) {
+      return;
+    } else {
+      return new Promise((resolve, reject) => {
+        const contentCover = document.querySelector(".contentCover");
+        const contentContainer = document.querySelector(".contentContainer");
+        contentCover.classList.add("contentCover--shown");
+        const exitPromptBox = document.createElement("div");
+        exitPromptBox.className = "exitPromptBox modal";
+        exitPromptBox.innerHTML = `
                 <header class="header">
                     Signing Out
                 </header>
@@ -564,31 +571,32 @@ class Modal {
                 </footer>
 
             `;
-      contentContainer.appendChild(exitPromptBox);
-      setTimeout(() => {
-        exitPromptBox.classList.add("exitPromptBox--shown");
-      }, 300);
-      const confirm = exitPromptBox.querySelector(".confirm");
-      const deny = exitPromptBox.querySelector(".deny");
-      /*****************Event Listeners************/
+        contentContainer.appendChild(exitPromptBox);
+        setTimeout(() => {
+          exitPromptBox.classList.add("exitPromptBox--shown");
+        }, 300);
+        const confirm = exitPromptBox.querySelector(".confirm");
+        const deny = exitPromptBox.querySelector(".deny");
+        /*****************Event Listeners************/
 
-      confirm.addEventListener("click", () => {
-        contentCover.classList.remove("contentCover--shown");
-        exitPromptBox.classList.remove("exitPromptBox--shown");
-        setTimeout(() => {
-          exitPromptBox.remove();
-          resolve();
-        }, 500);
+        confirm.addEventListener("click", () => {
+          contentCover.classList.remove("contentCover--shown");
+          exitPromptBox.classList.remove("exitPromptBox--shown");
+          setTimeout(() => {
+            exitPromptBox.remove();
+            resolve();
+          }, 500);
+        });
+        deny.addEventListener("click", () => {
+          contentCover.classList.remove("contentCover--shown");
+          exitPromptBox.classList.remove("exitPromptBox--shown");
+          setTimeout(() => {
+            exitPromptBox.remove();
+            reject();
+          }, 500);
+        });
       });
-      deny.addEventListener("click", () => {
-        contentCover.classList.remove("contentCover--shown");
-        exitPromptBox.classList.remove("exitPromptBox--shown");
-        setTimeout(() => {
-          exitPromptBox.remove();
-          reject();
-        }, 500);
-      });
-    });
+    }
   }
   /************************************************************************************************************************************************************************/
   //Confirmation DialogBox

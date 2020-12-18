@@ -93,7 +93,7 @@ class Modal {
             contentCover.classList.add("contentCover--shown");
 
             const exitPromptBox = document.createElement("div");
-            exitPromptBox.className = "exitPromptBox";
+            exitPromptBox.className = "exitPromptBox modal";
             exitPromptBox.innerHTML =
             `
                 <header class="header">
