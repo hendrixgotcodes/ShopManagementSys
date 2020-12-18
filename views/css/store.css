@@ -1936,6 +1936,73 @@ body {
         transition: .3s; }
         .main_body .mainBody_content .userForm .btn_employ:hover {
           background-color: #3f6958; }
+    .main_body .mainBody_content .exitPromptBox {
+      width: 30%;
+      height: 45%;
+      position: absolute;
+      top: 23%;
+      left: 30%;
+      z-index: 11;
+      background-color: #F1F2F2;
+      border-radius: 8px;
+      display: flex;
+      flex-flow: column;
+      justify-content: center;
+      align-items: center;
+      transition: .5s;
+      transform: scale(0);
+      color: #646766; }
+      .main_body .mainBody_content .exitPromptBox:active {
+        outline: none; }
+      .main_body .mainBody_content .exitPromptBox .header {
+        width: 100%;
+        height: 15%;
+        background-color: #fff;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        font-size: 1rem;
+        padding: .8rem;
+        box-shadow: 1px 3px 5px rgba(100, 103, 102, 0.3); }
+      .main_body .mainBody_content .exitPromptBox center {
+        width: 100%;
+        height: 70%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #fff;
+        font-size: 1.3rem; }
+      .main_body .mainBody_content .exitPromptBox footer {
+        width: 100%;
+        height: 15%;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+        display: flex;
+        justify-content: center;
+        align-items: center; }
+        .main_body .mainBody_content .exitPromptBox footer .confirm, .main_body .mainBody_content .exitPromptBox footer .deny {
+          flex: 1;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          color: #fff;
+          height: 100%;
+          cursor: pointer;
+          transition: .3s; }
+        .main_body .mainBody_content .exitPromptBox footer .confirm {
+          background-color: #35594B;
+          border-bottom-left-radius: 8px; }
+          .main_body .mainBody_content .exitPromptBox footer .confirm:hover {
+            background-color: #3f6958; }
+        .main_body .mainBody_content .exitPromptBox footer .deny {
+          background-color: #e16161;
+          border-bottom-right-radius: 8px; }
+          .main_body .mainBody_content .exitPromptBox footer .deny:hover {
+            background-color: #e57676; }
+    .main_body .mainBody_content .exitPromptBox--shown {
+      transform: scale(1); }
     .main_body .mainBody_content .modal {
       box-shadow: 0px 11px 22px rgba(0, 0, 0, 0.16); }
     .main_body .mainBody_content .dialog--shown {

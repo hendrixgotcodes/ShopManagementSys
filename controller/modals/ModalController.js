@@ -70,6 +70,73 @@ class Modal {
 
     }
 
+    static openExitPrompt(){
+
+        return new Promise((resolve, reject)=>{
+
+            const contentCover = document.querySelector(".contentCover");
+            const contentContainer = document.querySelector(".contentContainer");
+
+            contentCover.classList.add("contentCover--shown");
+
+            const exitPromptBox = document.createElement("div");
+            exitPromptBox.className = "exitPromptBox";
+            exitPromptBox.innerHTML =
+            `
+                <header class="header">
+                    Signing Out
+                </header>
+
+                <center>
+                    Please confirm signout.
+                </center>
+
+                <footer>
+                    <div class="confirm">Confirm</div>
+                    <div class="deny">Deny</div>
+                </footer>
+
+            `
+
+            contentContainer.appendChild(exitPromptBox);
+
+            setTimeout(()=>{
+                exitPromptBox.classList.add("exitPromptBox--shown")
+            }, 300)
+
+            const confirm = exitPromptBox.querySelector(".confirm");
+            const deny = exitPromptBox.querySelector(".deny");
+
+            /*****************Event Listeners************/
+            confirm.addEventListener("click", ()=>{
+
+                contentCover.classList.remove("contentCover--shown");
+                exitPromptBox.classList.remove("exitPromptBox--shown");
+
+                setTimeout(()=>{
+                    exitPromptBox.remove();
+                    resolve();
+                }, 500);
+
+            })
+
+            deny.addEventListener("click", ()=>{
+
+                contentCover.classList.remove("contentCover--shown");
+                exitPromptBox.classList.remove("exitPromptBox--shown");
+
+                setTimeout(()=>{
+                    exitPromptBox.remove();
+                    reject();
+                }, 500);
+
+            })
+
+
+        })
+
+    }
+
 /************************************************************************************************************************************************************************/  
 
     //Confirmation DialogBox

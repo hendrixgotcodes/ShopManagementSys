@@ -3,6 +3,7 @@
 const { ipcRenderer } = require("electron");
 import DATABASE from '../model/DATABASE';
 import STORE from '../model/STORE';
+import Modal from './modals/ModalController';
 
 
 const database = new DATABASE();
@@ -30,6 +31,8 @@ const goto_Store = document.querySelector('#goto_store')
 const goto_Inventory = document.querySelector('#goto_inventory');
 const goto_Analytics = document.querySelector('#goto_analytics');
 const goto_Employees = document.querySelector("#goto_employees");
+
+const signOut = document.getElementById("signout");
 
 const content_cover = document.querySelector('.contentCover')
 const mainBodyContent = document.querySelector('.mainBody_content')
@@ -111,6 +114,8 @@ goto_Inventory.addEventListener('click',loadInventory)
 goto_Analytics.addEventListener('click', loadAnalytics);
 goto_Employees.addEventListener('click', loadEmployees)
 
+signOut.addEventListener("click", openExitDialogBox)
+
 //For Content
 content_cover.addEventListener("click", removeModal)
 
@@ -190,6 +195,18 @@ function loadEmployees(){
 
 function loadLoginPage(){
     ipcRenderer.send('loadLogin')
+}
+
+function openExitDialogBox(){
+
+    Modal.openExitPrompt()
+    .then(()=>{
+
+        ipcRenderer.send("loadLogin");
+
+    })
+
+
 }
 
 //Removes Modal

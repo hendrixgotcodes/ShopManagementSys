@@ -1330,6 +1330,98 @@
 
 }
 
+.exitPromptBox{
+
+    width: 30%;
+    height: 45%;
+    position: absolute;
+    top: 23%;
+    left: 30%;
+    z-index: 11;
+    background-color: $OFFWHITE;
+    border-radius: 8px;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+    transition: .5s;
+    transform: scale(0);
+    color: $primary_black;
+
+    &:active{
+        outline: none;
+    }
+
+    .header{
+
+        width: 100%;
+        height: 15%;
+        background-color: $WHITE;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        font-size: 1rem;
+        padding: .8rem;
+        box-shadow: 1px 3px 5px rgba($color: $primary_black, $alpha: 0.3);
+
+
+    }
+
+    center{
+        width: 100%;
+        height: 70%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: $WHITE;
+        font-size: 1.3rem;
+    }
+    footer{
+        width: 100%;
+        height: 15%;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .confirm, .deny{
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: $WHITE;
+            height: 100%;
+            cursor: pointer;
+            transition: .3s;
+        }
+
+        .confirm{
+            background-color: $primary_green;
+            border-bottom-left-radius: 8px;
+
+            &:hover{
+                background-color: lighten($color: $primary_green, $amount: 5);
+            }
+        }
+        .deny{
+            background-color: $secondary_red;
+            border-bottom-right-radius: 8px;
+
+            &:hover{
+                background-color: lighten($color: $secondary_red, $amount: 5);
+            }
+        }
+
+    }
+
+}
+.exitPromptBox--shown{
+    transform: scale(1);
+}
+
 .modal{
     box-shadow: 0px 11px 22px rgba($color: #000000, $alpha: 0.16);
 }
