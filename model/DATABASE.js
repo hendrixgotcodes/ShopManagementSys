@@ -1655,6 +1655,30 @@ class DATABASE{
         
     }
 
+    getMostSoldItem(){
+
+        return new Promise((resolve, reject)=>{
+
+            this.connector.query("SELECT SUM(`sales`.`Purchased`) Total_Sale, (SELECT `items`.`Name` FROM `items` WHERE `items`.`id` = `sales`.`Item`) AS Item FROM `sales` WHERE `sales`.`Date` BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW() GROUP BY Item ORDER BY Total_Sale DESC LIMIT 1", (error, result)=>{
+
+                if(error){
+                    reject(error);
+                    throw error;
+                }
+                else{
+
+                    result = result.pop();
+
+                    resolve(result.Item)
+
+                }
+
+            })
+
+        })
+
+    }
+
     getUser(userName){
 
         return new Promise((resolve, reject)=>{
@@ -1669,6 +1693,30 @@ class DATABASE{
                 }
 
                 resolve(result)
+
+            })
+
+        })
+
+    }
+
+    getUserWithMostSalesLastMonth(){
+
+        return new Promise((resolve, reject)=>{
+
+            this.connector.query("SELECT `users`.`First_Name` AS First_Name, `users`.`Last_Name` AS Last_Name, (SELECT COUNT(*) FROM `sales` WHERE `sales`.`User` = `users`.`id`) AS Total_Sale FROM `users` ORDER BY Total_Sale DESC LIMIT 1", (error, result)=>{
+
+                if(error){
+                    reject(error)
+                    throw error
+                }
+                else{
+
+                    result = result.pop();
+
+                    resolve(`${result.First_Name} ${result.Last_Name}`)
+
+                }
 
             })
 
@@ -1812,6 +1860,35 @@ class DATABASE{
 
     }
 
+    getTotalProfitLastMonth(){
+
+        return new Promise((resolve, reject)=>{
+
+            this.connector.query("SELECT SUM(`sales`.`Profit`) AS Profit FROM `sales` WHERE `sales`.`Date` BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW()", (error, result)=>{
+
+                if(error){
+
+                    reject(error);
+                    throw error;
+
+                }
+
+                else{
+
+                    result = result.pop();
+
+                    console.log(result);
+
+                    resolve(result.Profit);
+
+                }
+
+            })
+
+        })
+
+    }
+
     getDateRangeSales(){
 
         return new Promise((resolve, reject)=>{
@@ -1835,6 +1912,7 @@ class DATABASE{
         })
 
     }
+
 
     deleteReportedAccount(userName){
 

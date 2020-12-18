@@ -1,5 +1,6 @@
 const { default: Millify } = require("millify");
 let validator = require('is-my-date-valid');
+const { default: clip } = require("text-clipper");
 validator = validator({format: "YYY-MM-DD"})
 
 let userType = "Admin";
@@ -11,9 +12,13 @@ let userName = "Maame Dufie"
 const toolBar_btn = document.querySelector('.toolBar_btn--alpha');
 const toolBar_btn_icon = document.querySelector('.ico_btn_clear')
 const profit_card = document.querySelector(".profit");
+const product_card = document.querySelector(".product");
+const topUser_card = document.querySelector(".topUser");
 const growthRateCard = document.querySelector('#growthRate')
 
 const profit = profit_card.querySelector(".card_content");
+const topItem = product_card.querySelector(".card_content");
+const topUser = topUser_card.querySelector(".card_content")
 
 const endtP = document.querySelector(".endtP");
 const starttP = document.querySelector(".starttP");
@@ -33,7 +38,7 @@ window.addEventListener("load", (e)=>{
         console.log(date, date.Minimum, date.Maximum);
 
         if(date.Maximum === null && date.Minimum === null){
-            
+
             toolBarDate_from.disabled = true;
             toolBarDate_to.disabled = true;
 
@@ -48,6 +53,8 @@ window.addEventListener("load", (e)=>{
         toolBarDate_to.max = date.Maximum;
 
     })
+
+    initializeData();
 
 })
 
@@ -150,11 +157,41 @@ function fetchAnalyticsData(e){
         database.getTotalProfit()
         .then((result)=>{
 
-            profit.innerText = `GHc ${Millify(result)}`;
+            profit.innerText = `GHc ${Millify(result, {
+                precision: 3
+            })}`;
 
         })
 
     }
 
+
+}
+
+function initializeData(){
+
+    database.getTotalProfitLastMonth()
+    .then((totalProfit)=>{
+
+
+        profit.innerText = `GHc ${Millify(totalProfit, {
+            precision: 3
+        })}`
+
+    })
+
+    database.getMostSoldItem()
+    .then((item)=>{
+
+        topItem.innerText = clip(item, 15);
+
+    })
+
+    database.getUserWithMostSalesLastMonth()
+    .then((user)=>{
+
+        topUser.innerText = clip(user, 15);
+
+    })
 
 }

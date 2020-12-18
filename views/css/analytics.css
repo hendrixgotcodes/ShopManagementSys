@@ -351,8 +351,8 @@ body {
         width: 8%;
         height: 55%;
         background-color: #fff;
-        border: 1.8px solid #35594B;
-        color: #35594B;
+        border: 1.6px solid #e16161;
+        color: #e16161;
         border-radius: 4px;
         display: flex;
         justify-content: center;
@@ -364,7 +364,7 @@ body {
           height: 60%;
           margin-left: .4rem; }
         .main_body .mainBody_content .content_toolBar .btn_clear:hover {
-          background-color: #35594B;
+          background-color: #e16161;
           color: #fff; }
     .main_body .mainBody_content .contentContainer {
       width: 100%;
@@ -425,6 +425,8 @@ body {
         align-items: center;
         color: #35594B;
         font-size: 2rem; }
+        .main_body .mainBody_content .contentContainer .card_content img {
+          width: 20%; }
     .main_body .mainBody_content .modal_hide {
       transition: .3s;
       transform: scale(0); }

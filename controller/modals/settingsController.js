@@ -107,7 +107,6 @@ const settingsModalTemplate =
         </div>
    
 `
-
 const settingsModal = document.createElement('div');
 settingsModal.className = "settingsModal";
 settingsModal.setAttribute("aria-placeholder", "Settings Modal");
