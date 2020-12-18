@@ -245,6 +245,7 @@ const goto_Store = document.querySelector('#goto_store');
 const goto_Inventory = document.querySelector('#goto_inventory');
 const goto_Analytics = document.querySelector('#goto_analytics');
 const goto_Employees = document.querySelector("#goto_employees");
+const signOut = document.getElementById("signout");
 const content_cover = document.querySelector('.contentCover');
 const mainBodyContent = document.querySelector('.mainBody_content');
 const toolBar_tb = document.querySelector('.toolBar_tb');
@@ -264,7 +265,8 @@ window.addEventListener("keyup", e => {
 });
 controlBoxMinimize.addEventListener('click', sendMinimizeEvent);
 controlBoxMaximize.addEventListener('click', sendMaximizeEvent);
-controlBoxClose.addEventListener('click', sendCloseEvent); //For "goto_Inventory"
+controlBoxClose.addEventListener('click', sendCloseEvent);
+signOut.addEventListener("click", openExitDialogBox); //For "goto_Inventory"
 
 goto_Store.addEventListener('click', loadStore);
 goto_Inventory.addEventListener('click', loadInventory);
@@ -335,6 +337,12 @@ function loadEmployees() {
 
 function loadLoginPage() {
   ipcRenderer.send('loadLogin');
+}
+
+function openExitDialogBox() {
+  _modals_ModalController__WEBPACK_IMPORTED_MODULE_2__["default"].openExitPrompt().then(() => {
+    ipcRenderer.send("loadLogin");
+  });
 } //Removes Modal
 
 

@@ -33,6 +33,8 @@ const goto_Inventory = document.querySelector('#goto_inventory');
 const goto_Analytics = document.querySelector('#goto_analytics');
 const goto_Employees = document.querySelector("#goto_employees");
 
+const signOut = document.getElementById("signout");
+
 const content_cover = document.querySelector('.contentCover');
 const mainBodyContent = document.querySelector('.mainBody_content');
 const toolBar_tb = document.querySelector('.toolBar_tb');
@@ -71,7 +73,7 @@ controlBoxMinimize.addEventListener('click', sendMinimizeEvent)
 controlBoxMaximize.addEventListener('click', sendMaximizeEvent)
 controlBoxClose.addEventListener('click', sendCloseEvent)
 
-
+signOut.addEventListener("click", openExitDialogBox)
 
 //For "goto_Inventory"
 goto_Store.addEventListener('click',loadStore)
@@ -137,6 +139,7 @@ function sendCloseEvent() {
 
 
 
+
 //Triggers an event to load the pages in the  ipcMain
 function loadStore(){
     ipcRenderer.send('loadStore', [UserName, UserType])
@@ -160,6 +163,18 @@ function loadEmployees(){
 
 function loadLoginPage(){
     ipcRenderer.send('loadLogin')
+}
+
+function openExitDialogBox(){
+
+    Modal.openExitPrompt()
+    .then(()=>{
+
+        ipcRenderer.send("loadLogin");
+
+    })
+
+
 }
 
 //Removes Modal

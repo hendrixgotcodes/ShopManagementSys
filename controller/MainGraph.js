@@ -3,9 +3,12 @@ import { left, right } from '@popperjs/core';
 import Chart from 'chart.js'
 import Millify from 'millify';
 import DATABASE from '../model/DATABASE';
+import Modal from './modals/ModalController';
 
 
 /**************DOM ELEMENTS************************/
+const signout = document.getElementById("signout");
+
 const totalSalesMade = document.querySelector("#totalSalesMade").querySelector(".valueLabel");
 const totalItemsSold = document.querySelector("#totalItemsSold").querySelector(".valueLabel");
 const gross_revenue = document.querySelector("#gross_revenue").querySelector(".valueLabel");
@@ -25,6 +28,8 @@ const footer_btn = document.querySelector(".footer_btn");
 var ctx = document.getElementById('myChart').getContext("2d");
 
 const database = new DATABASE();
+
+
 
 
 var myChart = new Chart(ctx, {
@@ -109,6 +114,8 @@ const brandSectionChart = new Chart(brandSection, {
 
 
 /**************************EVENT LISTENERS***************************/
+signout.addEventListener("click", openExitDialogBox)
+
 // window.addEventListener("load", getLastWeek)
 footer_btn.addEventListener("click", (e)=>{
 
@@ -127,6 +134,18 @@ footer_btn.addEventListener("click", (e)=>{
 
 
 /**************************FUNCTIONS********************************/
+function openExitDialogBox(){
+
+    Modal.openExitPrompt()
+    .then(()=>{
+
+        ipcRenderer.send("loadLogin");
+
+    })
+
+
+}
+
 function plotData(from, to){
 
     const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']

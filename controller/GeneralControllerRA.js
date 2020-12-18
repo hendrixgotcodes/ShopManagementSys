@@ -3,6 +3,7 @@
 const { ipcRenderer } = require("electron");
 import DATABASE from '../model/DATABASE';
 import STORE from '../model/STORE';
+import Modal from "./modals/ModalController";
 
 
 const database = new DATABASE();
@@ -27,6 +28,7 @@ const controlBoxClose = document.querySelector('.controlBox_close');
 const restoreMaxi = document.getElementById('restore_maxi');
 
 const goto_Store = document.querySelector('#goto_store')
+const signout  = document.getElementById("signout")
 
 
 const content_cover = document.querySelector('.contentCover')
@@ -39,39 +41,6 @@ const toolBar_tb = document.querySelector('.toolBar_tb');
 
 
 
-
-ipcRenderer.on("loadUserInfo", (e, array)=>{
-    [UserName, UserType] = array;
-
-
-    if(UserType === 'Admin'){
-
-        const store = new STORE({
-            configName: 'userPrefs',
-            defaults: {
-                toolTipsPref: 'show',
-                timeOutPref: '1',
-            }
-        });
-
-        let timeOutPref;
-
-        store.get("timeOutPref")
-        .then((TimeOutPref)=>{
-            
-            timeOutPref = parseInt(TimeOutPref)
-
-            logOutTimeOut = 60000 * timeOutPref;
-
-            startTimeOutCounter();
-
-
-        })
-        
-
-        
-    }
-})
 
 ipcRenderer.on("setUserParams", (e, paramsArray)=>{
 
@@ -134,6 +103,8 @@ window.addEventListener('keypress', (e)=>{
     updateUserLastSeen();
 });
 
+signout.addEventListener("click", openExitDialogBox)
+
 
 
 /*****************FUNCTIONS*****************/
@@ -167,24 +138,22 @@ function loadStore(){
     ipcRenderer.send('loadStore', [UserName, UserType])
 }
 
-function loadInventory(){
-    ipcRenderer.send('loadInventory', [UserName, UserType])
-}
 
-function loadAnalytics(){
-    ipcRenderer.send('loadAnalytics', [UserName, UserType])
-}
-
-function loadEmployees(){
-
-    console.log("...loading employees");
-
-    ipcRenderer.send('loadEmployees')
-
-}
 
 function loadLoginPage(){
     ipcRenderer.send('loadLogin')
+}
+
+function openExitDialogBox(){
+
+    Modal.openExitPrompt()
+    .then(()=>{
+
+        ipcRenderer.send("loadLogin");
+
+    })
+
+
 }
 
 //Removes Modal
