@@ -1195,11 +1195,11 @@
 
 .userForm{
 
-    width: 31%;
-    height: 70%;
+    width: 35%;
+    height: 80%;
     position: absolute;
     bottom: 15%;
-    left: 31%;
+    left: 30%;
     background-color: $WHITE;
     box-shadow: 3px 5px 8px rgba($color: $primary_black, $alpha: 0.3);
     z-index: 11;
@@ -1221,10 +1221,14 @@
         font-weight: 500;
         color: $primary_green;
         width: 100%;
+        z-index: 2;
+        background-color: $WHITE;
+        border-top-right-radius: 8px;
+        border-top-left-radius: 8px;
 
         img{
             width: 8%;
-            padding: .3rem;
+            padding: .1rem;
             transition: .3s;
             border-radius: 3px;
 
@@ -1232,6 +1236,24 @@
                 box-shadow: 1px 3px 5px rgba($color: $primary_black, $alpha: 0.3);
             }
         }
+
+    }
+    .alertBanner{
+
+        position: absolute;
+        top: 10%;
+        left: 0;
+        width: 100%;
+        background-color: $secondary_green;
+        color: $WHITE;
+        height: 5%;
+        transition: .3s;
+        z-index: 1;
+
+    }
+    .alertBanner--shown{
+
+        top: 12%;
 
     }
 
@@ -1251,12 +1273,13 @@
             display: block;
             width: 49%;
             height: 22%;
+            font-size: 1.15rem;
             // background-color: red;
 
             input,select{
                 width: 100%;
                 display: block;
-                height: 50%;
+                height: 60%;
                 border: 1px solid $primary_black;
                 border-radius: 3px;
                 margin-top: .1rem;
@@ -1264,6 +1287,7 @@
                 color: $primary_black;
                 position: relative;
                 transition: .3s;
+                font-size: 1rem;
 
             }
 
@@ -1295,6 +1319,12 @@
         border-bottom-left-radius: 8px;
         font-size: 1.1rem;
         color: $WHITE;
+        outline: none;
+        transition: .3s;
+
+        &:hover{
+            background-color: lighten($color: $primary_green, $amount: 5);
+        }
 
     }
 

@@ -1,10 +1,9 @@
 "use strict";
 
 import DATABASE from "../../model/DATABASE";
-// import { showAlert } from "../Alerts/NotificationController";
-// import UnitConverter from "../utilities/UnitConverter";
+import Notifications from "../Alerts/NotificationController";
+const cryptoJS = require("crypto-js");
 
-// const DOMCONTROLLER = require("../utilities/TableController");
 const database = new DATABASE()
 
 
@@ -561,246 +560,7 @@ class Modal {
 
 /************************************************************************************************************************************************************************/ 
 
-
-    // static createCheckout(cart, totalSelectedRows, cartCount){
-
-    //     return new Promise((resolve, reject)=>{
-
-    //         let totalPrice = 0;
-
-    //         let totalCostPrice = 0
-    //         let revenue = 0
-
-                        
-    //         cart.forEach((item)=>{
-    //             totalPrice +=  parseFloat(item.price * item.amountPurchased);
-
-    //             totalCostPrice += parseFloat(item.costPrice * item.amountPurchased)
-    //         })
-
-    //         revenue = totalPrice;
-
-
-    //         totalPrice = parseFloat(totalPrice).toFixed(2)
-
-    //         const formTemplate = 
-    //         `
-    //             <div class="dialogContainer fullwidth aDialog" role="container">
-    //                 <div class="dialogHeader" role="header">
-
-    //                     <span>In Cart</span>
-
-    //                     <span id="lblPrice"> <b>Gh¢ ${UnitConverter.convert(totalPrice)} </b></span>
-                        
-    //                 </div>
-
-    //                 <div class="scrollBox">
-
-    //                 </div>
-
-                
-    //                 <div class="dialogFooter fullwidth" role="footer" aria-placeholder="Confirm here">
-    //                     <div class="dialogConfirm">
-    //                         Sell
-    //                         <img src="../Icons/Modals/add.svg" alt="Confirmation Message" />
-    //                     </div>
-    //                 </div>
-
-    //             </div>
-                    
-    //         `
-
-    //         const itemForm = document.createElement('div');
-    //                 itemForm.className = "modal dialog--cartForm";
-    //                 itemForm.classList.add("dialog--promptBox")
-    //                 itemForm.setAttribute("aria-placeholder", "Confirm Box");
-    //                 itemForm.setAttribute('tabindex', '1');
-            
-    //                 itemForm.innerHTML = formTemplate;
-            
-    //                 const mainBodyContent = document.querySelector('.mainBody_content');
-
-    //                 // mainBodyContent.appendChild(itemForm);
-
-    //                 openModal(itemForm)
-
-    //                 //Giving focus to form immediately after its added to the DOM
-    //                 itemForm.focus();
-
-            
-    //                 document.querySelector('.contentCover').classList.add('contentCover--shown')
-
-    //                 setTimeout(()=>{
-    //                         mainBodyContent.querySelector(".dialog--cartForm").classList.add("dialog--shown")
-    //                 }, 100)
-
-
-    //                 //Adding Items to List
-
-    //                 let scrollBox = itemForm.querySelector('.scrollBox');
-
-    //                 cart.forEach((item)=>{
-
-    //                     let itemTemplate = 
-    //                     `
-    //                         <div class="itemInfo" id="name"><span>${item.name}</span></div>
-    //                         <div class="itemInfo" id="brand"><span>${item.brand}</span></div>
-    //                         <div class="itemInfo" id="amount"><span>x${item.amountPurchased}</span></div>
-    //                         <div class="itemInfo" id="costSection"><span>Gh¢ <span id="cost"> ${parseFloat(item.amountPurchased * item.price).toFixed(2)}</span></span></div>
-    //                         <div class="delItem"> <img src="../Icons/Modals/closeWhite.svg" alt="delete" /> </div>
-    //                     `
-    //                     let newRow = document.createElement('div');
-    //                     newRow.className = "modalItem";
-    //                     newRow.innerHTML = itemTemplate;
-
-    //                     //Delete Event Listener
-    //                     newRow.querySelector('.delItem').addEventListener('click',(e)=>{
-    //                         removeItem(e)
-    //                     })
-
-    //                     scrollBox.appendChild(newRow);
-
-    //                 })
-                    
-
-                    
-    //                 /***************************EVENT LISTENERS*****************************/
-
-    //                 itemForm.querySelector('.dialogConfirm').addEventListener("click", sellItems);
-
-    //                 itemForm.addEventListener('blur', exitBox)
-
-
-
-    //                 /***************************FUNCTIONS*****************************/
-
-    //                 //Sell button function
-    //                 function sellItems(){
-
-    //                     console.log("selling");
-
-    //                     const sellBtnIco =  itemForm.querySelector(".dialogConfirm").querySelector('img')
-    //                     sellBtnIco.setAttribute("src", "../../utils/media/animations/loaders/Rolling-1s-200px.svg")
-
-    //                     let Sale = []
-
-    //                     cart.forEach((item)=>{
-
-    //                         Sale.push({
-
-    //                             Name: item.name,
-    //                             Brand: item.brand,
-    //                             category: item.category,
-    //                             AmountPurchased: item.amountPurchased,
-    //                             CashMade: parseFloat(item.price * item.amountPurchased),
-    //                             ProfitMade: parseFloat(item.price * item.amountPurchased) - parseFloat(item.costPrice * item.amountPurchased),
-    //                             UnitDiscount: 0,
-    //                             TotalDiscount: 0
-
-    //                         })
-
-    //                     })
-                        
-
-    //                     exitBox()
-
-    //                     console.log(Sale, totalPrice);
-
-    //                     resolve([Sale, totalPrice]);
-
-
-    //                 }
-
-    //                 //Function called to close modal
-    //                 function exitBox(){
-
-    //                     closeModal(itemForm)
-
-    //                     document.querySelector('.contentCover').classList.remove('contentCover--shown')
-
-    //                 }
-
-    //                 // Function called to remove items (divs) in cart
-    //                 function removeItem(e){
-
-    //                     // Animating item (slide right)
-    //                     e.target.parentElement.parentElement.style.transform = 'translateX(100%)'
-                        
-
-
-    //                     //Remove element after animation
-    //                     setTimeout(()=>{
-
-    //                         e.target.parentElement.parentElement.remove();
-
-    //                         let name = e.target.parentElement.parentElement.querySelector('#name').innerText;
-    //                         let brand = e.target.parentElement.parentElement.querySelector('#brand').innerText;
-
-    //                         totalSelectedRows = totalSelectedRows -1;
-
-    //                         //Modifying span on checkout box
-    //                         cartCount.innerText = totalSelectedRows;
-
-    //                         if(totalSelectedRows === 0){
-    //                             cartCount.style.transform = "scale(0)"
-    //                         }
-
-    //                         //Uncheking Corresponding row in table
-    //                         TableController.uncheckRows(name, brand)
-
-                            
-    //                         //Subtracting prices of removed items from main total cost
-    //                         let itemPrice = e.target.parentElement.parentElement.querySelector('#costSection').querySelector('#cost').innerText;
-
-    //                         itemPrice = parseFloat(itemPrice);
-
-    //                         totalPrice = totalPrice - itemPrice;
-
-    //                         console.log(totalPrice, " ", itemPrice);
-
-    //                         itemForm.querySelector('#lblPrice').innerHTML = `<b>Gh¢ ${UnitConverter.convert(totalPrice)} </b>`;
-
-
-    //                         /****Removing item from cart array****/
-    //                         // For each item in cart array
-    //                         cart.forEach((item)=>{
-
-
-    //                             let currentItemIndex;
-                    
-    //                             //If 
-    //                             if(item.name === name && item.brand === brand){
-                    
-    //                                 currentItemIndex = cart.indexOf(item);
-                    
-    //                                 cart.splice(currentItemIndex, 1)
-                    
-                    
-    //                             }
-    //                         })
-
-    //                         // If cart is empty
-    //                         if(cart.length === 0){
-    //                             //Close modal
-    //                             closeModal(itemForm)
-
-    //                             // Disable Submit Button
-    //                             const footer_btn = document.querySelector('.footer_btn');
-    //                             footer_btn.disabled = true
-    //                         }
-
-    //                         resolve();
-                            
-
-    //                     },400)
-
-    //                 }
-                
-
-
-
-    //     })
-    // }
+                   
 
     
     static openUserForm(newUser){
@@ -833,12 +593,14 @@ class Modal {
 
                 <img src="../Icons/modals/close.svg"/>
             </header>
+            <div class="alertBanner"></div>
+
             <form>
 
                 <label class="formlbl lbl_FirstName" for="tb_FirstName">
 
                     First Name
-                    <input class="userForm_input" id="tb_FirstName" type="text" placeholder="eg. Adwoa">
+                    <input class="userForm_input tb_firstName" class="tb_FirstName" type="text" placeholder="eg. Adwoa">
                     <span class="alertSpan"></span>
 
                 </label>
@@ -846,7 +608,7 @@ class Modal {
                 <label class="formlbl lbl_LastName" for="tb_LastName">
 
                     Last Name
-                    <input class="userForm_input" id="tb_LastName" type="text" placeholder="eg. Sarpong">
+                    <input class="userForm_input tb_lastName" type="text" placeholder="eg. Sarpong">
                     <span class="alertSpan"></span>
 
                 </label>
@@ -862,7 +624,7 @@ class Modal {
                 <label class="formlbl lbl_Password" for="tb_Password">
 
                     Password
-                    <input class="userForm_input" id="tb_Password" class="form_Password" type="password" placeholder="eg. eightlengthedpassword"/>
+                    <input class="userForm_input tb_Password" id="tb_Password" class="form_Password" type="password" placeholder="eg. eightlengthedpassword"/>
                     <span class="alertSpan"></span>
 
                 </label>
@@ -870,7 +632,7 @@ class Modal {
                 <label class="formlbl lbl_Password" for="tb_PasswordRpt">
 
                     Confirm Password
-                    <input class="userForm_input" id="tb_PasswordRpt" class="form_Password" type="text" placeholder="eg. repeatpassword"/>
+                    <input class="userForm_input tb_PasswordRpt" id="tb_PasswordRpt" class="form_Password" type="password" placeholder="eg. repeatpassword"/>
                     <span class="alertSpan"></span>
 
 
@@ -879,10 +641,11 @@ class Modal {
                 <label class="formlbl lbl_Password" for="tb_PasswordRpt">
 
                     Account Type
-                   <select class="userForm_input">
+                   <select class="userForm_input slct_accountType">
                         <option value="0">Regular</option>
                         <option value="1">Administrator</option>
                    </select>
+                   <span class="alertSpan"></span>
 
                 </label>
 
@@ -898,12 +661,18 @@ class Modal {
         const header = userForm.querySelector(".userForm_header");
         const btnClose = header.querySelector("img");
         const btnEmploy = userForm.querySelector(".btn_employ");
+        const tb_FirstName = userForm.querySelector(".tb_firstName");
+        const tb_LastName = userForm.querySelector(".tb_lastName");
+        const tb_Password = userForm.querySelector(".tb_Password");
+        const tb_PasswordRpt = userForm.querySelector(".tb_PasswordRpt");
+        const slct_accountType = userForm.querySelector(".slct_accountType");
         const tbUserName = userForm.querySelector(".tb_UserName");
         const userForm_inputs = userForm.querySelectorAll(".userForm_input");
-        const passwordFields = userForm.querySelectorAll(".")
+        const passwordFields = userForm.querySelectorAll(".form_Password");
+        const alertBanner = userForm.querySelector(".alertBanner");
 
         let pos1,pos2, pos3, pos4 =0;
-        let formIsValid = true;
+        let formIsValid = false;
 
 
         /***********Event Listeners************/
@@ -948,13 +717,45 @@ class Modal {
 
         btnEmploy.addEventListener("click", (e)=>{
 
-            const userFormInput = userForm.querySelectorAll(".userForm_input");
+            if(formIsValid === true){
 
-            userFormInput.forEach((inputField)=>{
+                generateHash(tbUserName.value, tb_PasswordRpt.value)
+                .then((hashedPassword)=>{
 
-                inputField.classList.add("input_error");
+                    database.addNewUser({
+                        First_Name: tb_FirstName.value,
+                        Last_Name: tb_LastName.value,
+                        User_Name: tbUserName.value,
+                        Password: hashedPassword,
+                        IsAdmin: slct_accountType.value
+                    })
+                    .then(()=>{
 
-            })
+                        userForm.remove();
+                        contentCover.classList.remove("contentCover--shown");
+
+                        Notifications.showAlert("success", "User added successfully");
+
+                    })
+                    .catch((error)=>{
+
+                        throw error
+
+                    })
+
+                })
+
+            }
+            else{
+
+                alertBanner.classList.add("alertBanner--shown");
+                alertBanner.innerText = "Please fill all fields of your form"
+
+                setTimeout(()=>{
+                    alertBanner.classList.remove("alertBanner--shown");
+                }, 5000);
+
+            }
 
             
 
@@ -1014,7 +815,8 @@ class Modal {
 
             }
 
-        })
+        });
+
 
         userForm_inputs.forEach((userForm_input)=>{
 
@@ -1056,10 +858,84 @@ class Modal {
 
         })
 
+        passwordFields.forEach((passwordField)=>{
+
+            passwordField.addEventListener("keyup", (e)=>{
+
+                const alertSpan = passwordField.parentElement.querySelector(".alertSpan");
+
+                if(e.code === "Space"){
+
+                    passwordField.value = passwordField.value.replace(" ", "");
+                    passwordField.classList.add("error");
+                    alertSpan.innerText = "No spaces allowed here";
+                    
+                    formIsValid = false;
+
+                }
+                else{
+
+                    if(passwordFields.classList.contains("error")){
+                        passwordField.classList.remove("error");
+                    }
+
+                    alertSpan.innerText = "";
+
+                    formIsValid = true;
+
+                }
+
+            })
+
+        })
+
+        tb_PasswordRpt.addEventListener("blur", (e)=>{
+
+            const alertSpan = tb_PasswordRpt.parentElement.querySelector(".alertSpan");
+
+            if(tb_Password.value !== tb_PasswordRpt.value){
+
+                tb_PasswordRpt.classList.add("error");
+                alertSpan.innerText = "No spaces allowed here";
+                
+                formIsValid = false;
+
+            }
+            else{
+
+                if(tb_PasswordRpt.classList.contains("error")){
+                    tb_PasswordRpt.classList.remove("error");
+                }
+
+                alertSpan.innerText = "";
+
+                formIsValid = true;
+
+            }
+
+        })
+
+
+        /*****************Functions */
+        function generateHash(userName, password){
+
+            return new Promise((resolve, reject)=>{
+    
+                const hash = cryptoJS.AES.encrypt(password, userName).toString()
+    
+                resolve(hash)
+    
+            })
+    
+    
+        }
+
         
 
     }
 }
+
+
 
 
 
