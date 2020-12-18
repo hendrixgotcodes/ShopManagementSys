@@ -1678,24 +1678,16 @@ class DATABASE{
 
     getUsers(){
 
-       return new Promise((resolve, reject)=>{
+       return new Promise((resolve, reject)=>{           
 
-            let promises = [];
+            this.connector.query('select First_Name, Last_Name, IsAdmin, TIMEDIFF(CURRENT_TIMESTAMP(), Last_Seen) AS Last_Seen, (select sum(`sales`.`Profit`) from `sales` sales where `sales`.`User` = `users`.`id`) as Total_Profits, (SELECT COUNT(*) FROM `sales` WHERE `sales`.`user` = `users`.`id`) as Total_Sales from `users` users', (error, result)=>{
 
-            let allUsers = [];
+                if(error){
+                    reject(error)
+                    throw error
+                }
 
-            let fetchUser = new Promise((resolve, reject)=>{
-
-                this.connector.query('SELECT id, First_Name, Last_Name, User_Name, TIMEDIFF(NOW(), Last_Seen) Last_Seen, IsAdmin FROM `users`', (error, result)=>{
-
-                    if(error){
-                        reject(error)
-                        throw error
-                    }
-
-                    resolve(result);
-
-                })
+                resolve(result);
 
             })
 

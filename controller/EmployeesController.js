@@ -298,6 +298,14 @@ function initializeEmployees(){
                 user.IsAdmin = "Regular";
             }
 
+            if(user.Total_Sales === null){
+                user.Total_Sales = "0.00";
+            }
+            if(user.Total_Profits === null)
+            {
+                user.Total_Profits = "0.00"
+            }
+
             user.Last_Seen = getRelativeTime(user.Last_Seen);
 
             DOMCONTROLLER.createEmployeeItem(`${user.First_Name} ${user.Last_Name}`, user.IsAdmin, user.Last_Seen, user.Total_Sales, user.Total_Profits);

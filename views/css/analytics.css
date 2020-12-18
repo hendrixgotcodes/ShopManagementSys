@@ -413,8 +413,7 @@ body {
         .main_body .mainBody_content .contentContainer .card_lbl .period {
           display: block;
           width: 100%;
-          font-size: 1rem;
-          color: #12A89D; }
+          font-size: 1rem; }
       .main_body .mainBody_content .contentContainer .lbl--underline {
         text-decoration: underline;
         color: #EFB526; }

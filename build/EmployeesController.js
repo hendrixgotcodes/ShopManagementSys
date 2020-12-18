@@ -426,6 +426,14 @@ function initializeEmployees() {
         user.IsAdmin = "Regular";
       }
 
+      if (user.Total_Sales === null) {
+        user.Total_Sales = "0.00";
+      }
+
+      if (user.Total_Profits === null) {
+        user.Total_Profits = "0.00";
+      }
+
       user.Last_Seen = getRelativeTime(user.Last_Seen);
       DOMCONTROLLER.createEmployeeItem(`${user.First_Name} ${user.Last_Name}`, user.IsAdmin, user.Last_Seen, user.Total_Sales, user.Total_Profits);
     });
@@ -3172,38 +3180,13 @@ class DATABASE {
 
   getUsers() {
     return new Promise((resolve, reject) => {
-      let promises = [];
-      let allUsers = [];
-      let fetchUser = new Promise((resolve, reject) => {
-        this.connector.query('SELECT id, First_Name, Last_Name, User_Name, TIMEDIFF(NOW(), Last_Seen) Last_Seen, IsAdmin FROM `users`', (error, result) => {
-          if (error) {
-            reject(error);
-            throw error;
-          }
+      this.connector.query('select First_Name, Last_Name, IsAdmin, TIMEDIFF(CURRENT_TIMESTAMP(), Last_Seen) AS Last_Seen, (select sum(`sales`.`Profit`) from `sales` sales where `sales`.`User` = `users`.`id`) as Total_Profits, (SELECT COUNT(*) FROM `sales` WHERE `sales`.`user` = `users`.`id`) as Total_Sales from `users` users', (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
 
-          resolve(result);
-        });
-      });
-      fetchUser.then(users => {
-        users.forEach(user => {
-          promises.push(new Promise((resolve, reject) => [this.connector.query("SELECT COUNT(*) AS Total_Sales, SUM(Profit) AS Total_Profits FROM `sales` WHERE id = ?", user.id, (error, result) => {
-            if (error) {
-              reject(error);
-              throw error;
-            } else {
-              result = result.pop();
-              user.Total_Profits = result.Total_Profits;
-              user.Total_Sales = result.Total_Sales;
-              allUsers.push(user);
-              resolve();
-            }
-          })]));
-          Promise.all(promises).then(() => {
-            resolve(allUsers);
-          }).catch(() => {
-            reject();
-          });
-        });
+        resolve(result);
       });
     });
   }
