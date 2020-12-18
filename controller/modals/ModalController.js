@@ -11,6 +11,12 @@ class Modal {
 
     static openPrompt(itemName="", resolve, reject, justVerify="", customMessage=""){
 
+        if(document.querySelector("dialog--promptBox") !== null){
+
+            return;
+
+        }
+
         let defaultMessage = "Please Enter Your Password To Continue";
 
         if(customMessage !== ""){
@@ -72,7 +78,14 @@ class Modal {
 
     static openExitPrompt(){
 
-        return new Promise((resolve, reject)=>{
+        if(document.querySelector(".exitPromptBox") !== null){
+
+            return
+
+        }
+        else{
+
+             return new Promise((resolve, reject)=>{
 
             const contentCover = document.querySelector(".contentCover");
             const contentContainer = document.querySelector(".contentContainer");
@@ -134,6 +147,10 @@ class Modal {
 
 
         })
+
+        }
+
+       
 
     }
 
