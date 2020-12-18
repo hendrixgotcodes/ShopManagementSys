@@ -1590,6 +1590,34 @@ class DATABASE {
     });
   }
 
+  getTotalProfit() {
+    return new Promise((resolve, reject) => {
+      this.connector.query("SELECT SUM(Profit) AS Profit from `sales`", (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        } else {
+          result = result.pop();
+          resolve(result.Profit);
+        }
+      });
+    });
+  }
+
+  getDateRangeSales() {
+    return new Promise((resolve, reject) => {
+      this.connector.query("SELECT DATE_FORMAT(MIN(Date), '%Y-%m-%d') AS Minimum, DATE_FORMAT(MAX(Date), '%Y-%m-%d') AS Maximum FROM `sales`", (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        } else {
+          result = result.pop();
+          resolve(result);
+        }
+      });
+    });
+  }
+
   deleteReportedAccount(userName) {
     return new Promise((resolve, reject) => {
       console.log(";;", userName);

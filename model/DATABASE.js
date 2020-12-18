@@ -1699,57 +1699,6 @@ class DATABASE{
 
             })
 
-            fetchUser
-            .then((users)=>{
-
-                users.forEach((user)=>{
-
-                    promises.push(
-                        new Promise((resolve, reject)=>[
-
-                            this.connector.query("SELECT COUNT(*) AS Total_Sales, SUM(Profit) AS Total_Profits FROM `sales` WHERE id = ?", user.id, (error, result)=>{
-
-                                if(error){
-
-                                    reject(error);
-                                    throw error;
-
-                                }
-                                else{
-
-                                    result = result.pop();
-
-                                    user.Total_Profits = result.Total_Profits;
-                                    user.Total_Sales = result.Total_Sales;
-
-                                    allUsers.push(user);
-
-                                    resolve()
-
-                                }
-
-                                
-
-                            })
-
-                        ])
-                    )
-
-                    Promise.all(promises)
-                    .then(()=>{
-
-                        resolve(allUsers)
-
-                    })
-                    .catch(()=>{
-
-                        reject();
-
-                    })
-
-                })
-
-            })
 
        })
         
@@ -1842,6 +1791,54 @@ class DATABASE{
                 resolve(result)
 
             })
+
+        })
+
+    }
+
+    getTotalProfit(){
+
+        return new Promise((resolve, reject)=>{
+
+            this.connector.query("SELECT SUM(Profit) AS Profit from `sales`", (error, result)=>{
+
+                if(error){
+                    reject(error);
+                    throw error;
+                }
+                else{
+
+                    result = result.pop();
+
+                    resolve(result.Profit)
+
+                }
+
+            })
+
+        })
+
+    }
+
+    getDateRangeSales(){
+
+        return new Promise((resolve, reject)=>{
+
+            this.connector.query("SELECT DATE_FORMAT(MIN(Date), '%Y-%m-%d') AS Minimum, DATE_FORMAT(MAX(Date), '%Y-%m-%d') AS Maximum FROM `sales`",(error, result)=>{
+
+                if(error){
+                    reject(error);
+                    throw error;
+                }
+                else{
+
+                    result = result.pop();
+                    resolve(result);
+
+                }
+
+            })
+
 
         })
 

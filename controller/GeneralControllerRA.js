@@ -2,7 +2,6 @@
 
 const { ipcRenderer } = require("electron");
 import DATABASE from '../model/DATABASE';
-import STORE from '../model/STORE';
 import Modal from "./modals/ModalController";
 
 
@@ -13,8 +12,6 @@ const database = new DATABASE();
 let UserName;
 let UserType;
 let isFullScreen = false;
-let logOutTimeOut = 30000;
-let timeOutValue;
 let searchtimeOutValue;
 
 
@@ -140,10 +137,6 @@ function loadStore(){
 
 
 
-function loadLoginPage(){
-    ipcRenderer.send('loadLogin')
-}
-
 function openExitDialogBox(){
 
     Modal.openExitPrompt()
@@ -162,6 +155,13 @@ function removeModal(){
         mainBodyContent.querySelector('.modal').remove();
         document.querySelector('.contentCover').classList.remove('contentCover--shown')
     }
+    if(document.querySelector(".contentContainer").querySelector(".modal") !== null){
+
+        document.querySelector(".contentContainer").querySelector(".modal").remove();
+        document.querySelector('.contentCover').classList.remove('contentCover--shown')
+
+    }
+    
 }
 
 function seekItem(){
@@ -216,14 +216,12 @@ function seekItem(){
                     row.style.color = initColor;
                 },2000)
 
-                clearTimeout(timeOutValue)
+                clearTimeout(searchtimeOutValue)
             
             }
             else{
 
                 currentItem = row.querySelector(".td_Brands").innerText.toLowerCase();
-
-                console.log(currentItem);
 
                 if(currentItem.includes(itemName)){
 
@@ -231,7 +229,7 @@ function seekItem(){
                     row.focus()
     
     
-                    clearTimeout(timeOutValue)
+                    clearTimeout(searchtimeOutValue)
                 
                 }
                 else{
@@ -243,7 +241,7 @@ function seekItem(){
                         row.scrollIntoView({behavior: 'smooth'});
                         row.focus();
         
-                        clearTimeout(timeOutValue)
+                        clearTimeout(searchtimeOutValue)
                     
                     }
                     else{
@@ -264,29 +262,10 @@ function seekItem(){
 
 }
 
-function startTimeOutCounter(){
-
-    if(timeOutValue !== null || timeOutValue !== undefined){
-            clearTimeout(timeOutValue)
-    }
-
-
-     timeOutValue = setTimeout(loadLoginPage, logOutTimeOut)
-
-}
 
 
 
-function modifySectionTime(e){
 
-    
-    e.stopPropagation();
-
-    clearTimeout(timeOutValue)
-
-    timeOutValue = setTimeout(loadLoginPage, logOutTimeOut)
-
-}
 
 function updateUserLastSeen(){
 
@@ -313,8 +292,6 @@ ipcRenderer.on("setUserParams", (e, userParamsArray)=>{
 
 
     database.setUserLastSeen(UserName, lastSeen)
-    .then((result)=>{
-        console.log(result);
-    })
+    
 
 })

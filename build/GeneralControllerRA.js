@@ -211,9 +211,7 @@ module.exports = Notifications;
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _model_DATABASE__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../model/DATABASE */ "./model/DATABASE.js");
 /* harmony import */ var _model_DATABASE__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_model_DATABASE__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _model_STORE__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../model/STORE */ "./model/STORE.js");
-/* harmony import */ var _model_STORE__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_model_STORE__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _modals_ModalController__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modals/ModalController */ "./controller/modals/ModalController.js");
+/* harmony import */ var _modals_ModalController__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modals/ModalController */ "./controller/modals/ModalController.js");
 
 
 const {
@@ -222,14 +220,11 @@ const {
 
 
 
-
 const database = new _model_DATABASE__WEBPACK_IMPORTED_MODULE_0___default.a(); //Program Variables
 
 let UserName;
 let UserType;
 let isFullScreen = false;
-let logOutTimeOut = 30000;
-let timeOutValue;
 let searchtimeOutValue;
 /*****************DOM ELEMENTS*****/
 
@@ -313,12 +308,8 @@ function loadStore() {
   ipcRenderer.send('loadStore', [UserName, UserType]);
 }
 
-function loadLoginPage() {
-  ipcRenderer.send('loadLogin');
-}
-
 function openExitDialogBox() {
-  _modals_ModalController__WEBPACK_IMPORTED_MODULE_2__["default"].openExitPrompt().then(() => {
+  _modals_ModalController__WEBPACK_IMPORTED_MODULE_1__["default"].openExitPrompt().then(() => {
     ipcRenderer.send("loadLogin");
   });
 } //Removes Modal
@@ -327,6 +318,11 @@ function openExitDialogBox() {
 function removeModal() {
   if (mainBodyContent.querySelector('.modal') !== null) {
     mainBodyContent.querySelector('.modal').remove();
+    document.querySelector('.contentCover').classList.remove('contentCover--shown');
+  }
+
+  if (document.querySelector(".contentContainer").querySelector(".modal") !== null) {
+    document.querySelector(".contentContainer").querySelector(".modal").remove();
     document.querySelector('.contentCover').classList.remove('contentCover--shown');
   }
 }
@@ -368,17 +364,16 @@ function seekItem() {
           row.style.backgroundColor = initBGcolor;
           row.style.color = initColor;
         }, 2000);
-        clearTimeout(timeOutValue);
+        clearTimeout(searchtimeOutValue);
       } else {
         currentItem = row.querySelector(".td_Brands").innerText.toLowerCase();
-        console.log(currentItem);
 
         if (currentItem.includes(itemName)) {
           row.scrollIntoView({
             behavior: 'smooth'
           });
           row.focus();
-          clearTimeout(timeOutValue);
+          clearTimeout(searchtimeOutValue);
         } else {
           currentItem = row.querySelector(".td_Category").innerText.toLowerCase();
 
@@ -387,7 +382,7 @@ function seekItem() {
               behavior: 'smooth'
             });
             row.focus();
-            clearTimeout(timeOutValue);
+            clearTimeout(searchtimeOutValue);
           } else {
             row.style.display = "none";
           }
@@ -397,20 +392,6 @@ function seekItem() {
       return;
     });
   }, 2000);
-}
-
-function startTimeOutCounter() {
-  if (timeOutValue !== null || timeOutValue !== undefined) {
-    clearTimeout(timeOutValue);
-  }
-
-  timeOutValue = setTimeout(loadLoginPage, logOutTimeOut);
-}
-
-function modifySectionTime(e) {
-  e.stopPropagation();
-  clearTimeout(timeOutValue);
-  timeOutValue = setTimeout(loadLoginPage, logOutTimeOut);
 }
 
 function updateUserLastSeen() {
@@ -427,9 +408,7 @@ ipcRenderer.on("setUserParams", (e, userParamsArray) => {
 
   const now = new Date();
   const lastSeen = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
-  database.setUserLastSeen(UserName, lastSeen).then(result => {
-    console.log(result);
-  });
+  database.setUserLastSeen(UserName, lastSeen);
 });
 
 /***/ }),
@@ -2342,6 +2321,34 @@ class DATABASE {
     });
   }
 
+  getTotalProfit() {
+    return new Promise((resolve, reject) => {
+      this.connector.query("SELECT SUM(Profit) AS Profit from `sales`", (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        } else {
+          result = result.pop();
+          resolve(result.Profit);
+        }
+      });
+    });
+  }
+
+  getDateRangeSales() {
+    return new Promise((resolve, reject) => {
+      this.connector.query("SELECT DATE_FORMAT(MIN(Date), '%Y-%m-%d') AS Minimum, DATE_FORMAT(MAX(Date), '%Y-%m-%d') AS Maximum FROM `sales`", (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        } else {
+          result = result.pop();
+          resolve(result);
+        }
+      });
+    });
+  }
+
   deleteReportedAccount(userName) {
     return new Promise((resolve, reject) => {
       console.log(";;", userName);
@@ -2432,63 +2439,6 @@ function verifyPassword(userName, incomingPassword, storedPassword) {
 }
 
 module.exports = DATABASE;
-
-/***/ }),
-
-/***/ "./model/STORE.js":
-/*!************************!*\
-  !*** ./model/STORE.js ***!
-  \************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-const electron = __webpack_require__(/*! electron */ "electron");
-
-const path = __webpack_require__(/*! path */ "path");
-
-const fs = __webpack_require__(/*! fs */ "fs");
-
-const {
-  promisify
-} = __webpack_require__(/*! util */ "util");
-
-class STORE {
-  constructor(data) {
-    const userDataPath = (electron.app || electron.remote.app).getPath('userData');
-    this.path = path.join(userDataPath, data.configName + '.json');
-    this.data = parseDataFile(this.path, data.defaults);
-  }
-
-  get(key) {
-    return new Promise((resolve, reject) => {
-      resolve(this.data[key]);
-    });
-  }
-
-  set(key, val) {
-    return new Promise((resolve, reject) => {
-      this.data[key] = val; //  const writeFileSync = promisify(fs.writeFileSync);
-
-      fs.writeFileSync(this.path, JSON.stringify(this.data));
-      const writeFile = promisify(fs.writeFile);
-      writeFile(this.path, JSON.stringify(this.data)).then(() => {
-        let date = new Date();
-        resolve();
-      });
-    });
-  }
-
-}
-
-function parseDataFile(filePath, defaults) {
-  try {
-    return JSON.parse(fs.readFileSync(filePath));
-  } catch (error) {
-    return defaults;
-  }
-}
-
-module.exports = STORE;
 
 /***/ }),
 
@@ -39068,17 +39018,6 @@ module.exports = require("fs");
 /***/ (function(module, exports) {
 
 module.exports = require("net");
-
-/***/ }),
-
-/***/ "path":
-/*!***********************!*\
-  !*** external "path" ***!
-  \***********************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = require("path");
 
 /***/ }),
 

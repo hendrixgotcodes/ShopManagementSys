@@ -90,13 +90,26 @@ window.addEventListener("load", ()=>{
     //Alert ipcMain of readiness
     ipcRenderer.send("ready");
 
-    toolBar_tb.focus();
+    if(toolBar_tb !== null){
+
+        toolBar_tb.focus();
+
+    }
+
+    
 })
 
 window.addEventListener("keyup", (e)=>{
 
     if(e.code === "F1"){
-        toolBar_tb.focus();
+
+        if(toolBar_tb !== null){
+
+            toolBar_tb.focus();
+
+        }
+
+        
     }
 
 })
@@ -214,6 +227,12 @@ function removeModal(){
     if(mainBodyContent.querySelector('.modal') !== null){
         mainBodyContent.querySelector('.modal').remove();
         document.querySelector('.contentCover').classList.remove('contentCover--shown')
+    }
+    if(document.querySelector(".contentContainer").querySelector(".modal") !== null){
+
+        document.querySelector(".contentContainer").querySelector(".modal").remove();
+        document.querySelector('.contentCover').classList.remove('contentCover--shown')
+
     }
 }
 

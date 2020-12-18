@@ -273,11 +273,16 @@ ipcRenderer.on("setUserParams", (e, paramsArray) => {
 window.addEventListener("load", () => {
   //Alert ipcMain of readiness
   ipcRenderer.send("ready");
-  toolBar_tb.focus();
+
+  if (toolBar_tb !== null) {
+    toolBar_tb.focus();
+  }
 });
 window.addEventListener("keyup", e => {
   if (e.code === "F1") {
-    toolBar_tb.focus();
+    if (toolBar_tb !== null) {
+      toolBar_tb.focus();
+    }
   }
 });
 controlBoxMinimize.addEventListener('click', sendMinimizeEvent);
@@ -365,6 +370,11 @@ function openExitDialogBox() {
 function removeModal() {
   if (mainBodyContent.querySelector('.modal') !== null) {
     mainBodyContent.querySelector('.modal').remove();
+    document.querySelector('.contentCover').classList.remove('contentCover--shown');
+  }
+
+  if (document.querySelector(".contentContainer").querySelector(".modal") !== null) {
+    document.querySelector(".contentContainer").querySelector(".modal").remove();
     document.querySelector('.contentCover').classList.remove('contentCover--shown');
   }
 }
@@ -2376,6 +2386,34 @@ class DATABASE {
         }
 
         resolve(result);
+      });
+    });
+  }
+
+  getTotalProfit() {
+    return new Promise((resolve, reject) => {
+      this.connector.query("SELECT SUM(Profit) AS Profit from `sales`", (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        } else {
+          result = result.pop();
+          resolve(result.Profit);
+        }
+      });
+    });
+  }
+
+  getDateRangeSales() {
+    return new Promise((resolve, reject) => {
+      this.connector.query("SELECT DATE_FORMAT(MIN(Date), '%Y-%m-%d') AS Minimum, DATE_FORMAT(MAX(Date), '%Y-%m-%d') AS Maximum FROM `sales`", (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        } else {
+          result = result.pop();
+          resolve(result);
+        }
       });
     });
   }

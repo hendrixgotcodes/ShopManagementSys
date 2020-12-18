@@ -69,6 +69,33 @@
     <div class="mainBody_content">
       
       <div  class="content_toolBar">
+
+         <div class="footer_actions">
+     
+          <label for="" class="filter">
+            View From:
+            <input type="date" name="" id="toolBarDate_from" class="footer_date">
+
+            <div class="toolBar_tP starttP">
+              <div class="arrow"></div>
+
+              <div class="inSpan">Please select a start date</div>
+            </div>
+
+            To:
+            <input type="date" name="" id="toolBarDate_to" class="footer_date">
+
+            <div class="toolBar_tP endtP">
+              <span class="inSpan">Please select an end date</span>
+              <div class="arrow"></div>
+            </div>
+
+          </label>
+  
+          <button  class="toolBarSlct_btn">Go</button>
+  
+        </div>
+
         <button tabindex="0" class="toolBar_btn--alpha btn_clear tabItem">
             Clear
             <img src="../Icons/toolBar/btnClear--green.svg" class="ico_btn_clear"lt="Add New Product">
@@ -80,8 +107,13 @@
           <center class="alignment">
 
             <div tabindex="0" class="card tabItem profit">
-              <label class="card_lbl">Total Profit Of The Month</label>
-              <div class="card_content">Ghc 2.2M</div>
+              <label class="card_lbl">
+                Total Profit
+                <div class="period">
+                  From <span class="valueFrom">Exactly One Month Ago</span> <span class="valueTo"></span>
+                </div>
+              </label>
+              <div class="card_content">---</div>
               <label tabindex="0" class="card_lbl lbl--underline tabItem"><span>More</span></label>
              </div>
  
@@ -117,26 +149,7 @@
         <span class="clock_min"> 15</span>
         <span class="clock_ampm">PM</span>
       </div>
-      <div tabindex="0" class="select tabItem">
-        <div tabindex="0" class="select_value tabItem">
-          <center class="selectValue_center">
-            <img src="../Icons/toolBar/funnel.svg" class="selectValue_icon" alt="">
-            <span class="selectValue_span">Show By:</span>
-          </center>
-          <img src="../Icons/toolBar/play_arrow-black-18dp.svg" alt="" class="selectValue_icon arrow">
-        </div>
-        <div tabindex="0" class="select_dropdown tabItem">
-          <span tabindex="0" class="selectDropdown_value tip_category tabItem">
-            Category
-          </span>
-          <span tabindex="0" class="selectDropdown_value tip_brand tabItem">
-            Brand
-          </span>
-          <span tabindex="0" class="selectDropdown_value tip_default tabItem">
-            Default
-          </span>
-        </div>
-      </div>
+      
     </div>
 
 
