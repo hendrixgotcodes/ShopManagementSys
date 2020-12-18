@@ -587,7 +587,7 @@ body {
             border-radius: 15px; }
             .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_menu .modalMenu_item {
               width: 100%;
-              height: 33.4%;
+              height: 50%;
               display: flex;
               flex-direction: column;
               justify-content: center;
@@ -633,7 +633,7 @@ body {
                 width: 6%;
                 height: 40%; }
             .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider {
-              height: 300%;
+              height: 200%;
               transition: .5s ease-out;
               display: flex;
               justify-content: space-between;
@@ -642,7 +642,7 @@ body {
               .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .modalContent_settings {
                 position: relative;
                 width: 100%;
-                height: 31%;
+                height: 50%;
                 overflow-y: hidden; }
                 .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .modalContent_settings .settingsAlert {
                   width: 100%;
@@ -662,185 +662,6 @@ body {
                   background-color: #12A89D; }
                 .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .modalContent_settings .settingsAlert--fail {
                   background-color: #e16161; }
-              .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings {
-                margin-top: 8%;
-                position: relative; }
-                .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .modalBanner {
-                  width: 100%;
-                  background-color: #646766;
-                  height: 5%;
-                  color: #fff;
-                  z-index: 0;
-                  padding: .5rem; }
-                .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .modal_table {
-                  border-collapse: collapse;
-                  position: relative;
-                  height: 100%;
-                  width: 100%; }
-                  .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .modal_table .modal_tHead {
-                    height: 3rem;
-                    background-color: #35594B;
-                    color: #fff;
-                    position: sticky;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center; }
-                    .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .modal_table .modal_tHead th {
-                      width: 33.33%; }
-                .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .modal_tBody {
-                  color: #646766;
-                  text-align: center;
-                  display: block;
-                  width: 100%;
-                  overflow-y: auto;
-                  height: 100%;
-                  margin-top: .1%; }
-                  .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .modal_tBody tr {
-                    height: 4rem;
-                    background-color: #F1F2F2;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    padding: 0 1rem; }
-                    .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .modal_tBody tr:nth-child(even) {
-                      background-color: #fff; }
-                    .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .modal_tBody tr td {
-                      display: block;
-                      width: 33.33%; }
-                .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .modal_btn_add {
-                  width: 7%;
-                  height: 9.5%;
-                  border-radius: 100%;
-                  background-color: #487966;
-                  box-shadow: -3px 3px 6px rgba(0, 0, 0, 0.176);
-                  position: absolute;
-                  bottom: 1.5rem;
-                  right: 1rem;
-                  cursor: pointer;
-                  display: flex;
-                  justify-content: center;
-                  align-items: center;
-                  overflow: hidden; }
-                  .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .modal_btn_add::after {
-                    content: '';
-                    position: absolute;
-                    width: 100%;
-                    height: 100%;
-                    top: 0;
-                    bottom: 0;
-                    transform: scale(0);
-                    transition: .3s;
-                    background-color: #528973;
-                    border-radius: 100%; }
-                  .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .modal_btn_add:hover::after {
-                    scale: 1;
-                    transform: scale(1); }
-                  .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .modal_btn_add img {
-                    z-index: 1; }
-                .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .addEmployeePage {
-                  width: 100%;
-                  height: 110%;
-                  position: absolute;
-                  top: 0%;
-                  left: 0;
-                  background-color: #fff;
-                  z-index: 2; }
-                  .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .addEmployeePage header {
-                    width: 100%;
-                    height: 10%;
-                    background-color: #35594B;
-                    color: #fff;
-                    display: flex;
-                    padding: 1rem;
-                    justify-content: space-between;
-                    align-items: center;
-                    font-size: 1.1rem;
-                    font-weight: 600;
-                    z-index: 2;
-                    position: relative; }
-                  .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .addEmployeePage .alertBanner {
-                    width: 100%;
-                    height: 5%;
-                    background-color: #12A89D;
-                    position: absolute;
-                    top: 5%;
-                    left: 0;
-                    z-index: 1;
-                    transition: .3s; }
-                  .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .addEmployeePage .alertError {
-                    background-color: #e16161;
-                    top: 15%; }
-                  .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .addEmployeePage .alertSuccess {
-                    background-color: #12A89D;
-                    top: 15%; }
-                  .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .addEmployeePage .alertInfo {
-                    background-color: #EFB526;
-                    top: 15%; }
-                  .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .addEmployeePage .newEmployeeForm {
-                    width: 100%;
-                    height: 65%;
-                    padding: .5rem;
-                    margin-top: 1rem;
-                    margin-bottom: .5rem;
-                    display: flex;
-                    align-items: center;
-                    flex-direction: column;
-                    flex-wrap: wrap;
-                    color: #35594B; }
-                    .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .addEmployeePage .newEmployeeForm .form_lbl {
-                      display: block;
-                      width: 48%;
-                      height: 20%;
-                      margin-bottom: 1rem; }
-                      .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .addEmployeePage .newEmployeeForm .form_lbl .form_tb {
-                        display: block;
-                        width: 100%;
-                        height: 60%;
-                        border: 1px solid #646766;
-                        border-radius: 4px;
-                        padding: .5rem;
-                        color: #646766;
-                        font-size: .8rem; }
-                      .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .addEmployeePage .newEmployeeForm .form_lbl .emptyTB {
-                        outline: 3px solid rgba(225, 97, 97, 0.5); }
-                        .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .addEmployeePage .newEmployeeForm .form_lbl .emptyTB::placeholder {
-                          color: rgba(225, 97, 97, 0.5); }
-                      .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .addEmployeePage .newEmployeeForm .form_lbl select {
-                        width: 100%;
-                        height: 60%;
-                        border: 1px solid #646766;
-                        border-radius: 4px;
-                        display: block;
-                        font-size: .9rem;
-                        color: #646766; }
-                  .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .addEmployeePage #btn_employ {
-                    margin-left: 1rem;
-                    width: 11%;
-                    height: 6.5%;
-                    background-color: #fff;
-                    color: #35594B;
-                    transition: .3s;
-                    border: 1px solid #35594B;
-                    border-radius: 3px; }
-                    .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .addEmployeePage #btn_employ:hover, .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .addEmployeePage #btn_employ:focus {
-                      background-color: #35594B;
-                      color: #fff; }
-                  .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .addEmployeePage .lostAccountsCount {
-                    position: absolute;
-                    bottom: 10%;
-                    right: 2%;
-                    width: 3.8%;
-                    height: 5%;
-                    background-color: #EFB526;
-                    border-radius: 100%;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    opacity: 0;
-                    transition: .5s;
-                    color: #fff; }
-                  .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .adminSettings .addEmployeePage .lostAccountsCount---shown {
-                    opacity: 1; }
               .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .accSettings {
                 margin-top: 10%;
                 padding: 1rem; }
@@ -928,9 +749,9 @@ body {
             .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider--onAdmin {
               transform: translateY(0%); }
             .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider--onAcc {
-              transform: translateY(-33%); }
+              transform: translateY(0%); }
             .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider--onGen {
-              transform: translateY(-66%); }
+              transform: translateY(-50%); }
     .main_body .mainBody_content .dialog--confirmationBox {
       position: absolute;
       width: 40%;

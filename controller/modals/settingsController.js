@@ -31,12 +31,8 @@ const settingsModalTemplate =
 
             <div class="account modalPage" aria-placeholder="Account Settings">
                 <div class="modal_menu">
-                    <div class="modalMenu_adminSettings modalMenu_item currentPage">
-                        <img src="../Icons/settings/employees.svg" />
-                        <div>My Employees</div>
-                    </div>
 
-                    <div class="modalMenu_accSettings modalMenu_item">
+                    <div class="modalMenu_accSettings modalMenu_item currentPage">
                         <img src="../Icons/menuIcons/Tray/account.svg" />
                         <div>My Account</div>
                     </div>
@@ -56,28 +52,6 @@ const settingsModalTemplate =
                         </h1>
                     </header>
                     <div class="modalContent_body slider slider--onAdmin">
-                        <div class="modalContent_settings adminSettings">
-
-                            <table class="contentTable modal_table">
-                                <thead class="tableHeader">
-                                    <tr class="modal_tHead">
-                                        <th class="tableHead_items">Name</th>
-                                        <th class="tableHead_items">User Name</th>
-                                        <th class="tableHead_items">Admin Status</th>
-                                        <th class="tableHead_items">Last Seen</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="modal_tBody">
-
-
-                                </tbody>
-                            </table>
-
-                            <div class="modal_btn_add" aria-placeholder="Add User">
-                                <img src="../Icons/settings/addUser.svg" />
-                            </div>
-
-                        </div>
                         <div class="modalContent_settings accSettings">
                             <center>
                                 <label class="settingsLabel">
@@ -149,7 +123,6 @@ mainBodyContent.appendChild(settingsModal);
 
 /***********************************DOM ELEMENTS**************************************** */
 
-const modalMenu_adminSettings = document.querySelector('.modalMenu_adminSettings');
 const modalMenu_accSettings = document.querySelector('.modalMenu_accSettings');
 const modalMenu_genSettings = document.querySelector('.modalMenu_genSettings');
 const modal_slider = document.querySelector('.slider');
@@ -159,15 +132,8 @@ const toolTipPref = settingsModal.querySelector('.genSettings').querySelector('#
 const timeOutPref = settingsModal.querySelector('.genSettings').querySelector('#timeOutPref');
 const btnGenSettings = settingsModal.querySelector('.genSettings').querySelector('#btn_genSettings');
 
-const modal_btn_add = settingsModal.querySelector(".modal_btn_add");
-
-
-/***********Event Listeners */
-modal_btn_add.addEventListener("click", openEmployeeForm)
-
 
 /***********************************DEFAULT SETTERS**************************************** */
-initializeEmployeeTable()
 
 store.get("toolTipsPref")
 .then((userPref)=>{
@@ -225,146 +191,6 @@ store.get("timeOutPref")
 
 
 /***********************************FUNCTIONS**************************************** */
-function initializeEmployeeTable(){
-
-    database.getUsers()
-    .then((users)=>{
-
-
-        users.forEach((user)=>{
-
-            let userStatus = "Regular"
-
-
-            if(parseInt(user.IsAdmin) === 1){
-                userStatus = "Admin"
-            }
-
-            const tableContentTemplate = 
-            `
-                <td>${user.First_Name} ${user.Last_Name}</td>
-                <td>${user.User_Name}</td>
-                <td>${userStatus}</td>
-                <td>${getRelativeTime(user.Last_Seen)}</td>
-            `
-
-            const tableRow = document.createElement("tr");
-            tableRow.className = "bodyRow";
-            tableRow.innerHTML = tableContentTemplate;
-
-            modal_tBody.appendChild(tableRow);
-            
-
-        })
-
-    })
-
-    function getRelativeTime(time){
-
-        if(time === null || time===undefined){
-            return "Never"
-        }
-
-        let [hours, minutes, seconds] = time.split(":");
-
-        [hours, minutes, seconds] = [parseInt(hours), parseInt(minutes), parseInt(seconds)]
-
-
-        if(hours == 0 && minutes > 60){
-
-            let hours = parseInt(minutes);
-
-            if(hours === 1){
-
-                return `An hour ago`
-
-            }
-
-            return `${hours} hours ago ${minutes} minutes ago`
-
-
-        }
-        else if(hours > 24){
-            let days = parseInt(hours/24);
-            
-            if(days === 1){
-                return `${days} day ago`
-            }
-
-            return `${days} days ago`
-
-        }
-        else if(hours > 168){
-
-            let week = parseInt(hours/168);
-
-            if(week === 1){
-                return `${week} week ago`
-            }
-
-            return `${week} weeks ago`
-
-        }
-        else if(hours > 8760){
-            
-            let yearMonth = parseFloat(hours/8760).toPrecision(2);
-
-            let [year, month] = yearMonth.split(".");
-
-            if(year === 1){
-                
-                if(month === 1){
-                    return `A year and a month ago`
-                }
-                else{
-                    return `A year and ${month} months ago`
-                }
-
-            }
-            else{
-
-                if(month === 1){
-                    return `${year} years and 1 month ago`
-                }
-                else{
-                    return `${year} years and ${month} months ago`
-                }
-
-            }
-
-        }
-        else{
-
-            if(!(minutes > 1) && hours === 0){
-
-
-                return "Online"
-
-            }
-            else if(hours === 1){
-
-                if(minutes === 1){
-
-                    return `An hour and a minute ago`
-
-                }
-                else{
-                    return `${hours} hour ${minutes} minutes ago`
-                }
-
-
-            }
-            else{
-                return `${hours} hours ${minutes} minutes ago`
-            }
-
-
-
-        }
-
-    }
-
-}
 
 //Notification/Alert
 function alertSaved(settingType, action){
@@ -521,21 +347,6 @@ function saveGenSettings(){
 /***********************************EVENT LISTENERS**************************************** */
 btnGenSettings.addEventListener("click", saveGenSettings)
 
-modalMenu_adminSettings.addEventListener('click', ()=>{
-    setSliderClass('slider--onAdmin')
-
-    modalMenu_adminSettings.classList.add('currentPage')
-
-    if(modalMenu_genSettings.classList.contains("currentPage")){
-        modalMenu_genSettings.classList.remove('currentPage')
-    }
-
-    if(modalMenu_accSettings.classList.contains("currentPage")){
-        modalMenu_accSettings.classList.remove('currentPage')
-    }
-
-
-});
 modalMenu_accSettings.addEventListener('click',()=>{
     setSliderClass('slider--onAcc')
 
@@ -545,9 +356,6 @@ modalMenu_accSettings.addEventListener('click',()=>{
         modalMenu_genSettings.classList.remove('currentPage')
     }
 
-    if(modalMenu_adminSettings.classList.contains("currentPage")){
-        modalMenu_adminSettings.classList.remove('currentPage')
-    }
 })
 modalMenu_genSettings.addEventListener('click', ()=>{
     setSliderClass('slider--onGen')
@@ -555,9 +363,6 @@ modalMenu_genSettings.addEventListener('click', ()=>{
     modalMenu_genSettings.classList.add('currentPage')
 
 
-    if(modalMenu_adminSettings.classList.contains("currentPage")){
-        modalMenu_adminSettings.classList.remove('currentPage')
-    }
 
     if(modalMenu_accSettings.classList.contains("currentPage")){
         modalMenu_accSettings.classList.remove('currentPage')
@@ -606,369 +411,8 @@ function removeSettingsModal(cover){
     cover.classList.toggle('contentCover--shown');
 }
 
-function openEmployeeForm(){
 
-    const adminSettings = document.querySelector(".adminSettings");
 
-    const addEmployeePage = document.createElement("div");
-    addEmployeePage.className = "addEmployeePage";
-
-    addEmployeePage.innerHTML = 
-    `
-        <header class="header">New Employee</header>
-
-        <div class="alertBanner">Content Here</div>
-
-        <form class="newEmployeeForm">
-
-            <label for="tb_firstName" class="form_lbl" id="lbl_firstName">
-
-                First Name:
-
-                <input type="text" name="tb_firstName" id="tb_firstName" class="form_tb">
-
-            </label>
-
-            <label for="tb_secondName" class="form_lbl" id="lbl_secondName">
-
-                Second Name:
-                <input type="text" name="tb_secondName" id="tb_secondName" class="form_tb" >
-
-            </label>
-
-            <label for="tb_userName" class="form_lbl" id="lbl_userName">
-
-                User Name:
-                <input type="text" name="tb_userName" id="tb_userName" class="form_tb" >
-
-            </label>
-
-            <label for="tb_newPassword" class="form_lbl" id="lbl_newPassword">
-
-                Password:
-                <input type="password" name="tb_newPassword" id="tb_newPassword" class="form_tb" >
-
-            </label>
-
-            <label for="tb_confirmPassword" class="form_lbl" id="lbl_confirmPassword">
-
-                Confirm Password:
-                <input type="password" name="tb_confirmPassword" id="tb_confirmPassword" class="form_tb" >
-
-            </label>
-
-            <label for="tb_empStatus" class="form_lbl" id="lbl_empStatus">
-
-                Account Type:
-                <select id="tb_empStatus" name="tb_empStatus">
-
-                    <option value="0">Regular</option>
-                    <option value="1">Administrator</option>
-
-                </select>
-
-            </label>
-
-        </form>
-
-        <button id="btn_employ">Employ</button>
-
-        <div class="lostAccountsCount">0</div>
-        
-
-    `
-    adminSettings.appendChild(addEmployeePage)
-
-    const formTBs = addEmployeePage.querySelectorAll(".form_tb");
-    const btnEmploy = addEmployeePage.querySelector("#btn_employ")
-    const alertBanner = addEmployeePage.querySelector(".alertBanner")
-
-    //Textbox
-    const firstName = addEmployeePage.querySelector("#tb_firstName");
-    const secondName = addEmployeePage.querySelector("#tb_secondName")
-    const userName = addEmployeePage.querySelector("#tb_userName")
-    const newPassword = addEmployeePage.querySelector("#tb_newPassword")
-    const confirmPassword = addEmployeePage.querySelector("#tb_confirmPassword")
-    const accountType = addEmployeePage.querySelector("#tb_empStatus")
-
-    const lbl_lostAccounts = addEmployeePage.querySelector(".lostAccountsCount");
-
-    //checking for lost accounts
-    const accountReporter = new ACCOUNTREPORTER();
-    let ReportedAccounts = [];
-    let currentReportedAccount;
-
-    
-
-    /************EVENT LISTENERS */
-    formTBs.forEach((textbox)=>{
-
-        textbox.addEventListener("blur", ()=>{
-
-            if(textbox.value === ""){
-                textbox.classList.add("emptyTB")
-                textbox.setAttribute("placeholder", "*empty field")
-            }
-            else{
-                textbox.classList.remove("emptyTB")
-                textbox.setAttribute("placeholder", "")
-            }
-
-        })
-
-    })
-
-    btnEmploy.addEventListener("click", ()=>{
-
-        let emptyField = false;
-
-        formTBs.forEach((textbox)=>{
-
-            if(textbox.value === ""){
-
-                alertBanner.innerText = "One or more field is empty"
-                alertBanner.classList.add("alertError");
-
-                emptyField = true;
-
-                setTimeout(()=>{
-                    alertBanner.classList.remove("alertError")
-                }, 3000)
-
-                return;
-
-            }
-
-        })
-
-        if(emptyField === false){
-
-            if(newPassword.value === confirmPassword.value){
-
-
-                    generateHash(userName.value, confirmPassword.value)
-                    .then((hash)=>{
-
-                        let newUser = {
-                            First_Name: firstName.value,
-                            Last_Name: secondName.value,
-                            User_Name: userName.value,
-                            Password: hash,
-                            IsAdmin: accountType.value
-                        }
-
-                        console.log(currentReportedAccount);
-
-                        if(currentReportedAccount !== undefined){
-
-                            
-                            database.deleteReportedAccount(newUser.User_Name)
-                            .then(()=>{
-
-                                database.updateUserInfo(newUser.User_Name, hash)
-                                .then(()=>{
-
-                                    formTBs.forEach((textbox)=>{
-
-                                        textbox.value = "";
-                    
-                                    })
-
-                                    alertBanner.innerText = "User added successfully"
-                                    alertBanner.classList.add("alertSuccess");
-
-                                    setTimeout(()=>{
-                                        alertBanner.classList.remove("alertSuccess")
-                                    }, 3000)
-
-                                
-
-                                    ReportedAccounts.shift()
-                                    currentReportedAccount = null;
-
-                                    if(ReportedAccounts.length === 0){
-
-                                        lbl_lostAccounts.innerText = 0;
-                                        lbl_lostAccounts.classList.remove("lostAccountsCount---shown")
-
-                                    }
-                                    else{
-
-                                        initializeNextLostAccount()
-
-                                    }
-                                })
-                                .catch((e)=>{
-
-                                    if(e){
-                                        throw e
-                                    }
-    
-                                    alertBanner.innerText = "Failed to add user. An error occured"
-                                    alertBanner.classList.add("alertError");
-    
-                                    setTimeout(()=>{
-                                            alertBanner.classList.remove("alertError")
-                                    }, 3000)
-    
-                                })
-
-                            })
-                            .catch((error)=>{
-
-                                if(error){
-                                    throw error
-                                }
-
-                                alertBanner.innerText = "Failed to add user. An error occured"
-                                alertBanner.classList.add("alertError");
-
-                                setTimeout(()=>{
-                                    alertBanner.classList.remove("alertError")
-                                }, 3000)
-
-                            })
-                                
-
-                        }
-                        else{
-
-                            database.addNewUser(newUser)
-                            .then(()=>{
-
-                                formTBs.forEach((textbox)=>{
-
-                                    textbox.value = "";
-                
-                                })
-
-                                alertBanner.innerText = "User added successfully"
-                                alertBanner.classList.add("alertSuccess");
-
-                                setTimeout(()=>{
-                                    alertBanner.classList.remove("alertSuccess")
-                                }, 3000)
-
-                            })
-                            .catch((error)=>{
-
-                                if(error.code === "ER_DUP_ENTRY"){
-
-                                    alertBanner.innerText = "Failed to add user. A user with the same username already exists"
-                                    alertBanner.classList.add("alertError");
-
-                                }
-
-                                alertBanner.innerText = "Failed to add user. An error occured"
-                                alertBanner.classList.add("alertError");
-
-                                setTimeout(()=>{
-                                        alertBanner.classList.remove("alertError")
-                                }, 3000)
-
-                            })
-
-                        }
-
-
-                    })
-                    
-
-                }
-                else{
-
-                    alertBanner.innerText = "The two provided passwords do not match"
-                    alertBanner.classList.add("alertError");
-
-                    setTimeout(()=>{
-                        alertBanner.classList.remove("alertError")
-                    }, 3000)
-
-                }
-
-            }
-
-        
-
-    })
-
-    //Functions
-    function generateHash(userName, password){
-
-        return new Promise((resolve, reject)=>{
-
-            const hash = cryptoJS.AES.encrypt(password, userName).toString()
-
-            resolve(hash)
-
-        })
-
-
-    }
-
-    function initializeNextLostAccount(){
-
-        
-
-        if(ReportedAccounts.length > 0){
-
-            lbl_lostAccounts.innerText = ReportedAccounts.length;
-            lbl_lostAccounts.classList.add("lostAccountsCount---shown")
-
-            let ReportedAccountsCopy  = ReportedAccounts;
-
-            let reportedAccount = ReportedAccountsCopy.shift();
-            currentReportedAccount = reportedAccount;
-
-
-            firstName.value = reportedAccount.First_Name;
-            secondName.value = reportedAccount.Last_Name;
-            userName.value = reportedAccount.User_Name;
-
-
-        }
-
-    }
-
-
-    setTimeout(()=>{
-
-        database.getReportedAccounts()
-        .then((reportedAccounts)=>{
-
-
-            reportedAccounts.forEach((account)=>{
-
-                ReportedAccounts.push(account)
-
-            })
-
-            if(ReportedAccounts.length > 0)
-            {
-                let word = "report";
-
-                if(reportedAccounts.length > 1){
-                    word = "reports"
-                }
-
-                alertBanner.innerText = `${reportedAccounts.length} users have lost have lost their passwords. Click to resolve them now?`
-                alertBanner.classList.add("alertInfo");
-                alertBanner.addEventListener("click", initializeNextLostAccount)
-
-                btnEmploy.innerText = "Modify"
-
-                setTimeout(()=>{
-                    alertBanner.classList.remove("alertInfo")
-                    alertBanner.removeEventListener("click", initializeNextLostAccount)
-                }, 10000)
-            }
-
-        })
-
-    }, 1000)
-
-
-}
 
 
 
