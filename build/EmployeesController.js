@@ -1624,6 +1624,87 @@ class DOMCONTROLLER {
         `;
     tableBody.appendChild(row);
   }
+
+  static createProfitsItem(name, brand, avgInStock, avgSale, totalSold, revenue, profit) {
+    const tableBody = document.querySelector("tbody");
+    const row = document.createElement("tr");
+    row.className = "bodyRow";
+    row.innerHTML = `
+            <tr class="bodyRow">
+                <td class="td_Long td_Names">
+                    ${clip(name, 18)}
+                    <div class ="td_toolTip" id="tp_Name">${name}</div>
+                </td>
+                <td class="td_Long td_Brands">
+                    ${clip(brand, 10)}
+                    <div class ="td_toolTip" id="tp_Brand">${brand}</div>
+                </td>
+                <td class="td_Short td_InStock">${avgInStock}</td>
+                <td class="td_Short td_Sold">${avgSale}</td>
+                <td class="td_Short td_Sold">${totalSold}</td>
+                <td class="td_Medium td_Revenue">
+                    ${Millify(revenue)}
+                    <div class ="td_toolTip" id="tp_Revenue">GH¢${revenue}</div>
+                </td>
+                <td class="td_Medium td_Profit">
+                    ${Millify(profit)}
+                    <div class ="td_toolTip" id="tp_Profit">GH¢${profit}</div>
+                </td>
+            </tr>
+
+        `;
+    tableBody.appendChild(row);
+    const tdName = row.querySelector(".td_Names");
+    let timeoutId_tpName;
+    tdName.addEventListener("mouseenter", () => {
+      timeoutId_tpName = setTimeout(function showToolTip() {
+        tdName.querySelector(".td_toolTip").style.display = "block";
+      }, 1500);
+    });
+    tdName.addEventListener("mouseleave", () => {
+      clearTimeout(timeoutId_tpName);
+      tdName.querySelector(".td_toolTip").style.display = "none";
+    });
+    /*********************************************** */
+
+    const tdBrands = row.querySelector(".td_Brands");
+    let timeoutId_tpBrand;
+    tdBrands.addEventListener("mouseenter", () => {
+      timeoutId_tpBrand = setTimeout(function showToolTip() {
+        tdBrands.querySelector(".td_toolTip").style.display = "block";
+      }, 1500);
+    });
+    tdBrands.addEventListener("mouseleave", () => {
+      clearTimeout(timeoutId_tpBrand);
+      tdBrands.querySelector(".td_toolTip").style.display = "none";
+    });
+    /********************************************************/
+
+    const td_Revenue = row.querySelector(".td_Revenue");
+    let timeoutId_tpRevenue;
+    td_Revenue.addEventListener("mouseenter", () => {
+      timeoutId_tpRevenue = setTimeout(function showToolTip() {
+        td_Revenue.querySelector(".td_toolTip").style.display = "block";
+      }, 1500);
+    });
+    td_Revenue.addEventListener("mouseleave", () => {
+      clearTimeout(timeoutId_tpRevenue);
+      td_Revenue.querySelector(".td_toolTip").style.display = "none";
+    });
+    /********************************************** */
+
+    const tdProfit = row.querySelector(".td_Profit");
+    let timeoutId_tpProfit;
+    tdProfit.addEventListener("mouseenter", () => {
+      timeoutId_tpProfit = setTimeout(function showToolTip() {
+        tdProfit.querySelector(".td_toolTip").style.display = "block";
+      }, 1500);
+    });
+    tdProfit.addEventListener("mouseleave", () => {
+      clearTimeout(timeoutId_tpProfit);
+      tdProfit.querySelector(".td_toolTip").style.display = "none";
+    });
+  }
   /***********************************************************************************************************************************/
 
   /******REMOVING ITEM FROM INVENTORY*****/
@@ -2293,6 +2374,7 @@ class DATABASE {
                                 Profit DECIMAL(8,2) NOT NULL,
                                 UnitDiscount DECIMAL(8,2) NOT NULL,
                                 TotalDiscount DECIMAL(8,2) NOT NULL,
+                                InStock INT NOT NULL,
                                 PRIMARY KEY(id),
                                 FOREIGN KEY (User) REFERENCES  users(id) ON DELETE CASCADE ON UPDATE CASCADE,
                                 FOREIGN KEY (Item) REFERENCES  items(id) ON DELETE CASCADE ON UPDATE CASCADE
@@ -2402,7 +2484,6 @@ class DATABASE {
                                                 if (error) {
                                                   throw error;
                                                 } else {
-                                                  console.log(result);
                                                   result = result.pop();
 
                                                   if (result.Count === 0) {
@@ -2410,7 +2491,8 @@ class DATABASE {
                                                       First_Name: "admin",
                                                       Last_Name: "admin",
                                                       User_Name: "admin",
-                                                      Password: "U2FsdGVkX1+1/HhsPvFWOKBvsPBE1J0Re3XDWquuZeU="
+                                                      Password: "U2FsdGVkX1+1/HhsPvFWOKBvsPBE1J0Re3XDWquuZeU=",
+                                                      IsAdmin: "1"
                                                     }, (error, result) => {
                                                       if (error) {
                                                         this.connector.rollback();
@@ -2979,7 +3061,6 @@ class DATABASE {
           UnitDiscount: sale.UnitDiscount,
           TotalDiscount: sale.TotalDiscount
         };
-        console.log(finalSaleValue);
         let userValue = {
           User_Name: userName
         };
@@ -3000,6 +3081,7 @@ class DATABASE {
                 finalSaleValue.Item = item.id;
                 let InStock = item.InStock;
                 InStock = InStock - finalSaleValue.Purchased;
+                finalSaleValue.InStock = InStock;
                 this.connector.beginTransaction(error => {
                   if (error) {
                     reject("unknown error");
@@ -3116,6 +3198,24 @@ class DATABASE {
       max = Math.floor(max);
       return Math.floor(Math.random() * (max - min) + min);
     }
+  }
+
+  getItemOrderedMonthly() {
+    return new Promise((resolve, reject) => {
+      this.connector.query(`
+
+            SELECT (SELECT Name FROM items WHERE items.id = sales.Item) AS Name,(SELECT items.Brand FROM items WHERE items.id = sales.Item) AS Brand,(SELECT items.Category FROM items WHERE items.id = sales.Item) AS Category,SUM(InStock) DIV COUNT(*) AS Avg_Stock, 
+            SUM(Purchased) DIV COUNT(*) AS Avg_Sale,SUM(sales.Purchased) AS Total_Sold, SUM(sales.Revenue) As Revenue, SUM(sales.Profit) AS Profit FROM sales WHERE sales.Date BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW() GROUP BY sales.Item ORDER BY Profit DESC
+
+            `, (err, result) => {
+        if (err) {
+          reject(err);
+          throw err;
+        } else {
+          resolve(result);
+        }
+      });
+    });
   }
 
   getItemQuantity(itemName, itemBrand, itemCategory) {

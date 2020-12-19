@@ -1314,6 +1314,7 @@ class DATABASE {
                                 Profit DECIMAL(8,2) NOT NULL,
                                 UnitDiscount DECIMAL(8,2) NOT NULL,
                                 TotalDiscount DECIMAL(8,2) NOT NULL,
+                                InStock INT NOT NULL,
                                 PRIMARY KEY(id),
                                 FOREIGN KEY (User) REFERENCES  users(id) ON DELETE CASCADE ON UPDATE CASCADE,
                                 FOREIGN KEY (Item) REFERENCES  items(id) ON DELETE CASCADE ON UPDATE CASCADE
@@ -1423,7 +1424,6 @@ class DATABASE {
                                                 if (error) {
                                                   throw error;
                                                 } else {
-                                                  console.log(result);
                                                   result = result.pop();
 
                                                   if (result.Count === 0) {
@@ -1431,7 +1431,8 @@ class DATABASE {
                                                       First_Name: "admin",
                                                       Last_Name: "admin",
                                                       User_Name: "admin",
-                                                      Password: "U2FsdGVkX1+1/HhsPvFWOKBvsPBE1J0Re3XDWquuZeU="
+                                                      Password: "U2FsdGVkX1+1/HhsPvFWOKBvsPBE1J0Re3XDWquuZeU=",
+                                                      IsAdmin: "1"
                                                     }, (error, result) => {
                                                       if (error) {
                                                         this.connector.rollback();
@@ -2000,7 +2001,6 @@ class DATABASE {
           UnitDiscount: sale.UnitDiscount,
           TotalDiscount: sale.TotalDiscount
         };
-        console.log(finalSaleValue);
         let userValue = {
           User_Name: userName
         };
@@ -2021,6 +2021,7 @@ class DATABASE {
                 finalSaleValue.Item = item.id;
                 let InStock = item.InStock;
                 InStock = InStock - finalSaleValue.Purchased;
+                finalSaleValue.InStock = InStock;
                 this.connector.beginTransaction(error => {
                   if (error) {
                     reject("unknown error");
@@ -2137,6 +2138,24 @@ class DATABASE {
       max = Math.floor(max);
       return Math.floor(Math.random() * (max - min) + min);
     }
+  }
+
+  getItemOrderedMonthly() {
+    return new Promise((resolve, reject) => {
+      this.connector.query(`
+
+            SELECT (SELECT Name FROM items WHERE items.id = sales.Item) AS Name,(SELECT items.Brand FROM items WHERE items.id = sales.Item) AS Brand,(SELECT items.Category FROM items WHERE items.id = sales.Item) AS Category,SUM(InStock) DIV COUNT(*) AS Avg_Stock, 
+            SUM(Purchased) DIV COUNT(*) AS Avg_Sale,SUM(sales.Purchased) AS Total_Sold, SUM(sales.Revenue) As Revenue, SUM(sales.Profit) AS Profit FROM sales WHERE sales.Date BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW() GROUP BY sales.Item ORDER BY Profit DESC
+
+            `, (err, result) => {
+        if (err) {
+          reject(err);
+          throw err;
+        } else {
+          resolve(result);
+        }
+      });
+    });
   }
 
   getItemQuantity(itemName, itemBrand, itemCategory) {

@@ -378,6 +378,129 @@ class DOMCONTROLLER{
 
     }
 
+    static createProfitsItem(name, brand, avgInStock, avgSale, totalSold,revenue, profit){
+
+        const tableBody = document.querySelector("tbody");
+        const row = document.createElement("tr");
+
+        row.className = "bodyRow";
+        row.innerHTML = 
+        `
+            <tr class="bodyRow">
+                <td class="td_Long td_Names">
+                    ${clip(name, 18)}
+                    <div class ="td_toolTip" id="tp_Name">${name}</div>
+                </td>
+                <td class="td_Long td_Brands">
+                    ${clip(brand, 10)}
+                    <div class ="td_toolTip" id="tp_Brand">${brand}</div>
+                </td>
+                <td class="td_Short td_InStock">${avgInStock}</td>
+                <td class="td_Short td_Sold">${avgSale}</td>
+                <td class="td_Short td_Sold">${totalSold}</td>
+                <td class="td_Medium td_Revenue">
+                    ${Millify(revenue)}
+                    <div class ="td_toolTip" id="tp_Revenue">GH¢${revenue}</div>
+                </td>
+                <td class="td_Medium td_Profit">
+                    ${Millify(profit)}
+                    <div class ="td_toolTip" id="tp_Profit">GH¢${profit}</div>
+                </td>
+            </tr>
+
+        `
+
+        tableBody.appendChild(row);
+
+        const tdName = row.querySelector(".td_Names");
+        let timeoutId_tpName;
+
+        tdName.addEventListener("mouseenter", ()=>{
+                
+            timeoutId_tpName = setTimeout(function showToolTip(){
+    
+                tdName.querySelector(".td_toolTip").style.display = "block";
+    
+            }, 1500)
+    
+        });
+    
+        tdName.addEventListener("mouseleave", ()=>{
+    
+            clearTimeout(timeoutId_tpName);
+
+            tdName.querySelector(".td_toolTip").style.display = "none";
+    
+        })
+
+        /*********************************************** */
+        const tdBrands = row.querySelector(".td_Brands");
+        let timeoutId_tpBrand;
+
+        tdBrands.addEventListener("mouseenter", ()=>{
+                
+            timeoutId_tpBrand = setTimeout(function showToolTip(){
+    
+                tdBrands.querySelector(".td_toolTip").style.display = "block";
+    
+            }, 1500)
+    
+        });
+    
+        tdBrands.addEventListener("mouseleave", ()=>{
+    
+            clearTimeout(timeoutId_tpBrand);
+
+            tdBrands.querySelector(".td_toolTip").style.display = "none";
+    
+        })
+
+        /********************************************************/
+        const td_Revenue = row.querySelector(".td_Revenue");
+        let timeoutId_tpRevenue;
+
+        td_Revenue.addEventListener("mouseenter", ()=>{
+                
+            timeoutId_tpRevenue = setTimeout(function showToolTip(){
+    
+                td_Revenue.querySelector(".td_toolTip").style.display = "block";
+    
+            }, 1500)
+    
+        });
+    
+        td_Revenue.addEventListener("mouseleave", ()=>{
+    
+            clearTimeout(timeoutId_tpRevenue);
+
+            td_Revenue.querySelector(".td_toolTip").style.display = "none";
+    
+        })
+
+        /********************************************** */
+        const tdProfit = row.querySelector(".td_Profit");
+        let timeoutId_tpProfit;
+
+        tdProfit.addEventListener("mouseenter", ()=>{
+                
+            timeoutId_tpProfit = setTimeout(function showToolTip(){
+    
+                tdProfit.querySelector(".td_toolTip").style.display = "block";
+    
+            }, 1500)
+    
+        });
+    
+        tdProfit.addEventListener("mouseleave", ()=>{
+    
+            clearTimeout(timeoutId_tpProfit);
+
+            tdProfit.querySelector(".td_toolTip").style.display = "none";
+    
+        })
+
+    }
+
     
     
 /***********************************************************************************************************************************/

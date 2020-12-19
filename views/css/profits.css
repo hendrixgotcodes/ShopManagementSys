@@ -506,30 +506,66 @@ body {
                 transform: translateY(0%); }
       .main_body .mainBody_content .contentContainer .tb_cb {
         width: 5%; }
-      .main_body .mainBody_content .contentContainer .tb_Names,
-      .main_body .mainBody_content .contentContainer .tb_Brands,
-      .main_body .mainBody_content .contentContainer .tb_Category {
-        width: 22%;
+      .main_body .mainBody_content .contentContainer .tb_long {
+        width: 20%;
         display: flex;
         justify-content: center;
         align-items: center; }
-      .main_body .mainBody_content .contentContainer .tb_Stock,
-      .main_body .mainBody_content .contentContainer .tb_Price {
-        width: 15.5%; }
-      .main_body .mainBody_content .contentContainer .td_cb {
-        width: 2%; }
-      .main_body .mainBody_content .contentContainer .td_Names,
-      .main_body .mainBody_content .contentContainer .td_Brands,
-      .main_body .mainBody_content .contentContainer .td_Category {
-        width: 22%;
+      .main_body .mainBody_content .contentContainer .tb_Medium {
+        width: 20%; }
+      .main_body .mainBody_content .contentContainer .tb_Short {
+        width: 17.5%; }
+      .main_body .mainBody_content .contentContainer .td_Long {
+        width: 20%;
         display: flex;
         justify-content: center;
-        align-items: center;
-        text-align: center; }
-      .main_body .mainBody_content .contentContainer .td_Stock,
-      .main_body .mainBody_content .contentContainer .td_Price {
-        width: 15.5%;
-        text-align: center; }
+        align-items: center; }
+      .main_body .mainBody_content .contentContainer .td_Medium {
+        width: 20%; }
+      .main_body .mainBody_content .contentContainer .td_Short {
+        width: 17.5%; }
+      .main_body .mainBody_content .contentContainer .td_Names .td_toolTip {
+        position: absolute;
+        background-color: #fff;
+        border: 1px solid #979a99;
+        border-radius: 3px;
+        padding: .1rem;
+        display: none;
+        transition: .3s;
+        width: fit-content;
+        left: 5%; }
+      .main_body .mainBody_content .contentContainer .td_Brands .td_toolTip {
+        position: absolute;
+        background-color: #fff;
+        border: 1px solid #979a99;
+        border-radius: 3px;
+        padding: .1rem;
+        display: none;
+        transition: .3s;
+        width: fit-content;
+        left: 25%; }
+      .main_body .mainBody_content .contentContainer .td_Revenue .td_toolTip {
+        position: absolute;
+        background-color: #fff;
+        border: 1px solid #979a99;
+        border-radius: 3px;
+        padding: .1rem;
+        display: none;
+        transition: .3s;
+        width: fit-content;
+        left: 77%;
+        bottom: 30%; }
+      .main_body .mainBody_content .contentContainer .td_Profit .td_toolTip {
+        position: absolute;
+        background-color: #fff;
+        border: 1px solid #979a99;
+        border-radius: 3px;
+        padding: .1rem;
+        display: none;
+        transition: .3s;
+        width: fit-content;
+        left: 90%;
+        bottom: 30%; }
     .main_body .mainBody_content .modal_hide {
       transition: .3s;
       transform: scale(0); }
