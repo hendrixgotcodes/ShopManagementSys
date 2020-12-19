@@ -142,7 +142,7 @@
         width: 8%;
         height: 55%;
         background-color: $WHITE;
-        border: 1.6px solid $secondary_red;
+        border: 1.5px solid $secondary_red;
         color: $secondary_red;
         border-radius: 4px;
         display: flex;
@@ -160,6 +160,18 @@
         &:hover{
             background-color: $secondary_red;
             color: $WHITE;
+        }
+
+        &:disabled{
+
+            color: lighten($color: $secondary_red, $amount: 20);
+            border-color: lighten($color: $secondary_red, $amount: 20);
+            cursor: default;
+
+            &:hover{
+                background-color: $WHITE;
+            }
+
         }
     }
 

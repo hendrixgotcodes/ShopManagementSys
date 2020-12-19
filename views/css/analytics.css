@@ -351,7 +351,7 @@ body {
         width: 8%;
         height: 55%;
         background-color: #fff;
-        border: 1.6px solid #e16161;
+        border: 1.5px solid #e16161;
         color: #e16161;
         border-radius: 4px;
         display: flex;
@@ -366,6 +366,12 @@ body {
         .main_body .mainBody_content .content_toolBar .btn_clear:hover {
           background-color: #e16161;
           color: #fff; }
+        .main_body .mainBody_content .content_toolBar .btn_clear:disabled {
+          color: #f1b6b6;
+          border-color: #f1b6b6;
+          cursor: default; }
+          .main_body .mainBody_content .content_toolBar .btn_clear:disabled:hover {
+            background-color: #fff; }
     .main_body .mainBody_content .contentContainer {
       width: 100%;
       height: 90%;

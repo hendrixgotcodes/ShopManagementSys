@@ -88,15 +88,12 @@ if(toolBar_tb !== null){
 
 
 window.addEventListener('click', (e)=>{
-    modifySectionTime(e)
     updateUserLastSeen()
 });
 window.addEventListener('mouseover', (e)=>{
-    modifySectionTime(e)
     updateUserLastSeen()
 });
 window.addEventListener('keypress', (e)=>{
-    modifySectionTime(e)
     updateUserLastSeen();
 });
 

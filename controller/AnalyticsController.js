@@ -1,6 +1,7 @@
 const { default: Millify } = require("millify");
 let validator = require('is-my-date-valid');
 const { default: clip } = require("text-clipper");
+const { readdir } = require("fs");
 validator = validator({format: "YYY-MM-DD"})
 
 let userType = "Admin";
@@ -18,7 +19,14 @@ const growthRateCard = document.querySelector('#growthRate')
 
 const profit = profit_card.querySelector(".card_content");
 const topItem = product_card.querySelector(".card_content");
-const topUser = topUser_card.querySelector(".card_content")
+const topUser = topUser_card.querySelector(".card_content");
+
+const profitValueFrom = profit_card.querySelector(".valueFrom");
+const profitValueTo = profit_card.querySelector(".valueTo");
+const topItemValueFrom = product_card.querySelector(".valueFrom");
+const topItemValueTo = product_card.querySelector(".valueTo");
+const topUserValueFrom = topUser_card.querySelector(".valueFrom");
+const topUserValueTo = topUser_card.querySelector(".valueTo");
 
 const endtP = document.querySelector(".endtP");
 const starttP = document.querySelector(".starttP");
@@ -32,30 +40,36 @@ const toolBarDate_to = document.querySelector("#toolBarDate_to")
 /************EVENT LISTENERS */
 window.addEventListener("load", (e)=>{
 
-    database.getDateRangeSales()
-    .then((date)=>{
+    setTimeout(()=>{
 
-        console.log(date, date.Minimum, date.Maximum);
+        database.getDateRangeSales()
+            .then((date)=>{
 
-        if(date.Maximum === null && date.Minimum === null){
 
-            toolBarDate_from.disabled = true;
-            toolBarDate_to.disabled = true;
+                if(date.Maximum === null && date.Minimum === null){
 
-            toolBarSlct_btn.disabled = true;
-            return;
-        }
+                    toolBarDate_from.disabled = true;
+                    toolBarDate_to.disabled = true;
 
-        toolBarDate_from.min = date.Minimum;
-        toolBarDate_from.max = date.Maximum;
+                    toolBarSlct_btn.disabled = true;
+                    toolBar_btn.disabled = true;
+                    return;
+                }
 
-        toolBarDate_to.min = date.Minimum;
-        toolBarDate_to.max = date.Maximum;
+                toolBarDate_from.min = date.Minimum;
+                toolBarDate_from.max = date.Maximum;
 
-    })
+                toolBarDate_to.min = date.Minimum;
+                toolBarDate_to.max = date.Maximum;
 
-    initializeData();
+            })
 
+            initializeData();
+
+
+    },1000)
+
+    
 })
 
 toolBar_btn.addEventListener('mouseover',toggleTBbtn_white)
@@ -74,7 +88,7 @@ function toggleTBbtn_white(){
 }
 
 function toggleTBbtn_default(){
-    toolBar_btn_icon.setAttribute('src', '../Icons/toolBar/btnClear--green.svg')
+    toolBar_btn_icon.setAttribute('src', '../Icons/toolBar/btnClear--red.svg')
 }
 
 function loadProfits(){
@@ -154,12 +168,35 @@ function fetchAnalyticsData(e){
     }
     else{
 
-        database.getTotalProfit()
+        database.getTotalProfit(toolBarDate_from.value, toolBarDate_to.value)
         .then((result)=>{
 
             profit.innerText = `GHc ${Millify(result, {
                 precision: 3
             })}`;
+
+            profitValueFrom.innerText = readableDate(toolBarDate_from.value);
+            profitValueTo.innerText = "to " + readableDate(toolBarDate_to.value);
+
+        })
+
+        database.getMostSoldItem(toolBarDate_from.value, toolBarDate_to.value)
+        .then((item)=>{
+
+            topItem.innerText = clip(item, 15);
+
+            topItemValueFrom.innerText = readableDate(toolBarDate_from.value);
+            topItemValueTo.innerText = "to " + readableDate(toolBarDate_to.value)
+
+        })
+
+        database.getUserWithMostSales(toolBarDate_from.value, toolBarDate_to.value)
+        .then((user)=>{
+
+            topUser.innerText = clip(user, 15);
+
+            topUserValueFrom.innerText = readableDate(toolBarDate_from.value);
+            topUserValueTo.innerText = "to " + readableDate(toolBarDate_to.value);
 
         })
 
@@ -180,7 +217,7 @@ function initializeData(){
 
     })
 
-    database.getMostSoldItem()
+    database.getMostSoldItemMonth()
     .then((item)=>{
 
         topItem.innerText = clip(item, 15);
@@ -193,5 +230,36 @@ function initializeData(){
         topUser.innerText = clip(user, 15);
 
     })
+
+}
+
+function readableDate(date){
+
+    console.log(date);
+
+    let [year, month, day] = date.split("-");
+
+    let months = ["", "Jan", "Feb", "Mar" , "Apr",  "May", "June", "July", "Aug", "Sept",  "Oct", "Nov", "Dec"];
+
+    if(day === "1" || day === "21" || day === "31"){
+
+        day = day + "st"
+
+    }
+    else if(day === "2" || day === "22"){
+
+        day = day + "nd";
+
+    }
+    else if(day === "3" || day === "23"){
+        day = day + "rd";
+    }
+    else{
+        day = day + "th";
+    }
+
+    month = months[parseInt(month)];
+
+    return `${day} ${month}, ${year}`;
 
 }

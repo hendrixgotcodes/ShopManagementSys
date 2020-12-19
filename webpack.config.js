@@ -9,6 +9,7 @@ const electron ={
         toolTips: './controller/utilities/ToolTipController.js',
         settingsController: './controller/modals/settingsController.js',
         StoreController: './controller/StoreController.js',
+        StoreControllerRA: './controller/StoreControllerRA.js',
         LoginController: './controller/LoginController.js',
         MainGraph: './controller/MainGraph.js',
         EmployeesController: './controller/EmployeesController.js'

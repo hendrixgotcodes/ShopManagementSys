@@ -2272,7 +2272,21 @@ class DATABASE {
     });
   }
 
-  getMostSoldItem() {
+  getMostSoldItem(from, to) {
+    return new Promise((resolve, reject) => {
+      this.connector.query('SELECT SUM(`sales`.`Purchased`) Total_Sale, (SELECT `items`.`Name` FROM `items` WHERE `items`.`id` = `sales`.`Item`) AS Item FROM `sales` WHERE `sales`.`Date` BETWEEN ? AND ? GROUP BY Item ORDER BY Total_Sale DESC LIMIT 1', [from, to], (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        } else {
+          result = result.pop();
+          resolve(result.Item);
+        }
+      });
+    });
+  }
+
+  getMostSoldItemMonth() {
     return new Promise((resolve, reject) => {
       this.connector.query("SELECT SUM(`sales`.`Purchased`) Total_Sale, (SELECT `items`.`Name` FROM `items` WHERE `items`.`id` = `sales`.`Item`) AS Item FROM `sales` WHERE `sales`.`Date` BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW() GROUP BY Item ORDER BY Total_Sale DESC LIMIT 1", (error, result) => {
         if (error) {
@@ -2297,6 +2311,20 @@ class DATABASE {
         }
 
         resolve(result);
+      });
+    });
+  }
+
+  getUserWithMostSales(from, to) {
+    return new Promise((resolve, reject) => {
+      this.connector.query("SELECT `users`.`First_Name` AS First_Name, `users`.`Last_Name` AS Last_Name, (SELECT COUNT(*) FROM `sales` WHERE `sales`.`User` = `users`.`id` AND `sales`.`Date` BETWEEN ? AND ?) AS Total_Sale FROM `users` ORDER BY Total_Sale DESC LIMIT 1", [from, to], (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        } else {
+          result = result.pop();
+          resolve(`${result.First_Name} ${result.Last_Name}`);
+        }
       });
     });
   }
@@ -2393,9 +2421,9 @@ class DATABASE {
     });
   }
 
-  getTotalProfit() {
+  getTotalProfit(from, to) {
     return new Promise((resolve, reject) => {
-      this.connector.query("SELECT SUM(Profit) AS Profit from `sales`", (error, result) => {
+      this.connector.query("SELECT SUM(`sales`.`Profit`) AS Profit from `sales` WHERE `sales`.`Date` BETWEEN ? AND ?", [from, to], (error, result) => {
         if (error) {
           reject(error);
           throw error;
