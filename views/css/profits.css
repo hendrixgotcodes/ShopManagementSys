@@ -480,6 +480,27 @@ body {
     .main_body .mainBody_content .contentContainer {
       width: 100%;
       height: 90%; }
+      .main_body .mainBody_content .contentContainer .emptyBanner {
+        width: 100%;
+        height: 91%;
+        position: absolute;
+        bottom: 0%;
+        left: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1;
+        background-color: #F1F2F2; }
+        .main_body .mainBody_content .contentContainer .emptyBanner img {
+          width: 30%;
+          height: 40%; }
+        .main_body .mainBody_content .contentContainer .emptyBanner span {
+          display: block;
+          margin-top: 1rem;
+          color: #35594B; }
+          .main_body .mainBody_content .contentContainer .emptyBanner span img {
+            width: 1.5%;
+            cursor: pointer; }
       .main_body .mainBody_content .contentContainer .contentTable {
         width: 100%;
         border-collapse: collapse;
