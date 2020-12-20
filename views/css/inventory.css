@@ -626,6 +626,32 @@ body {
         display: none;
         transition: .3s;
         width: max-content; }
+      .main_body .mainBody_content .contentContainer .td_costPrice .td_toolTip {
+        position: absolute;
+        background-color: #fff;
+        border: 1px solid #979a99;
+        border-radius: 3px;
+        padding: .1rem;
+        display: none;
+        transition: .3s;
+        width: max-content;
+        z-index: 2;
+        bottom: 25%;
+        left: 76%;
+        width: max-content; }
+      .main_body .mainBody_content .contentContainer .td_sellingPrice .td_toolTip {
+        position: absolute;
+        background-color: #fff;
+        border: 1px solid #979a99;
+        border-radius: 3px;
+        padding: .1rem;
+        display: none;
+        transition: .3s;
+        width: max-content;
+        z-index: 2;
+        bottom: 25%;
+        left: 90%;
+        width: max-content; }
       .main_body .mainBody_content .contentContainer #tp_Name {
         bottom: 25%;
         left: 12%; }

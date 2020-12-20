@@ -39,10 +39,10 @@ const database = new DATABASE()
 
 
 
+/************Initializers************/
+initialzeStoreItems();
 
 /**********************EVENT LISTENERS *************************/
-window.addEventListener("load", initialzeStoreItems)
-
 checkBtn.addEventListener('mouseover',toggleTBbtn_white)
 checkBtn.addEventListener('mouseleave',toggleTBbtn_default)
 checkBtn.addEventListener("click", toggleDropDown)

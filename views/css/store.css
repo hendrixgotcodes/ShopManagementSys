@@ -606,11 +606,7 @@ body {
         align-items: center;
         text-align: center;
         overflow: hidden; }
-      .main_body .mainBody_content .contentContainer .td_Stock,
-      .main_body .mainBody_content .contentContainer .td_Price {
-        width: 20%;
-        text-align: center; }
-      .main_body .mainBody_content .contentContainer .td_toolTip {
+      .main_body .mainBody_content .contentContainer .td_Names .td_toolTip {
         position: absolute;
         background-color: #fff;
         border: 1px solid #979a99;
@@ -620,6 +616,21 @@ body {
         transition: .3s;
         z-index: 2;
         left: 0; }
+      .main_body .mainBody_content .contentContainer .td_Stock,
+      .main_body .mainBody_content .contentContainer .td_Price {
+        width: 20%;
+        text-align: center; }
+      .main_body .mainBody_content .contentContainer .td_Price .td_toolTip {
+        position: absolute;
+        background-color: #fff;
+        border: 1px solid #979a99;
+        border-radius: 3px;
+        padding: .1rem;
+        display: none;
+        transition: .3s;
+        z-index: 2;
+        left: 87%;
+        top: 23%; }
       .main_body .mainBody_content .contentContainer #tp_Name {
         bottom: 25%;
         left: 12%; }

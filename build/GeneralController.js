@@ -1231,12 +1231,12 @@ class Modal {
 
                 <label class="profitLabel">
                     Total Revenue
-                    <label class="value">GHc${commaNumber(totalRevenue)}</label>
+                    <label class="value">GH¢ ${commaNumber(totalRevenue)}</label>
                 </label>
 
                 <label class="profitLabel">
                     Total Profit
-                    <label class="value">GHC${commaNumber(totalProfit)}</label>
+                    <label class="value">GH¢ ${commaNumber(totalProfit)}</label>
                 </label>
 
             </center>

@@ -222,14 +222,9 @@ const database = new DATABASE();
 const profit = document.querySelector(".Profits");
 const profit_amount = profit.querySelector("#profit_amount");
 let mode = "monthly";
-database.getItemOrderedMonthly().then(items => {
-  items.forEach(item => {
-    DOMCONTROLLER.createProfitsItem(item.Name, item.Brand, item.Avg_Stock, item.Avg_Sale, item.Total_Sold, item.Revenue, item.Profit);
-  });
-});
-database.getTotalProfitLastMonth().then(Profit => {
-  profit_amount.innerText = Profit;
-});
+/*******Initializers */
+
+initializeItems();
 profit.addEventListener("click", () => {
   // if(mode === "monthly"){
   //     database.getGeneralStatsLastMonth()
@@ -238,6 +233,17 @@ profit.addEventListener("click", () => {
   // }
   Modal.openProfitsDialog("223", "20202", "30000", "500");
 });
+
+function initializeItems() {
+  database.getItemOrderedMonthly().then(items => {
+    items.forEach(item => {
+      DOMCONTROLLER.createProfitsItem(item.Name, item.Brand, item.Avg_Stock, item.Avg_Sale, item.Total_Sold, item.Revenue, item.Profit);
+    });
+  });
+  database.getTotalProfitLastMonth().then(Profit => {
+    profit_amount.innerText = Profit;
+  });
+}
 
 /***/ }),
 
@@ -987,12 +993,12 @@ class Modal {
 
                 <label class="profitLabel">
                     Total Revenue
-                    <label class="value">GHc${commaNumber(totalRevenue)}</label>
+                    <label class="value">GH¢ ${commaNumber(totalRevenue)}</label>
                 </label>
 
                 <label class="profitLabel">
                     Total Profit
-                    <label class="value">GHC${commaNumber(totalProfit)}</label>
+                    <label class="value">GH¢ ${commaNumber(totalProfit)}</label>
                 </label>
 
             </center>
@@ -1164,14 +1170,22 @@ class DOMCONTROLLER {
                     </td>
                     <td class="td_Brands">${clip(brand, 23)}</td>
                     <td class="td_Category">${clip(category, 23)}</td>
-                    <td hidden class="td_Stock">${stock}</td>
-                    <td class="td_Price">${commaNumber(parseFloat(sellingPrice))}</td>
-                    <td hidden class="td_costPrice">${parseFloat(costPrice)}</td>
+                    <td hidden class="td_Stock">
+                        ${stock}
+                    </td>
+                    <td class="td_Price">
+                        ${Millify(sellingPrice)}
+                        <div class ="td_toolTip">GH¢ ${commaNumber(sellingPrice)}</div>
+                    </td>
+                    <td hidden class="td_costPrice">
+                        ${costPrice}
+                    </td>
                     <td hidden class="td_discount">${parseFloat(discount)}</td>
                     <td hidden class="td_Name--hidden">${name}</td>
                     <td hidden class="td_Brand--hidden">${brand}</td>
                     <td hidden class="td_Category--hidden">${category}</td>
                     <td hidden class="td_ReOrderLevel--hidden">${reOrderLevel}</td>
+                    <td hidden class="td_Price--hidden">${sellingPrice}</td>
                     <td hidden class="state">visible</td>
                     `;
       } else {
@@ -1191,8 +1205,14 @@ class DOMCONTROLLER {
                     <td class="td_Category">${clip(category, 23)}</td>
                     <td class="td_Stock">${stock}</td>
                     <td class="td_ReOrderLevel">${reOrderLevel}</td>
-                    <td class="td_costPrice">${commaNumber(parseFloat(costPrice))}</td>
-                    <td class="td_sellingPrice">${commaNumber(parseFloat(sellingPrice))}</td>
+                    <td class="td_costPrice">
+                        ${Millify(costPrice)}
+                        <div class ="td_toolTip">GH¢ ${commaNumber(costPrice)}</div>
+                    </td>
+                    <td class="td_sellingPrice">
+                        ${Millify(sellingPrice)}
+                        <div class ="td_toolTip">GH¢ ${commaNumber(sellingPrice)}</div>
+                    </td>
                     <td hidden class="td_discount">${parseFloat(discount)}</td>
                     <td hidden class="td_Name--hidden">${name}</td>
                     <td hidden class="td_Brand--hidden">${brand}</td>
@@ -1302,6 +1322,33 @@ class DOMCONTROLLER {
         } else {
           row.querySelector('.state').innerText = "visible";
         }
+        /**********************************************************/
+
+
+        const td_sellingPrice = row.querySelector(".td_sellingPrice");
+        let timeoutId_sellingPrice;
+        td_sellingPrice.addEventListener("mouseenter", () => {
+          timeoutId_sellingPrice = setTimeout(function showToolTip() {
+            td_sellingPrice.querySelector(".td_toolTip").style.display = "block";
+          }, 1500);
+        });
+        td_sellingPrice.addEventListener("mouseleave", () => {
+          clearTimeout(timeoutId_sellingPrice);
+          td_sellingPrice.querySelector(".td_toolTip").style.display = "none";
+        });
+        /**********************************************************/
+
+        const td_costPrice = row.querySelector(".td_costPrice");
+        let timeoutId_costPrice;
+        td_costPrice.addEventListener("mouseenter", () => {
+          timeoutId_costPrice = setTimeout(function showToolTip() {
+            td_costPrice.querySelector(".td_toolTip").style.display = "block";
+          }, 1500);
+        });
+        td_costPrice.addEventListener("mouseleave", () => {
+          clearTimeout(timeoutId_costPrice);
+          td_costPrice.querySelector(".td_toolTip").style.display = "none";
+        });
       } else if (destinationPage.toLocaleLowerCase() === "store") {
         if (isdeletedItem === true) {
           row.remove();
@@ -1327,6 +1374,19 @@ class DOMCONTROLLER {
           tdName.querySelector(".td_toolTip").style.display = "none";
         });
         /*******************************************************************/
+
+        const td_Price = row.querySelector(".td_Price");
+        let timeoutId_Price;
+        td_Price.addEventListener("mouseenter", () => {
+          timeoutId_Price = setTimeout(function showToolTip() {
+            td_Price.querySelector(".td_toolTip").style.display = "block";
+          }, 1500);
+        });
+        td_Price.addEventListener("mouseleave", () => {
+          clearTimeout(timeoutId_Price);
+          td_Price.querySelector(".td_toolTip").style.display = "none";
+        });
+        /**************************************************************** */
       }
       /**_____________________________________________________________________________________________________________________________________________ */
 
@@ -1357,8 +1417,8 @@ class DOMCONTROLLER {
             <td class="td_Names">${name}</td>
             <td class="td_AccountStatus">${accountStatus}</td>
             <td class="td_LastSeen">${lastSeen}</td>
-            <td class="td_SalesMade">${totalSales}</td>
-            <td class="td_ProfitsMade">${totalProfit}</td>
+            <td class="td_SalesMade">${commaNumber(totalSales)}</td>
+            <td class="td_ProfitsMade">${commaNumber(totalProfit)}</td>
 
         `;
     tableBody.appendChild(row);
@@ -1383,11 +1443,11 @@ class DOMCONTROLLER {
                 <td class="td_Short td_Sold">${totalSold}</td>
                 <td class="td_Medium td_Revenue">
                     ${Millify(revenue)}
-                    <div class ="td_toolTip" id="tp_Revenue">GH¢${commaNumber(revenue)}</div>
+                    <div class ="td_toolTip" id="tp_Revenue">GH¢ ${commaNumber(revenue)}</div>
                 </td>
                 <td class="td_Medium td_Profit">
                     ${Millify(profit)}
-                    <div class ="td_toolTip" id="tp_Profit">GH¢${commaNumber(profit)}</div>
+                    <div class ="td_toolTip" id="tp_Profit">GH¢ ${commaNumber(profit)}</div>
                 </td>
                 <td hidden class="td_Name--hidden">${name}</td>
                 <td hidden class="td_Brand--hidden">${brand}</td>
@@ -1734,7 +1794,7 @@ class DOMCONTROLLER {
     const cartItems = cartItemsContainer.querySelectorAll(".cartItem");
     /*-----------------------------------------------------------------------------------------------*/
 
-    let [rowItemName, rowItemBrand, rowItemCategory, rowItemDiscount, rowItemSellingPrice, rowItemStock, rowItemCostPrice, reOrderLevel] = [row.querySelector(".td_Name--hidden").innerText, row.querySelector(".td_Brand--hidden").innerText, row.querySelector(".td_Category--hidden").innerText, row.querySelector('.td_discount').innerText, row.querySelector(".td_Price").innerText, row.querySelector('.td_Stock').innerText, row.querySelector('.td_costPrice').innerText, row.querySelector(".td_ReOrderLevel--hidden").innerText];
+    let [rowItemName, rowItemBrand, rowItemCategory, rowItemDiscount, rowItemSellingPrice, rowItemStock, rowItemCostPrice, reOrderLevel] = [row.querySelector(".td_Name--hidden").innerText, row.querySelector(".td_Brand--hidden").innerText, row.querySelector(".td_Category--hidden").innerText, row.querySelector('.td_discount').innerText, row.querySelector(".td_Price--hidden").innerText, row.querySelector('.td_Stock').innerText, row.querySelector('.td_costPrice').innerText, row.querySelector(".td_ReOrderLevel--hidden").innerText];
     rowItemSellingPrice = parseFloat(rowItemSellingPrice);
     let itemQuanityDB = 0; //Getting total quantity left. User's input will be checked against this to prevent sale of quantity more than what is actually left.
 

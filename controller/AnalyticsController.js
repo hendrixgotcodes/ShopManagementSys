@@ -38,39 +38,7 @@ const toolBarDate_to = document.querySelector("#toolBarDate_to")
 
 
 /************EVENT LISTENERS */
-window.addEventListener("load", (e)=>{
 
-    setTimeout(()=>{
-
-        database.getDateRangeSales()
-            .then((date)=>{
-
-
-                if(date.Maximum === null && date.Minimum === null){
-
-                    toolBarDate_from.disabled = true;
-                    toolBarDate_to.disabled = true;
-
-                    toolBarSlct_btn.disabled = true;
-                    toolBar_btn.disabled = true;
-                    return;
-                }
-
-                toolBarDate_from.min = date.Minimum;
-                toolBarDate_from.max = date.Maximum;
-
-                toolBarDate_to.min = date.Minimum;
-                toolBarDate_to.max = date.Maximum;
-
-            })
-
-            initializeData();
-
-
-    },1000)
-
-    
-})
 
 toolBar_btn.addEventListener('mouseover',toggleTBbtn_white)
 toolBar_btn.addEventListener('mouseleave',toggleTBbtn_default)
@@ -79,6 +47,11 @@ growthRateCard.addEventListener("click", loadGrowthRate)
 toolBarSlct_btn.addEventListener("click", (e)=>{
     fetchAnalyticsData(e)
 })
+
+
+/******************Initializers */
+initializeData();
+initializeDateRangeSales()
 
 
 
@@ -228,6 +201,32 @@ function initializeData(){
     .then((user)=>{
 
         topUser.innerText = clip(user, 15);
+
+    })
+
+}
+
+function initializeDateRangeSales(){
+
+    database.getDateRangeSales()
+    .then((date)=>{
+
+
+        if(date.Maximum === null && date.Minimum === null){
+
+            toolBarDate_from.disabled = true;
+            toolBarDate_to.disabled = true;
+
+            toolBarSlct_btn.disabled = true;
+            toolBar_btn.disabled = true;
+            return;
+        }
+
+        toolBarDate_from.min = date.Minimum;
+        toolBarDate_from.max = date.Maximum;
+
+        toolBarDate_to.min = date.Minimum;
+        toolBarDate_to.max = date.Maximum;
 
     })
 

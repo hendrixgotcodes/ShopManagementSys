@@ -650,11 +650,11 @@ function subtractItem(item, inCart=""){
 
         if( rowName=== itemName && rowBrand=== itemBrand && rowCategory=== itemCategory)
         {
-            rowItemPrice = row.querySelector(".td_Price").innerText;
+            rowItemPrice = row.querySelector(".td_Price--hidden").innerText;
 
             // row.querySelector(".selectOne").checked = false
 
-            rowItemPrice = row.querySelector(".td_Price").innerText
+            rowItemPrice = row.querySelector(".td_Price--hidden").innerText
 
             itemTotalCost = itemQuanity * parseFloat(rowItemPrice)
 
