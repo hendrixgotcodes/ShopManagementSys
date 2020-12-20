@@ -1662,7 +1662,6 @@ class DATABASE {
           throw error;
         } else {
           result = result.pop();
-          console.log(result);
           resolve(result.Profit);
         }
       });

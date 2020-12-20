@@ -1952,8 +1952,6 @@ class DATABASE{
 
                     result = result.pop();
 
-                    console.log(result);
-
                     resolve(result.Profit);
 
                 }

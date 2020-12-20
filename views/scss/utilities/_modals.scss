@@ -943,6 +943,70 @@
     }
 }
 
+.profitDialog{
+
+    position: absolute;
+    background-color: $WHITE;
+    top: 25%;
+    left: 35.5%;
+    width: 26%;
+    height: 50%;
+    z-index: 11;
+    border-radius: 8px;
+    box-shadow: 5px 8px 10px rgba($color: $primary_black, $alpha: 0.3);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    header{
+
+        width: 100%;
+        height: 20%;
+        font-weight: 500;
+        font-size: 1.9rem;
+        color: $primary_green;
+
+    }
+
+    center{
+
+        height: 80%;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+
+        .profitLabel{
+
+            display: block;
+            width: 48%;
+            // color: lighten($color: $primary_black, $amount: 5);
+            color: $primary_black;
+            text-align: left;
+            font-size: 1rem;
+
+            .value{
+
+                font-weight: 500;
+                color: $primary_black;
+                display: block;
+                width: 100%;
+                text-align: left;
+                font-size: 1.5rem;
+                color: $primary_green;
+
+
+            }
+
+        }
+
+    }
+
+}
+
 .userForm{
 
     width: 35%;

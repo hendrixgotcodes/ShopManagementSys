@@ -3,6 +3,7 @@
 const clip = require('text-clipper').default;
 const { default: Millify } = require('millify');
 const DATABASE = require('../../model/DATABASE');
+const commaNumber = require("comma-number")
 // import ToolTipsConTroller from '../utilities/UnitConverter';
 
 const database = new DATABASE();
@@ -62,7 +63,7 @@ class DOMCONTROLLER{
                     <td class="td_Brands">${clip(brand, 23)}</td>
                     <td class="td_Category">${clip(category, 23)}</td>
                     <td hidden class="td_Stock">${stock}</td>
-                    <td class="td_Price">${parseFloat(sellingPrice)}</td>
+                    <td class="td_Price">${commaNumber(parseFloat(sellingPrice))}</td>
                     <td hidden class="td_costPrice">${parseFloat(costPrice)}</td>
                     <td hidden class="td_discount">${parseFloat(discount)}</td>
                     <td hidden class="td_Name--hidden">${name}</td>
@@ -92,8 +93,8 @@ class DOMCONTROLLER{
                     <td class="td_Category">${clip(category, 23)}</td>
                     <td class="td_Stock">${stock}</td>
                     <td class="td_ReOrderLevel">${reOrderLevel}</td>
-                    <td class="td_costPrice">${parseFloat(costPrice)}</td>
-                    <td class="td_sellingPrice">${parseFloat(sellingPrice)}</td>
+                    <td class="td_costPrice">${commaNumber(parseFloat(costPrice))}</td>
+                    <td class="td_sellingPrice">${commaNumber(parseFloat(sellingPrice))}</td>
                     <td hidden class="td_discount">${parseFloat(discount)}</td>
                     <td hidden class="td_Name--hidden">${name}</td>
                     <td hidden class="td_Brand--hidden">${brand}</td>
@@ -400,12 +401,15 @@ class DOMCONTROLLER{
                 <td class="td_Short td_Sold">${totalSold}</td>
                 <td class="td_Medium td_Revenue">
                     ${Millify(revenue)}
-                    <div class ="td_toolTip" id="tp_Revenue">GH¢${revenue}</div>
+                    <div class ="td_toolTip" id="tp_Revenue">GH¢${commaNumber(revenue)}</div>
                 </td>
                 <td class="td_Medium td_Profit">
                     ${Millify(profit)}
-                    <div class ="td_toolTip" id="tp_Profit">GH¢${profit}</div>
+                    <div class ="td_toolTip" id="tp_Profit">GH¢${commaNumber(profit)}</div>
                 </td>
+                <td hidden class="td_Name--hidden">${name}</td>
+                <td hidden class="td_Brand--hidden">${brand}</td>
+                <td hidden class="td_Category--hidden"></td>
             </tr>
 
         `
@@ -415,11 +419,14 @@ class DOMCONTROLLER{
         const tdName = row.querySelector(".td_Names");
         let timeoutId_tpName;
 
-        tdName.addEventListener("mouseenter", ()=>{
+        tdName.addEventListener("mouseenter", (e)=>{
                 
             timeoutId_tpName = setTimeout(function showToolTip(){
+
+                const toolTip = tdName.querySelector(".td_toolTip");
     
-                tdName.querySelector(".td_toolTip").style.display = "block";
+                toolTip.style.display = "block";
+
     
             }, 1500)
     

@@ -399,6 +399,8 @@ body {
           align-self: flex-end;
           color: #35594B;
           cursor: pointer; }
+        .main_body .mainBody_content .content_toolBar .Sales img {
+          width: 15%; }
     .main_body .mainBody_content .contentContainer {
       width: 100%;
       height: 100%;
@@ -1206,6 +1208,48 @@ body {
           .main_body .mainBody_content .dialog--cartForm .dialogFooter .dialogConfirm img {
             width: 4%;
             margin-left: .5rem; }
+    .main_body .mainBody_content .profitDialog {
+      position: absolute;
+      background-color: #fff;
+      top: 25%;
+      left: 35.5%;
+      width: 26%;
+      height: 50%;
+      z-index: 11;
+      border-radius: 8px;
+      box-shadow: 5px 8px 10px rgba(100, 103, 102, 0.3);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center; }
+      .main_body .mainBody_content .profitDialog header {
+        width: 100%;
+        height: 20%;
+        font-weight: 500;
+        font-size: 1.9rem;
+        color: #35594B; }
+      .main_body .mainBody_content .profitDialog center {
+        height: 80%;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap; }
+        .main_body .mainBody_content .profitDialog center .profitLabel {
+          display: block;
+          width: 48%;
+          color: #646766;
+          text-align: left;
+          font-size: 1rem; }
+          .main_body .mainBody_content .profitDialog center .profitLabel .value {
+            font-weight: 500;
+            color: #646766;
+            display: block;
+            width: 100%;
+            text-align: left;
+            font-size: 1.5rem;
+            color: #35594B; }
     .main_body .mainBody_content .userForm {
       width: 35%;
       height: 80%;

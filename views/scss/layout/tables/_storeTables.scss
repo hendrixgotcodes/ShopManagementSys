@@ -275,6 +275,7 @@
     text-align: center;
 }
 
+
 .td_toolTip{
 
     position: absolute;
@@ -285,6 +286,7 @@
     padding: .1rem;
     display: none;
     transition: .3s;
+    width: max-content;
 
 }
 

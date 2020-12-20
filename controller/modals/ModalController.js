@@ -3,8 +3,10 @@
 import DATABASE from "../../model/DATABASE";
 import Notifications from "../Alerts/NotificationController";
 const cryptoJS = require("crypto-js");
+const commaNumber = require("comma-number");
 
 const database = new DATABASE()
+
 
 
 class Modal {
@@ -1015,6 +1017,55 @@ class Modal {
         }
 
         
+
+    }
+
+    static openProfitsDialog(totalSales, totalProfit, totalRevenue, totalDiscount){
+
+        const contentCover = document.querySelector(".contentCover");
+        const contentContainer = document.querySelector(".contentContainer");
+
+        contentCover.classList.add("contentCover--shown");
+
+        const profitDialog = document.createElement("div");
+        profitDialog.className = "profitDialog modal";
+        profitDialog.innerHTML = 
+        `
+            <header>More</header>
+
+            <center>
+
+                <label class="profitLabel">
+                    Total Sales
+                    <label class="value">${commaNumber(totalSales)}</label>
+                </label>
+
+                <label class="profitLabel">
+                    Total Discount
+                    <label class="value">${totalDiscount}</label>
+                </label>
+
+                <label class="profitLabel">
+                    Total Revenue
+                    <label class="value">GHc${commaNumber(totalRevenue)}</label>
+                </label>
+
+                <label class="profitLabel">
+                    Total Profit
+                    <label class="value">GHC${commaNumber(totalProfit)}</label>
+                </label>
+
+            </center>
+
+        `
+
+        contentContainer.appendChild(profitDialog);
+
+        setTimeout((()=>{
+
+            contentContainer.classList.add("profitDialog--shown");
+
+        }),300)
 
     }
 }

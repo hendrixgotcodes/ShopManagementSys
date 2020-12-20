@@ -276,7 +276,7 @@ function seekItem(){
             let initBGcolor = row.style.backgroundColor;
             let initColor = row.style.color;
 
-            let currentItem =   row.querySelector(".td_Names").innerText.toLowerCase();
+            let currentItem =   row.querySelector(".td_Name--hidden").innerText.toLowerCase();
 
             if(currentItem.includes(itemName)){
 
@@ -293,9 +293,8 @@ function seekItem(){
             }
             else{
 
-                currentItem = row.querySelector(".td_Brands").innerText.toLowerCase();
+                currentItem = row.querySelector(".td_Brand--hidden").innerText.toLowerCase();
 
-                console.log(currentItem);
 
                 if(currentItem.includes(itemName)){
 
@@ -308,7 +307,11 @@ function seekItem(){
                 }
                 else{
 
-                    currentItem = row.querySelector(".td_Category").innerText.toLowerCase();
+                    currentItem = row.querySelector(".td_Category--hidden").innerText.toLowerCase();
+
+                    if(currentItem === null){
+                        return;
+                    }
 
                     if(currentItem.includes(itemName)){
 
