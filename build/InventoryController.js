@@ -680,10 +680,13 @@ electron__WEBPACK_IMPORTED_MODULE_0__["ipcRenderer"].on('populateTable', (e, Ite
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _model_DATABASE__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../model/DATABASE */ "./model/DATABASE.js");
-/* harmony import */ var _model_DATABASE__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_model_DATABASE__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Alerts/NotificationController */ "./controller/Alerts/NotificationController.js");
-/* harmony import */ var _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var millify__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! millify */ "./node_modules/millify/dist/millify.js");
+/* harmony import */ var millify__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(millify__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _model_DATABASE__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../model/DATABASE */ "./model/DATABASE.js");
+/* harmony import */ var _model_DATABASE__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_model_DATABASE__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Alerts/NotificationController */ "./controller/Alerts/NotificationController.js");
+/* harmony import */ var _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2__);
+
 
 
 
@@ -693,7 +696,7 @@ const cryptoJS = __webpack_require__(/*! crypto-js */ "./node_modules/crypto-js/
 
 const commaNumber = __webpack_require__(/*! comma-number */ "./node_modules/comma-number/lib/index.js");
 
-const database = new _model_DATABASE__WEBPACK_IMPORTED_MODULE_0___default.a();
+const database = new _model_DATABASE__WEBPACK_IMPORTED_MODULE_1___default.a();
 
 class Modal {
   static openPrompt(itemName = "", resolve, reject, justVerify = "", customMessage = "") {
@@ -1278,7 +1281,7 @@ class Modal {
           }).then(() => {
             userForm.remove();
             contentCover.classList.remove("contentCover--shown");
-            _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_1___default.a.showAlert("success", "User added successfully");
+            _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", "User added successfully");
           }).catch(error => {
             throw error;
           });
@@ -1394,35 +1397,60 @@ class Modal {
     }
   }
 
-  static openProfitsDialog(totalSales, totalProfit, totalRevenue, totalDiscount) {
+  static openProfitsDialogLoading() {
     const contentCover = document.querySelector(".contentCover");
     const contentContainer = document.querySelector(".contentContainer");
+    contentCover.classList.add(".contentCover--shown");
+
+    if (contentContainer.querySelector(".profitDialog")) {
+      contentContainer.querySelector(".profitDialog").remove();
+    }
+
     contentCover.classList.add("contentCover--shown");
     const profitDialog = document.createElement("div");
     profitDialog.className = "profitDialog modal";
+    profitDialog.innerHTML = "<img src='../../utils/media/animations/loaders/Rolling-1s-200px-grey.svg'/>";
+    contentContainer.appendChild(profitDialog);
+    setTimeout(() => {
+      profitDialog.classList.add("profitDialog--shown");
+    }, 300);
+  }
+
+  static openProfitsDialog(totalSales, totalDiscount, totalRevenue, totalProfit) {
+    const contentCover = document.querySelector(".contentCover");
+    const contentContainer = document.querySelector(".contentContainer");
+    contentCover.classList.add("contentCover--shown");
+    const profitDialog = contentContainer.querySelector(".profitDialog");
     profitDialog.innerHTML = `
-            <header>More</header>
+            <header>
+                <span>More</span>
+                <img src="../Icons/modals/close.svg" />
+            </header>
 
             <center>
 
-                <label class="profitLabel">
+                <label id="sales" class="profitLabel">
                     Total Sales
-                    <label class="value">${commaNumber(totalSales)}</label>
+                    <label class="value">${millify__WEBPACK_IMPORTED_MODULE_0___default()(totalSales)}</label>
+                    <label class="lbl_toolTip">${commaNumber(totalSales)}</label>
                 </label>
 
-                <label class="profitLabel">
+                <label id="discount" class="profitLabel">
                     Total Discount
-                    <label class="value">${totalDiscount}</label>
+                    <label class="value">${millify__WEBPACK_IMPORTED_MODULE_0___default()(totalDiscount)}</label>
+                    <label class="lbl_toolTip">${commaNumber(totalDiscount)}</label>
                 </label>
 
-                <label class="profitLabel">
+                <label id="revenue" class="profitLabel">
                     Total Revenue
-                    <label class="value">GH¢ ${commaNumber(totalRevenue)}</label>
+                    <label class="value">GH¢ ${millify__WEBPACK_IMPORTED_MODULE_0___default()(totalRevenue)}</label>
+                    <label class="lbl_toolTip">GH¢ ${commaNumber(totalRevenue)}</label>
                 </label>
 
-                <label class="profitLabel">
+                <label id="profit" class="profitLabel">
                     Total Profit
-                    <label class="value">GH¢ ${commaNumber(totalProfit)}</label>
+                    <label class="value">GH¢ ${millify__WEBPACK_IMPORTED_MODULE_0___default()(totalProfit)}</label>
+                    <label class="lbl_toolTip">GH¢ ${commaNumber(totalProfit)}</label>
                 </label>
 
             </center>
@@ -1430,9 +1458,81 @@ class Modal {
         `;
     contentContainer.appendChild(profitDialog);
     setTimeout(() => {
-      contentContainer.classList.add("profitDialog--shown");
+      profitDialog.classList.add("profitDialog--shown");
     }, 300);
+    /*************Event Listeners */
+
+    const btnClose = profitDialog.querySelector("img");
+    btnClose.addEventListener("click", e => {
+      profitDialog.classList.remove("profitDialog--shown");
+      setTimeout(() => {
+        profitDialog.remove();
+        contentCover.classList.remove("contentCover--shown");
+      }, 250);
+    });
+    /***Hover acctions */
+
+    const sales = profitDialog.querySelector("#sales");
+    let timeoutId_sales;
+    sales.addEventListener("mouseenter", () => {
+      timeoutId_sales = setTimeout(function showToolTip() {
+        sales.querySelector(".lbl_toolTip").style.display = "block";
+      }, 1500);
+    });
+    sales.addEventListener("mouseleave", () => {
+      clearTimeout(timeoutId_sales);
+      sales.querySelector(".lbl_toolTip").style.display = "none";
+    });
+    /*__________________________________________________________________________*/
+
+    const discount = profitDialog.querySelector("#discount");
+    let timeoutId_discount;
+    discount.addEventListener("mouseenter", () => {
+      timeoutId_discount = setTimeout(function showToolTip() {
+        discount.querySelector(".lbl_toolTip").style.display = "block";
+      }, 1500);
+    });
+    discount.addEventListener("mouseleave", () => {
+      clearTimeout(timeoutId_discount);
+      discount.querySelector(".lbl_toolTip").style.display = "none";
+    });
+    /*_______________________________________________________________________________________________*/
+
+    const revenue = profitDialog.querySelector("#revenue");
+    let timeoutId_revenue;
+    revenue.addEventListener("mouseenter", () => {
+      timeoutId_revenue = setTimeout(function showToolTip() {
+        revenue.querySelector(".lbl_toolTip").style.display = "block";
+      }, 1500);
+    });
+    revenue.addEventListener("mouseleave", () => {
+      clearTimeout(timeoutId_revenue);
+      revenue.querySelector(".lbl_toolTip").style.display = "none";
+    });
+    /*____________________________________________________________________________________________________________*/
+
+    const profit = profitDialog.querySelector("#profit");
+    let timeoutId_profit;
+    profit.addEventListener("mouseenter", () => {
+      timeoutId_profit = setTimeout(function showToolTip() {
+        profit.querySelector(".lbl_toolTip").style.display = "block";
+      }, 1500);
+    });
+    profit.addEventListener("mouseleave", () => {
+      clearTimeout(timeoutId_profit);
+      profit.querySelector(".lbl_toolTip").style.display = "none";
+    });
   }
+
+  static openProfitsDialogError() {
+    const contentContainer = document.querySelector(".contentContainer");
+    const profitDialog = contentContainer.querySelector(".profitDialog");
+    profitDialog.innerHTML = `
+            "Sorry. An errorr occurred."
+        `;
+  }
+
+  static makeDraggable() {}
 
 }
 /*****************************************************************************FUNCTIONS***************************************************************/
@@ -1875,6 +1975,12 @@ class DOMCONTROLLER {
                 </td>
                 <td hidden class="td_Name--hidden">${name}</td>
                 <td hidden class="td_Brand--hidden">${brand}</td>
+                <td hidden class="td_Profit--hidden">${profit}</td>
+                <td hidden class="td_AvgStock--hidden">${avgInStock}</td>
+                <td hidden class="td_AvgSale--hidden">${avgSale}</td>
+                <td hidden class="td_Sold--hidden">${totalSold}</td>
+                <td hidden class="td_Revenue--hidden">${revenue}</td>
+
                 <td hidden class="td_Category--hidden"></td>
             </tr>
 
@@ -3676,6 +3782,20 @@ class DATABASE {
         } else {
           result = result.pop();
           resolve(result);
+        }
+      });
+    });
+  }
+
+  getGenerealStatsLastMonth() {
+    return new Promise((resolve, reject) => {
+      this.connector.query("SELECT COUNT(*) AS Sales, SUM(TotalDiscount) As Discount, SUM(Revenue) As Revenue, SUM(Profit) As Profit FROM `sales` WHERE `sales`.`Date` BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW()", (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        } else {
+          result = result.pop();
+          resolve([result.Sales, result.Discount, result.Revenue, result.Profit]);
         }
       });
     });

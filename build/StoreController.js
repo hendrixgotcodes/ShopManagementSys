@@ -1130,6 +1130,12 @@ class DOMCONTROLLER {
                 </td>
                 <td hidden class="td_Name--hidden">${name}</td>
                 <td hidden class="td_Brand--hidden">${brand}</td>
+                <td hidden class="td_Profit--hidden">${profit}</td>
+                <td hidden class="td_AvgStock--hidden">${avgInStock}</td>
+                <td hidden class="td_AvgSale--hidden">${avgSale}</td>
+                <td hidden class="td_Sold--hidden">${totalSold}</td>
+                <td hidden class="td_Revenue--hidden">${revenue}</td>
+
                 <td hidden class="td_Category--hidden"></td>
             </tr>
 
@@ -2931,6 +2937,20 @@ class DATABASE {
         } else {
           result = result.pop();
           resolve(result);
+        }
+      });
+    });
+  }
+
+  getGenerealStatsLastMonth() {
+    return new Promise((resolve, reject) => {
+      this.connector.query("SELECT COUNT(*) AS Sales, SUM(TotalDiscount) As Discount, SUM(Revenue) As Revenue, SUM(Profit) As Profit FROM `sales` WHERE `sales`.`Date` BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW()", (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        } else {
+          result = result.pop();
+          resolve([result.Sales, result.Discount, result.Revenue, result.Profit]);
         }
       });
     });

@@ -1324,30 +1324,47 @@ body {
       z-index: 11;
       border-radius: 8px;
       box-shadow: 5px 8px 10px rgba(100, 103, 102, 0.3);
-      padding: 1rem;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      align-items: center; }
+      align-items: center;
+      transform: scale(0);
+      transition: .3s; }
       .main_body .mainBody_content .profitDialog header {
         width: 100%;
-        height: 20%;
+        height: 15%;
         font-weight: 500;
-        font-size: 1.9rem;
-        color: #35594B; }
+        font-size: 1.7rem;
+        color: #35594B;
+        box-shadow: 1px 3px 5px rgba(100, 103, 102, 0.3);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        transition: .3s; }
+        .main_body .mainBody_content .profitDialog header img {
+          width: 8%;
+          padding: .1rem;
+          transition: .3s;
+          border-radius: 4px; }
+          .main_body .mainBody_content .profitDialog header img:hover {
+            box-shadow: 1px 3px 5px rgba(100, 103, 102, 0.3); }
       .main_body .mainBody_content .profitDialog center {
-        height: 80%;
+        height: 85%;
         width: 100%;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        flex-wrap: wrap; }
+        flex-wrap: wrap;
+        position: relative;
+        padding: 1rem; }
         .main_body .mainBody_content .profitDialog center .profitLabel {
           display: block;
           width: 48%;
           color: #646766;
           text-align: left;
-          font-size: 1rem; }
+          font-size: 1rem;
+          position: relative; }
           .main_body .mainBody_content .profitDialog center .profitLabel .value {
             font-weight: 500;
             color: #646766;
@@ -1356,6 +1373,18 @@ body {
             text-align: left;
             font-size: 1.5rem;
             color: #35594B; }
+          .main_body .mainBody_content .profitDialog center .profitLabel .lbl_toolTip {
+            position: absolute;
+            display: none;
+            padding: .1rem;
+            border: 1px solid #646766;
+            border-radius: 4px;
+            width: max-content;
+            z-index: 2; }
+      .main_body .mainBody_content .profitDialog img {
+        width: 20%; }
+    .main_body .mainBody_content .profitDialog--shown {
+      transform: scale(1); }
     .main_body .mainBody_content .userForm {
       width: 35%;
       height: 80%;
@@ -1573,7 +1602,8 @@ body {
     color: #fff;
     background-color: #e16161;
     transition: .5s;
-    transform: translateY(-100%); }
+    transform: translateY(-100%);
+    z-index: 5; }
     .main_body .alertBanner img {
       width: 2%;
       position: absolute;

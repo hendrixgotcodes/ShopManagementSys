@@ -1,5 +1,6 @@
 "use strict";
 
+import Millify from "millify";
 import DATABASE from "../../model/DATABASE";
 import Notifications from "../Alerts/NotificationController";
 const cryptoJS = require("crypto-js");
@@ -1020,39 +1021,78 @@ class Modal {
 
     }
 
-    static openProfitsDialog(totalSales, totalProfit, totalRevenue, totalDiscount){
+    static openProfitsDialogLoading(){
 
         const contentCover = document.querySelector(".contentCover");
         const contentContainer = document.querySelector(".contentContainer");
+
+        contentCover.classList.add(".contentCover--shown");
+
+        if(contentContainer.querySelector(".profitDialog")){
+
+            contentContainer.querySelector(".profitDialog").remove();
+
+        }
 
         contentCover.classList.add("contentCover--shown");
 
         const profitDialog = document.createElement("div");
         profitDialog.className = "profitDialog modal";
+
+        profitDialog.innerHTML = "<img src='../../utils/media/animations/loaders/Rolling-1s-200px-grey.svg'/>"
+
+        contentContainer.appendChild(profitDialog);
+        
+
+        setTimeout((()=>{
+
+            profitDialog.classList.add("profitDialog--shown");
+
+        }),300)
+
+    }
+
+    static openProfitsDialog(totalSales, totalDiscount, totalRevenue, totalProfit){
+        
+
+        const contentCover = document.querySelector(".contentCover");
+        const contentContainer = document.querySelector(".contentContainer");
+        contentCover.classList.add("contentCover--shown");
+
+
+        const profitDialog = contentContainer.querySelector(".profitDialog");
+     
         profitDialog.innerHTML = 
         `
-            <header>More</header>
+            <header>
+                <span>More</span>
+                <img src="../Icons/modals/close.svg" />
+            </header>
 
             <center>
 
-                <label class="profitLabel">
+                <label id="sales" class="profitLabel">
                     Total Sales
-                    <label class="value">${commaNumber(totalSales)}</label>
+                    <label class="value">${Millify(totalSales)}</label>
+                    <label class="lbl_toolTip">${commaNumber(totalSales)}</label>
                 </label>
 
-                <label class="profitLabel">
+                <label id="discount" class="profitLabel">
                     Total Discount
-                    <label class="value">${totalDiscount}</label>
+                    <label class="value">${Millify(totalDiscount)}</label>
+                    <label class="lbl_toolTip">${commaNumber(totalDiscount)}</label>
                 </label>
 
-                <label class="profitLabel">
+                <label id="revenue" class="profitLabel">
                     Total Revenue
-                    <label class="value">GH¢ ${commaNumber(totalRevenue)}</label>
+                    <label class="value">GH¢ ${Millify(totalRevenue)}</label>
+                    <label class="lbl_toolTip">GH¢ ${commaNumber(totalRevenue)}</label>
                 </label>
 
-                <label class="profitLabel">
+                <label id="profit" class="profitLabel">
                     Total Profit
-                    <label class="value">GH¢ ${commaNumber(totalProfit)}</label>
+                    <label class="value">GH¢ ${Millify(totalProfit)}</label>
+                    <label class="lbl_toolTip">GH¢ ${commaNumber(totalProfit)}</label>
                 </label>
 
             </center>
@@ -1061,11 +1101,138 @@ class Modal {
 
         contentContainer.appendChild(profitDialog);
 
+
         setTimeout((()=>{
 
-            contentContainer.classList.add("profitDialog--shown");
+            profitDialog.classList.add("profitDialog--shown");
 
         }),300)
+
+        /*************Event Listeners */
+        const btnClose = profitDialog.querySelector("img");
+        btnClose.addEventListener("click", (e)=>{
+
+            profitDialog.classList.remove("profitDialog--shown")
+
+            setTimeout(() => {
+
+                profitDialog.remove();
+                contentCover.classList.remove("contentCover--shown")
+                
+            }, 250);
+
+        })
+
+        /***Hover acctions */
+        const sales = profitDialog.querySelector("#sales");
+        let timeoutId_sales;
+
+        sales.addEventListener("mouseenter", ()=>{
+                
+            timeoutId_sales = setTimeout(function showToolTip(){
+    
+                sales.querySelector(".lbl_toolTip").style.display = "block";
+    
+            }, 1500)
+    
+        });
+    
+        sales.addEventListener("mouseleave", ()=>{
+    
+            clearTimeout(timeoutId_sales);
+
+            sales.querySelector(".lbl_toolTip").style.display = "none";
+    
+        })
+
+        /*__________________________________________________________________________*/
+
+        const discount = profitDialog.querySelector("#discount");
+        let timeoutId_discount;
+
+        discount.addEventListener("mouseenter", ()=>{
+                
+            timeoutId_discount = setTimeout(function showToolTip(){
+    
+                discount.querySelector(".lbl_toolTip").style.display = "block";
+    
+            }, 1500)
+    
+        });
+    
+        discount.addEventListener("mouseleave", ()=>{
+    
+            clearTimeout(timeoutId_discount);
+
+            discount.querySelector(".lbl_toolTip").style.display = "none";
+    
+        })
+
+        /*_______________________________________________________________________________________________*/
+        const revenue = profitDialog.querySelector("#revenue");
+        let timeoutId_revenue;
+
+        revenue.addEventListener("mouseenter", ()=>{
+                
+            timeoutId_revenue = setTimeout(function showToolTip(){
+    
+                revenue.querySelector(".lbl_toolTip").style.display = "block";
+    
+            }, 1500)
+    
+        });
+    
+        revenue.addEventListener("mouseleave", ()=>{
+    
+            clearTimeout(timeoutId_revenue);
+
+            revenue.querySelector(".lbl_toolTip").style.display = "none";
+    
+        })
+
+
+        /*____________________________________________________________________________________________________________*/
+        const profit = profitDialog.querySelector("#profit");
+        let timeoutId_profit;
+
+        profit.addEventListener("mouseenter", ()=>{
+                
+            timeoutId_profit = setTimeout(function showToolTip(){
+    
+                profit.querySelector(".lbl_toolTip").style.display = "block";
+    
+            }, 1500)
+    
+        });
+    
+        profit.addEventListener("mouseleave", ()=>{
+    
+            clearTimeout(timeoutId_profit);
+
+            profit.querySelector(".lbl_toolTip").style.display = "none";
+    
+        })
+
+    }
+
+    static openProfitsDialogError(){
+
+        const contentContainer = document.querySelector(".contentContainer");
+
+        
+        const profitDialog =contentContainer.querySelector(".profitDialog");
+
+
+        profitDialog.innerHTML = 
+        `
+            "Sorry. An errorr occurred."
+        `
+
+    }
+
+    static makeDraggable(){
+
+
 
     }
 }

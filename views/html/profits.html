@@ -76,7 +76,7 @@
           <button class="toolBar_btn">Go</button>
         </label>
 
-        <div class="toolBar_select">
+        <!-- <div class="toolBar_select">
           <div tabindex="7" class="select_value">
             <center class="selectValue_center">
               <img src="../Icons/toolBar/funnel.svg" class="selectValue_icon" alt="">
@@ -95,6 +95,32 @@
               Default
             </span>
           </div>
+        </div> -->
+
+        <div class="footer_actions">
+     
+          <label for="" class="filter">
+            View From:
+            <input type="date" name="" id="toolBarDate_from" class="footer_date">
+
+            <div class="toolBar_tP starttP">
+              <div class="arrow"></div>
+
+              <div class="inSpan">Please select a start date</div>
+            </div>
+
+            To:
+            <input type="date" name="" id="toolBarDate_to" class="footer_date">
+
+            <div class="toolBar_tP endtP">
+              <span class="inSpan">Please select an end date</span>
+              <div class="arrow"></div>
+            </div>
+
+          </label>
+  
+          <button  class="toolBarSlct_btn">Go</button>
+  
         </div>
 
         <div class="Sales Profits">
@@ -117,33 +143,33 @@
         <table class="contentTable">
           <thead class="tableHeader">
             <tr class="tableHead">
-              <th class="tableHead_items tb_long">
+              <th class="tableHead_items tb_long string" targetRow=".td_Name--hidden">
                 <img src="../Icons/table/header/sort.png" alt="" class="sortIcon items_pad">
                 <span>Name</span>
               </th>
-              <th class="tableHead_items tb_long">
+              <th class="tableHead_items tb_long string" targetRow=".td_Brand--hidden">
                 <img src="../Icons/table/header/sort.png" alt="" class="sortIcon items_pad">
                 <span>Brand</span>
               </th>
-              <th class="tableHead_items  tb_Short">
-                <img src="../Icons/table/header/sort.png" alt="" class="sortIcon items_pad">
+              <th class="tableHead_items  tb_Short" targetRow=".td_AvgStock--hidden">
+                <img src="../Icons/table/header/sort.png"  alt="" class="sortIcon items_pad">
                 <span>Avg. Stock</span>
               </th>
-              <th class="tableHead_items  tb_Short">
-                <img src="../Icons/table/header/sort.png" alt="" class="sortIcon items_pad">
+              <th class="tableHead_items  tb_Short" targetRow=".td_AvgSale--hidden">
+                <img src="../Icons/table/header/sort.png"  alt="" class="sortIcon items_pad">
                 <span>Avg. Sales</span>
               </th>
-              <th class="tableHead_items  tb_Short">
-                <img src="../Icons/table/header/sort.png" alt="" class="sortIcon items_pad">
+              <th class="tableHead_items  tb_Short" targetRow=".td_Sold--hidden">
+                <img src="../Icons/table/header/sort.png"  alt="" class="sortIcon items_pad">
                 <span>Total Sold</span>
               </th>
-              <th class="tableHead_items tb_Medium">
+              <th class="tableHead_items tb_Medium" targetRow=".td_Revenue--hidden">
                 <img src="../Icons/table/header/sort.png" alt="" class="sortIcon items_pad">
                 <span>
-                  Revenue Genrated <span class="currency"> (GH¢)</span>
+                  Total Revenue <span class="currency"> (GH¢)</span>
                 </span>
               </th>
-              <th class="tableHead_items  tb_Medium">
+              <th sorted="false"  class="tableHead_items tb_Medium th_profit" targetRow=".td_Profit--hidden">
                 <img src="../Icons/table/header/sort.png" alt="" class="sortIcon items_pad">
                 <span>
                   Profit Gained <span class="currency"> (GH¢)</span>

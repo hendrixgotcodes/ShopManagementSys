@@ -375,6 +375,83 @@ body {
             .main_body .mainBody_content .content_toolBar .toolBar_select .select_dropdown .selectDropdown_value:last-child {
               border-bottom-right-radius: 3px;
               border-bottom-left-radius: 3px; }
+      .main_body .mainBody_content .content_toolBar .footer_actions {
+        width: 42%;
+        height: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-self: flex-end;
+        align-items: center;
+        font-size: 1rem; }
+        .main_body .mainBody_content .content_toolBar .footer_actions .toolBarSlct_btn {
+          width: 14%;
+          text-decoration: none;
+          color: #35594B;
+          background-color: #fff;
+          border: 1px solid #35594B;
+          height: 45%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border-radius: 4px;
+          transition: .3s; }
+          .main_body .mainBody_content .content_toolBar .footer_actions .toolBarSlct_btn:hover {
+            background-color: #35594B;
+            color: #fff; }
+          .main_body .mainBody_content .content_toolBar .footer_actions .toolBarSlct_btn:disabled {
+            color: #78af9a;
+            border-color: #78af9a; }
+            .main_body .mainBody_content .content_toolBar .footer_actions .toolBarSlct_btn:disabled:hover {
+              background-color: #fff;
+              color: #78af9a; }
+        .main_body .mainBody_content .content_toolBar .footer_actions .filter {
+          width: 88%;
+          height: 100%;
+          display: flex;
+          justify-content: space-evenly;
+          align-items: center;
+          color: #646766;
+          border-radius: 4px;
+          position: relative; }
+          .main_body .mainBody_content .content_toolBar .footer_actions .filter .footer_date {
+            border: 1px solid #646766;
+            color: #646766;
+            border-radius: 4px;
+            padding: .5rem;
+            height: 48%; }
+            .main_body .mainBody_content .content_toolBar .footer_actions .filter .footer_date:disabled {
+              color: #b1b3b2;
+              border-color: #b1b3b2; }
+          .main_body .mainBody_content .content_toolBar .footer_actions .filter .toolBar_tP {
+            width: 35%;
+            height: 40%;
+            position: absolute;
+            bottom: -30%;
+            left: 0;
+            background-color: #12A89D;
+            color: #fff;
+            font-size: .9rem;
+            padding: .2rem;
+            border-radius: 3px;
+            opacity: 0;
+            z-index: 5;
+            transition: .3s; }
+            .main_body .mainBody_content .content_toolBar .footer_actions .filter .toolBar_tP .arrow {
+              background-color: #12A89D;
+              height: 40%;
+              width: 6%;
+              position: absolute;
+              top: -17%;
+              left: 5%;
+              transform: rotate(-45deg);
+              border-radius: 3px;
+              z-index: 0; }
+            .main_body .mainBody_content .content_toolBar .footer_actions .filter .toolBar_tP .inSpan {
+              z-index: 100; }
+          .main_body .mainBody_content .content_toolBar .footer_actions .filter .starttP {
+            left: 25%; }
+          .main_body .mainBody_content .content_toolBar .footer_actions .filter .endtP {
+            left: 70%; }
       .main_body .mainBody_content .content_toolBar .Sales {
         width: fit-content;
         display: flex;
@@ -425,7 +502,7 @@ body {
         display: flex;
         justify-content: center;
         align-items: center;
-        z-index: 2;
+        z-index: 5;
         background-color: #fff; }
         .main_body .mainBody_content .contentContainer .emptyBanner img {
           width: 30%;
@@ -1688,30 +1765,47 @@ body {
       z-index: 11;
       border-radius: 8px;
       box-shadow: 5px 8px 10px rgba(100, 103, 102, 0.3);
-      padding: 1rem;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      align-items: center; }
+      align-items: center;
+      transform: scale(0);
+      transition: .3s; }
       .main_body .mainBody_content .profitDialog header {
         width: 100%;
-        height: 20%;
+        height: 15%;
         font-weight: 500;
-        font-size: 1.9rem;
-        color: #35594B; }
+        font-size: 1.7rem;
+        color: #35594B;
+        box-shadow: 1px 3px 5px rgba(100, 103, 102, 0.3);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        transition: .3s; }
+        .main_body .mainBody_content .profitDialog header img {
+          width: 8%;
+          padding: .1rem;
+          transition: .3s;
+          border-radius: 4px; }
+          .main_body .mainBody_content .profitDialog header img:hover {
+            box-shadow: 1px 3px 5px rgba(100, 103, 102, 0.3); }
       .main_body .mainBody_content .profitDialog center {
-        height: 80%;
+        height: 85%;
         width: 100%;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        flex-wrap: wrap; }
+        flex-wrap: wrap;
+        position: relative;
+        padding: 1rem; }
         .main_body .mainBody_content .profitDialog center .profitLabel {
           display: block;
           width: 48%;
           color: #646766;
           text-align: left;
-          font-size: 1rem; }
+          font-size: 1rem;
+          position: relative; }
           .main_body .mainBody_content .profitDialog center .profitLabel .value {
             font-weight: 500;
             color: #646766;
@@ -1720,6 +1814,18 @@ body {
             text-align: left;
             font-size: 1.5rem;
             color: #35594B; }
+          .main_body .mainBody_content .profitDialog center .profitLabel .lbl_toolTip {
+            position: absolute;
+            display: none;
+            padding: .1rem;
+            border: 1px solid #646766;
+            border-radius: 4px;
+            width: max-content;
+            z-index: 2; }
+      .main_body .mainBody_content .profitDialog img {
+        width: 20%; }
+    .main_body .mainBody_content .profitDialog--shown {
+      transform: scale(1); }
     .main_body .mainBody_content .userForm {
       width: 35%;
       height: 80%;
@@ -1937,7 +2043,8 @@ body {
     color: #fff;
     background-color: #e16161;
     transition: .5s;
-    transform: translateY(-100%); }
+    transform: translateY(-100%);
+    z-index: 5; }
     .main_body .alertBanner img {
       width: 2%;
       position: absolute;

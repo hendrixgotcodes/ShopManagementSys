@@ -490,6 +490,12 @@ class DOMCONTROLLER{
                 </td>
                 <td hidden class="td_Name--hidden">${name}</td>
                 <td hidden class="td_Brand--hidden">${brand}</td>
+                <td hidden class="td_Profit--hidden">${profit}</td>
+                <td hidden class="td_AvgStock--hidden">${avgInStock}</td>
+                <td hidden class="td_AvgSale--hidden">${avgSale}</td>
+                <td hidden class="td_Sold--hidden">${totalSold}</td>
+                <td hidden class="td_Revenue--hidden">${revenue}</td>
+
                 <td hidden class="td_Category--hidden"></td>
             </tr>
 

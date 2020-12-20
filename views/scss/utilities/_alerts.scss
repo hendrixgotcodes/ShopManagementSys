@@ -58,6 +58,7 @@
     background-color: $secondary_red;
     transition: .5s;
     transform: translateY(-100%);
+    z-index: 5;
 
     & img{
         width: 2%;

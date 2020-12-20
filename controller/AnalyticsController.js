@@ -42,6 +42,7 @@ const toolBarDate_to = document.querySelector("#toolBarDate_to")
 
 toolBar_btn.addEventListener('mouseover',toggleTBbtn_white)
 toolBar_btn.addEventListener('mouseleave',toggleTBbtn_default)
+
 profit_card.addEventListener("click", loadProfits)
 growthRateCard.addEventListener("click", loadGrowthRate)
 toolBarSlct_btn.addEventListener("click", (e)=>{

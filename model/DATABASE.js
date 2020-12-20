@@ -1986,6 +1986,31 @@ class DATABASE{
 
     }
 
+    getGenerealStatsLastMonth(){
+
+        return new Promise((resolve, reject)=>{
+
+            this.connector.query("SELECT COUNT(*) AS Sales, SUM(TotalDiscount) As Discount, SUM(Revenue) As Revenue, SUM(Profit) As Profit FROM `sales` WHERE `sales`.`Date` BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW()",
+            (error, result)=>{
+
+                if(error){
+                    reject(error)
+                    throw error
+                }
+                else{
+
+                    result = result.pop()
+
+                    resolve([result.Sales, result.Discount, result.Revenue, result.Profit]);
+
+                }
+
+            })
+
+        })
+
+    }
+
 
     deleteReportedAccount(userName){
 
