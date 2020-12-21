@@ -744,7 +744,14 @@ class Modal {
     openModal(promptBox); //Event Listener
 
     promptBox.querySelector('.img_close').addEventListener("click", () => {
-      closePromptBox(promptBox, resolve, reject);
+      const mainBodyContent = document.querySelector(".mainBody_content");
+
+      if (mainBodyContent.querySelector('.modal') !== null) {
+        // mainBodyContent.querySelector('.modal').remove();
+        promptBox.remove();
+        document.querySelector('.contentCover').classList.remove('contentCover--shown');
+        reject();
+      }
     });
     promptBox.querySelector('.dialogConfirm').addEventListener("click", () => {
       confirmRemove(itemName, resolve, reject, justVerify); //ItemName and Item are basically the same but kinda acts as flags to polymorphism of this function
@@ -1930,7 +1937,15 @@ class DOMCONTROLLER {
     });
   }
 
-  static createEmployeeItem(name, accountStatus, lastSeen, userName, functions) {
+  static createEmployeeItem(name, accountStatus, lastSeen, userName, disabled, functions) {
+    let disableEnable;
+
+    if (disabled === 1) {
+      disableEnable = `<div class="enable"><span>Enable</span></div>`;
+    } else {
+      disableEnable = `<div class="disable"><span>Disable</span></div>`;
+    }
+
     const tableBody = document.querySelector("tbody");
     const row = document.createElement("tr");
     row.setAttribute("toggled", "false");
@@ -1938,7 +1953,7 @@ class DOMCONTROLLER {
     row.innerHTML = `
             <td class="controls">
                 <div class="delete"><span>Delete</span></div>
-                <div class="disabled"><span>Disable</span></div>
+                ${disableEnable}
             </td>
             <td class="td_Names">${name}</td>
             <td class="td_AccountStatus">${accountStatus}</td>
@@ -1947,7 +1962,12 @@ class DOMCONTROLLER {
 
         `;
     tableBody.appendChild(row);
+
+    if (disabled === 1 || disabled === "1") {
+      row.classList.add("bodyRow--disabled");
+    }
     /*********************EVENT LISTENERS***************/
+
 
     row.addEventListener("contextmenu", () => {
       if (row.getAttribute("toggled") === "false") {
@@ -1959,12 +1979,16 @@ class DOMCONTROLLER {
       }
     });
     const btnDelete = row.querySelector(".controls").querySelector(".delete");
-    const btnDisable = row.querySelector(".controls").querySelector(".disabled");
+    const btnDisableEnable = row.querySelector(".controls").querySelector(".disable") || row.querySelector(".controls").querySelector(".enable");
     btnDelete.addEventListener("click", () => {
       functions[1](userName, name);
     });
-    btnDisable.addEventListener("click", () => {
-      functions[0](userName, name);
+    btnDisableEnable.addEventListener("click", () => {
+      if (disabled === 1 || disabled === "1") {
+        functions[2](userName, name);
+      } else {
+        functions[0](userName, name);
+      }
     });
   }
 
@@ -2807,6 +2831,7 @@ class DATABASE {
                             Password VARCHAR(255) NOT NULL,
                             IsAdmin BOOLEAN NOT NULL,
                             Last_Seen DATETIME,
+                            Disabled BOOLEAN,
                             UNIQUE(User_Name),
                             PRIMARY KEY (id)
                         )
@@ -3895,7 +3920,7 @@ class DATABASE {
 
   getUsers() {
     return new Promise((resolve, reject) => {
-      this.connector.query('select First_Name, Last_Name, IsAdmin, User_Name,TIMEDIFF(CURRENT_TIMESTAMP(), Last_Seen) AS Last_Seen from `users` users', (error, result) => {
+      this.connector.query('select First_Name, Last_Name, IsAdmin, User_Name, Disabled, TIMEDIFF(CURRENT_TIMESTAMP(), Last_Seen) AS Last_Seen from `users` users', (error, result) => {
         if (error) {
           reject(error);
           throw error;
@@ -4089,12 +4114,25 @@ class DATABASE {
 
   disableEmployee(userName) {
     return new Promise((resolve, reject) => {
-      this.connector.query("UPDATE `users` SET `users`.`Disabled` WHERE `users`.`User_Name` = ?", userName, (error, result) => {
+      this.connector.query("UPDATE `users` SET `users`.`Disabled` = ? WHERE `users`.`User_Name` = ?", [true, userName], (error, result) => {
         if (error) {
           reject(error);
           throw error;
         } else {
-          resolve();
+          resolve(result);
+        }
+      });
+    });
+  }
+
+  enableEmployee(userName) {
+    return new Promise((resolve, reject) => {
+      this.connector.query("UPDATE `users` SET `users`.`Disabled` = ? WHERE `users`.`User_Name` = ?", [false, userName], (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        } else {
+          resolve(result);
         }
       });
     });

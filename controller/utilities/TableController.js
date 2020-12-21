@@ -440,7 +440,19 @@ class DOMCONTROLLER{
 
     }
 
-    static createEmployeeItem(name, accountStatus, lastSeen, userName,functions){
+    static createEmployeeItem(name, accountStatus, lastSeen, userName, disabled,functions){
+
+        let disableEnable;
+
+        if(disabled === 1){
+
+            disableEnable = `<div class="enable"><span>Enable</span></div>`;
+        }
+        else{
+
+            disableEnable = `<div class="disable"><span>Disable</span></div>`
+
+        }
 
         const tableBody = document.querySelector("tbody");
         const row = document.createElement("tr");
@@ -451,7 +463,7 @@ class DOMCONTROLLER{
         `
             <td class="controls">
                 <div class="delete"><span>Delete</span></div>
-                <div class="disabled"><span>Disable</span></div>
+                ${disableEnable}
             </td>
             <td class="td_Names">${name}</td>
             <td class="td_AccountStatus">${accountStatus}</td>
@@ -461,6 +473,11 @@ class DOMCONTROLLER{
         `
 
         tableBody.appendChild(row);
+        if(disabled === 1 || disabled === "1"){
+
+            row.classList.add("bodyRow--disabled")
+
+        }
 
 
         /*********************EVENT LISTENERS***************/
@@ -483,17 +500,29 @@ class DOMCONTROLLER{
 
         })
 
-        const btnDelete = row.querySelector(".controls").querySelector(".delete");
-        const btnDisable = row.querySelector(".controls").querySelector(".disabled");
+        const btnDelete = row.querySelector(".controls").querySelector(".delete") 
+        const btnDisableEnable = row.querySelector(".controls").querySelector(".disable") || row.querySelector(".controls").querySelector(".enable");
 
         btnDelete.addEventListener("click", ()=>{
 
-            functions[1](userName, name)
+            functions[1](userName,name)
+
          
         });
 
-        btnDisable.addEventListener("click", ()=>{
-            functions[0](userName, name)
+        btnDisableEnable.addEventListener("click", ()=>{
+            
+            if(disabled === 1 || disabled === "1"){
+
+                functions[2](userName, name)
+
+            }
+            else{
+
+                functions[0](userName, name)
+
+            }
+
         })
 
     }

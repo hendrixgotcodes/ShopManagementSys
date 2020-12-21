@@ -310,7 +310,7 @@ function initializeEmployees(){
 
             user.Last_Seen = getRelativeTime(user.Last_Seen);
 
-            DOMCONTROLLER.createEmployeeItem(`${user.First_Name} ${user.Last_Name}`, user.IsAdmin, user.Last_Seen, user.User_Name,[disableEmployee, deleteEmploye]);
+            DOMCONTROLLER.createEmployeeItem(`${user.First_Name} ${user.Last_Name}`, user.IsAdmin, user.Last_Seen, user.User_Name,user.Disabled,[disableEmployee, deleteEmploye, enableEmployee]);
 
         })
 
@@ -431,6 +431,21 @@ function openNewUserForm(){
 
 function disableEmployee(userName, employeeName){
 
+    const rows = document.querySelector("tbody").querySelectorAll(".bodyRow");
+    let row;
+
+    rows.forEach((currentRow)=>{
+
+
+        if(currentRow.querySelector(".td_UserName--hidden").innerText === userName){
+
+            row = currentRow;
+            row.style.transform = "translateX(0%)"
+
+        }
+
+    })
+
     employeeName = clip(employeeName, 20);
 
     const getUserConfirmation = new Promise((resolve, reject)=>{
@@ -447,6 +462,31 @@ function disableEmployee(userName, employeeName){
 
             Notifications.showAlert("success", `${employeeName}'s account have been disabled.`)
 
+            setTimeout(() => {
+
+
+                let btnEnable = document.createElement("div");
+                btnEnable.className = "enable";
+                btnEnable.innerHTML = "<span>Enable</span>"
+                btnEnable.addEventListener("click", ()=>{
+                    enableEmployee(userName, employeeName)
+                })
+
+                setTimeout(() => {
+
+                    row.classList.add("bodyRow--disabled")
+
+                    const controls = row.querySelector(".controls");
+                    const btnDisable = controls.querySelector(".disable");
+
+                    controls.replaceChild(btnEnable,btnDisable)
+                    
+                }, 500);
+
+
+                
+            }, 800);
+
         })
         .catch(()=>{
 
@@ -455,10 +495,99 @@ function disableEmployee(userName, employeeName){
         })
 
     })
+    .catch(()=>{
+
+    })
 
 }
 
+function enableEmployee(userName, employeeName){
+
+    const rows = document.querySelector("tbody").querySelectorAll(".bodyRow");
+    let row;
+
+    rows.forEach((currentRow)=>{
+
+        if(currentRow.querySelector(".td_UserName--hidden").innerText === userName){
+
+            row = currentRow;
+            row.style.transform = "translateX(0%)"
+
+        }
+
+    })
+
+    employeeName = clip(employeeName, 20);
+
+    const getUserConfirmation = new Promise((resolve, reject)=>{
+
+        Modal.openPrompt(employeeName, resolve, reject, true, `Please confirm to enable ${employeeName}'s account`)
+
+    })
+
+    getUserConfirmation
+    .then(()=>{
+
+        database.enableEmployee(userName)
+        .then(()=>{
+
+            Notifications.showAlert("success", `${employeeName}'s account have been enabled.`)
+
+            setTimeout(() => {
+
+
+                let btnDisable = document.createElement("div");
+                btnDisable.className = "disable";
+                btnDisable.innerHTML = "<span>Disable</span>"
+                btnDisable.addEventListener("click", ()=>{
+                    disableEmployee(userName, employeeName);
+                })
+
+                setTimeout(() => {
+
+                    row.classList.remove("bodyRow--disabled")
+
+                    const controls = row.querySelector(".controls");
+                    const btnEnable = controls.querySelector(".enable");
+
+                    controls.replaceChild(btnDisable,btnEnable)
+                    
+                }, 500);
+
+
+                
+            }, 800);
+
+        })
+        .catch(()=>{
+
+            Notifications.showAlert("error", `Failed to enable ${employeeName}'s account.`)
+
+        })
+
+    })
+    .catch(()=>{
+
+    })
+
+}
+
+
 function deleteEmploye(userName,employeeName){
+
+    const rows = document.querySelector("tbody").querySelectorAll(".bodyRow");
+    let row;
+
+    rows.forEach((currentRow)=>{
+
+        if(currentRow.querySelector(".td_UserName--hidden").innerText === userName){
+
+            row = currentRow;
+            row.style.transform = "translateX(0%)"
+
+        }
+
+    })
 
     employeeName = clip(employeeName, 20);
 
@@ -478,23 +607,17 @@ function deleteEmploye(userName,employeeName){
 
             setTimeout(() => {
 
-                const rows = document.querySelector("tbody").querySelectorAll(".bodyRow");
+               
 
-                rows.forEach((row)=>{
+                row.style.transform = "translateX(115%)"
 
-                    if(row.querySelector(".td_UserName--hidden").innerText === userName){
+                setTimeout(() => {
 
-                        row.style.transform = "translateX(115%)"
+                    row.remove();
+                    
+                }, 500);
 
-                        setTimeout(() => {
 
-                            row.remove();
-                            
-                        }, 500);
-
-                    }
-
-                })
                 
             }, 800);
 
@@ -506,6 +629,9 @@ function deleteEmploye(userName,employeeName){
 
         })
 
+    })
+    .catch(()=>{
+        
     })
 
 }

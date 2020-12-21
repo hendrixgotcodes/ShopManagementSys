@@ -181,9 +181,24 @@
                 //     color: $primary_blue;
                 // }
             }
-            & .disabled{
+            & .disable{
                 width: 50%;
                 background-color: lighten($color: $primary_black, $amount: 20);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                cursor: pointer;
+                transition: .3s;
+                color: $WHITE;
+
+                // &:hover{
+                //     color: $secondary_red;
+                // }
+            }
+
+            & .enable{
+                width: 50%;
+                background-color: darken($color: $secondary_green, $amount: 5);
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -225,6 +240,10 @@
             }
         }
 
+    }
+
+    & .bodyRow--disabled{
+        opacity: .5;
     }
 }
 

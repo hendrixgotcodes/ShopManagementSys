@@ -561,9 +561,18 @@ body {
               cursor: pointer;
               transition: .3s;
               color: #fff; }
-            .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .disabled {
+            .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .disable {
               width: 50%;
               background-color: #979a99;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              cursor: pointer;
+              transition: .3s;
+              color: #fff; }
+            .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .enable {
+              width: 50%;
+              background-color: #109187;
               display: flex;
               justify-content: center;
               align-items: center;
@@ -590,6 +599,8 @@ body {
                 z-index: 1; }
               .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .del:hover::after, .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .edit:hover::after {
                 transform: translateY(0%); }
+        .main_body .mainBody_content .contentContainer .tableBody .bodyRow--disabled {
+          opacity: .5; }
       .main_body .mainBody_content .contentContainer .tb_cb {
         width: 5%; }
       .main_body .mainBody_content .contentContainer .tb_Names,

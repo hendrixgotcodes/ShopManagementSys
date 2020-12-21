@@ -66,7 +66,22 @@ class Modal {
 
 
                 //Event Listener
-                promptBox.querySelector('.img_close').addEventListener("click",()=>{closePromptBox(promptBox, resolve, reject)})
+                promptBox.querySelector('.img_close').addEventListener("click",()=>{
+                    
+                    const mainBodyContent = document.querySelector(".mainBody_content")
+
+                    if(mainBodyContent.querySelector('.modal') !== null){
+
+                        // mainBodyContent.querySelector('.modal').remove();
+                        promptBox.remove()
+
+                        document.querySelector('.contentCover').classList.remove('contentCover--shown')
+
+                        reject()
+                        
+                    }
+
+                })
 
                 promptBox.querySelector('.dialogConfirm').addEventListener("click", ()=>{
                     confirmRemove(itemName, resolve, reject, justVerify)      //ItemName and Item are basically the same but kinda acts as flags to polymorphism of this function

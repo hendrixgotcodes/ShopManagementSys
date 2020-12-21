@@ -556,6 +556,7 @@ class DATABASE {
                             Password VARCHAR(255) NOT NULL,
                             IsAdmin BOOLEAN NOT NULL,
                             Last_Seen DATETIME,
+                            Disabled BOOLEAN,
                             UNIQUE(User_Name),
                             PRIMARY KEY (id)
                         )
@@ -1644,7 +1645,7 @@ class DATABASE {
 
   getUsers() {
     return new Promise((resolve, reject) => {
-      this.connector.query('select First_Name, Last_Name, IsAdmin, User_Name,TIMEDIFF(CURRENT_TIMESTAMP(), Last_Seen) AS Last_Seen from `users` users', (error, result) => {
+      this.connector.query('select First_Name, Last_Name, IsAdmin, User_Name, Disabled, TIMEDIFF(CURRENT_TIMESTAMP(), Last_Seen) AS Last_Seen from `users` users', (error, result) => {
         if (error) {
           reject(error);
           throw error;
@@ -1838,12 +1839,25 @@ class DATABASE {
 
   disableEmployee(userName) {
     return new Promise((resolve, reject) => {
-      this.connector.query("UPDATE `users` SET `users`.`Disabled` WHERE `users`.`User_Name` = ?", userName, (error, result) => {
+      this.connector.query("UPDATE `users` SET `users`.`Disabled` = ? WHERE `users`.`User_Name` = ?", [true, userName], (error, result) => {
         if (error) {
           reject(error);
           throw error;
         } else {
-          resolve();
+          resolve(result);
+        }
+      });
+    });
+  }
+
+  enableEmployee(userName) {
+    return new Promise((resolve, reject) => {
+      this.connector.query("UPDATE `users` SET `users`.`Disabled` = ? WHERE `users`.`User_Name` = ?", [false, userName], (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        } else {
+          resolve(result);
         }
       });
     });
