@@ -774,98 +774,8 @@ function showIssues(){
 
             newNotification.addEventListener("click", (e)=>{
 
-                if(modalOpened === true){
-                    return;
-                }
+                ipcRenderer.send("loadEmployees")
 
-                let confirmNewPasswordBox = document.createElement("div");
-                confirmNewPasswordBox.className = "confirmNewPasswordBox";
-                confirmNewPasswordBox.innerHTML =
-                `
-                    <label for="passwordBox" id="lbl_container">
-                        <label>This will be ${clip(account.First_Name, 8)}'s new password. Please copy and confirm.</label>
-                        <input type="text" id="passwordBox">
-                        <button id="copy">
-                            <img src="../Icons/modals/clipboard.svg"/>
-                        </button>
-                    </label>
-            
-                    <button id="confirm">Confirm</button>
-            
-                `
-                modalOpened = true;
-                confirmNewPasswordBox.style.display = "none";
-                confirmNewPasswordBox.tabIndex = "0";
-            
-                notificationContainer.appendChild(confirmNewPasswordBox)
-                confirmNewPasswordBox.focus();
-
-                confirmNewPasswordBox.style.top = e.pageY + "px";
-                confirmNewPasswordBox.style.left = e.pageX + "px";
-
-                confirmNewPasswordBox.style.display = "block";
-
-                let textbox = confirmNewPasswordBox.querySelector("#passwordBox");
-                textbox.value = Math.random().toString(36).slice(-8);
-                textbox.disabled = true;
-
-                let generatedPassword = textbox.value;
-
-                //Even Listeners
-                confirmNewPasswordBox.addEventListener("blur", ()=>{
-
-                    confirmNewPasswordBox.remove();
-                    modalOpened = false;
-
-                })
-
-
-                let copy = confirmNewPasswordBox.querySelector("#copy");
-                copy.addEventListener("click", ()=>{
-
-                    textbox.disabled = false;
-
-                    textbox.select();
-                    document.execCommand("copy");
-                    // textbox.execCommand("")
-                    textbox.disabled = true;
-
-                    confirmNewPasswordBox.querySelector("#lbl_container").querySelector("label").innerText = "Copied";
-
-                })
-
-                let btnConfirm = confirmNewPasswordBox.querySelector("#confirm");
-
-                btnConfirm.addEventListener("click", ()=>{
-
-                    let passwordBox = confirmNewPasswordBox.querySelector("#passwordBox");
-
-                    generateHashOf(generatedPassword, account.User_Name)
-                    .then((newPassword)=>{
-
-
-                        database.updateUserInfo(account.User_Name, newPassword)
-                        .then(()=>{
-
-                            database.deleteReportedAccount(account.User_Name)
-                            .then(()=>{
-
-                                confirmNewPasswordBox.remove();
-                                modalOpened = false;
-
-                                newNotification.remove();
-
-                                let footerBell_notIcon = document.querySelector(".footerBell_notIcon");
-                                footerBell_notIcon.innerText = parseInt(footerBell_notIcon.innerText) - 1;
-
-                            })
-
-
-                        })
-
-                    })
-
-                })
 
             })
 
@@ -894,6 +804,10 @@ function showIssues(){
             `
 
             notificationContainer.querySelector(".notifications").appendChild(newNotification)
+
+            newNotification.addEventListener("click", ()=>{
+                ipcRenderer.send('loadInventory', [UserName, UserType])
+            })
 
         })
 

@@ -427,63 +427,39 @@ function addItem(){
 
             // console.log([row, name, brand, category, stock, sellingPrice, costPrice]);
 
-            if(addNew === false){
-
-                console.log("iiin db");
-
-                database.addNewItem(storeObject, UserName)
-                .then(()=>{
-
-
-        
-                    DOMCONTROLLER.updateItem(name, brand, category, sellingPrice, costPrice, stock, discount)
-
-                    Notifications.showAlert("success", `Change successfuly made to ${name}`)
-        
-
-
-                })
-                .catch(()=>{
-
-                    Notifications.showAlert("error", "Sorry an error occurred.")
-
-                })
-
-            }
-            else{
+           
 
                 
-                database.addNewItem(storeObject, UserName)
-                .then((result)=>{
+            database.addNewItem(storeObject, UserName)
+            .then((result)=>{
 
-                    if(result === true){
+                if(result === true){
 
-                        DOMCONTROLLER.createItem(result.Name, result.Brand, result.Category, result.Stock, result.SellingPrice, result.Discount,result.ReOrderLevel,[checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "", false, false, "inventory")
-                        .then(()=>{
-        
-                            Notifications.showAlert("success", "Successfuly added to inventory")
-        
-                        })
+                    DOMCONTROLLER.createItem(result.Name, result.Brand, result.Category, result.Stock, result.SellingPrice, result.Discount,result.ReOrderLevel,[checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "", false, false, "inventory")
+                    .then(()=>{
+    
+                        Notifications.showAlert("success", "Successfuly added to inventory")
+    
+                    })
 
-                    }
+                }
 
-                
-                })
-                .catch((error)=>{
+            
+            })
+            .catch((error)=>{
 
-                    if(error === "duplicate"){
-                        Notifications.showAlert("error", `Sorry, failed to add ${storeObject.Name} of brand ${storeObject.Brand} to inventory. This item already exists`)
-                        return;
-                    }
-                    else{
+                if(error === "duplicate"){
+                    Notifications.showAlert("error", `Sorry, failed to add ${storeObject.Name} of brand ${storeObject.Brand} to inventory. This item already exists`)
+                    return;
+                }
+                else{
 
-                        Notifications.showAlert("error", `Sorry, failed to add ${storeObject.Name} of brand ${storeObject.Brand} to inventory due to an unknown error`)
+                    Notifications.showAlert("error", `Sorry, failed to add ${storeObject.Name} of brand ${storeObject.Brand} to inventory due to an unknown error`)
 
-                    }
+                }
 
-                })
+            })
 
-            }
 
 
     })

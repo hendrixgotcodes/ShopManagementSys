@@ -673,65 +673,7 @@ function showIssues() {
             `;
       notificationContainer.querySelector(".notifications").appendChild(newNotification);
       newNotification.addEventListener("click", e => {
-        if (modalOpened === true) {
-          return;
-        }
-
-        let confirmNewPasswordBox = document.createElement("div");
-        confirmNewPasswordBox.className = "confirmNewPasswordBox";
-        confirmNewPasswordBox.innerHTML = `
-                    <label for="passwordBox" id="lbl_container">
-                        <label>This will be ${text_clipper__WEBPACK_IMPORTED_MODULE_0___default()(account.First_Name, 8)}'s new password. Please copy and confirm.</label>
-                        <input type="text" id="passwordBox">
-                        <button id="copy">
-                            <img src="../Icons/modals/clipboard.svg"/>
-                        </button>
-                    </label>
-            
-                    <button id="confirm">Confirm</button>
-            
-                `;
-        modalOpened = true;
-        confirmNewPasswordBox.style.display = "none";
-        confirmNewPasswordBox.tabIndex = "0";
-        notificationContainer.appendChild(confirmNewPasswordBox);
-        confirmNewPasswordBox.focus();
-        confirmNewPasswordBox.style.top = e.pageY + "px";
-        confirmNewPasswordBox.style.left = e.pageX + "px";
-        confirmNewPasswordBox.style.display = "block";
-        let textbox = confirmNewPasswordBox.querySelector("#passwordBox");
-        textbox.value = Math.random().toString(36).slice(-8);
-        textbox.disabled = true;
-        let generatedPassword = textbox.value; //Even Listeners
-
-        confirmNewPasswordBox.addEventListener("blur", () => {
-          confirmNewPasswordBox.remove();
-          modalOpened = false;
-        });
-        let copy = confirmNewPasswordBox.querySelector("#copy");
-        copy.addEventListener("click", () => {
-          textbox.disabled = false;
-          textbox.select();
-          document.execCommand("copy"); // textbox.execCommand("")
-
-          textbox.disabled = true;
-          confirmNewPasswordBox.querySelector("#lbl_container").querySelector("label").innerText = "Copied";
-        });
-        let btnConfirm = confirmNewPasswordBox.querySelector("#confirm");
-        btnConfirm.addEventListener("click", () => {
-          let passwordBox = confirmNewPasswordBox.querySelector("#passwordBox");
-          generateHashOf(generatedPassword, account.User_Name).then(newPassword => {
-            database.updateUserInfo(account.User_Name, newPassword).then(() => {
-              database.deleteReportedAccount(account.User_Name).then(() => {
-                confirmNewPasswordBox.remove();
-                modalOpened = false;
-                newNotification.remove();
-                let footerBell_notIcon = document.querySelector(".footerBell_notIcon");
-                footerBell_notIcon.innerText = parseInt(footerBell_notIcon.innerText) - 1;
-              });
-            });
-          });
-        });
+        ipcRenderer.send("loadEmployees");
       });
     });
   }
@@ -751,6 +693,9 @@ function showIssues() {
 
             `;
       notificationContainer.querySelector(".notifications").appendChild(newNotification);
+      newNotification.addEventListener("click", () => {
+        ipcRenderer.send('loadInventory', [UserName, UserType]);
+      });
     });
   } else {
     let message = document.createElement("label");
@@ -2348,76 +2293,98 @@ class DATABASE {
           reject("unknown error");
           throw error;
         } else {
-          this.connector.query(updateItemSQL, update, (error, result) => {
+          this.connector.query("SELECT `itembrands`.`Name` FROM `itembrands` WHERE `itembrands`.`Name` = ?", change.Brand, (error, result) => {
             if (error) {
               this.connector.rollback(() => {
-                if (error.code === "ER_DUP_ENTRY") {
-                  reject(new Error("ERR_DUP_ENTRY"));
-                } else {
-                  reject(new Error("unknown error"));
-                }
-
+                reject(error);
                 throw error;
               });
             } else {
-              console.log(change.Name, change.Brand, change.Category);
-              this.connector.query(`SELECT * FROM  items WHERE Name = '${change.Name}' AND Brand = '${change.Brand}' AND Category = '${change.Category}'`, (error, result) => {
+              result = result.pop();
+              change.Brand = result.Name;
+              this.connector.query("SELECT `itemcategories`.`Name` FROM `itemcategories` WHERE `itemcategories`.`Name` = ?", change.Category, (error, result) => {
                 if (error) {
                   this.connector.rollback(() => {
-                    reject("unknown error");
+                    reject(error);
                     throw error;
                   });
                 } else {
-                  console.log(result);
-                  const item = result.shift();
-                  const itemId = item.id;
-                  this.connector.query(`SELECT * FROM  users WHERE User_Name = '${User}'`, (error, result) => {
-                    let user = result.shift();
-                    let userId = user.id;
-
+                  result = result.pop();
+                  change.Category = result.Name;
+                  this.connector.query(updateItemSQL, update, (error, result) => {
                     if (error) {
                       this.connector.rollback(() => {
-                        reject("unknown error");
+                        if (error.code === "ER_DUP_ENTRY") {
+                          reject(new Error("ERR_DUP_ENTRY"));
+                        } else {
+                          reject(new Error("unknown error"));
+                        }
+
                         throw error;
                       });
-                    } else if (result === null) {
-                      this.connector.rollback(() => {
-                        reject("unknown user");
-                        throw new Error("unknow user");
-                      });
                     } else {
-                      const Today = new Date();
-                      let auditTrailValues = {
-                        Date: `${Today.getFullYear()}-${Today.getMonth() + 1}-${Today.getDate()} ${Today.getHours()}:${Today.getMinutes()}:${Today.getSeconds()}`,
-                        User: userId,
-                        Operation: "Edit",
-                        Item: itemId
-                      };
-                      this.connector.query("INSERT INTO  auditTrails SET ?", auditTrailValues, (error, result) => {
+                      console.log(change.Name, change.Brand, change.Category);
+                      this.connector.query(`SELECT * FROM  items WHERE Name = '${change.Name}' AND Brand = '${change.Brand}' AND Category = '${change.Category}'`, (error, result) => {
                         if (error) {
                           this.connector.rollback(() => {
                             reject("unknown error");
                             throw error;
                           });
                         } else {
-                          let itemAuditTrailValues = {
-                            Item: itemId,
-                            AuditTrail: result.insertId
-                          };
-                          this.connector.query("INSERT INTO  itemAuditTrails SET ?", itemAuditTrailValues, error => {
+                          console.log(result);
+                          const item = result.shift();
+                          const itemId = item.id;
+                          this.connector.query(`SELECT * FROM  users WHERE User_Name = '${User}'`, (error, result) => {
+                            let user = result.shift();
+                            let userId = user.id;
+
                             if (error) {
                               this.connector.rollback(() => {
                                 reject("unknown error");
                                 throw error;
                               });
+                            } else if (result === null) {
+                              this.connector.rollback(() => {
+                                reject("unknown user");
+                                throw new Error("unknow user");
+                              });
                             } else {
-                              this.connector.commit(error => {
+                              const Today = new Date();
+                              let auditTrailValues = {
+                                Date: `${Today.getFullYear()}-${Today.getMonth() + 1}-${Today.getDate()} ${Today.getHours()}:${Today.getMinutes()}:${Today.getSeconds()}`,
+                                User: userId,
+                                Operation: "Edit",
+                                Item: itemId
+                              };
+                              this.connector.query("INSERT INTO  auditTrails SET ?", auditTrailValues, (error, result) => {
                                 if (error) {
-                                  reject("unknown error");
-                                  throw error;
-                                }
+                                  this.connector.rollback(() => {
+                                    reject("unknown error");
+                                    throw error;
+                                  });
+                                } else {
+                                  let itemAuditTrailValues = {
+                                    Item: itemId,
+                                    AuditTrail: result.insertId
+                                  };
+                                  this.connector.query("INSERT INTO  itemAuditTrails SET ?", itemAuditTrailValues, error => {
+                                    if (error) {
+                                      this.connector.rollback(() => {
+                                        reject("unknown error");
+                                        throw error;
+                                      });
+                                    } else {
+                                      this.connector.commit(error => {
+                                        if (error) {
+                                          reject("unknown error");
+                                          throw error;
+                                        }
 
-                                resolve(true);
+                                        resolve(true);
+                                      });
+                                    }
+                                  });
+                                }
                               });
                             }
                           });

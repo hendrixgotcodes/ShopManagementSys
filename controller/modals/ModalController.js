@@ -257,7 +257,7 @@ class Modal {
 /************************************************************************************************************************************************************************/  
  
 
-    static openItemForm(row="", editForm, inInventory = false){
+    static openItemForm(row="", editForm){
 
         return new Promise((resolve, reject)=>{
 
@@ -552,24 +552,13 @@ class Modal {
 
                     if(name !== "" && category !== "" && brand !== "" && stock !== "" && sellingPrice !== ""){
 
-                        if(inInventory === true){
+                        
 
-                            closeModal(itemForm);
+                        closeModal(itemForm);
 
-                            // openPrompt("",resolve,reject, [true, row, name, brand, category, stock, sellingPrice])
+                        // openPrompt("",resolve,reject, [true, row, name, brand, category, stock, sellingPrice])
 
-                            resolve([false, row, name, brand, category, stock, sellingPrice, costPrice, discount]);
-
-                        }
-                        else{
-
-                            closeModal(itemForm);
-
-                            // openPrompt("",resolve,reject, [true, row, name, brand, category, stock, sellingPrice])
-
-                            resolve([true, row, name, brand, category, stock, sellingPrice, costPrice, discount]);
-
-                        }
+                        resolve([true, row, name, brand, category, stock, sellingPrice, costPrice, discount]);
 
 
                     }
@@ -578,77 +567,6 @@ class Modal {
 
                 function exitBox(){
                     closeConfirmationBox(resolve, reject)
-                }
-
-
-                if(inInventory === true){
-
-                    const name = itemForm.querySelector("#name");
-                    const brand = itemForm.querySelector("#brand");
-                    const category = itemForm.querySelector("#category");
-                    const costPrice = itemForm.querySelector("#costPrice");
-                    const sellingPrice = itemForm.querySelector("#sellingPrice");
-                    const total = itemForm.querySelector("#total")
-                    const discount = itemForm.querySelector("#discount");
-
-                    //Looks up for existing match in database while a user types
-                    name.addEventListener("keyup", function lookUpForExistingEntry(){
-
-                        const itemList = itemForm.querySelector("#itemList");
-
-                        database.getItem(name.value)
-                        .then((existingItems)=>{
-
-                            existingItems.forEach((item)=>{
-
-                                const newOption = document.createElement("option");
-                                newOption.innerText = item.Name;
-
-                                if( itemList.querySelector("option") !== null && itemList.querySelector("option").innerText !== item.Name){
-
-                                    itemList.appendChild(newOption);
-
-                                }
-                                else if(itemList.querySelector("option") == null){
-
-                                    itemList.appendChild(newOption);
-
-                                }
-
-
-                            })
-
-                        })
-
-                    })
-
-                    name.addEventListener("change", function onChanged(){
-
-                        database.getItem(name.value)
-                        .then((items)=>{
-
-                            items.forEach((item)=>{
-
-                                name.disabled = true;
-
-                                category.value = item.Category;
-                                category.disabled = true;
-
-                                brand.value = item.Brand;
-                                brand.disabled = true;
-
-                                costPrice.value = item.CostPrice;
-                                sellingPrice.value = item.SellingPrice;
-                                total.value = item.InStock;
-                                discount.value = item.Discount;
-
-                            })
-
-                        })
-
-                        
-                    })
-
                 }
 
             

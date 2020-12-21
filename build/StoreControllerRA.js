@@ -2253,76 +2253,98 @@ class DATABASE {
           reject("unknown error");
           throw error;
         } else {
-          this.connector.query(updateItemSQL, update, (error, result) => {
+          this.connector.query("SELECT `itembrands`.`Name` FROM `itembrands` WHERE `itembrands`.`Name` = ?", change.Brand, (error, result) => {
             if (error) {
               this.connector.rollback(() => {
-                if (error.code === "ER_DUP_ENTRY") {
-                  reject(new Error("ERR_DUP_ENTRY"));
-                } else {
-                  reject(new Error("unknown error"));
-                }
-
+                reject(error);
                 throw error;
               });
             } else {
-              console.log(change.Name, change.Brand, change.Category);
-              this.connector.query(`SELECT * FROM  items WHERE Name = '${change.Name}' AND Brand = '${change.Brand}' AND Category = '${change.Category}'`, (error, result) => {
+              result = result.pop();
+              change.Brand = result.Name;
+              this.connector.query("SELECT `itemcategories`.`Name` FROM `itemcategories` WHERE `itemcategories`.`Name` = ?", change.Category, (error, result) => {
                 if (error) {
                   this.connector.rollback(() => {
-                    reject("unknown error");
+                    reject(error);
                     throw error;
                   });
                 } else {
-                  console.log(result);
-                  const item = result.shift();
-                  const itemId = item.id;
-                  this.connector.query(`SELECT * FROM  users WHERE User_Name = '${User}'`, (error, result) => {
-                    let user = result.shift();
-                    let userId = user.id;
-
+                  result = result.pop();
+                  change.Category = result.Name;
+                  this.connector.query(updateItemSQL, update, (error, result) => {
                     if (error) {
                       this.connector.rollback(() => {
-                        reject("unknown error");
+                        if (error.code === "ER_DUP_ENTRY") {
+                          reject(new Error("ERR_DUP_ENTRY"));
+                        } else {
+                          reject(new Error("unknown error"));
+                        }
+
                         throw error;
                       });
-                    } else if (result === null) {
-                      this.connector.rollback(() => {
-                        reject("unknown user");
-                        throw new Error("unknow user");
-                      });
                     } else {
-                      const Today = new Date();
-                      let auditTrailValues = {
-                        Date: `${Today.getFullYear()}-${Today.getMonth() + 1}-${Today.getDate()} ${Today.getHours()}:${Today.getMinutes()}:${Today.getSeconds()}`,
-                        User: userId,
-                        Operation: "Edit",
-                        Item: itemId
-                      };
-                      this.connector.query("INSERT INTO  auditTrails SET ?", auditTrailValues, (error, result) => {
+                      console.log(change.Name, change.Brand, change.Category);
+                      this.connector.query(`SELECT * FROM  items WHERE Name = '${change.Name}' AND Brand = '${change.Brand}' AND Category = '${change.Category}'`, (error, result) => {
                         if (error) {
                           this.connector.rollback(() => {
                             reject("unknown error");
                             throw error;
                           });
                         } else {
-                          let itemAuditTrailValues = {
-                            Item: itemId,
-                            AuditTrail: result.insertId
-                          };
-                          this.connector.query("INSERT INTO  itemAuditTrails SET ?", itemAuditTrailValues, error => {
+                          console.log(result);
+                          const item = result.shift();
+                          const itemId = item.id;
+                          this.connector.query(`SELECT * FROM  users WHERE User_Name = '${User}'`, (error, result) => {
+                            let user = result.shift();
+                            let userId = user.id;
+
                             if (error) {
                               this.connector.rollback(() => {
                                 reject("unknown error");
                                 throw error;
                               });
+                            } else if (result === null) {
+                              this.connector.rollback(() => {
+                                reject("unknown user");
+                                throw new Error("unknow user");
+                              });
                             } else {
-                              this.connector.commit(error => {
+                              const Today = new Date();
+                              let auditTrailValues = {
+                                Date: `${Today.getFullYear()}-${Today.getMonth() + 1}-${Today.getDate()} ${Today.getHours()}:${Today.getMinutes()}:${Today.getSeconds()}`,
+                                User: userId,
+                                Operation: "Edit",
+                                Item: itemId
+                              };
+                              this.connector.query("INSERT INTO  auditTrails SET ?", auditTrailValues, (error, result) => {
                                 if (error) {
-                                  reject("unknown error");
-                                  throw error;
-                                }
+                                  this.connector.rollback(() => {
+                                    reject("unknown error");
+                                    throw error;
+                                  });
+                                } else {
+                                  let itemAuditTrailValues = {
+                                    Item: itemId,
+                                    AuditTrail: result.insertId
+                                  };
+                                  this.connector.query("INSERT INTO  itemAuditTrails SET ?", itemAuditTrailValues, error => {
+                                    if (error) {
+                                      this.connector.rollback(() => {
+                                        reject("unknown error");
+                                        throw error;
+                                      });
+                                    } else {
+                                      this.connector.commit(error => {
+                                        if (error) {
+                                          reject("unknown error");
+                                          throw error;
+                                        }
 
-                                resolve(true);
+                                        resolve(true);
+                                      });
+                                    }
+                                  });
+                                }
                               });
                             }
                           });

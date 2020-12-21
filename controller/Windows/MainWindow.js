@@ -26,7 +26,7 @@ class MainWWindow extends BrowserWindow {
             show: false,
             minWidth: 1503,
             minHeight: 800,
-            hasShadow: true,
+            hasShadow: true
         })
 
         //Program Variables
@@ -40,13 +40,13 @@ class MainWWindow extends BrowserWindow {
 
         const that = this;
         
-        globalShortcut.register('cmdorctrl+d', () => {
-            that.webContents.toggleDevTools();
-        })
+        // globalShortcut.register('cmdorctrl+d', () => {
+        //     that.webContents.toggleDevTools();
+        // })
 
-        globalShortcut.register('ctrl+r', () => {
-            that.reload();
-        })
+        // globalShortcut.register('ctrl+r', () => {
+        //     that.reload();
+        // })
 
 
 /****************************************EVENT LISTENERS************************************/
