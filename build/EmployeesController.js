@@ -209,11 +209,15 @@ module.exports = Notifications;
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _model_DATABASE__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../model/DATABASE */ "./model/DATABASE.js");
-/* harmony import */ var _model_DATABASE__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_model_DATABASE__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _model_STORE__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../model/STORE */ "./model/STORE.js");
-/* harmony import */ var _model_STORE__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_model_STORE__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _modals_ModalController__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modals/ModalController */ "./controller/modals/ModalController.js");
+/* harmony import */ var text_clipper__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! text-clipper */ "./node_modules/text-clipper/dist/index.js");
+/* harmony import */ var text_clipper__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(text_clipper__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _model_DATABASE__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../model/DATABASE */ "./model/DATABASE.js");
+/* harmony import */ var _model_DATABASE__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_model_DATABASE__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _model_STORE__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../model/STORE */ "./model/STORE.js");
+/* harmony import */ var _model_STORE__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_model_STORE__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Alerts/NotificationController */ "./controller/Alerts/NotificationController.js");
+/* harmony import */ var _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _modals_ModalController__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modals/ModalController */ "./controller/modals/ModalController.js");
 
 
 const {
@@ -224,9 +228,11 @@ const {
 
 
 
+
+
 const DOMCONTROLLER = __webpack_require__(/*! ./utilities/TableController */ "./controller/utilities/TableController.js");
 
-const database = new _model_DATABASE__WEBPACK_IMPORTED_MODULE_0___default.a(); //Program Variables
+const database = new _model_DATABASE__WEBPACK_IMPORTED_MODULE_1___default.a(); //Program Variables
 
 let UserName;
 let UserType;
@@ -340,7 +346,7 @@ function loadLoginPage() {
 }
 
 function openExitDialogBox() {
-  _modals_ModalController__WEBPACK_IMPORTED_MODULE_2__["default"].openExitPrompt().then(() => {
+  _modals_ModalController__WEBPACK_IMPORTED_MODULE_4__["default"].openExitPrompt().then(() => {
     ipcRenderer.send("loadLogin");
   });
 } //Removes Modal
@@ -435,7 +441,7 @@ function initializeEmployees() {
       }
 
       user.Last_Seen = getRelativeTime(user.Last_Seen);
-      DOMCONTROLLER.createEmployeeItem(`${user.First_Name} ${user.Last_Name}`, user.IsAdmin, user.Last_Seen, user.Total_Sales, user.Total_Profits);
+      DOMCONTROLLER.createEmployeeItem(`${user.First_Name} ${user.Last_Name}`, user.IsAdmin, user.Last_Seen, user.User_Name, [disableEmployee, deleteEmploye]);
     });
   });
 }
@@ -505,7 +511,46 @@ function getRelativeTime(time) {
 }
 
 function openNewUserForm() {
-  _modals_ModalController__WEBPACK_IMPORTED_MODULE_2__["default"].openUserForm(true);
+  _modals_ModalController__WEBPACK_IMPORTED_MODULE_4__["default"].openUserForm(true);
+}
+
+function disableEmployee(userName, employeeName) {
+  employeeName = text_clipper__WEBPACK_IMPORTED_MODULE_0___default()(employeeName, 20);
+  const getUserConfirmation = new Promise((resolve, reject) => {
+    _modals_ModalController__WEBPACK_IMPORTED_MODULE_4__["default"].openPrompt(employeeName, resolve, reject, true, `Please confirm to disable ${employeeName}'s account`);
+  });
+  getUserConfirmation.then(() => {
+    database.disableEmployee(userName).then(() => {
+      _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_3___default.a.showAlert("success", `${employeeName}'s account have been disabled.`);
+    }).catch(() => {
+      _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_3___default.a.showAlert("error", `Failed to disable ${employeeName}'s account.`);
+    });
+  });
+}
+
+function deleteEmploye(userName, employeeName) {
+  employeeName = text_clipper__WEBPACK_IMPORTED_MODULE_0___default()(employeeName, 20);
+  const getUserConfirmation = new Promise((resolve, reject) => {
+    _modals_ModalController__WEBPACK_IMPORTED_MODULE_4__["default"].openPrompt(employeeName, resolve, reject, true, `Please confirm to delete ${employeeName}'s account. This will also delete all sales records of ${employeeName}`);
+  });
+  getUserConfirmation.then(() => {
+    database.deleteEmployee(userName).then(() => {
+      _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_3___default.a.showAlert("success", `${employeeName}'s account have been deleted.`);
+      setTimeout(() => {
+        const rows = document.querySelector("tbody").querySelectorAll(".bodyRow");
+        rows.forEach(row => {
+          if (row.querySelector(".td_UserName--hidden").innerText === userName) {
+            row.style.transform = "translateX(115%)";
+            setTimeout(() => {
+              row.remove();
+            }, 500);
+          }
+        });
+      }, 800);
+    }).catch(() => {
+      _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_3___default.a.showAlert("error", `Failed to delete ${employeeName}'s account.`);
+    });
+  });
 }
 /*****************************EVENT LISTENERS FOR MAIN PROCESS */
 
@@ -514,7 +559,7 @@ ipcRenderer.on("loadUserInfo", (e, array) => {
   [UserName, UserType] = array;
 
   if (UserType === 'Admin') {
-    const store = new _model_STORE__WEBPACK_IMPORTED_MODULE_1___default.a({
+    const store = new _model_STORE__WEBPACK_IMPORTED_MODULE_2___default.a({
       configName: 'userPrefs',
       defaults: {
         toolTipsPref: 'show',
@@ -561,6 +606,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _model_DATABASE__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_model_DATABASE__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Alerts/NotificationController */ "./controller/Alerts/NotificationController.js");
 /* harmony import */ var _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _utilities_TableController__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utilities/TableController */ "./controller/utilities/TableController.js");
+/* harmony import */ var _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_utilities_TableController__WEBPACK_IMPORTED_MODULE_3__);
+
 
 
 
@@ -595,11 +643,9 @@ class Modal {
                         </div>
 
                         <div class="dialogBody fullwidth" role="body">
-                        <span>
+                            <span>
                                 ${defaultMessage}
                             </span>
-
-                            <input type="password" class="modal_pass" aria-placeholder="enter password here" placeholder="Enter Your Password Here" />
 
                         </div>
 
@@ -1094,6 +1140,9 @@ class Modal {
 
         `;
     contentContainer.appendChild(userForm);
+    setTimeout(() => {
+      userForm.classList.add("userForm--shown");
+    }, 400);
     const header = userForm.querySelector(".userForm_header");
     const btnClose = header.querySelector("img");
     const btnEmploy = userForm.querySelector(".btn_employ");
@@ -1141,8 +1190,11 @@ class Modal {
       }
     });
     btnClose.addEventListener("click", e => {
-      userForm.remove();
+      userForm.classList.remove("userForm--shown");
       contentCover.classList.remove("contentCover--shown");
+      setTimeout(() => {
+        userForm.remove();
+      }, 400);
     });
     btnEmploy.addEventListener("click", e => {
       if (formIsValid === true) {
@@ -1154,9 +1206,10 @@ class Modal {
             Password: hashedPassword,
             IsAdmin: slct_accountType.value
           }).then(() => {
-            userForm.remove();
             contentCover.classList.remove("contentCover--shown");
             _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", "User added successfully");
+            Object(_utilities_TableController__WEBPACK_IMPORTED_MODULE_3__["createEmployeeItem"])(`${tb_FirstName} ${tb_LastName.value}`, IsAdmin, "Never");
+            userForm.remove();
           }).catch(error => {
             throw error;
           });
@@ -1415,6 +1468,8 @@ class Modal {
 
 
 function closeConfirmationBox(resolve, reject, edited = "", name = "") {
+  const mainBodyContent = document.querySelector(".mainBody_content");
+
   if (mainBodyContent.querySelector('.modal') !== null) {
     // document.querySelector(".dialog--confirmationBox").querySelector('.img_close').removeEventListener("click",closeConfirmationBox)
     // document.querySelector(".dialog--confirmationBox").querySelector(".dialogRevert").removeEventListener("click",closeConfirmationBox)
@@ -1444,6 +1499,8 @@ function openPrompt(itemName, resolve, reject, justVerify = "") {
 
 
 function closePromptBox(modal, resolve, reject) {
+  const mainBodyContent = document.querySelector(".mainBody_content");
+
   if (mainBodyContent.querySelector('.modal') !== null) {
     // mainBodyContent.querySelector('.modal').remove();
     closeModal(modal);
@@ -1454,25 +1511,10 @@ function closePromptBox(modal, resolve, reject) {
 
 
 function confirmRemove(itemName, resolve, reject, justVerify = "") {
+  const mainBodyContent = document.querySelector(".mainBody_content");
   const modal = mainBodyContent.querySelector('.modal');
-  const Password = document.querySelector('.dialog--promptBox').querySelector(".modal_pass").value;
-
-  if (Password === "Duffy") {
-    closeModal(modal);
-    document.querySelector('.contentCover').classList.remove('contentCover--shown');
-
-    if (justVerify[0] === true) {
-      resolve(["edited", justVerify]);
-      return;
-    }
-
-    resolve("verified");
-    console.log("removed");
-  } else {
-    reject(new Error("wrongPassword"));
-    closeModal(modal);
-    document.querySelector('.contentCover').classList.remove('contentCover--shown');
-  }
+  closeModal(modal);
+  resolve(["edited", justVerify]);
 } //Function called to reomve modal
 
 
@@ -1808,19 +1850,42 @@ class DOMCONTROLLER {
     });
   }
 
-  static createEmployeeItem(name, accountStatus, lastSeen, totalSales, totalProfit) {
+  static createEmployeeItem(name, accountStatus, lastSeen, userName, functions) {
     const tableBody = document.querySelector("tbody");
     const row = document.createElement("tr");
+    row.setAttribute("toggled", "false");
     row.className = "bodyRow";
     row.innerHTML = `
+            <td class="controls">
+                <div class="delete"><span>Delete</span></div>
+                <div class="disabled"><span>Disable</span></div>
+            </td>
             <td class="td_Names">${name}</td>
             <td class="td_AccountStatus">${accountStatus}</td>
             <td class="td_LastSeen">${lastSeen}</td>
-            <td class="td_SalesMade">${commaNumber(totalSales)}</td>
-            <td class="td_ProfitsMade">${commaNumber(totalProfit)}</td>
+            <td hidden class="td_UserName--hidden">${userName}</td>
 
         `;
     tableBody.appendChild(row);
+    /*********************EVENT LISTENERS***************/
+
+    row.addEventListener("contextmenu", () => {
+      if (row.getAttribute("toggled") === "false") {
+        row.style.transform = "translateX(15%)";
+        row.setAttribute("toggled", "true");
+      } else if (row.getAttribute("toggled") === "true") {
+        row.style.transform = "translateX(0)";
+        row.setAttribute("toggled", "false");
+      }
+    });
+    const btnDelete = row.querySelector(".controls").querySelector(".delete");
+    const btnDisable = row.querySelector(".controls").querySelector(".disabled");
+    btnDelete.addEventListener("click", () => {
+      functions[1](userName, name);
+    });
+    btnDisable.addEventListener("click", () => {
+      functions[0](userName, name);
+    });
   }
 
   static createProfitsItem(name, brand, avgInStock, avgSale, totalSold, revenue, profit) {
@@ -1911,6 +1976,132 @@ class DOMCONTROLLER {
     tdProfit.addEventListener("mouseleave", () => {
       clearTimeout(timeoutId_tpProfit);
       tdProfit.querySelector(".td_toolTip").style.display = "none";
+    });
+  }
+
+  static createEmployeePerformanceItem(name, salesMade, itemsSold, totalRevenue, profitGained, discountGiven) {
+    const tableBody = document.querySelector("tbody");
+    const row = document.createElement("tr");
+    row.className = "bodyRow";
+    row.innerHTML = `
+            <tr class="bodyRow">
+                <td class="td_Long td_Names">
+                    ${clip(name, 18)}
+                    <div class ="td_toolTip" id="tp_Name">${name}</div>
+                </td>
+               
+                <td class="td_Short td_SalesMade">
+                    ${Millify(salesMade)}
+                    <div class ="td_toolTip" id="tp_Revenue">GH¢ ${commaNumber(salesMade)}</div>
+                </td>
+                <td class="td_Short td_Sold">
+                    ${Millify(itemsSold)}
+                    <div class ="td_toolTip" id="tp_Revenue">GH¢ ${commaNumber(itemsSold)}</div>
+                </td>
+                <td class="td_Medium td_Revenue">
+                    ${Millify(totalRevenue)}
+                    <div class ="td_toolTip" id="tp_Revenue">GH¢ ${commaNumber(totalRevenue)}</div>
+                </td>
+                <td class="td_Medium td_Profit">
+                    ${Millify(profitGained)}
+                    <div class ="td_toolTip" id="tp_Profit">GH¢ ${commaNumber(profitGained)}</div>
+                </td>
+                <td class="td_Medium td_Discount">
+                    ${Millify(discountGiven)}
+                    <div class ="td_toolTip" id="tp_Profit">GH¢ ${commaNumber(discountGiven)}</div>
+                </td>
+                <td hidden class="td_Name--hidden">${name}</td>
+                <td hidden class="td_Brand--hidden"></td>
+                <td hidden class="td_Profit--hidden">${profitGained}</td>
+                <td hidden class="td_ItemsSold--hidden">${itemsSold}</td>
+                <td hidden class="td_SaleMade--hidden">${salesMade}</td>
+                <td hidden class="td_Revenue--hidden">${totalRevenue}</td>
+                <td hidden class="td_Discounts--hidden">${discountGiven}</td>
+
+
+                <td hidden class="td_Category--hidden"></td>
+            </tr>
+
+        `;
+    tableBody.appendChild(row);
+    /**************************************************/
+
+    const tdName = row.querySelector(".td_Names");
+    let timeoutId_tpName;
+    tdName.addEventListener("mouseenter", e => {
+      timeoutId_tpName = setTimeout(function showToolTip() {
+        const toolTip = tdName.querySelector(".td_toolTip");
+        toolTip.style.display = "block";
+      }, 1500);
+    });
+    tdName.addEventListener("mouseleave", () => {
+      clearTimeout(timeoutId_tpName);
+      tdName.querySelector(".td_toolTip").style.display = "none";
+    });
+    /********************************************************************/
+
+    const td_Revenue = row.querySelector(".td_Revenue");
+    let timeoutId_tpRevenue;
+    td_Revenue.addEventListener("mouseenter", () => {
+      timeoutId_tpRevenue = setTimeout(function showToolTip() {
+        td_Revenue.querySelector(".td_toolTip").style.display = "block";
+      }, 1500);
+    });
+    td_Revenue.addEventListener("mouseleave", () => {
+      clearTimeout(timeoutId_tpRevenue);
+      td_Revenue.querySelector(".td_toolTip").style.display = "none";
+    });
+    /********************************************************************/
+
+    const tdProfit = row.querySelector(".td_Profit");
+    let timeoutId_tpProfit;
+    tdProfit.addEventListener("mouseenter", () => {
+      timeoutId_tpProfit = setTimeout(function showToolTip() {
+        tdProfit.querySelector(".td_toolTip").style.display = "block";
+      }, 1500);
+    });
+    tdProfit.addEventListener("mouseleave", () => {
+      clearTimeout(timeoutId_tpProfit);
+      tdProfit.querySelector(".td_toolTip").style.display = "none";
+    });
+    /*****************************************************/
+
+    const td_SalesMade = row.querySelector(".td_SalesMade");
+    let timeoutId_tpSalesMade;
+    td_SalesMade.addEventListener("mouseenter", () => {
+      timeoutId_tpSalesMade = setTimeout(function showToolTip() {
+        td_SalesMade.querySelector(".td_toolTip").style.display = "block";
+      }, 1500);
+    });
+    td_SalesMade.addEventListener("mouseleave", () => {
+      clearTimeout(timeoutId_tpSalesMade);
+      td_SalesMade.querySelector(".td_toolTip").style.display = "none";
+    });
+    /**************************************************************/
+
+    const td_Sold = row.querySelector(".td_Sold");
+    let timeoutId_tpSold;
+    td_Sold.addEventListener("mouseenter", () => {
+      timeoutId_tpSold = setTimeout(function showToolTip() {
+        td_Sold.querySelector(".td_toolTip").style.display = "block";
+      }, 1500);
+    });
+    td_Sold.addEventListener("mouseleave", () => {
+      clearTimeout(timeoutId_tpSold);
+      td_Sold.querySelector(".td_toolTip").style.display = "none";
+    });
+    /********************************************************/
+
+    const td_Discount = row.querySelector(".td_Discount");
+    let timeoutId_tpDiscount;
+    td_Discount.addEventListener("mouseenter", () => {
+      timeoutId_tpDiscount = setTimeout(function showToolTip() {
+        td_Discount.querySelector(".td_toolTip").style.display = "block";
+      }, 1500);
+    });
+    td_Discount.addEventListener("mouseleave", () => {
+      clearTimeout(timeoutId_tpDiscount);
+      td_Discount.querySelector(".td_toolTip").style.display = "none";
     });
   }
   /***********************************************************************************************************************************/
@@ -3408,6 +3599,42 @@ class DATABASE {
     }
   }
 
+  getItems(from, to) {
+    return new Promise((resolve, reject) => {
+      this.connector.query(`
+
+            SELECT (SELECT Name FROM items WHERE items.id = sales.Item) AS Name,(SELECT items.Brand FROM items WHERE items.id = sales.Item) AS Brand,(SELECT items.Category FROM items WHERE items.id = sales.Item) AS Category,SUM(InStock) DIV COUNT(*) AS Avg_Stock, 
+            SUM(Purchased) DIV COUNT(*) AS Avg_Sale,SUM(sales.Purchased) AS Total_Sold, SUM(sales.Revenue) As Revenue, SUM(sales.Profit) AS Profit FROM sales WHERE sales.Date BETWEEN ? AND ? GROUP BY sales.Item ORDER BY Profit DESC
+
+            `, [from, to], (err, result) => {
+        if (err) {
+          reject(err);
+          throw err;
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  }
+
+  getTopItems(from, to) {
+    return new Promise((resolve, reject) => {
+      this.connector.query(`
+
+            SELECT (SELECT Name FROM items WHERE items.id = sales.Item) AS Name,(SELECT items.Brand FROM items WHERE items.id = sales.Item) AS Brand,(SELECT items.Category FROM items WHERE items.id = sales.Item) AS Category,SUM(InStock) DIV COUNT(*) AS Avg_Stock, 
+            SUM(Purchased) DIV COUNT(*) AS Avg_Sale,SUM(sales.Purchased) AS Total_Sold, SUM(sales.Revenue) As Revenue, SUM(sales.Profit) AS Profit FROM sales WHERE sales.Date BETWEEN ? AND ? GROUP BY sales.Item ORDER BY Avg_Sale DESC
+
+            `, [from, to], (err, result) => {
+        if (err) {
+          reject(err);
+          throw err;
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  }
+
   getItemOrderedMonthly() {
     return new Promise((resolve, reject) => {
       this.connector.query(`
@@ -3416,6 +3643,50 @@ class DATABASE {
             SUM(Purchased) DIV COUNT(*) AS Avg_Sale,SUM(sales.Purchased) AS Total_Sold, SUM(sales.Revenue) As Revenue, SUM(sales.Profit) AS Profit FROM sales WHERE sales.Date BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW() GROUP BY sales.Item ORDER BY Profit DESC
 
             `, (err, result) => {
+        if (err) {
+          reject(err);
+          throw err;
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  }
+
+  getTopItemOrderedMonthly() {
+    return new Promise((resolve, reject) => {
+      this.connector.query(`
+
+            SELECT (SELECT Name FROM items WHERE items.id = sales.Item) AS Name,(SELECT items.Brand FROM items WHERE items.id = sales.Item) AS Brand,(SELECT items.Category FROM items WHERE items.id = sales.Item) AS Category,SUM(InStock) DIV COUNT(*) AS Avg_Stock, 
+            SUM(Purchased) DIV COUNT(*) AS Avg_Sale,SUM(sales.Purchased) AS Total_Sold, SUM(sales.Revenue) As Revenue, SUM(sales.Profit) AS Profit FROM sales WHERE sales.Date BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW() GROUP BY sales.Item ORDER BY Avg_Sale DESC
+
+            `, (err, result) => {
+        if (err) {
+          reject(err);
+          throw err;
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  }
+
+  getTopEmployees(from, to) {
+    return new Promise((resolve, reject) => {
+      this.connector.query('SELECT (SELECT `users`.`First_Name` FROM `users` WHERE `users`.`id` = `sales`.`User`) AS FirstName, (SELECT `users`.`Last_Name` FROM `users` WHERE `users`.`id` = `sales`.`User`) AS LastName, SUM(`Profit`) AS Profit, SUM(Revenue) AS Revenue, COUNT(*) AS SalesMade, SUM(Purchased) AS ItemsSold, SUM(TotalDiscount) AS Discount FROM `sales` WHERE `sales`.`Date` BETWEEN ? AND ? GROUP BY `sales`.`User` ORDER BY Profit DESC', [from, to], (err, result) => {
+        if (err) {
+          reject(err);
+          throw err;
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  }
+
+  getTopEmployeesOrderedMonthly() {
+    return new Promise((resolve, reject) => {
+      this.connector.query('SELECT (SELECT `users`.`First_Name` FROM `users` WHERE `users`.`id` = `sales`.`User`) AS FirstName, (SELECT `users`.`Last_Name` FROM `users` WHERE `users`.`id` = `sales`.`User`) AS LastName, SUM(`Profit`) AS Profit, SUM(Revenue) AS Revenue, COUNT(*) AS SalesMade, SUM(Purchased) AS ItemsSold, SUM(TotalDiscount) AS Discount FROM `sales` WHERE `sales`.`Date` BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW() GROUP BY `sales`.`User` ORDER BY Profit DESC', (err, result) => {
         if (err) {
           reject(err);
           throw err;
@@ -3544,7 +3815,7 @@ class DATABASE {
 
   getUsers() {
     return new Promise((resolve, reject) => {
-      this.connector.query('select First_Name, Last_Name, IsAdmin, TIMEDIFF(CURRENT_TIMESTAMP(), Last_Seen) AS Last_Seen, (select sum(`sales`.`Profit`) from `sales` sales where `sales`.`User` = `users`.`id`) as Total_Profits, (SELECT COUNT(*) FROM `sales` WHERE `sales`.`user` = `users`.`id`) as Total_Sales from `users` users', (error, result) => {
+      this.connector.query('select First_Name, Last_Name, IsAdmin, User_Name,TIMEDIFF(CURRENT_TIMESTAMP(), Last_Seen) AS Last_Seen from `users` users', (error, result) => {
         if (error) {
           reject(error);
           throw error;
@@ -3731,6 +4002,32 @@ class DATABASE {
 
             resolve(result);
           });
+        }
+      });
+    });
+  }
+
+  disableEmployee(userName) {
+    return new Promise((resolve, reject) => {
+      this.connector.query("UPDATE `users` SET `users`.`Disabled` WHERE `users`.`User_Name` = ?", userName, (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
+
+  deleteEmployee(userName) {
+    return new Promise((resolve, reject) => {
+      this.connector.query("DELETE FROM `users` WHERE `users`.`User_Name` = ?", userName, (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        } else {
+          resolve();
         }
       });
     });

@@ -1067,6 +1067,8 @@
     justify-content: center;
     align-items: center;
     flex-flow: column;
+    transform: scale(0);
+    transition: .3s;
     // background-color: blue;
 
     .userForm_header{
@@ -1187,6 +1189,10 @@
 
     }
 
+}
+
+.userForm--shown{
+    transform: scale(1);
 }
 
 .exitPromptBox{

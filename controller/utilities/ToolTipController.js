@@ -192,15 +192,18 @@ function setToolTips(){
         
         
         tip_storeFront = tippy('.tip_store', {
-                           content: storeFront
+                           content: storeFront,
+                           zIndex: 99
                          });
                         
         tip_inventory = tippy('.tip_inventory', {
-                          content: inventory
+                          content: inventory,
+                          zIndex:99
                         });
               
         tip_analytics = tippy('.tip_analytics', {
-                          content: analytics
+                          content: analytics,
+                          zIndex: 99
                         })
 
         tip_employees = tippy('.tip_employees',{
@@ -211,12 +214,14 @@ function setToolTips(){
         
         tip_account = tippy('#account', {
                         content: info,
-                        placement: 'bottom'
+                        placement: 'bottom',
+                        zIndex: 99
                       })
         
         tip_settings = tippy('#settings', {
                         content: settings,
-                        placement: 'bottom'
+                        placement: 'bottom',
+                        zIndex: 99
                       });
 
         tippy('#signout',{

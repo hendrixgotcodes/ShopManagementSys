@@ -3,6 +3,7 @@
 import Millify from "millify";
 import DATABASE from "../../model/DATABASE";
 import Notifications from "../Alerts/NotificationController";
+import { createEmployeeItem } from "../utilities/TableController";
 const cryptoJS = require("crypto-js");
 const commaNumber = require("comma-number");
 
@@ -38,11 +39,9 @@ class Modal {
                         </div>
 
                         <div class="dialogBody fullwidth" role="body">
-                        <span>
+                            <span>
                                 ${defaultMessage}
                             </span>
-
-                            <input type="password" class="modal_pass" aria-placeholder="enter password here" placeholder="Enter Your Password Here" />
 
                         </div>
 
@@ -745,6 +744,12 @@ class Modal {
 
         contentContainer.appendChild(userForm);
 
+        setTimeout(()=>{
+
+            userForm.classList.add("userForm--shown")
+
+        },400)
+
         const header = userForm.querySelector(".userForm_header");
         const btnClose = header.querySelector("img");
         const btnEmploy = userForm.querySelector(".btn_employ");
@@ -797,8 +802,14 @@ class Modal {
 
         btnClose.addEventListener("click", (e)=>{
 
-            userForm.remove();
-            contentCover.classList.remove("contentCover--shown")
+            userForm.classList.remove("userForm--shown");
+            contentCover.classList.remove("contentCover--shown");
+
+            setTimeout(() => {
+
+                userForm.remove()
+                
+            }, 400);
 
         });
 
@@ -818,10 +829,12 @@ class Modal {
                     })
                     .then(()=>{
 
-                        userForm.remove();
                         contentCover.classList.remove("contentCover--shown");
 
                         Notifications.showAlert("success", "User added successfully");
+
+                        createEmployeeItem(`${tb_FirstName} ${tb_LastName.value}`, IsAdmin, "Never");
+                        userForm.remove();
 
                     })
                     .catch((error)=>{
@@ -1252,6 +1265,9 @@ class Modal {
 
 ///Event Listener Functions
 function closeConfirmationBox(resolve, reject, edited="", name=""){
+
+    const mainBodyContent = document.querySelector(".mainBody_content")
+
     if(mainBodyContent.querySelector('.modal') !== null){
 
        // document.querySelector(".dialog--confirmationBox").querySelector('.img_close').removeEventListener("click",closeConfirmationBox)
@@ -1294,6 +1310,9 @@ function openPrompt(itemName, resolve, reject, justVerify=""){
 
 //For Prompt bOX
 function closePromptBox(modal, resolve, reject){
+
+    const mainBodyContent = document.querySelector(".mainBody_content")
+
     if(mainBodyContent.querySelector('.modal') !== null){
 
         // mainBodyContent.querySelector('.modal').remove();
@@ -1309,36 +1328,13 @@ function closePromptBox(modal, resolve, reject){
 // Validates password provided in prompt box and removes removes specified element
 function confirmRemove(itemName, resolve, reject, justVerify=""){
 
+        const mainBodyContent = document.querySelector(".mainBody_content");
+
         const modal =  mainBodyContent.querySelector('.modal');
 
 
-        const Password = document.querySelector('.dialog--promptBox').querySelector(".modal_pass").value;
-
-        if(Password === "Duffy"){
-
-            closeModal(modal);
-           
-
-            document.querySelector('.contentCover').classList.remove('contentCover--shown')
-
-            if(justVerify[0] === true){
-
-                resolve (["edited", justVerify])
-                return;
-            }
-
-
-            resolve("verified")
-            console.log("removed");
-        }
-        else{
-            reject(new Error("wrongPassword"))
-
-            closeModal(modal)
-
-            document.querySelector('.contentCover').classList.remove('contentCover--shown')
-            
-        }
+        closeModal(modal);
+        resolve (["edited", justVerify])
 
 }
 

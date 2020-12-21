@@ -1,8 +1,10 @@
 "use strict";
 
 const { ipcRenderer } = require("electron");
+import clip from 'text-clipper';
 import DATABASE from '../model/DATABASE';
 import STORE from '../model/STORE';
+import Notifications from './Alerts/NotificationController';
 import Modal from './modals/ModalController';
 const DOMCONTROLLER = require("./utilities/TableController");
 
@@ -308,7 +310,7 @@ function initializeEmployees(){
 
             user.Last_Seen = getRelativeTime(user.Last_Seen);
 
-            DOMCONTROLLER.createEmployeeItem(`${user.First_Name} ${user.Last_Name}`, user.IsAdmin, user.Last_Seen, user.Total_Sales, user.Total_Profits);
+            DOMCONTROLLER.createEmployeeItem(`${user.First_Name} ${user.Last_Name}`, user.IsAdmin, user.Last_Seen, user.User_Name,[disableEmployee, deleteEmploye]);
 
         })
 
@@ -424,6 +426,87 @@ function getRelativeTime(time){
 function openNewUserForm(){
 
     Modal.openUserForm(true);
+
+}
+
+function disableEmployee(userName, employeeName){
+
+    employeeName = clip(employeeName, 20);
+
+    const getUserConfirmation = new Promise((resolve, reject)=>{
+
+        Modal.openPrompt(employeeName, resolve, reject, true, `Please confirm to disable ${employeeName}'s account`)
+
+    })
+
+    getUserConfirmation
+    .then(()=>{
+
+        database.disableEmployee(userName)
+        .then(()=>{
+
+            Notifications.showAlert("success", `${employeeName}'s account have been disabled.`)
+
+        })
+        .catch(()=>{
+
+            Notifications.showAlert("error", `Failed to disable ${employeeName}'s account.`)
+
+        })
+
+    })
+
+}
+
+function deleteEmploye(userName,employeeName){
+
+    employeeName = clip(employeeName, 20);
+
+    const getUserConfirmation = new Promise((resolve, reject)=>{
+
+        Modal.openPrompt(employeeName, resolve, reject, true, `Please confirm to delete ${employeeName}'s account. This will also delete all sales records of ${employeeName}`)
+
+    })
+
+    getUserConfirmation
+    .then(()=>{
+
+        database.deleteEmployee(userName)
+        .then(()=>{
+
+            Notifications.showAlert("success", `${employeeName}'s account have been deleted.`)
+
+            setTimeout(() => {
+
+                const rows = document.querySelector("tbody").querySelectorAll(".bodyRow");
+
+                rows.forEach((row)=>{
+
+                    if(row.querySelector(".td_UserName--hidden").innerText === userName){
+
+                        row.style.transform = "translateX(115%)"
+
+                        setTimeout(() => {
+
+                            row.remove();
+                            
+                        }, 500);
+
+                    }
+
+                })
+                
+            }, 800);
+
+
+        })
+        .catch(()=>{
+
+            Notifications.showAlert("error", `Failed to delete ${employeeName}'s account.`)
+
+        })
+
+    })
 
 }
 

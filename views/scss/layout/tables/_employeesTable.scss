@@ -168,21 +168,7 @@
             left: -15%;
             flex-direction: row-reverse;
 
-            & .edit{
-                width: 50%;
-                background-color: $primary_blue;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                cursor: pointer;
-                transition: .3s;
-                color: $primary_blue;
-
-                // &:hover{
-                //     color: $primary_blue;
-                // }
-            }
-            & .del{
+            & .delete{
                 width: 50%;
                 background-color: $secondary_red;
                 display: flex;
@@ -190,6 +176,20 @@
                 align-items: center;
                 cursor: pointer;
                 transition: .3s;
+                color: $WHITE;
+                // &:hover{
+                //     color: $primary_blue;
+                // }
+            }
+            & .disabled{
+                width: 50%;
+                background-color: lighten($color: $primary_black, $amount: 20);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                cursor: pointer;
+                transition: .3s;
+                color: $WHITE;
 
                 // &:hover{
                 //     color: $secondary_red;

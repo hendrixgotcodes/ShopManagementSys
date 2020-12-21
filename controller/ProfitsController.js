@@ -29,6 +29,7 @@ const toolBarDate_to = document.querySelector("#toolBarDate_to")
 
 /*******Initializers */
 initializeItems();
+initializeDateRangeSales();
 
 
 /**************Event Listeners*****************/
@@ -135,12 +136,41 @@ function initializeItems(){
     database.getTotalProfitLastMonth()
     .then((Profit)=>{
 
+        if(Profit===null){
+            Profit = "0.00"
+        }
+
         profit_amount.innerText = Profit;
 
     })
 
 }
 
+function initializeDateRangeSales(){
+
+    database.getDateRangeSales()
+    .then((date)=>{
+
+
+        if(date.Maximum === null && date.Minimum === null){
+
+            toolBarDate_from.disabled = true;
+            toolBarDate_to.disabled = true;
+
+            toolBarSlct_btn.disabled = true;
+            toolBar_btn.disabled = true;
+            return;
+        }
+
+        toolBarDate_from.min = date.Minimum;
+        toolBarDate_from.max = date.Maximum;
+
+        toolBarDate_to.min = date.Minimum;
+        toolBarDate_to.max = date.Maximum;
+
+    })
+
+}
 
 function sortTableByColumn(table, column, asc = true, makeInt, TH, searchKey) {
     const dirModifier = asc ? 1 : -1;
@@ -240,7 +270,43 @@ function fetchAnalyticsData(e){
 
         DOMCONTROLLER.showLoadingBanner("Please wait...")
 
-        console.log("kmkmwiia");
+        const tableRows = document.querySelector("tbody").querySelectorAll("tr");
+        tableRows.forEach((tableRow)=>{
+
+            tableRow.remove();
+
+        })
+
+        database.getItems(toolBarDate_from.value, toolBarDate_to.value)
+        .then((items)=>{
+
+
+            items.forEach((item)=>{
+
+                console.log();
+
+                DOMCONTROLLER.createProfitsItem(item.Name, item.Brand, item.Avg_Stock, item.Avg_Sale, item.Total_Sold, item.Revenue, item.Profit)
+
+            })
+
+            DOMCONTROLLER.removeOldBanners();
+
+        })
+
+
+        database.getTotalProfit(toolBarDate_from.value, toolBarDate_to.value)
+        .then((Profit)=>{
+
+            if(Profit === null){
+
+                Profit = "0.00"
+
+            }
+
+            profit_amount.innerText = Profit;
+
+
+        })
 
       
     }

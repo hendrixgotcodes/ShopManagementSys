@@ -677,6 +677,48 @@ body {
           left: 10%;
           bottom: 30%;
           z-index: 2; }
+      .main_body .mainBody_content .contentContainer .td_SalesMade {
+        position: relative; }
+        .main_body .mainBody_content .contentContainer .td_SalesMade .td_toolTip {
+          position: absolute;
+          background-color: #fff;
+          border: 1px solid #979a99;
+          border-radius: 3px;
+          padding: .1rem;
+          display: none;
+          transition: .3s;
+          width: fit-content;
+          z-index: 2;
+          left: 40%;
+          bottom: 18%; }
+      .main_body .mainBody_content .contentContainer .td_Sold {
+        position: relative; }
+        .main_body .mainBody_content .contentContainer .td_Sold .td_toolTip {
+          position: absolute;
+          background-color: #fff;
+          border: 1px solid #979a99;
+          border-radius: 3px;
+          padding: .1rem;
+          display: none;
+          transition: .3s;
+          width: fit-content;
+          z-index: 2;
+          left: 40%;
+          bottom: 18%; }
+      .main_body .mainBody_content .contentContainer .td_Discount {
+        position: relative; }
+        .main_body .mainBody_content .contentContainer .td_Discount .td_toolTip {
+          position: absolute;
+          background-color: #fff;
+          border: 1px solid #979a99;
+          border-radius: 3px;
+          padding: .1rem;
+          display: none;
+          transition: .3s;
+          width: fit-content;
+          z-index: 2;
+          left: 40%;
+          bottom: 18%; }
     .main_body .mainBody_content .modal_hide {
       transition: .3s;
       transform: scale(0); }
@@ -1420,7 +1462,9 @@ body {
       display: flex;
       justify-content: center;
       align-items: center;
-      flex-flow: column; }
+      flex-flow: column;
+      transform: scale(0);
+      transition: .3s; }
       .main_body .mainBody_content .userForm .userForm_header {
         height: 12%;
         display: flex;
@@ -1501,6 +1545,8 @@ body {
         transition: .3s; }
         .main_body .mainBody_content .userForm .btn_employ:hover {
           background-color: #3f6958; }
+    .main_body .mainBody_content .userForm--shown {
+      transform: scale(1); }
     .main_body .mainBody_content .exitPromptBox {
       width: 30%;
       height: 45%;
@@ -1625,7 +1671,7 @@ body {
     background-color: #e16161;
     transition: .5s;
     transform: translateY(-100%);
-    z-index: 5; }
+    z-index: 3; }
     .main_body .alertBanner img {
       width: 2%;
       position: absolute;

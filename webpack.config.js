@@ -13,7 +13,9 @@ const electron ={
         LoginController: './controller/LoginController.js',
         MainGraph: './controller/MainGraph.js',
         EmployeesController: './controller/EmployeesController.js',
-        ProfitsController: './controller/ProfitsController.js'
+        ProfitsController: './controller/ProfitsController.js',
+        TopItemsController: './controller/TopItemsController.js',
+        EmployeePerformanceController: './controller/EmployeePerformanceController.js'
     },
     output: {
         path: path.resolve(__dirname, 'build'),

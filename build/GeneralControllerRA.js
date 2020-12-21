@@ -425,6 +425,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _model_DATABASE__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_model_DATABASE__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Alerts/NotificationController */ "./controller/Alerts/NotificationController.js");
 /* harmony import */ var _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _utilities_TableController__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utilities/TableController */ "./controller/utilities/TableController.js");
+/* harmony import */ var _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_utilities_TableController__WEBPACK_IMPORTED_MODULE_3__);
+
 
 
 
@@ -459,11 +462,9 @@ class Modal {
                         </div>
 
                         <div class="dialogBody fullwidth" role="body">
-                        <span>
+                            <span>
                                 ${defaultMessage}
                             </span>
-
-                            <input type="password" class="modal_pass" aria-placeholder="enter password here" placeholder="Enter Your Password Here" />
 
                         </div>
 
@@ -958,6 +959,9 @@ class Modal {
 
         `;
     contentContainer.appendChild(userForm);
+    setTimeout(() => {
+      userForm.classList.add("userForm--shown");
+    }, 400);
     const header = userForm.querySelector(".userForm_header");
     const btnClose = header.querySelector("img");
     const btnEmploy = userForm.querySelector(".btn_employ");
@@ -1005,8 +1009,11 @@ class Modal {
       }
     });
     btnClose.addEventListener("click", e => {
-      userForm.remove();
+      userForm.classList.remove("userForm--shown");
       contentCover.classList.remove("contentCover--shown");
+      setTimeout(() => {
+        userForm.remove();
+      }, 400);
     });
     btnEmploy.addEventListener("click", e => {
       if (formIsValid === true) {
@@ -1018,9 +1025,10 @@ class Modal {
             Password: hashedPassword,
             IsAdmin: slct_accountType.value
           }).then(() => {
-            userForm.remove();
             contentCover.classList.remove("contentCover--shown");
             _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", "User added successfully");
+            Object(_utilities_TableController__WEBPACK_IMPORTED_MODULE_3__["createEmployeeItem"])(`${tb_FirstName} ${tb_LastName.value}`, IsAdmin, "Never");
+            userForm.remove();
           }).catch(error => {
             throw error;
           });
@@ -1279,6 +1287,8 @@ class Modal {
 
 
 function closeConfirmationBox(resolve, reject, edited = "", name = "") {
+  const mainBodyContent = document.querySelector(".mainBody_content");
+
   if (mainBodyContent.querySelector('.modal') !== null) {
     // document.querySelector(".dialog--confirmationBox").querySelector('.img_close').removeEventListener("click",closeConfirmationBox)
     // document.querySelector(".dialog--confirmationBox").querySelector(".dialogRevert").removeEventListener("click",closeConfirmationBox)
@@ -1308,6 +1318,8 @@ function openPrompt(itemName, resolve, reject, justVerify = "") {
 
 
 function closePromptBox(modal, resolve, reject) {
+  const mainBodyContent = document.querySelector(".mainBody_content");
+
   if (mainBodyContent.querySelector('.modal') !== null) {
     // mainBodyContent.querySelector('.modal').remove();
     closeModal(modal);
@@ -1318,25 +1330,10 @@ function closePromptBox(modal, resolve, reject) {
 
 
 function confirmRemove(itemName, resolve, reject, justVerify = "") {
+  const mainBodyContent = document.querySelector(".mainBody_content");
   const modal = mainBodyContent.querySelector('.modal');
-  const Password = document.querySelector('.dialog--promptBox').querySelector(".modal_pass").value;
-
-  if (Password === "Duffy") {
-    closeModal(modal);
-    document.querySelector('.contentCover').classList.remove('contentCover--shown');
-
-    if (justVerify[0] === true) {
-      resolve(["edited", justVerify]);
-      return;
-    }
-
-    resolve("verified");
-    console.log("removed");
-  } else {
-    reject(new Error("wrongPassword"));
-    closeModal(modal);
-    document.querySelector('.contentCover').classList.remove('contentCover--shown');
-  }
+  closeModal(modal);
+  resolve(["edited", justVerify]);
 } //Function called to reomve modal
 
 
@@ -1372,6 +1369,1129 @@ function openModal(modal) {
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (Modal);
+
+/***/ }),
+
+/***/ "./controller/utilities/TableController.js":
+/*!*************************************************!*\
+  !*** ./controller/utilities/TableController.js ***!
+  \*************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+const clip = __webpack_require__(/*! text-clipper */ "./node_modules/text-clipper/dist/index.js").default;
+
+const {
+  default: Millify
+} = __webpack_require__(/*! millify */ "./node_modules/millify/dist/millify.js");
+
+const DATABASE = __webpack_require__(/*! ../../model/DATABASE */ "./model/DATABASE.js");
+
+const commaNumber = __webpack_require__(/*! comma-number */ "./node_modules/comma-number/lib/index.js"); // import ToolTipsConTroller from '../utilities/UnitConverter';
+
+
+const database = new DATABASE();
+
+class DOMCONTROLLER {
+  static createItem(name, brand, category, stock, sellingPrice, discount, reOrderLevel, functions, hasItems, costPrice = "", purchased = "", dontHighlightAfterCreate = false, isdeletedItem = false, destinationPage = "", Scroll = true) {
+    return new Promise((resolve, reject) => {
+      const tableROWS = document.querySelectorAll('tr');
+      tableROWS.forEach(row => {
+        if (row.Name === name && row.Category === category && row.Brand === brand) {
+          reject("already created");
+        }
+      }); //Removing Empty Banner Before Addition of new row
+
+      const emptyBanner = document.querySelector('.contentContainer').querySelector('.emptyBanner'); //Check if Default Banner is attached to the contentContainer
+
+      if (emptyBanner !== null) {
+        emptyBanner.remove();
+      } // creating new row element
+
+
+      const row = document.createElement("tr");
+      let rowContent = "";
+
+      if (destinationPage.toLowerCase() === "store") {
+        rowContent = `
+                    <td class="controls">
+                        <div class="edit"><span>Edit</span></div>
+                        <div class="del"><span>Soft Delete</span></div>
+                    </td>
+                    <td class="td_cb">
+                        <input disabled type="checkbox" class="selectOne" aria-placeholder="select one">
+                    </td>
+                    <td class="td_Names">
+                        ${clip(name, 23)}
+                        <div class ="td_toolTip" id="tp_Name">${name}</div>
+                    </td>
+                    <td class="td_Brands">${clip(brand, 23)}</td>
+                    <td class="td_Category">${clip(category, 23)}</td>
+                    <td hidden class="td_Stock">
+                        ${stock}
+                    </td>
+                    <td class="td_Price">
+                        ${Millify(sellingPrice)}
+                        <div class ="td_toolTip">GH¢ ${commaNumber(sellingPrice)}</div>
+                    </td>
+                    <td hidden class="td_costPrice">
+                        ${costPrice}
+                    </td>
+                    <td hidden class="td_discount">${parseFloat(discount)}</td>
+                    <td hidden class="td_Name--hidden">${name}</td>
+                    <td hidden class="td_Brand--hidden">${brand}</td>
+                    <td hidden class="td_Category--hidden">${category}</td>
+                    <td hidden class="td_ReOrderLevel--hidden">${reOrderLevel}</td>
+                    <td hidden class="td_Price--hidden">${sellingPrice}</td>
+                    <td hidden class="state">visible</td>
+                    `;
+      } else {
+        rowContent = `
+                    <td class="controls">
+                        <div class="edit"><span>Edit</span></div>
+                        <div class="del"><span>Soft Delete</span></div>
+                    </td>
+                    <td class="td_cb">
+                        <input disabled type="checkbox" class="selectOne" aria-placeholder="select one">
+                    </td>
+                    <td class="td_Names">
+                        ${clip(name, 23)}
+                        <div class ="td_toolTip" id="tp_Name">${name}</div>
+                    </td>
+                    <td class="td_Brands">${clip(brand, 23)}</td>
+                    <td class="td_Category">${clip(category, 23)}</td>
+                    <td class="td_Stock">${stock}</td>
+                    <td class="td_ReOrderLevel">${reOrderLevel}</td>
+                    <td class="td_costPrice">
+                        ${Millify(costPrice)}
+                        <div class ="td_toolTip">GH¢ ${commaNumber(costPrice)}</div>
+                    </td>
+                    <td class="td_sellingPrice">
+                        ${Millify(sellingPrice)}
+                        <div class ="td_toolTip">GH¢ ${commaNumber(sellingPrice)}</div>
+                    </td>
+                    <td hidden class="td_discount">${parseFloat(discount)}</td>
+                    <td hidden class="td_Name--hidden">${name}</td>
+                    <td hidden class="td_Brand--hidden">${brand}</td>
+                    <td hidden class="td_Category--hidden">${category}</td>
+                    <td hidden class="state">visible</td>
+                    `;
+      }
+
+      row.innerHTML = rowContent;
+      row.id = tableROWS.length + 1;
+      row.className = "bodyRow";
+      row.tabIndex = "0";
+
+      if (hasItems === true) {
+        tableROWS.forEach(tableRow => {
+          if (tableRow.querySelector('.td_Names').innerText === row.querySelector('.td_Names').innerText) {
+            document.querySelector('.tableBody').replaceChild(row, tableRow);
+            returnedValue = 1;
+          } else {
+            document.querySelector(".tableBody").appendChild(row); // ToolTipsController.generateToolTip('row.id', name);
+          }
+        });
+      } else if (hasItems !== true) {
+        document.querySelector(".tableBody").appendChild(row); // returnedValue = true;
+      }
+
+      if (Scroll === true) {
+        row.scrollIntoView({
+          behavior: 'smooth'
+        });
+      }
+      /********************************CONDTIONS***************************************/
+
+      /**_____________________________________________________________________________________________________________________________________________ */
+
+      /**
+           * Destination Page determines which page is requesting for a table row to be created
+          */
+
+
+      if (destinationPage.toLowerCase() === "inventory") {
+        //Destructing functions
+        let checkCB = functions[0];
+        let editItem = functions[1];
+        let deleteItem = functions[2];
+        let showRowControls = functions[3];
+
+        if (parseInt(stock) === 0) {
+          setTimeout(() => {
+            row.style.backgroundColor = "rgba(241, 26, 26, 0.2)";
+            row.querySelector(".td_Stock").style.color = "rgb(241, 26, 26)";
+          }, 1000);
+        } else if (parseInt(stock) <= parseInt(reOrderLevel)) {
+          setTimeout(() => {
+            row.style.backgroundColor = "rgba(239, 181, 38, 0.3)";
+            row.querySelector(".td_Stock").style.color = "rgb(239, 181, 38, 56)";
+          }, 1000);
+        }
+
+        row.addEventListener("click", toggleCB);
+        row.querySelector(".controls").querySelector(".edit").addEventListener("click", function editRow(e) {
+          //Prevents selection of row
+          e.stopPropagation();
+          editItem(row);
+        });
+        row.querySelector(".controls").querySelector(".del").addEventListener("click", function deleteRow(e) {
+          //Prevents selection of row
+          e.stopPropagation();
+          const rowState = row.querySelector(".state").innerText;
+
+          if (rowState === "visible") {
+            deleteItem(row);
+          } else if (rowState === "deleted") {
+            deleteItem(row, "recover");
+          }
+        });
+        row.addEventListener("contextmenu", toggleRowControls);
+        /*******************************************************************/
+
+        const tdName = row.querySelector(".td_Names");
+        let timeoutId;
+        tdName.addEventListener("mouseenter", () => {
+          timeoutId = setTimeout(function showToolTip() {
+            tdName.querySelector(".td_toolTip").style.display = "block";
+          }, 1500);
+        });
+        tdName.addEventListener("mouseleave", () => {
+          clearTimeout(timeoutId);
+          tdName.querySelector(".td_toolTip").style.display = "none";
+        });
+        /*******************************************************************/
+
+        /**************FUNCTIONS**********************************/
+
+        function toggleCB() {
+          checkCB(row);
+        }
+
+        function toggleRowControls() {
+          showRowControls(row);
+        } // if item is marked as deleted
+
+
+        if (isdeletedItem === true) {
+          row.style.opacity = ".55";
+          row.querySelector('.state').innerText = "deleted";
+        } else {
+          row.querySelector('.state').innerText = "visible";
+        }
+        /**********************************************************/
+
+
+        const td_sellingPrice = row.querySelector(".td_sellingPrice");
+        let timeoutId_sellingPrice;
+        td_sellingPrice.addEventListener("mouseenter", () => {
+          timeoutId_sellingPrice = setTimeout(function showToolTip() {
+            td_sellingPrice.querySelector(".td_toolTip").style.display = "block";
+          }, 1500);
+        });
+        td_sellingPrice.addEventListener("mouseleave", () => {
+          clearTimeout(timeoutId_sellingPrice);
+          td_sellingPrice.querySelector(".td_toolTip").style.display = "none";
+        });
+        /**********************************************************/
+
+        const td_costPrice = row.querySelector(".td_costPrice");
+        let timeoutId_costPrice;
+        td_costPrice.addEventListener("mouseenter", () => {
+          timeoutId_costPrice = setTimeout(function showToolTip() {
+            td_costPrice.querySelector(".td_toolTip").style.display = "block";
+          }, 1500);
+        });
+        td_costPrice.addEventListener("mouseleave", () => {
+          clearTimeout(timeoutId_costPrice);
+          td_costPrice.querySelector(".td_toolTip").style.display = "none";
+        });
+      } else if (destinationPage.toLocaleLowerCase() === "store") {
+        if (isdeletedItem === true) {
+          row.remove();
+        }
+
+        let rowCount = document.querySelector("tbody").querySelectorAll("tr").length;
+
+        if (rowCount === 0) {
+          this.showIsEmpty();
+        }
+        /*******************************************************************/
+
+
+        const tdName = row.querySelector(".td_Names");
+        let timeoutId;
+        tdName.addEventListener("mouseenter", () => {
+          timeoutId = setTimeout(function showToolTip() {
+            tdName.querySelector(".td_toolTip").style.display = "block";
+          }, 1500);
+        });
+        tdName.addEventListener("mouseleave", () => {
+          clearTimeout(timeoutId);
+          tdName.querySelector(".td_toolTip").style.display = "none";
+        });
+        /*******************************************************************/
+
+        const td_Price = row.querySelector(".td_Price");
+        let timeoutId_Price;
+        td_Price.addEventListener("mouseenter", () => {
+          timeoutId_Price = setTimeout(function showToolTip() {
+            td_Price.querySelector(".td_toolTip").style.display = "block";
+          }, 1500);
+        });
+        td_Price.addEventListener("mouseleave", () => {
+          clearTimeout(timeoutId_Price);
+          td_Price.querySelector(".td_toolTip").style.display = "none";
+        });
+        /**************************************************************** */
+      }
+      /**_____________________________________________________________________________________________________________________________________________ */
+
+
+      if (dontHighlightAfterCreate === true) {
+        resolve(row);
+        return;
+      }
+
+      const initBGcolor = row.style.backgroundColor;
+      const initColor = row.style.color;
+      row.style.backgroundColor = 'rgba(53, 89, 75, 0.711)';
+      row.style.color = "#fff";
+      setTimeout(() => {
+        row.style.backgroundColor = initBGcolor;
+        row.style.color = initColor;
+      }, 3000);
+      resolve();
+      /******************************************* */
+    });
+  }
+
+  static createEmployeeItem(name, accountStatus, lastSeen, userName, functions) {
+    const tableBody = document.querySelector("tbody");
+    const row = document.createElement("tr");
+    row.setAttribute("toggled", "false");
+    row.className = "bodyRow";
+    row.innerHTML = `
+            <td class="controls">
+                <div class="delete"><span>Delete</span></div>
+                <div class="disabled"><span>Disable</span></div>
+            </td>
+            <td class="td_Names">${name}</td>
+            <td class="td_AccountStatus">${accountStatus}</td>
+            <td class="td_LastSeen">${lastSeen}</td>
+            <td hidden class="td_UserName--hidden">${userName}</td>
+
+        `;
+    tableBody.appendChild(row);
+    /*********************EVENT LISTENERS***************/
+
+    row.addEventListener("contextmenu", () => {
+      if (row.getAttribute("toggled") === "false") {
+        row.style.transform = "translateX(15%)";
+        row.setAttribute("toggled", "true");
+      } else if (row.getAttribute("toggled") === "true") {
+        row.style.transform = "translateX(0)";
+        row.setAttribute("toggled", "false");
+      }
+    });
+    const btnDelete = row.querySelector(".controls").querySelector(".delete");
+    const btnDisable = row.querySelector(".controls").querySelector(".disabled");
+    btnDelete.addEventListener("click", () => {
+      functions[1](userName, name);
+    });
+    btnDisable.addEventListener("click", () => {
+      functions[0](userName, name);
+    });
+  }
+
+  static createProfitsItem(name, brand, avgInStock, avgSale, totalSold, revenue, profit) {
+    const tableBody = document.querySelector("tbody");
+    const row = document.createElement("tr");
+    row.className = "bodyRow";
+    row.innerHTML = `
+            <tr class="bodyRow">
+                <td class="td_Long td_Names">
+                    ${clip(name, 18)}
+                    <div class ="td_toolTip" id="tp_Name">${name}</div>
+                </td>
+                <td class="td_Long td_Brands">
+                    ${clip(brand, 10)}
+                    <div class ="td_toolTip" id="tp_Brand">${brand}</div>
+                </td>
+                <td class="td_Short td_InStock">${avgInStock}</td>
+                <td class="td_Short td_Sold">${avgSale}</td>
+                <td class="td_Short td_Sold">${totalSold}</td>
+                <td class="td_Medium td_Revenue">
+                    ${Millify(revenue)}
+                    <div class ="td_toolTip" id="tp_Revenue">GH¢ ${commaNumber(revenue)}</div>
+                </td>
+                <td class="td_Medium td_Profit">
+                    ${Millify(profit)}
+                    <div class ="td_toolTip" id="tp_Profit">GH¢ ${commaNumber(profit)}</div>
+                </td>
+                <td hidden class="td_Name--hidden">${name}</td>
+                <td hidden class="td_Brand--hidden">${brand}</td>
+                <td hidden class="td_Profit--hidden">${profit}</td>
+                <td hidden class="td_AvgStock--hidden">${avgInStock}</td>
+                <td hidden class="td_AvgSale--hidden">${avgSale}</td>
+                <td hidden class="td_Sold--hidden">${totalSold}</td>
+                <td hidden class="td_Revenue--hidden">${revenue}</td>
+
+                <td hidden class="td_Category--hidden"></td>
+            </tr>
+
+        `;
+    tableBody.appendChild(row);
+    const tdName = row.querySelector(".td_Names");
+    let timeoutId_tpName;
+    tdName.addEventListener("mouseenter", e => {
+      timeoutId_tpName = setTimeout(function showToolTip() {
+        const toolTip = tdName.querySelector(".td_toolTip");
+        toolTip.style.display = "block";
+      }, 1500);
+    });
+    tdName.addEventListener("mouseleave", () => {
+      clearTimeout(timeoutId_tpName);
+      tdName.querySelector(".td_toolTip").style.display = "none";
+    });
+    /*********************************************** */
+
+    const tdBrands = row.querySelector(".td_Brands");
+    let timeoutId_tpBrand;
+    tdBrands.addEventListener("mouseenter", () => {
+      timeoutId_tpBrand = setTimeout(function showToolTip() {
+        tdBrands.querySelector(".td_toolTip").style.display = "block";
+      }, 1500);
+    });
+    tdBrands.addEventListener("mouseleave", () => {
+      clearTimeout(timeoutId_tpBrand);
+      tdBrands.querySelector(".td_toolTip").style.display = "none";
+    });
+    /********************************************************/
+
+    const td_Revenue = row.querySelector(".td_Revenue");
+    let timeoutId_tpRevenue;
+    td_Revenue.addEventListener("mouseenter", () => {
+      timeoutId_tpRevenue = setTimeout(function showToolTip() {
+        td_Revenue.querySelector(".td_toolTip").style.display = "block";
+      }, 1500);
+    });
+    td_Revenue.addEventListener("mouseleave", () => {
+      clearTimeout(timeoutId_tpRevenue);
+      td_Revenue.querySelector(".td_toolTip").style.display = "none";
+    });
+    /********************************************** */
+
+    const tdProfit = row.querySelector(".td_Profit");
+    let timeoutId_tpProfit;
+    tdProfit.addEventListener("mouseenter", () => {
+      timeoutId_tpProfit = setTimeout(function showToolTip() {
+        tdProfit.querySelector(".td_toolTip").style.display = "block";
+      }, 1500);
+    });
+    tdProfit.addEventListener("mouseleave", () => {
+      clearTimeout(timeoutId_tpProfit);
+      tdProfit.querySelector(".td_toolTip").style.display = "none";
+    });
+  }
+
+  static createEmployeePerformanceItem(name, salesMade, itemsSold, totalRevenue, profitGained, discountGiven) {
+    const tableBody = document.querySelector("tbody");
+    const row = document.createElement("tr");
+    row.className = "bodyRow";
+    row.innerHTML = `
+            <tr class="bodyRow">
+                <td class="td_Long td_Names">
+                    ${clip(name, 18)}
+                    <div class ="td_toolTip" id="tp_Name">${name}</div>
+                </td>
+               
+                <td class="td_Short td_SalesMade">
+                    ${Millify(salesMade)}
+                    <div class ="td_toolTip" id="tp_Revenue">GH¢ ${commaNumber(salesMade)}</div>
+                </td>
+                <td class="td_Short td_Sold">
+                    ${Millify(itemsSold)}
+                    <div class ="td_toolTip" id="tp_Revenue">GH¢ ${commaNumber(itemsSold)}</div>
+                </td>
+                <td class="td_Medium td_Revenue">
+                    ${Millify(totalRevenue)}
+                    <div class ="td_toolTip" id="tp_Revenue">GH¢ ${commaNumber(totalRevenue)}</div>
+                </td>
+                <td class="td_Medium td_Profit">
+                    ${Millify(profitGained)}
+                    <div class ="td_toolTip" id="tp_Profit">GH¢ ${commaNumber(profitGained)}</div>
+                </td>
+                <td class="td_Medium td_Discount">
+                    ${Millify(discountGiven)}
+                    <div class ="td_toolTip" id="tp_Profit">GH¢ ${commaNumber(discountGiven)}</div>
+                </td>
+                <td hidden class="td_Name--hidden">${name}</td>
+                <td hidden class="td_Brand--hidden"></td>
+                <td hidden class="td_Profit--hidden">${profitGained}</td>
+                <td hidden class="td_ItemsSold--hidden">${itemsSold}</td>
+                <td hidden class="td_SaleMade--hidden">${salesMade}</td>
+                <td hidden class="td_Revenue--hidden">${totalRevenue}</td>
+                <td hidden class="td_Discounts--hidden">${discountGiven}</td>
+
+
+                <td hidden class="td_Category--hidden"></td>
+            </tr>
+
+        `;
+    tableBody.appendChild(row);
+    /**************************************************/
+
+    const tdName = row.querySelector(".td_Names");
+    let timeoutId_tpName;
+    tdName.addEventListener("mouseenter", e => {
+      timeoutId_tpName = setTimeout(function showToolTip() {
+        const toolTip = tdName.querySelector(".td_toolTip");
+        toolTip.style.display = "block";
+      }, 1500);
+    });
+    tdName.addEventListener("mouseleave", () => {
+      clearTimeout(timeoutId_tpName);
+      tdName.querySelector(".td_toolTip").style.display = "none";
+    });
+    /********************************************************************/
+
+    const td_Revenue = row.querySelector(".td_Revenue");
+    let timeoutId_tpRevenue;
+    td_Revenue.addEventListener("mouseenter", () => {
+      timeoutId_tpRevenue = setTimeout(function showToolTip() {
+        td_Revenue.querySelector(".td_toolTip").style.display = "block";
+      }, 1500);
+    });
+    td_Revenue.addEventListener("mouseleave", () => {
+      clearTimeout(timeoutId_tpRevenue);
+      td_Revenue.querySelector(".td_toolTip").style.display = "none";
+    });
+    /********************************************************************/
+
+    const tdProfit = row.querySelector(".td_Profit");
+    let timeoutId_tpProfit;
+    tdProfit.addEventListener("mouseenter", () => {
+      timeoutId_tpProfit = setTimeout(function showToolTip() {
+        tdProfit.querySelector(".td_toolTip").style.display = "block";
+      }, 1500);
+    });
+    tdProfit.addEventListener("mouseleave", () => {
+      clearTimeout(timeoutId_tpProfit);
+      tdProfit.querySelector(".td_toolTip").style.display = "none";
+    });
+    /*****************************************************/
+
+    const td_SalesMade = row.querySelector(".td_SalesMade");
+    let timeoutId_tpSalesMade;
+    td_SalesMade.addEventListener("mouseenter", () => {
+      timeoutId_tpSalesMade = setTimeout(function showToolTip() {
+        td_SalesMade.querySelector(".td_toolTip").style.display = "block";
+      }, 1500);
+    });
+    td_SalesMade.addEventListener("mouseleave", () => {
+      clearTimeout(timeoutId_tpSalesMade);
+      td_SalesMade.querySelector(".td_toolTip").style.display = "none";
+    });
+    /**************************************************************/
+
+    const td_Sold = row.querySelector(".td_Sold");
+    let timeoutId_tpSold;
+    td_Sold.addEventListener("mouseenter", () => {
+      timeoutId_tpSold = setTimeout(function showToolTip() {
+        td_Sold.querySelector(".td_toolTip").style.display = "block";
+      }, 1500);
+    });
+    td_Sold.addEventListener("mouseleave", () => {
+      clearTimeout(timeoutId_tpSold);
+      td_Sold.querySelector(".td_toolTip").style.display = "none";
+    });
+    /********************************************************/
+
+    const td_Discount = row.querySelector(".td_Discount");
+    let timeoutId_tpDiscount;
+    td_Discount.addEventListener("mouseenter", () => {
+      timeoutId_tpDiscount = setTimeout(function showToolTip() {
+        td_Discount.querySelector(".td_toolTip").style.display = "block";
+      }, 1500);
+    });
+    td_Discount.addEventListener("mouseleave", () => {
+      clearTimeout(timeoutId_tpDiscount);
+      td_Discount.querySelector(".td_toolTip").style.display = "none";
+    });
+  }
+  /***********************************************************************************************************************************/
+
+  /******REMOVING ITEM FROM INVENTORY*****/
+
+
+  static markAsRemove(itemName, itemBrand) {
+    itemName = itemName.toLowerCase();
+    itemBrand = itemBrand.toLowerCase();
+    const tableROWS = document.querySelector('.tableBody').querySelectorAll('.bodyRow');
+    tableROWS.forEach(row => {
+      const name = row.querySelector(".td_Names").innerText.toLowerCase();
+      const brand = row.querySelector(".td_Brands").innerText.toLowerCase();
+
+      if (row !== null && name === itemName && brand === itemBrand) {
+        row.style.opacity = '0.55'; //Set item state to deleted
+
+        row.querySelector(".state").innerText = "deleted";
+      }
+    });
+  }
+
+  static markAsVisible(itemName, itemBrand) {
+    itemName = itemName.toLowerCase();
+    itemBrand = itemBrand.toLowerCase();
+    const tableROWS = document.querySelector('.tableBody').querySelectorAll('.bodyRow');
+    tableROWS.forEach(row => {
+      const name = row.querySelector(".td_Names").innerText.toLowerCase();
+      const brand = row.querySelector(".td_Brands").innerText.toLowerCase();
+
+      if (row !== null && name === itemName && brand === itemBrand) {
+        row.style.opacity = '1'; //Set item state to deleted
+
+        row.querySelector(".state").innerText = "recovered";
+      }
+    });
+  }
+
+  static editItem(row, name, brand, category, stock, sellingPrice, costPrice, discount) {
+    if (row === "") {
+      console.log(null);
+      let tableRows = document.querySelector("tbody").querySelectorAll("tr");
+      tableRows.forEach(currentRow => {
+        if (currentRow.querySelector('.td_Names').innerText === name && currentRow.querySelector('.td_Brands').innerText === brand && currentRow.querySelector('.td_Category').innerText === category) {
+          currentRow.querySelector('.td_Names').innerText = name;
+          currentRow.querySelector('.td_Brands').innerText = brand;
+          currentRow.querySelector('.td_Category').innerText = category;
+          currentRow.querySelector('.td_Stock').innerText = stock;
+          currentRow.querySelector('.td_costPrice').innerText = costPrice;
+          currentRow.querySelector('.td_discount').innerText = discount;
+          currentRow.querySelector(".td_sellingPrice").innerText = sellingPrice;
+        }
+      });
+      return;
+    }
+
+    row.querySelector('.td_Names').innerText = name;
+    row.querySelector('.td_Brands').innerText = brand;
+    row.querySelector('.td_Category').innerText = category;
+    row.querySelector('.td_Stock').innerText = stock;
+    row.querySelector('.td_costPrice').innerText = costPrice;
+    row.querySelector('.td_discount').innerText = discount;
+    row.querySelector(".td_sellingPrice").innerText = sellingPrice;
+    return true;
+  }
+
+  static updateStock(name, brand, category, stock) {
+    const tableRows = document.querySelector("tbody").querySelectorAll("tr");
+    console.log(name, brand, category, stock);
+    tableRows.forEach(row => {
+      if (row.querySelector('.td_Name--hidden').innerText === name && row.querySelector('.td_Brand--hidden').innerText === brand && row.querySelector('.td_Category--hidden').innerText === category) {
+        // currentRow.querySelector('.td_Names').innerText = name;
+        // currentRow.querySelector('.td_Brands').innerText = brand;
+        // currentRow.querySelector('.td_Category').innerText = category;
+        row.querySelector('.td_Stock').innerText = stock;
+        return;
+      }
+    });
+  }
+
+  static updateItem(name, brand, category, sellingPrice, costPrice, discount) {
+    const tableRows = document.querySelector("tbody").querySelectorAll("tr");
+    console.log(name, brand, category, stock);
+    tableRows.forEach(row => {
+      if (row.querySelector('.td_Name--hidden').innerText === name && row.querySelector('.td_Brand--hidden').innerText === brand && row.querySelector('.td_Category--hidden').innerText === category) {
+        row.querySelector('.td_Names').innerText = name;
+        row.querySelector('.td_Name--hidden').innerText = name;
+        row.querySelector('.td_Brands').innerText = brand;
+        row.querySelector('.td_Brand--hidden').innerText = brand;
+        row.querySelector('.td_Category').innerText = category;
+        row.querySelector('.td_Category--hidden').innerText = category;
+        row.querySelector(".td_sellingPrice").innerText = sellingPrice;
+        row.querySelector(".td_costPrice").innerText = costPrice;
+        row.querySelector(".td_discount").innerText = discount;
+        row.querySelector('.td_Stock').innerText = stock;
+        return;
+      }
+    });
+  } // static editMany(Array){
+  //     const inTable = [];
+  //     const table = document.querySelectorAll("tr");
+  //     Array.forEach((item)=>{
+  //         table.forEach((row)=>{
+  //             if(row.querySelector('.td_Names').innerText === item.Name && row.querySelector('.td_Brands').innerText === item.Brand){
+  //                 this.editItem(row, item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount)
+  //             }
+  //         })
+  //     })
+  // }
+
+  /***********************************************************************************************************************************/
+
+
+  static showIsEmpty() {
+    const tBody = document.querySelector('tbody');
+
+    if (tBody.rows.length !== 0) {
+      return;
+    }
+
+    const contentContainer = document.querySelector(".contentContainer");
+    const template = `
+            <center>
+
+                <img src="../img/empty.svg" />
+                <span id="info">
+                    Inventory Is Empty!
+                </span>
+
+            </center>
+            
+        
+       `;
+    let emptyBanner = document.createElement('div');
+    emptyBanner.className = "emptyBanner";
+    emptyBanner.innerHTML = template;
+    contentContainer.appendChild(emptyBanner);
+  }
+  /***********************************************************************************************************************************/
+  //    FilterS Items Table Based On Their Category Or Brand      FilterBy = either category or brand, Key =  the Classification type
+
+
+  static filterItems(filterBy, Key) {
+    const doneLoading = new Promise((resolve, reject) => {
+      filterBy = filterBy.toLowerCase();
+      Key = Key.toLowerCase();
+
+      switch (filterBy) {
+        case 'category':
+          filterBy = '.td_Category';
+          break;
+
+        case 'brand':
+          filterBy = '.td_Brands';
+          break;
+
+        default:
+          break;
+      }
+
+      const tableRows = document.querySelector('table').querySelector('tbody').querySelectorAll('tr');
+      tableRows.forEach(tableRow => {
+        if (tableRow.querySelector(filterBy).innerText.toLowerCase() !== Key) {
+          tableRow.style.display = 'none';
+
+          if (tableRow.classList.contains('sorted')) {
+            tableRow.classList.remove('sorted');
+          }
+        } else {
+          tableRow.style.display = 'flex';
+          tableRow.classList.add('sorted');
+        }
+      });
+      resolve();
+    });
+    doneLoading.then(() => {
+      this.removeOldBanners();
+    });
+    this.showLoadingBanner("Loading Please Wait");
+  }
+
+  static resetTable() {
+    const doneLoading = new Promise((resolve, reject) => {
+      const tableRows = document.querySelector('table').querySelector('tbody').querySelectorAll('tr');
+      tableRows.forEach(tableRow => {
+        tableRow.style.display = 'flex';
+      });
+      resolve();
+    });
+    doneLoading.then(() => {
+      this.removeOldBanners();
+    });
+    this.showLoadingBanner("Loading Please Wait");
+  }
+  /***********************************************************************************************************************************/
+
+
+  static showLoadingBanner(loadinInfo) {
+    this.removeOldBanners(); // const tBody = document.querySelector('tbody');
+
+    const template = `
+                <center>
+
+                    <img src="../../utils/media/animations/loaders/Spin-1s-200px.svg" alt=${loadinInfo} />
+                    <span id="info">
+                        ${loadinInfo}
+                    </span>
+
+                </center>
+                
+            
+        `;
+    let emptyBanner = document.createElement('div');
+    emptyBanner.className = "emptyBanner";
+    emptyBanner.innerHTML = template;
+    const contentContainer = document.querySelector(".contentContainer");
+    contentContainer.appendChild(emptyBanner);
+  }
+
+  static showErrorBanner(loadinInfo) {
+    const template = `
+                <center>
+
+                    <img src="../../utils/media/animations/loaders/error.svg" alt=${loadinInfo} />
+                    <span id="info">
+                        ${loadinInfo}
+                    </span>
+
+                </center>
+                
+            
+        `;
+    let emptyBanner = document.createElement('div');
+    emptyBanner.className = "emptyBanner";
+    emptyBanner.innerHTML = template;
+    const contentContainer = document.querySelector(".contentContainer");
+    contentContainer.appendChild(emptyBanner);
+  }
+
+  static removeOldBanners() {
+    const contentContainer = document.querySelector(".contentContainer");
+    const oldBanner = contentContainer.querySelector('.emptyBanner');
+
+    if (oldBanner !== null) {
+      oldBanner.remove();
+    }
+  }
+
+  static uncheckRows(name, brand, category) {
+    const tRows = document.querySelector('tbody').querySelectorAll('tr');
+    tRows.forEach(row => {
+      let rowName = row.querySelector('.td_Names').innerText;
+      let rowBrand = row.querySelector('.td_Brands').innerText;
+      let rowCategory = row.querySelector('.td_Category').innerText;
+      let checkbox = row.querySelector('.td_cb').querySelector('.selectOne');
+
+      if (rowName === name && rowBrand === brand && rowCategory === category) {
+        checkbox.checked = false;
+        console.log('checked');
+      } else {
+        console.log('not cheked');
+      }
+    });
+  }
+
+  static addToCart(row, inCart, btnCart_sell, btnCart_clear, subtractItem) {
+    /*
+     *   ALGORITHM
+     *
+     * 1. Establish all necessary varaibles (Includes setting dom elements)
+     * 2. Hide cartInfo ("no items in cart yet") from dom and enable all buttons acting on the cart
+     * 3. Iterate through cartItems and check if incoming item(rowItem) is not already added to the cart. If yes then remove item from cart.
+     * 4. If incoming item does not exist in cart then add to cart and show(animation)
+     * 
+     *
+     *
+     */
+    const toolBar_tb = document.querySelector(".toolBar_tb"); //Cart Content
+
+    const cart = document.querySelector(".cart");
+    const subTotal = cart.querySelector(".subTotal").querySelector(".value");
+    const mainTotal = cart.querySelector(".mainTotal").querySelector(".value");
+    const cartItemsContainer = document.querySelector(".cart").querySelector(".cartItems");
+    const cartInfo = cartItemsContainer.querySelector(".cartInfo");
+    const cartItems = cartItemsContainer.querySelectorAll(".cartItem");
+    /*-----------------------------------------------------------------------------------------------*/
+
+    let [rowItemName, rowItemBrand, rowItemCategory, rowItemDiscount, rowItemSellingPrice, rowItemStock, rowItemCostPrice, reOrderLevel] = [row.querySelector(".td_Name--hidden").innerText, row.querySelector(".td_Brand--hidden").innerText, row.querySelector(".td_Category--hidden").innerText, row.querySelector('.td_discount').innerText, row.querySelector(".td_Price--hidden").innerText, row.querySelector('.td_Stock').innerText, row.querySelector('.td_costPrice').innerText, row.querySelector(".td_ReOrderLevel--hidden").innerText];
+    rowItemSellingPrice = parseFloat(rowItemSellingPrice);
+    let itemQuanityDB = 0; //Getting total quantity left. User's input will be checked against this to prevent sale of quantity more than what is actually left.
+
+    database.getItemQuantity(rowItemName, rowItemBrand, rowItemCategory).then(result => {
+      result = result.pop();
+      itemQuanityDB = parseInt(result.InStock);
+    });
+    let itemExists = false; //Set "no items in cart yet" invisble
+
+    cartInfo.style.display = "none"; //disble buttons
+
+    btnCart_clear.disabled = false;
+    btnCart_sell.disabled = false; //Iterate through cart items to remove if already exists
+
+    cartItems.forEach(cartItem => {
+      if (cartItem.querySelector(".hidden_itemName").innerText === rowItemName && cartItem.querySelector(".hidden_itemBrand").innerText === rowItemBrand && cartItem.querySelector(".hidden_itemCategory").innerText === rowItemCategory) {
+        cartItem.classList.remove("cartItem--shown");
+        itemExists = true;
+        setTimeout(() => {
+          cartItem.remove();
+        }, 300);
+        subtractItem(cartItem);
+
+        if (cartItems.length === 0) {
+          btnCart_clear.disabled = false;
+          btnCart_sell.disabled = false;
+          cartInfo.style.display = "block";
+        }
+      }
+    });
+
+    if (itemExists === true) {
+      return;
+    } else {
+      addToCart();
+    }
+    /********************************EVENT LISTENERS*****************************************/
+
+    /****************************FUNCTIONS***********************/
+
+
+    function addToCart() {
+      console.log(reOrderLevel);
+      const cartItemTemplate = `
+            <div class="cartItem_details">
+                <div class="cartItem_Name">${clip(rowItemName, 18)}</div>
+                <div class="cartItem_Brand">${clip(rowItemBrand, 10)}</div>
+                <div hidden class="hidden_itemCategory">${rowItemCategory}</div>
+                <div hidden class="hidden_itemName">${rowItemName}</div>
+                <div hidden class="hidden_itemBrand">${rowItemBrand}</div>
+                <div hidden class="hidden_reOrderLevel">${reOrderLevel}</div>
+            </div>
+
+            <button class="cartItem_discount cartItem_discount--disabled" id="cart_discount${cartItems.length + 1}">
+
+                <div class="discountValue">-${rowItemDiscount}%</div>
+
+            </button>
+
+            <input type="checkbox" class="cb_cartItem cartCheckBox" />
+
+            <div class="cartItem_toolTip">
+                Empty
+            </div>
+
+
+
+        `;
+      const cartItem = document.createElement("div");
+      cartItem.className = "cartItem";
+      cartItem.id = "toolTip" + cartItems.length + 1;
+      let cartItemID = cartItem.id;
+      cartItem.innerHTML = cartItemTemplate;
+      cartItemsContainer.appendChild(cartItem);
+      setTimeout(() => {
+        cartItem.classList.add("cartItem--shown");
+        cartItem.scroll({
+          behavior: "smooth"
+        });
+      }, 100);
+      let itemCount = parseInt(rowItemStock);
+      const tb_itemCount = document.createElement("input"); // tb_itemCount.setAttribute("type", "");
+
+      tb_itemCount.type = "number";
+      tb_itemCount.placeholder = "Qty.";
+      tb_itemCount.className = "cartItem_count";
+      tb_itemCount.id = cartItemsContainer.length + 1;
+      tb_itemCount.value = 1;
+      tb_itemCount.min = 1;
+      database.getItemQuantity(rowItemName, rowItemBrand, rowItemCategory).then(item => {
+        item = item.pop();
+        tb_itemCount.max = parseInt(item.InStock);
+      });
+      cartItem.appendChild(tb_itemCount);
+      setTimeout(() => {
+        tb_itemCount.focus();
+      }, 500);
+      const cartItemCost = document.createElement("div");
+      cartItemCost.className = "cartItem_cost";
+      cartItemCost.innerText = `GH¢ ${Millify(rowItemSellingPrice, {
+        units: ['', 'K', 'M', 'B', 'T', 'P', 'E'],
+        precision: 2
+      })}`;
+      cartItem.appendChild(cartItemCost);
+      let currentSubtotal = parseFloat(subTotal.innerText);
+      subTotal.innerText = currentSubtotal + rowItemSellingPrice;
+      mainTotal.innerText = subTotal.innerText;
+      let totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemSellingPrice));
+      let totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemCostPrice));
+      inCart.push({
+        Item: {
+          Name: rowItemName,
+          Brand: rowItemBrand,
+          Category: rowItemCategory
+        },
+        Purchased: parseInt(tb_itemCount.value),
+        Revenue: totalItemSellingPrice,
+        Profit: totalItemSellingPrice - totalItemCostPrice,
+        UnitDiscount: rowItemDiscount,
+        // TotalDiscount: parseFloat(rowItemDiscount) * parseInt(tb_itemCount.value)
+        TotalDiscount: 0
+      });
+      const checkbox = cartItem.querySelector(".cartCheckBox"); //Evt Listeners
+
+      checkbox.addEventListener("click", function toggleDiscount() {
+        if (checkbox.checked === true) {
+          cartItemsContainer.querySelector(`#cart_discount${cartItems.length + 1}`).classList.remove("cartItem_discount--disabled");
+        } else {
+          cartItemsContainer.querySelector(`#cart_discount${cartItems.length + 1}`).classList.add("cartItem_discount--disabled");
+        }
+      });
+      tb_itemCount.addEventListener("change", function modifyCost(e) {
+        if (tb_itemCount.value > itemQuanityDB) {
+          let toolTip = document.querySelector(`#${cartItemID}`).querySelector(".cartItem_toolTip");
+          toolTip.innerText = "Qty exceeded";
+          toolTip.classList.add("cartItem_toolTip--shown");
+          setTimeout(() => {
+            toolTip.classList.remove("cartItem_toolTip--shown");
+          }, 3000);
+          return;
+        } else if (tb_itemCount.value === "") {
+          tb_itemCount.focus();
+          let toolTip = document.querySelector(`#${cartItemID}`).querySelector(".cartItem_toolTip");
+          toolTip.innerText = "Qty can't be empty";
+          toolTip.classList.add("cartItem_toolTip--shown");
+          setTimeout(() => {
+            toolTip.classList.remove("cartItem_toolTip--shown");
+          }, 3000);
+          return;
+        } else if (tb_itemCount.value <= 0) {
+          tb_itemCount.focus();
+          let toolTip = document.querySelector(`#${cartItemID}`).querySelector(".cartItem_toolTip");
+          toolTip.innerText = "Invalid Qty";
+          toolTip.classList.add("cartItem_toolTip--shown");
+          setTimeout(() => {
+            toolTip.classList.remove("cartItem_toolTip--shown");
+          }, 3000);
+          return;
+        } else {
+          let [itemName, itemBrand, itemCategory] = [cartItem.querySelector(".hidden_itemName").innerText, cartItem.querySelector(".hidden_itemBrand").innerText, cartItem.querySelector(".hidden_itemCategory").innerText];
+          let newRevenue = 0;
+          totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemSellingPrice));
+          totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemCostPrice));
+          inCart.forEach(item => {
+            if (item.Item.Name === itemName && item.Item.Brand === itemBrand && item.Item.Category === itemCategory) {
+              item.Purchased = parseInt(tb_itemCount.value);
+              item.Revenue = totalItemSellingPrice;
+              item.Profit = totalItemSellingPrice - totalItemCostPrice;
+            }
+
+            newRevenue = parseFloat(item.Revenue + newRevenue);
+          });
+          subTotal.innerText = newRevenue;
+          mainTotal.innerText = newRevenue; // toolBar_tb.focus()
+        }
+      });
+      tb_itemCount.addEventListener("keyup", e => {
+        if (e.code === "Enter") {
+          if (tb_itemCount.value > itemQuanityDB) {
+            let toolTip = document.querySelector(`#${cartItemID}`).querySelector(".cartItem_toolTip");
+            toolTip.innerText = "Qty exceeded";
+            toolTip.classList.add("cartItem_toolTip--shown");
+            setTimeout(() => {
+              toolTip.classList.remove("cartItem_toolTip--shown");
+            }, 3000);
+            return;
+          } else if (tb_itemCount.value === "") {
+            tb_itemCount.focus();
+            let toolTip = document.querySelector(`#${cartItemID}`).querySelector(".cartItem_toolTip");
+            toolTip.innerText = "Qty can't be empty";
+            toolTip.classList.add("cartItem_toolTip--shown");
+            setTimeout(() => {
+              toolTip.classList.remove("cartItem_toolTip--shown");
+            }, 3000);
+            return;
+          } else if (tb_itemCount.value <= 0) {
+            tb_itemCount.focus();
+            let toolTip = document.querySelector(`#${cartItemID}`).querySelector(".cartItem_toolTip");
+            toolTip.innerText = "Invalid Qty";
+            toolTip.classList.add("cartItem_toolTip--shown");
+            setTimeout(() => {
+              toolTip.classList.remove("cartItem_toolTip--shown");
+            }, 3000);
+            return;
+          } else {
+            let [itemName, itemBrand, itemCategory] = [cartItem.querySelector(".hidden_itemName").innerText, cartItem.querySelector(".hidden_itemBrand").innerText, cartItem.querySelector(".hidden_itemCategory").innerText];
+            let newRevenue = 0;
+            totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemSellingPrice));
+            totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemCostPrice));
+            inCart.forEach(item => {
+              if (item.Item.Name === itemName && item.Item.Brand === itemBrand && item.Item.Category === itemCategory) {
+                item.Purchased = parseInt(tb_itemCount.value);
+                item.Revenue = totalItemSellingPrice;
+                item.Profit = totalItemSellingPrice - totalItemCostPrice;
+              }
+
+              newRevenue = parseFloat(item.Revenue + newRevenue);
+            }); // let totalItemCost = parseFloat(itemQuanity * rowItemSellingPrice).toPrecision(3);
+            // let currentSubtotal = parseFloat(subTotal.innerText)
+            // subTotal.innerText = currentSubtotal + parseFloat(totalItemCost);
+
+            subTotal.innerText = newRevenue;
+            mainTotal.innerText = newRevenue;
+            toolBar_tb.focus();
+          }
+        }
+      });
+      tb_itemCount.addEventListener("blur", () => {
+        if (tb_itemCount.value > itemQuanityDB) {
+          let toolTip = document.querySelector(`#${cartItemID}`).querySelector(".cartItem_toolTip");
+          toolTip.innerText = "Qty exceeded";
+          toolTip.classList.add("cartItem_toolTip--shown");
+          setTimeout(() => {
+            toolTip.classList.remove("cartItem_toolTip--shown");
+          }, 3000);
+          return;
+        } else if (tb_itemCount.value === "") {
+          tb_itemCount.focus();
+          let toolTip = document.querySelector(`#${cartItemID}`).querySelector(".cartItem_toolTip");
+          toolTip.innerText = "Qty can't be empty";
+          toolTip.classList.add("cartItem_toolTip--shown");
+          setTimeout(() => {
+            toolTip.classList.remove("cartItem_toolTip--shown");
+          }, 3000);
+          return;
+        } else if (tb_itemCount.value <= 0) {
+          tb_itemCount.focus();
+          let toolTip = document.querySelector(`#${cartItemID}`).querySelector(".cartItem_toolTip");
+          toolTip.innerText = "Invalid Qty";
+          toolTip.classList.add("cartItem_toolTip--shown");
+          setTimeout(() => {
+            toolTip.classList.remove("cartItem_toolTip--shown");
+          }, 3000);
+          return;
+        } else {
+          let [itemName, itemBrand, itemCategory] = [cartItem.querySelector(".hidden_itemName").innerText, cartItem.querySelector(".hidden_itemBrand").innerText, cartItem.querySelector(".hidden_itemCategory").innerText];
+          let newRevenue = 0;
+          totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemSellingPrice));
+          totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemCostPrice));
+          inCart.forEach(item => {
+            if (item.Item.Name === itemName && item.Item.Brand === itemBrand && item.Item.Category === itemCategory) {
+              item.Purchased = parseInt(tb_itemCount.value);
+              item.Revenue = totalItemSellingPrice;
+              item.Profit = totalItemSellingPrice - totalItemCostPrice;
+            }
+
+            newRevenue = parseFloat(item.Revenue + newRevenue);
+          }); // let totalItemCost = parseFloat(itemQuanity * rowItemSellingPrice).toPrecision(3);
+          // let currentSubtotal = parseFloat(subTotal.innerText)
+          // subTotal.innerText = currentSubtotal + parseFloat(totalItemCost);
+
+          subTotal.innerText = newRevenue;
+          mainTotal.innerText = newRevenue;
+          toolBar_tb.focus();
+        }
+      });
+    }
+  }
+
+}
+
+module.exports = DOMCONTROLLER;
 
 /***/ }),
 
@@ -2298,6 +3418,42 @@ class DATABASE {
     }
   }
 
+  getItems(from, to) {
+    return new Promise((resolve, reject) => {
+      this.connector.query(`
+
+            SELECT (SELECT Name FROM items WHERE items.id = sales.Item) AS Name,(SELECT items.Brand FROM items WHERE items.id = sales.Item) AS Brand,(SELECT items.Category FROM items WHERE items.id = sales.Item) AS Category,SUM(InStock) DIV COUNT(*) AS Avg_Stock, 
+            SUM(Purchased) DIV COUNT(*) AS Avg_Sale,SUM(sales.Purchased) AS Total_Sold, SUM(sales.Revenue) As Revenue, SUM(sales.Profit) AS Profit FROM sales WHERE sales.Date BETWEEN ? AND ? GROUP BY sales.Item ORDER BY Profit DESC
+
+            `, [from, to], (err, result) => {
+        if (err) {
+          reject(err);
+          throw err;
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  }
+
+  getTopItems(from, to) {
+    return new Promise((resolve, reject) => {
+      this.connector.query(`
+
+            SELECT (SELECT Name FROM items WHERE items.id = sales.Item) AS Name,(SELECT items.Brand FROM items WHERE items.id = sales.Item) AS Brand,(SELECT items.Category FROM items WHERE items.id = sales.Item) AS Category,SUM(InStock) DIV COUNT(*) AS Avg_Stock, 
+            SUM(Purchased) DIV COUNT(*) AS Avg_Sale,SUM(sales.Purchased) AS Total_Sold, SUM(sales.Revenue) As Revenue, SUM(sales.Profit) AS Profit FROM sales WHERE sales.Date BETWEEN ? AND ? GROUP BY sales.Item ORDER BY Avg_Sale DESC
+
+            `, [from, to], (err, result) => {
+        if (err) {
+          reject(err);
+          throw err;
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  }
+
   getItemOrderedMonthly() {
     return new Promise((resolve, reject) => {
       this.connector.query(`
@@ -2306,6 +3462,50 @@ class DATABASE {
             SUM(Purchased) DIV COUNT(*) AS Avg_Sale,SUM(sales.Purchased) AS Total_Sold, SUM(sales.Revenue) As Revenue, SUM(sales.Profit) AS Profit FROM sales WHERE sales.Date BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW() GROUP BY sales.Item ORDER BY Profit DESC
 
             `, (err, result) => {
+        if (err) {
+          reject(err);
+          throw err;
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  }
+
+  getTopItemOrderedMonthly() {
+    return new Promise((resolve, reject) => {
+      this.connector.query(`
+
+            SELECT (SELECT Name FROM items WHERE items.id = sales.Item) AS Name,(SELECT items.Brand FROM items WHERE items.id = sales.Item) AS Brand,(SELECT items.Category FROM items WHERE items.id = sales.Item) AS Category,SUM(InStock) DIV COUNT(*) AS Avg_Stock, 
+            SUM(Purchased) DIV COUNT(*) AS Avg_Sale,SUM(sales.Purchased) AS Total_Sold, SUM(sales.Revenue) As Revenue, SUM(sales.Profit) AS Profit FROM sales WHERE sales.Date BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW() GROUP BY sales.Item ORDER BY Avg_Sale DESC
+
+            `, (err, result) => {
+        if (err) {
+          reject(err);
+          throw err;
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  }
+
+  getTopEmployees(from, to) {
+    return new Promise((resolve, reject) => {
+      this.connector.query('SELECT (SELECT `users`.`First_Name` FROM `users` WHERE `users`.`id` = `sales`.`User`) AS FirstName, (SELECT `users`.`Last_Name` FROM `users` WHERE `users`.`id` = `sales`.`User`) AS LastName, SUM(`Profit`) AS Profit, SUM(Revenue) AS Revenue, COUNT(*) AS SalesMade, SUM(Purchased) AS ItemsSold, SUM(TotalDiscount) AS Discount FROM `sales` WHERE `sales`.`Date` BETWEEN ? AND ? GROUP BY `sales`.`User` ORDER BY Profit DESC', [from, to], (err, result) => {
+        if (err) {
+          reject(err);
+          throw err;
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  }
+
+  getTopEmployeesOrderedMonthly() {
+    return new Promise((resolve, reject) => {
+      this.connector.query('SELECT (SELECT `users`.`First_Name` FROM `users` WHERE `users`.`id` = `sales`.`User`) AS FirstName, (SELECT `users`.`Last_Name` FROM `users` WHERE `users`.`id` = `sales`.`User`) AS LastName, SUM(`Profit`) AS Profit, SUM(Revenue) AS Revenue, COUNT(*) AS SalesMade, SUM(Purchased) AS ItemsSold, SUM(TotalDiscount) AS Discount FROM `sales` WHERE `sales`.`Date` BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW() GROUP BY `sales`.`User` ORDER BY Profit DESC', (err, result) => {
         if (err) {
           reject(err);
           throw err;
@@ -2434,7 +3634,7 @@ class DATABASE {
 
   getUsers() {
     return new Promise((resolve, reject) => {
-      this.connector.query('select First_Name, Last_Name, IsAdmin, TIMEDIFF(CURRENT_TIMESTAMP(), Last_Seen) AS Last_Seen, (select sum(`sales`.`Profit`) from `sales` sales where `sales`.`User` = `users`.`id`) as Total_Profits, (SELECT COUNT(*) FROM `sales` WHERE `sales`.`user` = `users`.`id`) as Total_Sales from `users` users', (error, result) => {
+      this.connector.query('select First_Name, Last_Name, IsAdmin, User_Name,TIMEDIFF(CURRENT_TIMESTAMP(), Last_Seen) AS Last_Seen from `users` users', (error, result) => {
         if (error) {
           reject(error);
           throw error;
@@ -2621,6 +3821,32 @@ class DATABASE {
 
             resolve(result);
           });
+        }
+      });
+    });
+  }
+
+  disableEmployee(userName) {
+    return new Promise((resolve, reject) => {
+      this.connector.query("UPDATE `users` SET `users`.`Disabled` WHERE `users`.`User_Name` = ?", userName, (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
+
+  deleteEmployee(userName) {
+    return new Promise((resolve, reject) => {
+      this.connector.query("DELETE FROM `users` WHERE `users`.`User_Name` = ?", userName, (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        } else {
+          resolve();
         }
       });
     });
@@ -38951,6 +40177,594 @@ function convertTimezone(tz) {
   }
 
   return false;
+}
+
+/***/ }),
+
+/***/ "./node_modules/text-clipper/dist/index.js":
+/*!*************************************************!*\
+  !*** ./node_modules/text-clipper/dist/index.js ***!
+  \*************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+}); // Void elements are elements without inner content,
+// which close themselves regardless of trailing slash.
+// E.g. both <br> and <br /> are self-closing.
+
+var VOID_ELEMENTS = ["area", "base", "br", "col", "command", "embed", "hr", "img", "input", "keygen", "link", "meta", "param", "source", "track", "wbr"]; // Block elements trigger newlines where they're inserted,
+// and are always safe places for truncation.
+
+var BLOCK_ELEMENTS = ["address", "article", "aside", "blockquote", "canvas", "dd", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer", "form", "h1", "h2", "h3", "h4", "h5", "h6", "header", "hgroup", "hr", "li", "main", "nav", "noscript", "ol", "output", "p", "pre", "section", "table", "tbody", "tfoot", "thead", "tr", "ul", "video"];
+var NEWLINE_CHAR_CODE = 10; // '\n'
+
+var EXCLAMATION_CHAR_CODE = 33; // '!'
+
+var DOUBLE_QUOTE_CHAR_CODE = 34; // '"'
+
+var AMPERSAND_CHAR_CODE = 38; // '&'
+
+var SINGLE_QUOTE_CHAR_CODE = 39; // '\''
+
+var FORWARD_SLASH_CHAR_CODE = 47; // '/'
+
+var SEMICOLON_CHAR_CODE = 59; // ';'
+
+var TAG_OPEN_CHAR_CODE = 60; // '<'
+
+var EQUAL_SIGN_CHAR_CODE = 61; // '='
+
+var TAG_CLOSE_CHAR_CODE = 62; // '>'
+
+var CHAR_OF_INTEREST_REGEX = /[<&\n\ud800-\udbff]/;
+var SIMPLIFY_WHITESPACE_REGEX = /\s{2,}/g;
+/**
+ * Clips a string to a maximum length. If the string exceeds the length, it is truncated and an
+ * indicator (an ellipsis, by default) is appended.
+ *
+ * In detail, the clipping rules are as follows:
+ * - The resulting clipped string may never contain more than maxLength characters. Examples:
+ *   - clip("foo", 3) => "foo"
+ *   - clip("foo", 2) => "f…"
+ * - The indicator is inserted if and only if the string is clipped at any place other than a
+ *   newline. Examples:
+ *   - clip("foo bar", 5) => "foo …"
+ *   - clip("foo\nbar", 5) => "foo"
+ * - If the html option is true and valid HTML is inserted, the clipped output *must* also be valid
+ *   HTML. If the input is not valid HTML, the result is undefined (not to be confused with JS'
+ *   "undefined" type; some errors might be detected and result in an exception, but this is not
+ *   guaranteed).
+ *
+ * @param string The string to clip.
+ * @param maxLength The maximum length of the clipped string in number of characters.
+ * @param options Optional options object.
+ *
+ * @return The clipped string.
+ */
+
+function clip(string, maxLength, options) {
+  if (options === void 0) {
+    options = {};
+  }
+
+  if (!string) {
+    return "";
+  }
+
+  string = string.toString();
+  return options.html ? clipHtml(string, maxLength, options) : clipPlainText(string, maxLength, options);
+}
+
+exports.default = clip;
+
+function clipHtml(string, maxLength, options) {
+  var _a = options.imageWeight,
+      imageWeight = _a === void 0 ? 2 : _a,
+      _b = options.indicator,
+      indicator = _b === void 0 ? "\u2026" : _b,
+      _c = options.maxLines,
+      maxLines = _c === void 0 ? Infinity : _c;
+  var numChars = indicator.length;
+  var numLines = 1;
+  var i = 0;
+  var isUnbreakableContent = false;
+  var tagStack = []; // Stack of currently open HTML tags.
+
+  var length = string.length;
+
+  for (; i < length; i++) {
+    var rest = i ? string.slice(i) : string;
+    var nextIndex = rest.search(CHAR_OF_INTEREST_REGEX);
+    var nextBlockSize = nextIndex > -1 ? nextIndex : rest.length;
+    i += nextBlockSize;
+
+    if (!isUnbreakableContent) {
+      if (shouldSimplifyWhiteSpace(tagStack)) {
+        numChars += simplifyWhiteSpace(nextBlockSize === rest.length ? rest : rest.slice(0, nextIndex)).length;
+
+        if (numChars > maxLength) {
+          i -= nextBlockSize; // We just cut off the entire incorrectly placed text...
+
+          break;
+        }
+      } else {
+        numChars += nextBlockSize;
+
+        if (numChars > maxLength) {
+          i = Math.max(i - numChars + maxLength, 0);
+          break;
+        }
+      }
+    }
+
+    if (nextIndex === -1) {
+      break;
+    }
+
+    var charCode = string.charCodeAt(i);
+
+    if (charCode === TAG_OPEN_CHAR_CODE) {
+      var nextCharCode = string.charCodeAt(i + 1);
+      var isSpecialTag = nextCharCode === EXCLAMATION_CHAR_CODE;
+
+      if (isSpecialTag && string.substr(i + 2, 2) === "--") {
+        var commentEndIndex = string.indexOf("-->", i + 4) + 3;
+        i = commentEndIndex - 1; // - 1 because the outer for loop will increment it
+      } else if (isSpecialTag && string.substr(i + 2, 7) === "[CDATA[") {
+        var cdataEndIndex = string.indexOf("]]>", i + 9) + 3;
+        i = cdataEndIndex - 1; // - 1 because the outer for loop will increment it
+        // note we don't count CDATA text for our character limit because it is only
+        // allowed within SVG and MathML content, both of which we don't clip
+      } else {
+        // don't open new tags if we are currently at the limit
+        if (numChars === maxLength && string.charCodeAt(i + 1) !== FORWARD_SLASH_CHAR_CODE) {
+          numChars++;
+          break;
+        }
+
+        var attributeQuoteCharCode = 0;
+        var endIndex = i;
+        var isAttributeValue = false;
+
+        while (true
+        /* eslint-disable-line */
+        ) {
+          endIndex++;
+
+          if (endIndex >= length) {
+            throw new Error("Invalid HTML: " + string);
+          }
+
+          var charCode_1 = string.charCodeAt(endIndex);
+
+          if (isAttributeValue) {
+            if (attributeQuoteCharCode) {
+              if (charCode_1 === attributeQuoteCharCode) {
+                isAttributeValue = false;
+              }
+            } else {
+              if (isWhiteSpace(charCode_1)) {
+                isAttributeValue = false;
+              } else if (charCode_1 === TAG_CLOSE_CHAR_CODE) {
+                isAttributeValue = false;
+                endIndex--; // re-evaluate this character
+              }
+            }
+          } else if (charCode_1 === EQUAL_SIGN_CHAR_CODE) {
+            while (isWhiteSpace(string.charCodeAt(endIndex + 1))) {
+              endIndex++; // skip whitespace
+            }
+
+            isAttributeValue = true;
+            var firstAttributeCharCode = string.charCodeAt(endIndex + 1);
+
+            if (firstAttributeCharCode === DOUBLE_QUOTE_CHAR_CODE || firstAttributeCharCode === SINGLE_QUOTE_CHAR_CODE) {
+              attributeQuoteCharCode = firstAttributeCharCode;
+              endIndex++;
+            } else {
+              attributeQuoteCharCode = 0;
+            }
+          } else if (charCode_1 === TAG_CLOSE_CHAR_CODE) {
+            var isEndTag = string.charCodeAt(i + 1) === FORWARD_SLASH_CHAR_CODE;
+            var tagNameStartIndex = i + (isEndTag ? 2 : 1);
+            var tagNameEndIndex = Math.min(indexOfWhiteSpace(string, tagNameStartIndex), endIndex);
+            var tagName = string.slice(tagNameStartIndex, tagNameEndIndex).toLowerCase();
+
+            if (tagName.charCodeAt(tagName.length - 1) === FORWARD_SLASH_CHAR_CODE) {
+              // Remove trailing slash for self-closing tag names like <br/>
+              tagName = tagName.slice(0, tagName.length - 1);
+            }
+
+            if (isEndTag) {
+              var currentTagName = tagStack.pop();
+
+              if (currentTagName !== tagName) {
+                throw new Error("Invalid HTML: " + string);
+              }
+
+              if (tagName === "math" || tagName === "svg") {
+                isUnbreakableContent = tagStack.includes("math") || tagStack.includes("svg");
+
+                if (!isUnbreakableContent) {
+                  numChars += imageWeight;
+
+                  if (numChars > maxLength) {
+                    break;
+                  }
+                }
+              }
+
+              if (BLOCK_ELEMENTS.includes(tagName)) {
+                // All block level elements should trigger a new line
+                // when truncating
+                if (!isUnbreakableContent) {
+                  numLines++;
+
+                  if (numLines > maxLines) {
+                    // If we exceed the max lines, push the tag back onto the
+                    // stack so that it will be added back correctly after
+                    // truncation
+                    tagStack.push(tagName);
+                    break;
+                  }
+                }
+              }
+            } else if (VOID_ELEMENTS.includes(tagName) || string.charCodeAt(endIndex - 1) === FORWARD_SLASH_CHAR_CODE) {
+              if (tagName === "br") {
+                numLines++;
+
+                if (numLines > maxLines) {
+                  break;
+                }
+              } else if (tagName === "img") {
+                numChars += imageWeight;
+
+                if (numChars > maxLength) {
+                  break;
+                }
+              }
+            } else {
+              tagStack.push(tagName);
+
+              if (tagName === "math" || tagName === "svg") {
+                isUnbreakableContent = true;
+              }
+            }
+
+            i = endIndex;
+            break;
+          }
+        }
+
+        if (numChars > maxLength || numLines > maxLines) {
+          break;
+        }
+      }
+    } else if (charCode === AMPERSAND_CHAR_CODE) {
+      var endIndex = i + 1;
+      var isCharacterReference = true;
+
+      while (true
+      /* eslint-disable-line */
+      ) {
+        var charCode_2 = string.charCodeAt(endIndex);
+
+        if (isCharacterReferenceCharacter(charCode_2)) {
+          endIndex++;
+        } else if (charCode_2 === SEMICOLON_CHAR_CODE) {
+          break;
+        } else {
+          isCharacterReference = false;
+          break;
+        }
+      }
+
+      if (!isUnbreakableContent) {
+        numChars++;
+
+        if (numChars > maxLength) {
+          break;
+        }
+      }
+
+      if (isCharacterReference) {
+        i = endIndex;
+      }
+    } else if (charCode === NEWLINE_CHAR_CODE) {
+      if (!isUnbreakableContent && !shouldSimplifyWhiteSpace(tagStack)) {
+        numChars++;
+
+        if (numChars > maxLength) {
+          break;
+        }
+
+        numLines++;
+
+        if (numLines > maxLines) {
+          break;
+        }
+      }
+    } else {
+      if (!isUnbreakableContent) {
+        numChars++;
+
+        if (numChars > maxLength) {
+          break;
+        }
+      } // high Unicode surrogate should never be separated from its matching low surrogate
+
+
+      var nextCharCode = string.charCodeAt(i + 1);
+
+      if ((nextCharCode & 0xfc00) === 0xdc00) {
+        i++;
+      }
+    }
+  }
+
+  if (numChars > maxLength) {
+    var nextChar = takeHtmlCharAt(string, i);
+
+    if (indicator) {
+      var peekIndex = i + nextChar.length;
+
+      while (string.charCodeAt(peekIndex) === TAG_OPEN_CHAR_CODE && string.charCodeAt(peekIndex + 1) === FORWARD_SLASH_CHAR_CODE) {
+        var nextPeekIndex = string.indexOf(">", peekIndex + 2) + 1;
+
+        if (nextPeekIndex) {
+          peekIndex = nextPeekIndex;
+        } else {
+          break;
+        }
+      }
+
+      if (peekIndex && (peekIndex === string.length || isLineBreak(string, peekIndex))) {
+        // if there's only a single character remaining in the input string, or the next
+        // character is followed by a line-break, we can include it instead of the clipping
+        // indicator (provided it's not a special HTML character)
+        i += nextChar.length;
+        nextChar = string.charAt(i);
+      }
+    } // include closing tags before adding the clipping indicator if that's where they
+    // are in the input string
+
+
+    while (nextChar === "<" && string.charCodeAt(i + 1) === FORWARD_SLASH_CHAR_CODE) {
+      var tagName = tagStack.pop();
+      var tagEndIndex = tagName ? string.indexOf(">", i + 2) : -1;
+
+      if (tagEndIndex === -1 || string.slice(i + 2, tagEndIndex).trim() !== tagName) {
+        throw new Error("Invalid HTML: " + string);
+      }
+
+      i = tagEndIndex + 1;
+      nextChar = string.charAt(i);
+    }
+
+    if (i < string.length) {
+      if (!options.breakWords) {
+        // try to clip at word boundaries, if desired
+        for (var j = i - indicator.length; j >= 0; j--) {
+          var charCode = string.charCodeAt(j);
+
+          if (charCode === TAG_CLOSE_CHAR_CODE || charCode === SEMICOLON_CHAR_CODE) {
+            // these characters could be just regular characters, so if they occur in
+            // the middle of a word, they would "break" our attempt to prevent breaking
+            // of words, but given this seems highly unlikely and the alternative is
+            // doing another full parsing of the preceding text, this seems acceptable.
+            break;
+          } else if (charCode === NEWLINE_CHAR_CODE || charCode === TAG_OPEN_CHAR_CODE) {
+            i = j;
+            break;
+          } else if (isWhiteSpace(charCode)) {
+            i = j + (indicator ? 1 : 0);
+            break;
+          }
+        }
+      }
+
+      var result = string.slice(0, i);
+
+      if (!isLineBreak(string, i)) {
+        result += indicator;
+      }
+
+      while (tagStack.length) {
+        var tagName = tagStack.pop();
+        result += "</" + tagName + ">";
+      }
+
+      return result;
+    }
+  } else if (numLines > maxLines) {
+    var result = string.slice(0, i);
+
+    while (tagStack.length) {
+      var tagName = tagStack.pop();
+      result += "</" + tagName + ">";
+    }
+
+    return result;
+  }
+
+  return string;
+}
+
+function clipPlainText(string, maxLength, options) {
+  var _a = options.indicator,
+      indicator = _a === void 0 ? "\u2026" : _a,
+      _b = options.maxLines,
+      maxLines = _b === void 0 ? Infinity : _b;
+  var numChars = indicator.length;
+  var numLines = 1;
+  var i = 0;
+  var length = string.length;
+
+  for (; i < length; i++) {
+    numChars++;
+
+    if (numChars > maxLength) {
+      break;
+    }
+
+    var charCode = string.charCodeAt(i);
+
+    if (charCode === NEWLINE_CHAR_CODE) {
+      numLines++;
+
+      if (numLines > maxLines) {
+        break;
+      }
+    } else if ((charCode & 0xfc00) === 0xd800) {
+      // high Unicode surrogate should never be separated from its matching low surrogate
+      var nextCharCode = string.charCodeAt(i + 1);
+
+      if ((nextCharCode & 0xfc00) === 0xdc00) {
+        i++;
+      }
+    }
+  }
+
+  if (numChars > maxLength) {
+    var nextChar = takeCharAt(string, i);
+
+    if (indicator) {
+      var peekIndex = i + nextChar.length;
+
+      if (peekIndex === string.length) {
+        return string;
+      } else if (string.charCodeAt(peekIndex) === NEWLINE_CHAR_CODE) {
+        return string.slice(0, i + nextChar.length);
+      }
+    }
+
+    if (!options.breakWords) {
+      // try to clip at word boundaries, if desired
+      for (var j = i - indicator.length; j >= 0; j--) {
+        var charCode = string.charCodeAt(j);
+
+        if (charCode === NEWLINE_CHAR_CODE) {
+          i = j;
+          nextChar = "\n";
+          break;
+        } else if (isWhiteSpace(charCode)) {
+          i = j + (indicator ? 1 : 0);
+          break;
+        }
+      }
+    }
+
+    return string.slice(0, i) + (nextChar === "\n" ? "" : indicator);
+  } else if (numLines > maxLines) {
+    return string.slice(0, i);
+  }
+
+  return string;
+}
+
+function indexOfWhiteSpace(string, fromIndex) {
+  var length = string.length;
+
+  for (var i = fromIndex; i < length; i++) {
+    if (isWhiteSpace(string.charCodeAt(i))) {
+      return i;
+    }
+  } // Rather than -1, this function returns the length of the string if no match is found,
+  // so it works well with the Math.min() usage above:
+
+
+  return length;
+}
+
+function isCharacterReferenceCharacter(charCode) {
+  return charCode >= 48 && charCode <= 57 || charCode >= 65 && charCode <= 90 || charCode >= 97 && charCode <= 122;
+}
+
+function isLineBreak(string, index) {
+  var firstCharCode = string.charCodeAt(index);
+
+  if (firstCharCode === NEWLINE_CHAR_CODE) {
+    return true;
+  } else if (firstCharCode === TAG_OPEN_CHAR_CODE) {
+    var newlineElements = "(" + BLOCK_ELEMENTS.join("|") + "|br)";
+    var newlineRegExp = new RegExp("^<" + newlineElements + "[\t\n\f\r ]*/?>", "i");
+    return newlineRegExp.test(string.slice(index));
+  } else {
+    return false;
+  }
+}
+
+function isWhiteSpace(charCode) {
+  return charCode === 9 || charCode === 10 || charCode === 12 || charCode === 13 || charCode === 32;
+}
+/**
+ * Certain tags don't display their whitespace-only content. In such cases, we
+ * should simplify the whitespace before counting it.
+ */
+
+
+function shouldSimplifyWhiteSpace(tagStack) {
+  for (var i = tagStack.length - 1; i >= 0; i--) {
+    var tagName = tagStack[i];
+
+    if (tagName === "li" || tagName === "td") {
+      return false;
+    }
+
+    if (tagName === "ol" || tagName === "table" || tagName === "ul") {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function simplifyWhiteSpace(string) {
+  return string.trim().replace(SIMPLIFY_WHITESPACE_REGEX, " ");
+}
+
+function takeCharAt(string, index) {
+  var charCode = string.charCodeAt(index);
+
+  if ((charCode & 0xfc00) === 0xd800) {
+    // high Unicode surrogate should never be separated from its matching low surrogate
+    var nextCharCode = string.charCodeAt(index + 1);
+
+    if ((nextCharCode & 0xfc00) === 0xdc00) {
+      return String.fromCharCode(charCode, nextCharCode);
+    }
+  }
+
+  return String.fromCharCode(charCode);
+}
+
+function takeHtmlCharAt(string, index) {
+  var char = takeCharAt(string, index);
+
+  if (char === "&") {
+    while (true
+    /* eslint-disable-line */
+    ) {
+      index++;
+      var nextCharCode = string.charCodeAt(index);
+
+      if (isCharacterReferenceCharacter(nextCharCode)) {
+        char += String.fromCharCode(nextCharCode);
+      } else if (nextCharCode === SEMICOLON_CHAR_CODE) {
+        char += String.fromCharCode(nextCharCode);
+        break;
+      } else {
+        break;
+      }
+    }
+  }
+
+  return char;
 }
 
 /***/ }),

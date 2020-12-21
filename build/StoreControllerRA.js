@@ -993,19 +993,42 @@ class DOMCONTROLLER {
     });
   }
 
-  static createEmployeeItem(name, accountStatus, lastSeen, totalSales, totalProfit) {
+  static createEmployeeItem(name, accountStatus, lastSeen, userName, functions) {
     const tableBody = document.querySelector("tbody");
     const row = document.createElement("tr");
+    row.setAttribute("toggled", "false");
     row.className = "bodyRow";
     row.innerHTML = `
+            <td class="controls">
+                <div class="delete"><span>Delete</span></div>
+                <div class="disabled"><span>Disable</span></div>
+            </td>
             <td class="td_Names">${name}</td>
             <td class="td_AccountStatus">${accountStatus}</td>
             <td class="td_LastSeen">${lastSeen}</td>
-            <td class="td_SalesMade">${commaNumber(totalSales)}</td>
-            <td class="td_ProfitsMade">${commaNumber(totalProfit)}</td>
+            <td hidden class="td_UserName--hidden">${userName}</td>
 
         `;
     tableBody.appendChild(row);
+    /*********************EVENT LISTENERS***************/
+
+    row.addEventListener("contextmenu", () => {
+      if (row.getAttribute("toggled") === "false") {
+        row.style.transform = "translateX(15%)";
+        row.setAttribute("toggled", "true");
+      } else if (row.getAttribute("toggled") === "true") {
+        row.style.transform = "translateX(0)";
+        row.setAttribute("toggled", "false");
+      }
+    });
+    const btnDelete = row.querySelector(".controls").querySelector(".delete");
+    const btnDisable = row.querySelector(".controls").querySelector(".disabled");
+    btnDelete.addEventListener("click", () => {
+      functions[1](userName, name);
+    });
+    btnDisable.addEventListener("click", () => {
+      functions[0](userName, name);
+    });
   }
 
   static createProfitsItem(name, brand, avgInStock, avgSale, totalSold, revenue, profit) {
@@ -1096,6 +1119,132 @@ class DOMCONTROLLER {
     tdProfit.addEventListener("mouseleave", () => {
       clearTimeout(timeoutId_tpProfit);
       tdProfit.querySelector(".td_toolTip").style.display = "none";
+    });
+  }
+
+  static createEmployeePerformanceItem(name, salesMade, itemsSold, totalRevenue, profitGained, discountGiven) {
+    const tableBody = document.querySelector("tbody");
+    const row = document.createElement("tr");
+    row.className = "bodyRow";
+    row.innerHTML = `
+            <tr class="bodyRow">
+                <td class="td_Long td_Names">
+                    ${clip(name, 18)}
+                    <div class ="td_toolTip" id="tp_Name">${name}</div>
+                </td>
+               
+                <td class="td_Short td_SalesMade">
+                    ${Millify(salesMade)}
+                    <div class ="td_toolTip" id="tp_Revenue">GH¢ ${commaNumber(salesMade)}</div>
+                </td>
+                <td class="td_Short td_Sold">
+                    ${Millify(itemsSold)}
+                    <div class ="td_toolTip" id="tp_Revenue">GH¢ ${commaNumber(itemsSold)}</div>
+                </td>
+                <td class="td_Medium td_Revenue">
+                    ${Millify(totalRevenue)}
+                    <div class ="td_toolTip" id="tp_Revenue">GH¢ ${commaNumber(totalRevenue)}</div>
+                </td>
+                <td class="td_Medium td_Profit">
+                    ${Millify(profitGained)}
+                    <div class ="td_toolTip" id="tp_Profit">GH¢ ${commaNumber(profitGained)}</div>
+                </td>
+                <td class="td_Medium td_Discount">
+                    ${Millify(discountGiven)}
+                    <div class ="td_toolTip" id="tp_Profit">GH¢ ${commaNumber(discountGiven)}</div>
+                </td>
+                <td hidden class="td_Name--hidden">${name}</td>
+                <td hidden class="td_Brand--hidden"></td>
+                <td hidden class="td_Profit--hidden">${profitGained}</td>
+                <td hidden class="td_ItemsSold--hidden">${itemsSold}</td>
+                <td hidden class="td_SaleMade--hidden">${salesMade}</td>
+                <td hidden class="td_Revenue--hidden">${totalRevenue}</td>
+                <td hidden class="td_Discounts--hidden">${discountGiven}</td>
+
+
+                <td hidden class="td_Category--hidden"></td>
+            </tr>
+
+        `;
+    tableBody.appendChild(row);
+    /**************************************************/
+
+    const tdName = row.querySelector(".td_Names");
+    let timeoutId_tpName;
+    tdName.addEventListener("mouseenter", e => {
+      timeoutId_tpName = setTimeout(function showToolTip() {
+        const toolTip = tdName.querySelector(".td_toolTip");
+        toolTip.style.display = "block";
+      }, 1500);
+    });
+    tdName.addEventListener("mouseleave", () => {
+      clearTimeout(timeoutId_tpName);
+      tdName.querySelector(".td_toolTip").style.display = "none";
+    });
+    /********************************************************************/
+
+    const td_Revenue = row.querySelector(".td_Revenue");
+    let timeoutId_tpRevenue;
+    td_Revenue.addEventListener("mouseenter", () => {
+      timeoutId_tpRevenue = setTimeout(function showToolTip() {
+        td_Revenue.querySelector(".td_toolTip").style.display = "block";
+      }, 1500);
+    });
+    td_Revenue.addEventListener("mouseleave", () => {
+      clearTimeout(timeoutId_tpRevenue);
+      td_Revenue.querySelector(".td_toolTip").style.display = "none";
+    });
+    /********************************************************************/
+
+    const tdProfit = row.querySelector(".td_Profit");
+    let timeoutId_tpProfit;
+    tdProfit.addEventListener("mouseenter", () => {
+      timeoutId_tpProfit = setTimeout(function showToolTip() {
+        tdProfit.querySelector(".td_toolTip").style.display = "block";
+      }, 1500);
+    });
+    tdProfit.addEventListener("mouseleave", () => {
+      clearTimeout(timeoutId_tpProfit);
+      tdProfit.querySelector(".td_toolTip").style.display = "none";
+    });
+    /*****************************************************/
+
+    const td_SalesMade = row.querySelector(".td_SalesMade");
+    let timeoutId_tpSalesMade;
+    td_SalesMade.addEventListener("mouseenter", () => {
+      timeoutId_tpSalesMade = setTimeout(function showToolTip() {
+        td_SalesMade.querySelector(".td_toolTip").style.display = "block";
+      }, 1500);
+    });
+    td_SalesMade.addEventListener("mouseleave", () => {
+      clearTimeout(timeoutId_tpSalesMade);
+      td_SalesMade.querySelector(".td_toolTip").style.display = "none";
+    });
+    /**************************************************************/
+
+    const td_Sold = row.querySelector(".td_Sold");
+    let timeoutId_tpSold;
+    td_Sold.addEventListener("mouseenter", () => {
+      timeoutId_tpSold = setTimeout(function showToolTip() {
+        td_Sold.querySelector(".td_toolTip").style.display = "block";
+      }, 1500);
+    });
+    td_Sold.addEventListener("mouseleave", () => {
+      clearTimeout(timeoutId_tpSold);
+      td_Sold.querySelector(".td_toolTip").style.display = "none";
+    });
+    /********************************************************/
+
+    const td_Discount = row.querySelector(".td_Discount");
+    let timeoutId_tpDiscount;
+    td_Discount.addEventListener("mouseenter", () => {
+      timeoutId_tpDiscount = setTimeout(function showToolTip() {
+        td_Discount.querySelector(".td_toolTip").style.display = "block";
+      }, 1500);
+    });
+    td_Discount.addEventListener("mouseleave", () => {
+      clearTimeout(timeoutId_tpDiscount);
+      td_Discount.querySelector(".td_toolTip").style.display = "none";
     });
   }
   /***********************************************************************************************************************************/
@@ -2593,6 +2742,42 @@ class DATABASE {
     }
   }
 
+  getItems(from, to) {
+    return new Promise((resolve, reject) => {
+      this.connector.query(`
+
+            SELECT (SELECT Name FROM items WHERE items.id = sales.Item) AS Name,(SELECT items.Brand FROM items WHERE items.id = sales.Item) AS Brand,(SELECT items.Category FROM items WHERE items.id = sales.Item) AS Category,SUM(InStock) DIV COUNT(*) AS Avg_Stock, 
+            SUM(Purchased) DIV COUNT(*) AS Avg_Sale,SUM(sales.Purchased) AS Total_Sold, SUM(sales.Revenue) As Revenue, SUM(sales.Profit) AS Profit FROM sales WHERE sales.Date BETWEEN ? AND ? GROUP BY sales.Item ORDER BY Profit DESC
+
+            `, [from, to], (err, result) => {
+        if (err) {
+          reject(err);
+          throw err;
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  }
+
+  getTopItems(from, to) {
+    return new Promise((resolve, reject) => {
+      this.connector.query(`
+
+            SELECT (SELECT Name FROM items WHERE items.id = sales.Item) AS Name,(SELECT items.Brand FROM items WHERE items.id = sales.Item) AS Brand,(SELECT items.Category FROM items WHERE items.id = sales.Item) AS Category,SUM(InStock) DIV COUNT(*) AS Avg_Stock, 
+            SUM(Purchased) DIV COUNT(*) AS Avg_Sale,SUM(sales.Purchased) AS Total_Sold, SUM(sales.Revenue) As Revenue, SUM(sales.Profit) AS Profit FROM sales WHERE sales.Date BETWEEN ? AND ? GROUP BY sales.Item ORDER BY Avg_Sale DESC
+
+            `, [from, to], (err, result) => {
+        if (err) {
+          reject(err);
+          throw err;
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  }
+
   getItemOrderedMonthly() {
     return new Promise((resolve, reject) => {
       this.connector.query(`
@@ -2601,6 +2786,50 @@ class DATABASE {
             SUM(Purchased) DIV COUNT(*) AS Avg_Sale,SUM(sales.Purchased) AS Total_Sold, SUM(sales.Revenue) As Revenue, SUM(sales.Profit) AS Profit FROM sales WHERE sales.Date BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW() GROUP BY sales.Item ORDER BY Profit DESC
 
             `, (err, result) => {
+        if (err) {
+          reject(err);
+          throw err;
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  }
+
+  getTopItemOrderedMonthly() {
+    return new Promise((resolve, reject) => {
+      this.connector.query(`
+
+            SELECT (SELECT Name FROM items WHERE items.id = sales.Item) AS Name,(SELECT items.Brand FROM items WHERE items.id = sales.Item) AS Brand,(SELECT items.Category FROM items WHERE items.id = sales.Item) AS Category,SUM(InStock) DIV COUNT(*) AS Avg_Stock, 
+            SUM(Purchased) DIV COUNT(*) AS Avg_Sale,SUM(sales.Purchased) AS Total_Sold, SUM(sales.Revenue) As Revenue, SUM(sales.Profit) AS Profit FROM sales WHERE sales.Date BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW() GROUP BY sales.Item ORDER BY Avg_Sale DESC
+
+            `, (err, result) => {
+        if (err) {
+          reject(err);
+          throw err;
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  }
+
+  getTopEmployees(from, to) {
+    return new Promise((resolve, reject) => {
+      this.connector.query('SELECT (SELECT `users`.`First_Name` FROM `users` WHERE `users`.`id` = `sales`.`User`) AS FirstName, (SELECT `users`.`Last_Name` FROM `users` WHERE `users`.`id` = `sales`.`User`) AS LastName, SUM(`Profit`) AS Profit, SUM(Revenue) AS Revenue, COUNT(*) AS SalesMade, SUM(Purchased) AS ItemsSold, SUM(TotalDiscount) AS Discount FROM `sales` WHERE `sales`.`Date` BETWEEN ? AND ? GROUP BY `sales`.`User` ORDER BY Profit DESC', [from, to], (err, result) => {
+        if (err) {
+          reject(err);
+          throw err;
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  }
+
+  getTopEmployeesOrderedMonthly() {
+    return new Promise((resolve, reject) => {
+      this.connector.query('SELECT (SELECT `users`.`First_Name` FROM `users` WHERE `users`.`id` = `sales`.`User`) AS FirstName, (SELECT `users`.`Last_Name` FROM `users` WHERE `users`.`id` = `sales`.`User`) AS LastName, SUM(`Profit`) AS Profit, SUM(Revenue) AS Revenue, COUNT(*) AS SalesMade, SUM(Purchased) AS ItemsSold, SUM(TotalDiscount) AS Discount FROM `sales` WHERE `sales`.`Date` BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW() GROUP BY `sales`.`User` ORDER BY Profit DESC', (err, result) => {
         if (err) {
           reject(err);
           throw err;
@@ -2729,7 +2958,7 @@ class DATABASE {
 
   getUsers() {
     return new Promise((resolve, reject) => {
-      this.connector.query('select First_Name, Last_Name, IsAdmin, TIMEDIFF(CURRENT_TIMESTAMP(), Last_Seen) AS Last_Seen, (select sum(`sales`.`Profit`) from `sales` sales where `sales`.`User` = `users`.`id`) as Total_Profits, (SELECT COUNT(*) FROM `sales` WHERE `sales`.`user` = `users`.`id`) as Total_Sales from `users` users', (error, result) => {
+      this.connector.query('select First_Name, Last_Name, IsAdmin, User_Name,TIMEDIFF(CURRENT_TIMESTAMP(), Last_Seen) AS Last_Seen from `users` users', (error, result) => {
         if (error) {
           reject(error);
           throw error;
@@ -2916,6 +3145,32 @@ class DATABASE {
 
             resolve(result);
           });
+        }
+      });
+    });
+  }
+
+  disableEmployee(userName) {
+    return new Promise((resolve, reject) => {
+      this.connector.query("UPDATE `users` SET `users`.`Disabled` WHERE `users`.`User_Name` = ?", userName, (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
+
+  deleteEmployee(userName) {
+    return new Promise((resolve, reject) => {
+      this.connector.query("DELETE FROM `users` WHERE `users`.`User_Name` = ?", userName, (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        } else {
+          resolve();
         }
       });
     });

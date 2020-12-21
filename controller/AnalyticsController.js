@@ -2,6 +2,7 @@ const { default: Millify } = require("millify");
 let validator = require('is-my-date-valid');
 const { default: clip } = require("text-clipper");
 const { readdir } = require("fs");
+// const { ipcRenderer } = require("electron");
 validator = validator({format: "YYY-MM-DD"})
 
 let userType = "Admin";
@@ -43,7 +44,9 @@ const toolBarDate_to = document.querySelector("#toolBarDate_to")
 toolBar_btn.addEventListener('mouseover',toggleTBbtn_white)
 toolBar_btn.addEventListener('mouseleave',toggleTBbtn_default)
 
+product_card.addEventListener("click", loadTopItems)
 profit_card.addEventListener("click", loadProfits)
+topUser_card.addEventListener("click", loadEmployeePerformance)
 growthRateCard.addEventListener("click", loadGrowthRate)
 toolBarSlct_btn.addEventListener("click", (e)=>{
     fetchAnalyticsData(e)
@@ -69,8 +72,16 @@ function loadProfits(){
     ipcRenderer.send('loadProfits', [userName, userType])
 }
 
+function loadTopItems(){
+    ipcRenderer.send("loadTopItems")
+}
+
 function loadGrowthRate(){
     ipcRenderer.send('loadGrowthRate', [userName, userType])
+}
+
+function loadEmployeePerformance(){
+    ipcRenderer.send('loadEmployeePerformance', [userName, userType])
 }
 
 // const store = new STORE({
@@ -235,7 +246,6 @@ function initializeDateRangeSales(){
 
 function readableDate(date){
 
-    console.log(date);
 
     let [year, month, day] = date.split("-");
 

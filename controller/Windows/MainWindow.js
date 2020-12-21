@@ -112,6 +112,17 @@ class MainWWindow extends BrowserWindow {
                 this.loadFile('./views/html/maingraph.html')
             })
 
+            ipcMain.on('loadTopItems',()=>{
+                
+                this.loadFile('./views/html/topItems.html')
+            })
+
+            ipcMain.on('loadEmployeePerformance',()=>{
+
+                this.loadFile('./views/html/employeePerformance.html')
+
+            })
+
             ipcMain.on('sendUserParams', (e)=>{
 
                 this.webContents.send("setUserParams", [this.userName, this.userType])

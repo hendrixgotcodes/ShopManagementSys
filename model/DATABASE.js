@@ -1580,6 +1580,64 @@ class DATABASE{
         
     }
 
+    getItems(from, to){
+
+        return new Promise((resolve, reject)=>{
+
+            this.connector.query(`
+
+            SELECT (SELECT Name FROM items WHERE items.id = sales.Item) AS Name,(SELECT items.Brand FROM items WHERE items.id = sales.Item) AS Brand,(SELECT items.Category FROM items WHERE items.id = sales.Item) AS Category,SUM(InStock) DIV COUNT(*) AS Avg_Stock, 
+            SUM(Purchased) DIV COUNT(*) AS Avg_Sale,SUM(sales.Purchased) AS Total_Sold, SUM(sales.Revenue) As Revenue, SUM(sales.Profit) AS Profit FROM sales WHERE sales.Date BETWEEN ? AND ? GROUP BY sales.Item ORDER BY Profit DESC
+
+            `,[from, to], (err, result)=>{
+
+                if(err){
+
+                    reject(err);
+                    throw(err);
+
+                }
+                else{
+
+                    resolve(result);
+
+                }
+
+            })
+
+        })
+
+    }
+
+    getTopItems(from, to){
+
+        return new Promise((resolve, reject)=>{
+
+            this.connector.query(`
+
+            SELECT (SELECT Name FROM items WHERE items.id = sales.Item) AS Name,(SELECT items.Brand FROM items WHERE items.id = sales.Item) AS Brand,(SELECT items.Category FROM items WHERE items.id = sales.Item) AS Category,SUM(InStock) DIV COUNT(*) AS Avg_Stock, 
+            SUM(Purchased) DIV COUNT(*) AS Avg_Sale,SUM(sales.Purchased) AS Total_Sold, SUM(sales.Revenue) As Revenue, SUM(sales.Profit) AS Profit FROM sales WHERE sales.Date BETWEEN ? AND ? GROUP BY sales.Item ORDER BY Avg_Sale DESC
+
+            `,[from, to], (err, result)=>{
+
+                if(err){
+
+                    reject(err);
+                    throw(err);
+
+                }
+                else{
+
+                    resolve(result);
+
+                }
+
+            })
+
+        })
+
+    }
+
     getItemOrderedMonthly(){
 
         return new Promise((resolve, reject)=>{
@@ -1590,6 +1648,85 @@ class DATABASE{
             SUM(Purchased) DIV COUNT(*) AS Avg_Sale,SUM(sales.Purchased) AS Total_Sold, SUM(sales.Revenue) As Revenue, SUM(sales.Profit) AS Profit FROM sales WHERE sales.Date BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW() GROUP BY sales.Item ORDER BY Profit DESC
 
             `, (err, result)=>{
+
+                if(err){
+
+                    reject(err);
+                    throw(err);
+
+                }
+                else{
+
+                    resolve(result);
+
+                }
+
+            })
+
+        })
+
+    }
+
+    getTopItemOrderedMonthly(){
+
+        return new Promise((resolve, reject)=>{
+
+            this.connector.query(`
+
+            SELECT (SELECT Name FROM items WHERE items.id = sales.Item) AS Name,(SELECT items.Brand FROM items WHERE items.id = sales.Item) AS Brand,(SELECT items.Category FROM items WHERE items.id = sales.Item) AS Category,SUM(InStock) DIV COUNT(*) AS Avg_Stock, 
+            SUM(Purchased) DIV COUNT(*) AS Avg_Sale,SUM(sales.Purchased) AS Total_Sold, SUM(sales.Revenue) As Revenue, SUM(sales.Profit) AS Profit FROM sales WHERE sales.Date BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW() GROUP BY sales.Item ORDER BY Avg_Sale DESC
+
+            `, (err, result)=>{
+
+                if(err){
+
+                    reject(err);
+                    throw(err);
+
+                }
+                else{
+
+                    resolve(result);
+
+                }
+
+            })
+
+        })
+
+    }
+
+    getTopEmployees(from, to){
+
+        return new Promise((resolve, reject)=>{
+
+            this.connector.query(
+            'SELECT (SELECT `users`.`First_Name` FROM `users` WHERE `users`.`id` = `sales`.`User`) AS FirstName, (SELECT `users`.`Last_Name` FROM `users` WHERE `users`.`id` = `sales`.`User`) AS LastName, SUM(`Profit`) AS Profit, SUM(Revenue) AS Revenue, COUNT(*) AS SalesMade, SUM(Purchased) AS ItemsSold, SUM(TotalDiscount) AS Discount FROM `sales` WHERE `sales`.`Date` BETWEEN ? AND ? GROUP BY `sales`.`User` ORDER BY Profit DESC',[from, to], (err, result)=>{
+
+                if(err){
+
+                    reject(err);
+                    throw(err);
+
+                }
+                else{
+
+                    resolve(result);
+
+                }
+
+            })
+
+        })
+
+    }
+
+    getTopEmployeesOrderedMonthly(){
+
+        return new Promise((resolve, reject)=>{
+
+            this.connector.query(
+            'SELECT (SELECT `users`.`First_Name` FROM `users` WHERE `users`.`id` = `sales`.`User`) AS FirstName, (SELECT `users`.`Last_Name` FROM `users` WHERE `users`.`id` = `sales`.`User`) AS LastName, SUM(`Profit`) AS Profit, SUM(Revenue) AS Revenue, COUNT(*) AS SalesMade, SUM(Purchased) AS ItemsSold, SUM(TotalDiscount) AS Discount FROM `sales` WHERE `sales`.`Date` BETWEEN DATE_SUB(NOW(), INTERVAL 1 MONTH) AND NOW() GROUP BY `sales`.`User` ORDER BY Profit DESC', (err, result)=>{
 
                 if(err){
 
@@ -1803,7 +1940,7 @@ class DATABASE{
 
        return new Promise((resolve, reject)=>{           
 
-            this.connector.query('select First_Name, Last_Name, IsAdmin, TIMEDIFF(CURRENT_TIMESTAMP(), Last_Seen) AS Last_Seen, (select sum(`sales`.`Profit`) from `sales` sales where `sales`.`User` = `users`.`id`) as Total_Profits, (SELECT COUNT(*) FROM `sales` WHERE `sales`.`user` = `users`.`id`) as Total_Sales from `users` users', (error, result)=>{
+            this.connector.query('select First_Name, Last_Name, IsAdmin, User_Name,TIMEDIFF(CURRENT_TIMESTAMP(), Last_Seen) AS Last_Seen from `users` users', (error, result)=>{
 
                 if(error){
                     reject(error)
@@ -2093,6 +2230,54 @@ class DATABASE{
             })
 
            
+
+        })
+
+    }
+
+    disableEmployee(userName){
+
+        return new Promise((resolve, reject)=>{
+
+            this.connector.query("UPDATE `users` SET `users`.`Disabled` WHERE `users`.`User_Name` = ?", userName, (error, result)=>{
+
+                if(error){
+
+                    reject(error);
+                    throw error;
+
+                }
+                else{
+
+                    resolve();
+
+                }
+
+            })
+
+        })
+
+    }
+
+    deleteEmployee(userName){
+
+        return new Promise((resolve, reject)=>{
+
+            this.connector.query("DELETE FROM `users` WHERE `users`.`User_Name` = ?", userName, (error, result)=>{
+
+                if(error){
+
+                    reject(error);
+                    throw error;
+
+                }
+                else{
+
+                    resolve();
+
+                }
+
+            })
 
         })
 

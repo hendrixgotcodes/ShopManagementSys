@@ -214,7 +214,7 @@ body {
   justify-content: center;
   align-items: center; }
   .main_body .titleBar {
-    z-index: 1;
+    z-index: 5;
     justify-self: flex-start;
     width: 100%;
     height: 4.5%;
@@ -1176,7 +1176,9 @@ body {
       display: flex;
       justify-content: center;
       align-items: center;
-      flex-flow: column; }
+      flex-flow: column;
+      transform: scale(0);
+      transition: .3s; }
       .main_body .mainBody_content .userForm .userForm_header {
         height: 12%;
         display: flex;
@@ -1257,6 +1259,8 @@ body {
         transition: .3s; }
         .main_body .mainBody_content .userForm .btn_employ:hover {
           background-color: #3f6958; }
+    .main_body .mainBody_content .userForm--shown {
+      transform: scale(1); }
     .main_body .mainBody_content .exitPromptBox {
       width: 30%;
       height: 45%;
