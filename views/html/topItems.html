@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Market Performance</title>
+  <link rel="stylesheet" href="../../views/css/profits.css">
+</head>
+
+<body>
+
+  <div class="main_menu">
+    <div class="menu_a">
+      <label for="" class="lbl_storeName"><img src="../Icons/logo/logo.png" alt=""></label>
+
+      <div class="menu_iconsContainer">
+
+        <div id="goto_store" tabindex="1" class="menu_icons tabItem">
+          <img src="../Icons/menuIcons/storefront.svg" id="storefront" alt="Goto StoreFront" class="menuIcon tip_store">
+        </div>
+        <div id="goto_inventory" tabindex="2" class="menu_icons tabItem" aria-placeholder="Go to Inventory">
+          <img src="../Icons/menuIcons/inventory.png" id="menuIcon_png" alt="Goto Inventory"
+            class="menuIcon tip_inventory">
+        </div>
+        <div id="goto_analytics" tabindex="3" class="menu_icons tabItem" aria-placeholder="Go to analytics">
+          <img src="../Icons/menuIcons/analytics.svg" alt="Goto analytics" class="menuIcon tip_analytics">
+        </div>
+
+        <div id="goto_employees" tabindex="3" class="menu_icons tabItem" aria-placeholder="Go to employees">
+          <img src="../Icons/menuIcons/users_ico.svg" alt="Goto analytics" class="menuIcon tip_employees">
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="menu_b">
+      <center>
+        <img tabindex="4" id="account" src="../Icons/menuIcons/Tray/info.svg" alt="" class="menu_items tabItem">
+        <!-- <input type="checkbox" name="" id="" class="menuB_cb"> -->
+        <img tabindex="5" id="settings" src="../Icons/menuIcons/Tray/settings.svg" alt="" class="menu_items tabItem">
+        <img tabindex="6" src="../Icons/menuIcons/Tray/signout.svg" alt="" id="signout" class="menu_items tabItem">
+      </center>
+    </div>
+
+  </div>
+
+  <div class="main_body">
+
+    <div class="titleBar" aria-placeholder="Title Bar">
+
+      <div class="titleBar_location">Analytics <img src="../Icons/Control_Box/angle.svg" alt=""> Product Market Performance</div>
+      <div class="titleBar_userName"></div>
+
+      <div class="titleBar_controlBox">
+        <div class="controlBox_minimize control store" aria-placeholder="minimize">
+          <img src="../Icons/Control_Box/Store/Minimize.png" alt="" />
+        </div>
+        <div class="controlBox_maximize control store" aria-placeholder="maximize">
+          <img src="../Icons/Control_Box/Store/Maximize.png" id="restore_maxi" alt="" />
+        </div>
+        <div class="controlBox_close control store" aria-placeholder="close">
+          <img src="../Icons/Control_Box/Store/Close.png" alt="" />
+        </div>
+      </div>
+
+    </div>
+
+    <div class="mainBody_content">
+      <div class="content_toolBar" aria-placeholder="Tool Bar">
+        <label for="searchItem" class="toolBar_lbl">
+          Find:
+          <input tabindex="6" type="text" placeholder="Find your products by name"
+            aria-placeholder="Find your products by name" class="toolBar_tb">
+          <button class="toolBar_btn">Go</button>
+        </label>
+
+        <!-- <div class="toolBar_select">
+          <div tabindex="7" class="select_value">
+            <center class="selectValue_center">
+              <img src="../Icons/toolBar/funnel.svg" class="selectValue_icon" alt="">
+              <span class="selectValue_span">Filter By:</span>
+            </center>
+            <img src="../Icons/toolBar/play_arrow-black-18dp.svg" alt="" class="selectValue_icon arrow">
+          </div>
+          <div tabindex="0" class="select_dropdown">
+            <span tabindex="0" class="selectDropdown_value tip_category">
+              Category
+            </span>
+            <span tabindex="0" class="selectDropdown_value tip_brand">
+              Brand
+            </span>
+            <span tabindex="0" class="selectDropdown_value tip_default">
+              Default
+            </span>
+          </div>
+        </div> -->
+
+        <div class="footer_actions">
+     
+          <label for="" class="filter">
+            View From:
+            <input type="date" name="" id="toolBarDate_from" class="footer_date">
+
+            <div class="toolBar_tP starttP">
+              <div class="arrow"></div>
+
+              <div class="inSpan">Please select a start date</div>
+            </div>
+
+            To:
+            <input type="date" name="" id="toolBarDate_to" class="footer_date">
+
+            <div class="toolBar_tP endtP">
+              <span class="inSpan">Please select an end date</span>
+              <div class="arrow"></div>
+            </div>
+
+          </label>
+  
+          <button  class="toolBarSlct_btn">Go</button>
+  
+        </div>
+
+        <div class="Sales Profits">
+          <center>
+            <label for="" class="lbl_salesTag">
+              Total Profit
+              <img src="../Icons/toolBar/arrowdown.svg" alt="">
+            </label>
+            <label for="" class="salesMade">
+              <span class="salesCurrency">GH¢</span>
+              <span id="profit_amount">0.00</span>
+            </label>
+          </center>
+        </div>
+
+
+      </div>
+
+      <div class="contentContainer">
+        <table class="contentTable">
+          <thead class="tableHeader">
+            <tr class="tableHead">
+              <th class="tableHead_items tb_long string" targetRow=".td_Name--hidden">
+                <img src="../Icons/table/header/sort.png" alt="" class="sortIcon items_pad">
+                <span>Name</span>
+              </th>
+              <th class="tableHead_items tb_long string" targetRow=".td_Brand--hidden">
+                <img src="../Icons/table/header/sort.png" alt="" class="sortIcon items_pad">
+                <span>Brand</span>
+              </th>
+              <th class="tableHead_items  tb_Short" targetRow=".td_AvgStock--hidden">
+                <img src="../Icons/table/header/sort.png"  alt="" class="sortIcon items_pad">
+                <span>Avg. Stock</span>
+              </th>
+              <th class="tableHead_items  tb_Short" targetRow=".td_AvgSale--hidden">
+                <img src="../Icons/table/header/sort.png"  alt="" class="sortIcon items_pad">
+                <span>Avg. Sales</span>
+              </th>
+              <th class="tableHead_items  tb_Short" targetRow=".td_Sold--hidden">
+                <img src="../Icons/table/header/sort.png"  alt="" class="sortIcon items_pad">
+                <span>Total Sold</span>
+              </th>
+              <th class="tableHead_items tb_Medium" targetRow=".td_Revenue--hidden">
+                <img src="../Icons/table/header/sort.png" alt="" class="sortIcon items_pad">
+                <span>
+                  Total Revenue <span class="currency"> (GH¢)</span>
+                </span>
+              </th>
+              <th sorted="false"  class="tableHead_items tb_Medium th_profit" targetRow=".td_Profit--hidden">
+                <img src="../Icons/table/header/sort.png" alt="" class="sortIcon items_pad">
+                <span>
+                  Profit Gained <span class="currency"> (GH¢)</span>
+                </span>
+              </th>
+            </tr>
+          </thead>
+
+          <tbody class="tableBody">
+           
+           
+          </tbody>
+        </table>
+
+      </div>
+
+
+    </div>
+
+    <div class="notification_banner" role="alert">
+      <span></span>
+
+      <div class="banner_arrow"></div>
+    </div>
+
+    <div class="footer">
+      <div class="footer_clock"">
+        <span class=" clock_hour">6</span>
+        <span id="clock_blinker">: </span>
+        <span class="clock_min"> 15</span>
+        <span class="clock_ampm">PM</span>
+      </div>
+      <div class="footer_actions">
+       
+      </div>
+    </div>
+
+
+  </div>
+
+   
+    <!--  -->
+
+  <div class="contentCover"></div>
+
+  <!-- <script src="../../controller/GeneralController.js"></script> -->
+  <script src="../../build/GeneralController.js"></script>
+  <script src="../../build/TopItemsController.js"></script>
+  <script src="../../views/js/sortTable.js"></script>
+  <script src="../../build/toolTips.js"></script>
+  <script src="../../views/js/clock.js"></script>
+  <script src="../../controller/modals/settingsController.js"></script>
+  <!-- <script src="../../build/toolTips_Modals.js"></script> -->
+</body>
+
+</html>
