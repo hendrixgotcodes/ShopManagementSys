@@ -1,5 +1,6 @@
 "use strict";
 
+import { lstat } from "fs";
 import Millify from "millify";
 import DATABASE from "../../model/DATABASE";
 import Notifications from "../Alerts/NotificationController";
@@ -8,6 +9,7 @@ const cryptoJS = require("crypto-js");
 const commaNumber = require("comma-number");
 
 const database = new DATABASE()
+let validation;
 
 
 
@@ -664,325 +666,263 @@ class Modal {
                    
 
     
-    static openUserForm(newUser){
+    static openUserForm(newUser, userNamePara="", firstNamePara="", lastNamePara="", accountStatus=""){
 
-        let formTitle, disabled;
+        return new Promise((resolve, reject)=>{
+            
+        
+            let formTitle, disabled, btnLabel;
 
-        if(newUser === true){
+            if(newUser === true){
 
-            formTitle = "New Account"
-            disabled = " ";
+                formTitle = "New Account"
+                disabled = " ";
+                btnLabel = "Employ";
 
-        }
-        else{
-            formTitle = "Edit Account";
-            disabled = "disabled";
-        }
+            }
+            else{
+                formTitle = "Edit Account";
+                disabled = "disabled";
+                btnLabel = "Submit Change"
+            }
 
-        const contentCover = document.querySelector(".contentCover");
-        const contentContainer = document.querySelector(".contentContainer");
+            const contentCover = document.querySelector(".contentCover");
+            const contentContainer = document.querySelector(".contentContainer");
 
-        contentCover.classList.add("contentCover--shown");
+            contentCover.classList.add("contentCover--shown");
 
-        const userForm = document.createElement("div");
-        userForm.className = "userForm modal";
+            const userForm = document.createElement("div");
+            userForm.className = "userForm modal";
 
-        userForm.innerHTML =
-        `
-            <header class="userForm_header">
-                ${formTitle}
+            userForm.innerHTML =
+            `
+                <header class="userForm_header">
+                    ${formTitle}
 
-                <img src="../Icons/modals/close.svg"/>
-            </header>
-            <div class="alertBanner"></div>
+                    <img src="../Icons/modals/close.svg"/>
+                </header>
+                <div class="notificationBanner"></div>
 
-            <form>
+                <form>
 
-                <label class="formlbl lbl_FirstName" for="tb_FirstName">
+                    <label class="formlbl lbl_FirstName" for="tb_FirstName">
 
-                    First Name
-                    <input class="userForm_input tb_firstName" class="tb_FirstName" type="text" placeholder="eg. Adwoa">
+                        First Name
+                        <input class="userForm_input tb_firstName" value="${firstNamePara}" ${disabled} class="tb_FirstName" type="text" placeholder="eg. Adwoa">
+                        <span class="alertSpan"></span>
+
+                    </label>
+
+                    <label class="formlbl lbl_LastName" for="tb_LastName">
+
+                        Last Name
+                        <input class="userForm_input tb_lastName" value="${lastNamePara}" ${disabled} type="text" placeholder="eg. Sarpong">
+                        <span class="alertSpan"></span>
+
+                    </label>
+
+                    <label class="formlbl lbl_UserName" for="tb_UserName">
+
+                        Username
+                        <input class="userForm_input tb_UserName" value="${userNamePara}" ${disabled} type="text" placeholder="eg. adwoaSar11"/>
+                        <span class="alertSpan"></span>
+
+                    </label>
+
+                    <label class="formlbl lbl_Password" for="tb_Password">
+
+                        Password
+                        <input class="userForm_input tb_Password"  id="tb_Password" class="form_Password" type="password" placeholder="eg. eightlengthedpassword"/>
+                        <span class="alertSpan"></span>
+
+                    </label>
+
+                    <label class="formlbl lbl_Password" for="tb_PasswordRpt">
+
+                        Confirm Password
+                        <input class="userForm_input tb_PasswordRpt" id="tb_PasswordRpt" class="form_Password" type="password" placeholder="eg. repeatpassword"/>
+                        <span class="alertSpan"></span>
+
+
+                    </label>
+
+                    <label class="formlbl lbl_Password" for="tb_PasswordRpt">
+
+                        Account Type
+                    <select value="${accountStatus}" class="userForm_input slct_accountType" ${disabled}>
+                            <option value="0">Regular</option>
+                            <option value="1">Administrator</option>
+                    </select>
                     <span class="alertSpan"></span>
 
-                </label>
-
-                <label class="formlbl lbl_LastName" for="tb_LastName">
-
-                    Last Name
-                    <input class="userForm_input tb_lastName" type="text" placeholder="eg. Sarpong">
-                    <span class="alertSpan"></span>
-
-                </label>
-
-                <label class="formlbl lbl_UserName" for="tb_UserName">
-
-                    Username
-                    <input class="userForm_input tb_UserName" type="text" placeholder="eg. adwoaSar11"/>
-                    <span class="alertSpan"></span>
-
-                </label>
-
-                <label class="formlbl lbl_Password" for="tb_Password">
-
-                    Password
-                    <input class="userForm_input tb_Password" id="tb_Password" class="form_Password" type="password" placeholder="eg. eightlengthedpassword"/>
-                    <span class="alertSpan"></span>
-
-                </label>
-
-                <label class="formlbl lbl_Password" for="tb_PasswordRpt">
-
-                    Confirm Password
-                    <input class="userForm_input tb_PasswordRpt" id="tb_PasswordRpt" class="form_Password" type="password" placeholder="eg. repeatpassword"/>
-                    <span class="alertSpan"></span>
+                    </label>
 
 
-                </label>
+                </form>
 
-                <label class="formlbl lbl_Password" for="tb_PasswordRpt">
+                <button class="btn_employ">${btnLabel}</button>
 
-                    Account Type
-                   <select class="userForm_input slct_accountType">
-                        <option value="0">Regular</option>
-                        <option value="1">Administrator</option>
-                   </select>
-                   <span class="alertSpan"></span>
+            `
 
-                </label>
+            contentContainer.appendChild(userForm);
 
+            setTimeout(()=>{
 
-            </form>
+                userForm.classList.add("userForm--shown")
 
-            <button class="btn_employ">Employ</button>
+            },400)
 
-        `
+            const header = userForm.querySelector(".userForm_header");
+            const btnClose = header.querySelector("img");
+            const btnEmploy = userForm.querySelector(".btn_employ");
+            const tb_FirstName = userForm.querySelector(".tb_firstName");
+            const tb_LastName = userForm.querySelector(".tb_lastName");
+            const tb_Password = userForm.querySelector(".tb_Password");
+            const tb_PasswordRpt = userForm.querySelector(".tb_PasswordRpt");
+            const slct_accountType = userForm.querySelector(".slct_accountType");
+            const tbUserName = userForm.querySelector(".tb_UserName");
+            const userForm_inputs = userForm.querySelectorAll(".userForm_input");
+            const passwordFields = userForm.querySelectorAll(".form_Password");
+            const notificationBanner = userForm.querySelector(".notificationBanner");
 
-        contentContainer.appendChild(userForm);
+            const firstNameAlert =  tb_FirstName.parentElement.querySelector(".alertSpan");
+            const secondNameAlert = tb_LastName.parentElement.querySelector(".alertSpan");
+            const passwordAlert = tb_Password.parentElement.querySelector(".alertSpan");
+            const passwordRptAlert = tb_PasswordRpt.parentElement.querySelector(".alertSpan");
+            const userNameAlert = tbUserName.parentElement.querySelector(".alertSpan");
 
-        setTimeout(()=>{
-
-            userForm.classList.add("userForm--shown")
-
-        },400)
-
-        const header = userForm.querySelector(".userForm_header");
-        const btnClose = header.querySelector("img");
-        const btnEmploy = userForm.querySelector(".btn_employ");
-        const tb_FirstName = userForm.querySelector(".tb_firstName");
-        const tb_LastName = userForm.querySelector(".tb_lastName");
-        const tb_Password = userForm.querySelector(".tb_Password");
-        const tb_PasswordRpt = userForm.querySelector(".tb_PasswordRpt");
-        const slct_accountType = userForm.querySelector(".slct_accountType");
-        const tbUserName = userForm.querySelector(".tb_UserName");
-        const userForm_inputs = userForm.querySelectorAll(".userForm_input");
-        const passwordFields = userForm.querySelectorAll(".form_Password");
-        const alertBanner = userForm.querySelector(".alertBanner");
-
-        let pos1,pos2, pos3, pos4 =0;
-        let formIsValid = false;
+            let pos1,pos2, pos3, pos4 =0;
+            let formIsValid = false;
 
 
-        /***********Event Listeners************/
-        header.addEventListener("mousedown",function dragMouseDown(e){
+            /***********Event Listeners************/
+            header.addEventListener("mousedown",function dragMouseDown(e){
 
-            e.preventDefault();
-            pos3 = e.clientX;
-            pos4 = e.clentY;
-
-            document.onmouseup = closeDragElement;
-            // call a function whenever the cursor moves:
-            document.onmousemove = elementDrag;
-
-            function elementDrag(e) {
-                e = e || window.event;
                 e.preventDefault();
-                // calculate the new cursor position:
-                pos1 = pos3 - e.clientX;
-                pos2 = pos4 - e.clientY;
                 pos3 = e.clientX;
-                pos4 = e.clientY;
-                // set the element's new position:
-                userForm.style.top = (userForm.offsetTop - pos2) + "px";
-                userForm.style.left = (userForm.offsetLeft - pos1) + "px";
-              }
-            
-              function closeDragElement() {
-                // stop moving when mouse button is released:
-                document.onmouseup = null;
-                document.onmousemove = null;
-              }
+                pos4 = e.clentY;
 
+                document.onmouseup = closeDragElement;
+                // call a function whenever the cursor moves:
+                document.onmousemove = elementDrag;
 
-        })
-
-        btnClose.addEventListener("click", (e)=>{
-
-            userForm.classList.remove("userForm--shown");
-            contentCover.classList.remove("contentCover--shown");
-
-            setTimeout(() => {
-
-                userForm.remove()
+                function elementDrag(e) {
+                    e = e || window.event;
+                    e.preventDefault();
+                    // calculate the new cursor position:
+                    pos1 = pos3 - e.clientX;
+                    pos2 = pos4 - e.clientY;
+                    pos3 = e.clientX;
+                    pos4 = e.clientY;
+                    // set the element's new position:
+                    userForm.style.top = (userForm.offsetTop - pos2) + "px";
+                    userForm.style.left = (userForm.offsetLeft - pos1) + "px";
+                }
                 
-            }, 400);
-
-        });
-
-        btnEmploy.addEventListener("click", (e)=>{
-
-            if(formIsValid === true){
-
-                generateHash(tbUserName.value, tb_PasswordRpt.value)
-                .then((hashedPassword)=>{
-
-                    database.addNewUser({
-                        First_Name: tb_FirstName.value,
-                        Last_Name: tb_LastName.value,
-                        User_Name: tbUserName.value,
-                        Password: hashedPassword,
-                        IsAdmin: slct_accountType.value
-                    })
-                    .then(()=>{
-
-                        contentCover.classList.remove("contentCover--shown");
-
-                        Notifications.showAlert("success", "User added successfully");
-
-                        createEmployeeItem(`${tb_FirstName} ${tb_LastName.value}`, IsAdmin, "Never");
-                        userForm.remove();
-
-                    })
-                    .catch((error)=>{
-
-                        throw error
-
-                    })
-
-                })
-
-            }
-            else{
-
-                alertBanner.classList.add("alertBanner--shown");
-                alertBanner.innerText = "Please fill all fields of your form"
-
-                setTimeout(()=>{
-                    alertBanner.classList.remove("alertBanner--shown");
-                }, 5000);
-
-            }
-
-            
-
-        })
-
-        tbUserName.addEventListener("keyup", (e)=>{
-
-            const alertSpan = tbUserName.parentElement.querySelector(".alertSpan");
-
-            // let tbValue = tbUserName.value.replace(" ","");
-
-            if(e.code === "Space"){
-
-                tbUserName.value = tbUserName.value.replace(" ", "");
-                tbUserName.classList.add("error");
-                alertSpan.innerText = "No spaces allowed here";
-                
-                formIsValid = false;
-
-            }
-            else{
-
-                formIsValid = true;
-
-                database.getUser(tbUserName.value)
-                .then((result)=>{
-
-                    if(tbUserName.classList.contains("error")){
-                        tbUserName.classList.remove("error");
-                    }
-
-                    alertSpan.innerText = "";
-
-    
-                    if(result.length > 0){
-    
-                        tbUserName.classList.add("error");
-                        const alertSpan = tbUserName.parentElement.querySelector(".alertSpan");
-                        alertSpan.innerText = "Sorry, username already exists";
-
-                        formIsValid = false;
-    
-                    }
-                    else{
-    
-                        if(tbUserName.classList.contains("error")){
-                            tbUserName.classList.remove("error");
-                        }
-    
-                        alertSpan.innerText = "";
-
-                        formIsValid = true;
-    
-                    }
-    
-                })
-
-            }
-
-        });
-
-
-        userForm_inputs.forEach((userForm_input)=>{
-
-            userForm_input.addEventListener("blur", (e)=>{
-
-                const alertSpan = userForm_input.parentElement.querySelector(".alertSpan");
-
-                if(tbUserName.classList.contains("error")){
-                    tbUserName.classList.remove("error");
+                function closeDragElement() {
+                    // stop moving when mouse button is released:
+                    document.onmouseup = null;
+                    document.onmousemove = null;
                 }
 
-                alertSpan.innerText = "";
 
-                formIsValid = true;
-               
+            })
 
-                if(userForm_input.value === "" || userForm_input.value.replace(" ", "") === ""){
+            btnClose.addEventListener("click", (e)=>{
 
-                    alertSpan.innerText = "Entry cannot be empty";
+                userForm.classList.remove("userForm--shown");
+                contentCover.classList.remove("contentCover--shown");
 
-                    userForm_input.classList.add("error");
+                setTimeout(() => {
 
-                    formIsValid = false;
+                    userForm.remove()
+                    
+                }, 400);
+
+                reject();
+
+
+            });
+
+            btnEmploy.addEventListener("click", (e)=>{
+
+                
+
+                if((validateForm(tb_FirstName.value, tb_LastName.value, tbUserName.value, tb_Password.value, tb_PasswordRpt.value) )){
+
+                    userForm.classList.remove("userForm--shown");
+                    contentCover.classList.remove("contentCover--shown");
+
+                    setTimeout(() => {
+
+                        userForm.remove();
+                        
+                    }, 400);
+
+                    generateHash(tbUserName.value, tb_PasswordRpt.value)
+                    .then((hashedPassword)=>{
+
+                        resolve({
+                            First_Name: tb_FirstName.value,
+                            Last_Name: tb_LastName.value,
+                            User_Name: tbUserName.value,
+                            Password: hashedPassword,
+                            IsAdmin: slct_accountType.value
+                        })
+
+                    })
 
                 }
                 else{
 
-                    if(tbUserName.classList.contains("error")){
-                        tbUserName.classList.remove("error");
-                    }
+                   userNameAlert.innerText = "Must be atleast 5 characters long";
+                   tbUserName.classList.add("error");
 
-                    alertSpan.innerText = "";
+                   firstNameAlert.innerText = "Must be atleast 3 characters long";
+                   tb_FirstName.classList.add("error");
 
-                    formIsValid = true;
+                   secondNameAlert.innerText = "Must be atleast 3 characters long";
+                   tb_LastName.classList.add("error");
+
+                   passwordAlert.innerText = "Must be atleast 5 characters long and alpha numeric";
+                   tb_Password.classList.add("error");
+
+                   passwordRptAlert.innerText = "Must match with first password";
+                   tb_PasswordRpt.classList.add("error");
+
 
                 }
 
+                function validateForm(firstName, lastName, userName, firstPassword, secndPassword){
+
+                    let threeChars = /(.*[a-z]){3}/i;
+                    let fiveChars = /(.*[a-z]){5}/i;
+
+                    if(threeChars.test(firstName) === true && threeChars.test(lastName) === true && fiveChars.test(userName)===true && fiveChars.test(firstPassword) && firstPassword === secndPassword){
+
+                        return true
+
+                    }
+                    else{
+                        return false;
+                    }
+
+                }
+
+                
+
             })
 
-        })
+            tbUserName.addEventListener("keyup", (e)=>{
 
-        passwordFields.forEach((passwordField)=>{
+                const alertSpan = tbUserName.parentElement.querySelector(".alertSpan");
 
-            passwordField.addEventListener("keyup", (e)=>{
-
-                const alertSpan = passwordField.parentElement.querySelector(".alertSpan");
+                // let tbValue = tbUserName.value.replace(" ","");
 
                 if(e.code === "Space"){
 
-                    passwordField.value = passwordField.value.replace(" ", "");
-                    passwordField.classList.add("error");
+                    tbUserName.value = tbUserName.value.replace(" ", "");
+                    tbUserName.classList.add("error");
                     alertSpan.innerText = "No spaces allowed here";
                     
                     formIsValid = false;
@@ -990,8 +930,133 @@ class Modal {
                 }
                 else{
 
-                    if(passwordFields.classList.contains("error")){
-                        passwordField.classList.remove("error");
+                    formIsValid = true;
+
+                    database.getUser(tbUserName.value)
+                    .then((result)=>{
+
+                        if(tbUserName.classList.contains("error")){
+                            tbUserName.classList.remove("error");
+                        }
+
+                        alertSpan.innerText = "";
+
+        
+                        if(result.length > 0){
+        
+                            tbUserName.classList.add("error");
+                            const alertSpan = tbUserName.parentElement.querySelector(".alertSpan");
+                            alertSpan.innerText = "Sorry, username already exists";
+
+                            formIsValid = false;
+        
+                        }
+                        else{
+        
+                            if(tbUserName.classList.contains("error")){
+                                tbUserName.classList.remove("error");
+                            }
+        
+                            alertSpan.innerText = "";
+
+                            formIsValid = true;
+        
+                        }
+        
+                    })
+
+                }
+
+            });
+
+
+            userForm_inputs.forEach((userForm_input)=>{
+
+                userForm_input.addEventListener("blur", (e)=>{
+
+                    const alertSpan = userForm_input.parentElement.querySelector(".alertSpan");
+
+                    if(tbUserName.classList.contains("error")){
+                        tbUserName.classList.remove("error");
+                    }
+
+                    alertSpan.innerText = "";
+
+                    formIsValid = true;
+                
+
+                    if(userForm_input.value === "" || userForm_input.value.replace(" ", "") === ""){
+
+                        alertSpan.innerText = "Entry cannot be empty";
+
+                        userForm_input.classList.add("error");
+
+                        formIsValid = false;
+
+                    }
+                    else{
+
+                        if(tbUserName.classList.contains("error")){
+                            tbUserName.classList.remove("error");
+                        }
+
+                        alertSpan.innerText = "";
+
+                        formIsValid = true;
+
+                    }
+
+                })
+
+            })
+
+            passwordFields.forEach((passwordField)=>{
+
+                passwordField.addEventListener("keyup", (e)=>{
+
+                    const alertSpan = passwordField.parentElement.querySelector(".alertSpan");
+
+                    if(e.code === "Space"){
+
+                        passwordField.value = passwordField.value.replace(" ", "");
+                        passwordField.classList.add("error");
+                        alertSpan.innerText = "No spaces allowed here";
+                        
+                        formIsValid = false;
+
+                    }
+                    else{
+
+                        if(passwordFields.classList.contains("error")){
+                            passwordField.classList.remove("error");
+                        }
+
+                        alertSpan.innerText = "";
+
+                        formIsValid = true;
+
+                    }
+
+                })
+
+            })
+
+            tb_PasswordRpt.addEventListener("blur", (e)=>{
+
+                const alertSpan = tb_PasswordRpt.parentElement.querySelector(".alertSpan");
+
+                if(tb_Password.value !== tb_PasswordRpt.value){
+
+                    tb_PasswordRpt.classList.add("error");
+                    alertSpan.innerText = "No spaces allowed here";
+                    
+                    formIsValid = false;
+
+                }
+                else{
+
+                    if(tb_PasswordRpt.classList.contains("error")){
+                        tb_PasswordRpt.classList.remove("error");
                     }
 
                     alertSpan.innerText = "";
@@ -1002,49 +1067,24 @@ class Modal {
 
             })
 
-        })
 
-        tb_PasswordRpt.addEventListener("blur", (e)=>{
+            /*****************Functions */
+            function generateHash(userName, password){
 
-            const alertSpan = tb_PasswordRpt.parentElement.querySelector(".alertSpan");
-
-            if(tb_Password.value !== tb_PasswordRpt.value){
-
-                tb_PasswordRpt.classList.add("error");
-                alertSpan.innerText = "No spaces allowed here";
-                
-                formIsValid = false;
-
-            }
-            else{
-
-                if(tb_PasswordRpt.classList.contains("error")){
-                    tb_PasswordRpt.classList.remove("error");
-                }
-
-                alertSpan.innerText = "";
-
-                formIsValid = true;
-
+                return new Promise((resolve, reject)=>{
+        
+                    const hash = cryptoJS.AES.encrypt(password, userName).toString()
+        
+                    resolve(hash)
+        
+                })
+        
+        
             }
 
         })
 
-
-        /*****************Functions */
-        function generateHash(userName, password){
-
-            return new Promise((resolve, reject)=>{
-    
-                const hash = cryptoJS.AES.encrypt(password, userName).toString()
-    
-                resolve(hash)
-    
-            })
-    
-    
-        }
-
+            
         
 
     }

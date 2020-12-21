@@ -4,7 +4,7 @@ const { ipcRenderer } = require("electron");
 import clip from 'text-clipper';
 import DATABASE from '../model/DATABASE';
 import STORE from '../model/STORE';
-import Notifications from './Alerts/NotificationController';
+import Notifications, { showNotification } from './Alerts/NotificationController';
 import Modal from './modals/ModalController';
 const DOMCONTROLLER = require("./utilities/TableController");
 
@@ -308,9 +308,16 @@ function initializeEmployees(){
                 user.Total_Profits = "0.00"
             }
 
+            if(user.Reported === 1 || user.Reported === "1"){
+                user.Reported = true;
+            }
+            else{
+                user.Reported = false
+            }
+
             user.Last_Seen = getRelativeTime(user.Last_Seen);
 
-            DOMCONTROLLER.createEmployeeItem(`${user.First_Name} ${user.Last_Name}`, user.IsAdmin, user.Last_Seen, user.User_Name,user.Disabled,[disableEmployee, deleteEmploye, enableEmployee]);
+            DOMCONTROLLER.createEmployeeItem(`${user.First_Name} ${user.Last_Name}`, user.IsAdmin, user.Last_Seen, user.User_Name,user.Disabled,[disableEmployee, deleteEmploye, enableEmployee, editEmployee], user.Reported);
 
         })
 
@@ -425,7 +432,35 @@ function getRelativeTime(time){
 
 function openNewUserForm(){
 
-    Modal.openUserForm(true);
+    Modal.openUserForm(true)
+    .then((user)=>{
+
+        user.Reported = false;
+
+        database.addNewUser(user)
+        .then(()=>{
+
+            if(user.IsAdmin === 1){
+                user.IsAdmin = "Administrator";
+            }
+            else{
+                user.IsAdmin = "Regular"
+            }
+
+            DOMCONTROLLER.createEmployeeItem(`${user.First_Name} ${user.Last_Name}`, user.IsAdmin, "Never", user.User_Name, false, [disableEmployee, deleteEmploye, enableEmployee, editEmployee], false);
+
+            Notifications.showAlert("success", `${user.First_Name} has successfully employed`)
+
+        })
+        .catch((error)=>{
+
+           Notifications.showAlert("error", "Failed to add user")
+
+           throw error
+
+        })
+
+    })
 
 }
 
@@ -572,6 +607,52 @@ function enableEmployee(userName, employeeName){
 
 }
 
+function editEmployee(userName){
+
+    const rows = document.querySelector("tbody").querySelectorAll(".bodyRow");
+    let row;
+
+    rows.forEach((currentRow)=>{
+
+        if(currentRow.querySelector(".td_UserName--hidden").innerText === userName){
+
+            row = currentRow;
+            row.style.transform = "translateX(0%)"
+
+        }
+
+    })
+
+    database.getUser(userName)
+    .then((user)=>{
+
+        user = user.pop();
+
+        Modal.openUserForm(false, user.User_Name, user.First_Name, user.Last_Name, user.IsAdmin)
+        .then((user)=>{
+
+            database.removeEmployeeFromReported(user.User_Name, user.Password)
+            .then(()=>{
+
+                Notifications.showAlert("success", `${user.First_Name}'s password modified successfully`);
+
+                row.style.backgroundColor = "#fff";
+
+                row.querySelector(".controls").querySelector(".edit").disabled = true;
+
+            })
+            .catch(()=>{
+
+                Notifications.showAlert("error", `Sorry. Failed to modify ${user.User_Name}'s password.`)
+
+            })
+
+        })
+
+    })
+
+}
+
 
 function deleteEmploye(userName,employeeName){
 
@@ -631,7 +712,7 @@ function deleteEmploye(userName,employeeName){
 
     })
     .catch(()=>{
-        
+
     })
 
 }

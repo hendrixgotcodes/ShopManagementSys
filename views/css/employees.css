@@ -579,14 +579,30 @@ body {
               cursor: pointer;
               transition: .3s;
               color: #fff; }
-            .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .del, .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .edit {
+            .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .edit {
+              width: 50%;
+              background-color: #646766;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              cursor: pointer;
+              transition: .3s;
+              color: #fff;
+              border: none; }
+              .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .edit:disabled::before {
+                content: "(Can't edit)";
+                color: #fff;
+                position: absolute;
+                bottom: 10%;
+                font-size: .8rem; }
+            .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .del, .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .edit, .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .enable {
               position: relative;
               height: 100%;
               color: #fff;
               overflow: hidden; }
-              .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .del span, .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .edit span {
+              .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .del span, .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .edit span, .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .enable span {
                 z-index: 2; }
-              .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .del::after, .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .edit::after {
+              .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .del::after, .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .edit::after, .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .enable::after {
                 content: "";
                 position: absolute;
                 transition: .3s;
@@ -597,7 +613,7 @@ body {
                 right: 0;
                 transform: translateY(100%);
                 z-index: 1; }
-              .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .del:hover::after, .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .edit:hover::after {
+              .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .del:hover::after, .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .edit:hover::after, .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .enable:hover::after {
                 transform: translateY(0%); }
         .main_body .mainBody_content .contentContainer .tableBody .bodyRow--disabled {
           opacity: .5; }
@@ -1428,17 +1444,20 @@ body {
           border-radius: 3px; }
           .main_body .mainBody_content .userForm .userForm_header img:hover {
             box-shadow: 1px 3px 5px rgba(100, 103, 102, 0.3); }
-      .main_body .mainBody_content .userForm .alertBanner {
+      .main_body .mainBody_content .userForm .notificationBanner {
         position: absolute;
-        top: 10%;
+        top: 2%;
         left: 0;
         width: 100%;
         background-color: #12A89D;
         color: #fff;
         height: 5%;
         transition: .3s;
-        z-index: 1; }
-      .main_body .mainBody_content .userForm .alertBanner--shown {
+        z-index: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center; }
+      .main_body .mainBody_content .userForm .notificationBanner--shown {
         top: 12%; }
       .main_body .mainBody_content .userForm form {
         height: 78%;
@@ -1468,10 +1487,12 @@ body {
             font-size: 1rem; }
           .main_body .mainBody_content .userForm form .formlbl .error {
             outline-width: .5rem;
-            outline-color: #e16161; }
+            outline-color: #e16161;
+            position: relative; }
             .main_body .mainBody_content .userForm form .formlbl .error + .alertSpan {
               font-size: .7rem;
-              color: #e16161; }
+              color: #e16161;
+              position: absolute; }
         .main_body .mainBody_content .userForm form .lbl_FirstName, .main_body .mainBody_content .userForm form .lbl_LastName {
           width: 100%; }
       .main_body .mainBody_content .userForm .btn_employ {

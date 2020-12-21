@@ -440,9 +440,9 @@ class DOMCONTROLLER{
 
     }
 
-    static createEmployeeItem(name, accountStatus, lastSeen, userName, disabled,functions){
+    static createEmployeeItem(name, accountStatus, lastSeen, userName, disabled,functions, reported){
 
-        let disableEnable;
+        let disableEnable, btnEdit_UI;
 
         if(disabled === 1){
 
@@ -452,6 +452,15 @@ class DOMCONTROLLER{
 
             disableEnable = `<div class="disable"><span>Disable</span></div>`
 
+        }
+
+        if(reported === true){
+
+            btnEdit_UI = '<button class="edit"><span>Edit</span></button>'
+
+        }
+        else{
+            btnEdit_UI = '<button class="edit" disabled ><span>Edit</span></button>'
         }
 
         const tableBody = document.querySelector("tbody");
@@ -464,6 +473,7 @@ class DOMCONTROLLER{
             <td class="controls">
                 <div class="delete"><span>Delete</span></div>
                 ${disableEnable}
+                ${btnEdit_UI}
             </td>
             <td class="td_Names">${name}</td>
             <td class="td_AccountStatus">${accountStatus}</td>
@@ -476,6 +486,17 @@ class DOMCONTROLLER{
         if(disabled === 1 || disabled === "1"){
 
             row.classList.add("bodyRow--disabled")
+
+        }
+
+        if(reported === true){
+
+            setTimeout(() => {
+
+                row.style.backgroundColor = "rgba(239, 181, 38, 0.3)";
+                
+            }, 1000);
+
 
         }
 
@@ -502,6 +523,7 @@ class DOMCONTROLLER{
 
         const btnDelete = row.querySelector(".controls").querySelector(".delete") 
         const btnDisableEnable = row.querySelector(".controls").querySelector(".disable") || row.querySelector(".controls").querySelector(".enable");
+        const btnEdit = row.querySelector(".controls").querySelector(".edit");
 
         btnDelete.addEventListener("click", ()=>{
 
@@ -523,6 +545,10 @@ class DOMCONTROLLER{
 
             }
 
+        })
+
+        btnEdit.addEventListener("click", ()=>{
+            functions[3](userName)
         })
 
     }

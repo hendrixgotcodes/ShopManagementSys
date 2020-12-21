@@ -211,11 +211,40 @@
                 // }
             }
 
-            & .del, & .edit{
+            & .edit{
+                width: 50%;
+                background-color: lighten($primary_black, 0);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                cursor: pointer;
+                transition: .3s;
+                color: $WHITE;
+                border: none;
+
+                &:disabled{
+
+                    &::before{
+                        content: "(Can't edit)";
+                        color: $WHITE;
+                        position: absolute;
+                        bottom: 10%;
+                        font-size: .8rem;
+                    }
+                    
+                }
+
+                // &:hover{
+                //     color: $secondary_red;
+                // }
+            }
+
+            & .del, & .edit, & .enable{
                 position: relative;
                 height: 100%;
                 color: $WHITE;
                 overflow: hidden;
+                // background-color: lighten($color: $primary_black, $amount: 0);
 
                 & span{
                     z-index: 2;

@@ -32,6 +32,7 @@
     "text-clipper": "^2.1.0",
     "timediff": "^1.1.1",
     "tippy.js": "^6.2.6",
+    "validatorjs": "^3.22.1",
     "webpack": "^4.44.2",
     "webpack-dev-server": "^3.11.0",
     "xlsx": "^0.16.8"

@@ -2,6 +2,7 @@
 const mariadb = require('mysql2');
 const cryptoJS = require('crypto-js');
 const { offset } = require('@popperjs/core');
+const { transform } = require('babel-core');
 
 class DATABASE{
 
@@ -46,6 +47,7 @@ class DATABASE{
                             IsAdmin BOOLEAN NOT NULL,
                             Last_Seen DATETIME,
                             Disabled BOOLEAN,
+                            Reported BOOLEAN,
                             UNIQUE(User_Name),
                             PRIMARY KEY (id)
                         )
@@ -1941,7 +1943,7 @@ class DATABASE{
 
        return new Promise((resolve, reject)=>{           
 
-            this.connector.query('select First_Name, Last_Name, IsAdmin, User_Name, Disabled, TIMEDIFF(CURRENT_TIMESTAMP(), Last_Seen) AS Last_Seen from `users` users', (error, result)=>{
+            this.connector.query('select First_Name, Last_Name, IsAdmin, User_Name, Disabled, Reported, TIMEDIFF(CURRENT_TIMESTAMP(), Last_Seen) AS Last_Seen from `users` users', (error, result)=>{
 
                 if(error){
                     reject(error)
@@ -2196,41 +2198,175 @@ class DATABASE{
 
         return new Promise((resolve, reject)=>{
 
-            this.connector.query("SELECT User_Name FROM `users` WHERE ?", {User_Name: userName}, (error, result)=>{
-
+            this.connector.beginTransaction((error)=>{ 
+                
                 if(error){
                     reject(error)
                     throw error
                 }
 
-                let user = result.shift();
+                this.connector.query("SELECT User_Name FROM `users` WHERE ?", {User_Name: userName}, (error, result)=>{
+
+                    if(error){
+                        reject(error)
+                        throw error
+                    }
+
+                    let user = result.shift();
 
 
-                if(user === null || user === undefined){
+                    if(user === null || user === undefined){
 
-                    reject(new Error("invalid user"))
+                        reject(new Error("invalid user"))
 
-                }
-                else{
+                    }
+                    else{
 
-                     this.connector.query("INSERT INTO `reportedaccounts` SET ?",{User_Name: user.User_Name}, (error, result)=>{
+                        this.connector.query("INSERT INTO `reportedaccounts` SET ?",{User_Name: user.User_Name}, (error, result)=>{
 
-                        if(error){
+                            if(error){
+                
+                                this.connector.rollback(()=>{
+
+                                    reject(error)
+                                    throw error
+
+                                })
+                                
+                
+                            }
+                            else{
+
+                                this.connector.query("UPDATE `users` SET `users`.`Reported` = ? WHERE `users`.`User_Name` = ?", [true, user.User_Name], (error, result)=>{
+
+                                    if(error){
+
+                                        this.connector.rollback(()=>{
+
+                                            reject(error)
+                                            throw error
+
+                                        })
+
+                                    }
+                                    else{
+
+                                        this.connector.commit((error)=>{
+
+                                            if(error){
+                                                reject(error)
+                                                throw error
+                                            }
+                                            else{
+                                                resolve(result)
+                                                
+                                            }
+
+                                        })
+
+                                    }
+
+                                })
+
+                            }
+                
             
-                            reject(error)
-                            throw error
-            
-                        }
-            
-                        resolve(result)
-        
-                    })
+                        })
 
-                }
+                    }
+
+                })
 
             })
 
-           
+        })
+
+    }
+
+    removeEmployeeFromReported(userName, password){
+
+        return new Promise((resolve, reject)=>{
+
+            this.connector.beginTransaction((error)=>{ 
+                
+                if(error){
+                    reject(error)
+                    throw error
+                }
+
+                this.connector.query("SELECT `users`.`User_Name` FROM `users` WHERE ?", {User_Name: userName}, (error, result)=>{
+
+                    if(error){
+                        reject(error)
+                        throw error
+                    }
+
+                    let user = result.shift();
+
+
+                    if(user === null || user === undefined){
+
+                        reject(new Error("invalid user"))
+
+                    }
+                    else{
+
+                        this.connector.query("DELETE FROM `reportedaccounts` WHERE ?",{User_Name: user.User_Name}, (error, result)=>{
+
+                            if(error){
+                
+                                this.connector.rollback(()=>{
+
+                                    reject(error)
+                                    throw error
+
+                                })
+                                
+                
+                            }
+                            else{
+
+                                this.connector.query("UPDATE `users` SET ? WHERE `users`.`User_Name` = ?", [{Reported: false, Password: password}, user.User_Name], (error, result)=>{
+
+                                    if(error){
+
+                                        this.connector.rollback(()=>{
+
+                                            reject(error)
+                                            throw error
+
+                                        })
+
+                                    }
+                                    else{
+
+                                        this.connector.commit((error)=>{
+
+                                            if(error){
+                                                reject(error)
+                                                throw error
+                                            }
+                                            else{
+                                                resolve(result)
+                                                
+                                            }
+
+                                        })
+
+                                    }
+
+                                })
+
+                            }
+                
+            
+                        })
+
+                    }
+
+                })
+
+            })
 
         })
 

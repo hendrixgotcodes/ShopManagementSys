@@ -1422,17 +1422,20 @@ body {
           border-radius: 3px; }
           .main_body .mainBody_content .userForm .userForm_header img:hover {
             box-shadow: 1px 3px 5px rgba(100, 103, 102, 0.3); }
-      .main_body .mainBody_content .userForm .alertBanner {
+      .main_body .mainBody_content .userForm .notificationBanner {
         position: absolute;
-        top: 10%;
+        top: 2%;
         left: 0;
         width: 100%;
         background-color: #12A89D;
         color: #fff;
         height: 5%;
         transition: .3s;
-        z-index: 1; }
-      .main_body .mainBody_content .userForm .alertBanner--shown {
+        z-index: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center; }
+      .main_body .mainBody_content .userForm .notificationBanner--shown {
         top: 12%; }
       .main_body .mainBody_content .userForm form {
         height: 78%;
@@ -1462,10 +1465,12 @@ body {
             font-size: 1rem; }
           .main_body .mainBody_content .userForm form .formlbl .error {
             outline-width: .5rem;
-            outline-color: #e16161; }
+            outline-color: #e16161;
+            position: relative; }
             .main_body .mainBody_content .userForm form .formlbl .error + .alertSpan {
               font-size: .7rem;
-              color: #e16161; }
+              color: #e16161;
+              position: absolute; }
         .main_body .mainBody_content .userForm form .lbl_FirstName, .main_body .mainBody_content .userForm form .lbl_LastName {
           width: 100%; }
       .main_body .mainBody_content .userForm .btn_employ {

@@ -1099,10 +1099,10 @@
         }
 
     }
-    .alertBanner{
+    .notificationBanner{
 
         position: absolute;
-        top: 10%;
+        top: 2%;
         left: 0;
         width: 100%;
         background-color: $secondary_green;
@@ -1110,9 +1110,12 @@
         height: 5%;
         transition: .3s;
         z-index: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
 
     }
-    .alertBanner--shown{
+    .notificationBanner--shown{
 
         top: 12%;
 
@@ -1155,10 +1158,12 @@
             .error{
                 outline-width: .5rem;
                 outline-color: $secondary_red;
+                position: relative;
 
                 & + .alertSpan{
                     font-size: .7rem;
                     color: $secondary_red;
+                    position: absolute;
                 }
             }
 
