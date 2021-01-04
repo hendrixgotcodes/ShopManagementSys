@@ -12,6 +12,14 @@
     font-weight: 400;
     font-size: .8rem;
     color: $primary_green--dark;
+    position: relative;
+
+    .titleBar_userName{
+        
+        position: absolute;
+        left: 48%;
+
+    }
 
     .titleBar_location {
         margin-left: 2%;

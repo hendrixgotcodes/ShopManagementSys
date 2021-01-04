@@ -17,6 +17,17 @@ const store = new STORE({
     }
 });
 
+let USERNAME, USERTYPE; 
+
+ipcRenderer.send("sendUserParams")
+
+ipcRenderer.on("setUserParams",(e, [userName, userType])=>{
+
+    USERNAME = userName;
+    USERTYPE = userType
+
+})
+
 const settings = document.querySelector('#settings');
 const contentCover = document.querySelector('.contentCover');
 const mainBodyContent = document.querySelector('.mainBody_content');
@@ -55,21 +66,21 @@ const settingsModalTemplate =
                         <div class="modalContent_settings accSettings">
                             <center>
                                 <label class="settingsLabel">
-                                    UserName
+                                    Username
                                     <input type="text" placeholder="Leave blank to maintain current name"
                                         class="modal_textB">
                                 </label>
                                 <label class="settingsLabel">
+                                    Old Password
+                                    <input type="password" placeholder="The password you currently want to change from" class="oldPassword" >
+                                </label>
+                                <label class="settingsLabel">
                                     New Password
-                                    <input type="password" placeholder="New Password" class="New Password">
+                                    <input type="password" placeholder="The password you want to begin using" class="newPassword">
                                 </label>
                                 <label class="settingsLabel">
-                                    Confirm Pasword
-                                    <input type="password" placeholder="Confirm Password" class="Confirm New Password">
-                                </label>
-                                <label class="settingsLabel">
-                                    Current Password
-                                    <input type="password" placeholder="Current Password" class="Old Password Password">
+                                    Confirm New Password
+                                    <input type="password" placeholder="Repeat your new password here" class="confirmPassword">
                                 </label>
                             </center>
                             <button class="modal_btn_submit">Change</button>
@@ -132,7 +143,16 @@ const timeOutPref = settingsModal.querySelector('.genSettings').querySelector('#
 const btnGenSettings = settingsModal.querySelector('.genSettings').querySelector('#btn_genSettings');
 
 
-/***********************************DEFAULT SETTERS**************************************** */
+const accSettings = settingsModal.querySelector(".accSettings");
+const userName = accSettings.querySelector(".modal_textB");
+const oldPassword = accSettings.querySelector(".oldPassword");
+const newPassword = accSettings.querySelector(".newPassword");
+const confirmPassword = accSettings.querySelector(".confirmPassword");
+const btnSumbit = accSettings.querySelector(".modal_btn_submit");
+
+console.log(accSettings, userName, oldPassword, newPassword, confirmPassword, btnSumbit);
+
+/***********************************INITIALIZERS**************************************** */
 
 store.get("toolTipsPref")
 .then((userPref)=>{
@@ -153,13 +173,10 @@ store.get("timeOutPref")
 
     userPref = parseInt(userPref)
 
-    console.log(userPref, "lk");
-
     switch(userPref){
 
         case 1:
             timeOutPref.selectedIndex = "0";
-            console.log("0");
             break;
         case 3:
             timeOutPref.selectedIndex = "1";
@@ -185,6 +202,15 @@ store.get("timeOutPref")
 
 })
 
+database.getUser(USERNAME)
+.then((user)=>{
+
+    user = user.pop();
+
+    userName.value = user.User_Name;
+    userName.disabled = true;
+
+})
 
 
 
@@ -413,41 +439,6 @@ function removeSettingsModal(cover){
 
 
 
+/********************************************************************** */
 
 
-/**********************TIPPJS**************** */
-
-// import tippy from 'tippy.js'
-// import '../../node_modules/tippy.js/dist/tippy-bundle.umd';
-// import tippyBundleUmd from '../../node_modules/tippy.js/dist/tippy-bundle.umd';
-// import '../../node_modules/tippy.js/themes/material.css';
-// import "../../node_modules/tippy.js/themes/light.css";
-// import 'tippy.js/themes/light.css';
-// import 'tippy.js/animations/perspective.css'
-
-// //For admin settings tab
-// tippy(modalMenu_adminSettings,{
-//     content: 'Admin Settings',
-//     placement: 'bottom-right',
-//     interactive: true,
-//     theme: 'tomato',
-//     arrow: true
-// });
-
-// //For account settings tab
-// tippy(modalMenu_accSettings,{
-//     content: 'Account Settings',
-//     placement: 'bottom-right',
-//     interactive: true,
-//     theme: 'tomato',
-//     arrow: true
-// });
-
-// //For general settings tab
-// tippy(modalMenu_genSettings,{
-//     content: 'General Settings',
-//     placement: 'bottom-right',
-//     interactive: true,
-//     theme: 'tomato',
-//     arrow: true
-// });

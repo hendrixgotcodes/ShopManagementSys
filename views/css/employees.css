@@ -589,12 +589,14 @@ body {
               transition: .3s;
               color: #fff;
               border: none; }
-              .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .edit:disabled::before {
-                content: "(Can't edit)";
-                color: #fff;
-                position: absolute;
-                bottom: 10%;
-                font-size: .8rem; }
+              .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .edit:disabled {
+                cursor: not-allowed; }
+                .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .edit:disabled::before {
+                  content: "(Can't edit)";
+                  color: #fff;
+                  position: absolute;
+                  bottom: 10%;
+                  font-size: .8rem; }
             .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .del, .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .edit, .main_body .mainBody_content .contentContainer .tableBody .bodyRow .controls .enable {
               position: relative;
               height: 100%;

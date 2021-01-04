@@ -841,6 +841,30 @@ class DATABASE{
 
     }
 
+    deleteItem(Name, Brand, Category){
+
+        return new Promise((resolve, reject)=>{
+
+            this.connector.query("DELETE FROM `items` WHERE `items`.`Name` = ? AND `items`.`Brand` = ? AND `items`.`Category` = ?", [Name, Brand, Category], (error, result)=>{
+
+                if(error){
+
+                    reject(error);
+                    throw error;
+
+                }
+                else{
+
+                    resolve()
+
+                }
+
+            })
+
+        })
+
+    }
+
 
     recoverItem(shopItem){
 

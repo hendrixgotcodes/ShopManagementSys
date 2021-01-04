@@ -40,21 +40,10 @@ class MainWWindow extends BrowserWindow {
 
         const that = this;
         
-        // globalShortcut.register('cmdorctrl+d', () => {
-        //     that.webContents.toggleDevTools();
-        // })
-
-        // globalShortcut.register('ctrl+r', () => {
-        //     that.reload();
-        // })
 
 
 /****************************************EVENT LISTENERS************************************/
-        this.once('ready-to-show',()=>{
-
-            this.show();
-
-        })
+        
 
 
             /***************Loads Program Pages */
@@ -164,6 +153,12 @@ class MainWWindow extends BrowserWindow {
         ipcMain.on("ready", ()=>{
 
             this.webContents.send("loadUserInfo", [this.userName, this.userType])
+        })
+
+        this.once('ready-to-show',()=>{
+
+            this.show();
+
         })
 
 

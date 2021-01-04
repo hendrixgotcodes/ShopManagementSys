@@ -86,7 +86,7 @@ class DOMCONTROLLER{
                     `
                     <td class="controls">
                         <div class="edit"><span>Edit</span></div>
-                        <div class="del"><span>Soft Delete</span></div>
+                        <div class="del"><span>Delete</span></div>
                     </td>
                     <td class="td_cb">
                         <input disabled type="checkbox" class="selectOne" aria-placeholder="select one">

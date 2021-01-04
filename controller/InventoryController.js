@@ -252,27 +252,27 @@ function deleteItem(row, action="delete"){
            if(action === "delete"){
 
                 // Opens a confirmation dialog box which returns a promise
-                Modal.openConfirmationBox(itemName, itemQuantity, "delete")
+                Modal.openConfirmationBox(itemName, itemQuantity, "delete", )
                 .then((resolved)=>{   
                     
 
                     if(resolved === "confirmed"){
 
-                        database.softDeleteItem( {
-                            Name: itemName,
-                            Brand: itemBrand,
-                            Category: itemCategory,
-                        })
+                        database.deleteItem( 
+                            itemName,
+                            itemBrand,
+                            itemCategory,
+                        )
                         .then(()=>{
 
-                            DOMCONTROLLER.markAsRemove(itemName, itemBrand)
+                            row.remove();
 
-                            Notifications.showAlert("warning", `${itemName} of quantity ${itemQuantity} will no longer be visible in the shop front`)
+                            Notifications.showAlert("warning", `${itemName} has been deleted successfully`)
 
 
                         })
                         .catch((e)=>{
-                            Notifications.showAlert("error", `Sorry, failed to mark ${itemName} of quantity ${itemQuantity} as deleted. ${itemName} will remain visible in the shop front` )
+                            Notifications.showAlert("error", `Sorry, failed to delete ${itemName}` )
                         })
 
                     }

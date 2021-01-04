@@ -228,7 +228,11 @@ body {
     background-color: #fff;
     font-weight: 400;
     font-size: .8rem;
-    color: #204B40; }
+    color: #204B40;
+    position: relative; }
+    .main_body .titleBar .titleBar_userName {
+      position: absolute;
+      left: 48%; }
     .main_body .titleBar .titleBar_location {
       margin-left: 2%;
       font-weight: 500; }

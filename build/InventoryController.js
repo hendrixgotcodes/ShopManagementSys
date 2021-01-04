@@ -380,15 +380,11 @@ function deleteItem(row, action = "delete") {
     // Opens a confirmation dialog box which returns a promise
     _controller_modals_ModalController__WEBPACK_IMPORTED_MODULE_1__["default"].openConfirmationBox(itemName, itemQuantity, "delete").then(resolved => {
       if (resolved === "confirmed") {
-        database.softDeleteItem({
-          Name: itemName,
-          Brand: itemBrand,
-          Category: itemCategory
-        }).then(() => {
-          _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.markAsRemove(itemName, itemBrand);
-          _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("warning", `${itemName} of quantity ${itemQuantity} will no longer be visible in the shop front`);
+        database.deleteItem(itemName, itemBrand, itemCategory).then(() => {
+          row.remove();
+          _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("warning", `${itemName} has been deleted successfully`);
         }).catch(e => {
-          _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("error", `Sorry, failed to mark ${itemName} of quantity ${itemQuantity} as deleted. ${itemName} will remain visible in the shop front`);
+          _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("error", `Sorry, failed to delete ${itemName}`);
         });
       }
     });
@@ -1691,7 +1687,7 @@ class DOMCONTROLLER {
         rowContent = `
                     <td class="controls">
                         <div class="edit"><span>Edit</span></div>
-                        <div class="del"><span>Soft Delete</span></div>
+                        <div class="del"><span>Delete</span></div>
                     </td>
                     <td class="td_cb">
                         <input disabled type="checkbox" class="selectOne" aria-placeholder="select one">
@@ -3289,6 +3285,19 @@ class DATABASE {
         resolve(true);
       }).catch(() => {
         reject(false);
+      });
+    });
+  }
+
+  deleteItem(Name, Brand, Category) {
+    return new Promise((resolve, reject) => {
+      this.connector.query("DELETE FROM `items` WHERE `items`.`Name` = ? AND `items`.`Brand` = ? AND `items`.`Category` = ?", [Name, Brand, Category], (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        } else {
+          resolve();
+        }
       });
     });
   }
@@ -16134,7 +16143,7 @@ exports.SourceNode = __webpack_require__(/*! ./lib/source-node */ "./node_module
 /*! exports provided: _args, _from, _id, _inBundle, _integrity, _location, _phantomChildren, _requested, _requiredBy, _resolved, _spec, _where, author, dependencies, description, devDependencies, homepage, keywords, license, name, repository, scripts, version, default */
 /***/ (function(module) {
 
-module.exports = JSON.parse("{\"_args\":[[\"babel-core@6.26.3\",\"C:\\\\dufie kids\"]],\"_from\":\"babel-core@6.26.3\",\"_id\":\"babel-core@6.26.3\",\"_inBundle\":false,\"_integrity\":\"sha512-6jyFLuDmeidKmUEb3NM+/yawG0M2bDZ9Z1qbZP59cyHLz8kYGKYwpJP0UwUKKUiTRNvxfLesJnTedqczP7cTDA==\",\"_location\":\"/babel-core\",\"_phantomChildren\":{},\"_requested\":{\"type\":\"version\",\"registry\":true,\"raw\":\"babel-core@6.26.3\",\"name\":\"babel-core\",\"escapedName\":\"babel-core\",\"rawSpec\":\"6.26.3\",\"saveSpec\":null,\"fetchSpec\":\"6.26.3\"},\"_requiredBy\":[\"/\",\"/babel-register\"],\"_resolved\":\"https://registry.npmjs.org/babel-core/-/babel-core-6.26.3.tgz\",\"_spec\":\"6.26.3\",\"_where\":\"C:\\\\dufie kids\",\"author\":{\"name\":\"Sebastian McKenzie\",\"email\":\"sebmck@gmail.com\"},\"dependencies\":{\"babel-code-frame\":\"^6.26.0\",\"babel-generator\":\"^6.26.0\",\"babel-helpers\":\"^6.24.1\",\"babel-messages\":\"^6.23.0\",\"babel-register\":\"^6.26.0\",\"babel-runtime\":\"^6.26.0\",\"babel-template\":\"^6.26.0\",\"babel-traverse\":\"^6.26.0\",\"babel-types\":\"^6.26.0\",\"babylon\":\"^6.18.0\",\"convert-source-map\":\"^1.5.1\",\"debug\":\"^2.6.9\",\"json5\":\"^0.5.1\",\"lodash\":\"^4.17.4\",\"minimatch\":\"^3.0.4\",\"path-is-absolute\":\"^1.0.1\",\"private\":\"^0.1.8\",\"slash\":\"^1.0.0\",\"source-map\":\"^0.5.7\"},\"description\":\"Babel compiler core.\",\"devDependencies\":{\"babel-helper-fixtures\":\"^6.26.2\",\"babel-helper-transform-fixture-test-runner\":\"^6.26.2\",\"babel-polyfill\":\"^6.26.0\"},\"homepage\":\"https://babeljs.io/\",\"keywords\":[\"6to5\",\"babel\",\"classes\",\"const\",\"es6\",\"harmony\",\"let\",\"modules\",\"transpile\",\"transpiler\",\"var\",\"babel-core\",\"compiler\"],\"license\":\"MIT\",\"name\":\"babel-core\",\"repository\":{\"type\":\"git\",\"url\":\"https://github.com/babel/babel/tree/master/packages/babel-core\"},\"scripts\":{\"bench\":\"make bench\",\"test\":\"make test\"},\"version\":\"6.26.3\"}");
+module.exports = JSON.parse("{\"_args\":[[\"babel-core@6.26.3\",\"C:\\\\duffyKids\"]],\"_from\":\"babel-core@6.26.3\",\"_id\":\"babel-core@6.26.3\",\"_inBundle\":false,\"_integrity\":\"sha512-6jyFLuDmeidKmUEb3NM+/yawG0M2bDZ9Z1qbZP59cyHLz8kYGKYwpJP0UwUKKUiTRNvxfLesJnTedqczP7cTDA==\",\"_location\":\"/babel-core\",\"_phantomChildren\":{},\"_requested\":{\"type\":\"version\",\"registry\":true,\"raw\":\"babel-core@6.26.3\",\"name\":\"babel-core\",\"escapedName\":\"babel-core\",\"rawSpec\":\"6.26.3\",\"saveSpec\":null,\"fetchSpec\":\"6.26.3\"},\"_requiredBy\":[\"/\",\"/babel-register\"],\"_resolved\":\"https://registry.npmjs.org/babel-core/-/babel-core-6.26.3.tgz\",\"_spec\":\"6.26.3\",\"_where\":\"C:\\\\duffyKids\",\"author\":{\"name\":\"Sebastian McKenzie\",\"email\":\"sebmck@gmail.com\"},\"dependencies\":{\"babel-code-frame\":\"^6.26.0\",\"babel-generator\":\"^6.26.0\",\"babel-helpers\":\"^6.24.1\",\"babel-messages\":\"^6.23.0\",\"babel-register\":\"^6.26.0\",\"babel-runtime\":\"^6.26.0\",\"babel-template\":\"^6.26.0\",\"babel-traverse\":\"^6.26.0\",\"babel-types\":\"^6.26.0\",\"babylon\":\"^6.18.0\",\"convert-source-map\":\"^1.5.1\",\"debug\":\"^2.6.9\",\"json5\":\"^0.5.1\",\"lodash\":\"^4.17.4\",\"minimatch\":\"^3.0.4\",\"path-is-absolute\":\"^1.0.1\",\"private\":\"^0.1.8\",\"slash\":\"^1.0.0\",\"source-map\":\"^0.5.7\"},\"description\":\"Babel compiler core.\",\"devDependencies\":{\"babel-helper-fixtures\":\"^6.26.2\",\"babel-helper-transform-fixture-test-runner\":\"^6.26.2\",\"babel-polyfill\":\"^6.26.0\"},\"homepage\":\"https://babeljs.io/\",\"keywords\":[\"6to5\",\"babel\",\"classes\",\"const\",\"es6\",\"harmony\",\"let\",\"modules\",\"transpile\",\"transpiler\",\"var\",\"babel-core\",\"compiler\"],\"license\":\"MIT\",\"name\":\"babel-core\",\"repository\":{\"type\":\"git\",\"url\":\"https://github.com/babel/babel/tree/master/packages/babel-core\"},\"scripts\":{\"bench\":\"make bench\",\"test\":\"make test\"},\"version\":\"6.26.3\"}");
 
 /***/ }),
 
