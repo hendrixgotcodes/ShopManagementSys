@@ -448,7 +448,7 @@ class Modal {
                             newTextBox.className = "dialogForm_tb halfwidth";
                             newTextBox.id = "category"
 
-                            itemForm.querySelector("form").querySelector(".flexContainer").replaceChild(newTextBox, categorySelect)
+                            itemForm.querySelector("form").querySelector(".flexContainer").querySelector("#lbl_category").replaceChild(newTextBox, categorySelect)
 
 
                         }
@@ -519,7 +519,9 @@ class Modal {
                             newTextBox.className = "dialogForm_tb halfwidth";
                             newTextBox.id = "brand"
 
-                            itemForm.querySelector("form").querySelector(".flexContainer").replaceChild(newTextBox, brandSelect)
+                            console.log(newTextBox, brandSelect);
+
+                            itemForm.querySelector("form").querySelector(".flexContainer").querySelector("#lbl_brand").replaceChild(newTextBox, brandSelect)
 
 
                         }

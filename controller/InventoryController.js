@@ -4,7 +4,7 @@
 import { ipcRenderer } from 'electron';
 /************IMPORT******/
 import Modal from '../controller/modals/ModalController';
-import Notifications from './Alerts/NotificationController';
+import Notifications, { showNotification } from './Alerts/NotificationController';
 import DOMCONTROLLER from './utilities/TableController';
 
 //Importing ItemDB operations
@@ -18,7 +18,6 @@ const toolBar_btn_icon = document.querySelector('.ico_btn_add')
 
 const tableROWS = document.querySelector('.tableBody').querySelectorAll('.bodyRow');
 
-const btnAdd = document.querySelector(".btn_add");
 const btnEdit =  document.querySelector(".btn_edit");
 const btnDelete =  document.querySelector(".btn_delete");
 const checkBtn = document.querySelector(".checkBtn");
@@ -242,10 +241,10 @@ function showRowControls(row){
 //And decide to show or not show an alert based on that result - (Used by event listeners on row ".del" buttons in Inventory)
 function deleteItem(row, action="delete"){
 
-            const itemName = row.querySelector(".td_Names").innerText;
-            const itemBrand = row.querySelector(".td_Brands").innerText
+            const itemName = row.querySelector(".td_Name--hidden").innerText;
+            const itemBrand = row.querySelector(".td_Brand--hidden").innerText
             const itemQuantity = row.querySelector(".td_Stock").innerText;
-            const itemCategory = row.querySelector(".td_Category").innerText;
+            const itemCategory = row.querySelector(".td_Category--hidden").innerText;
 
 
                 
@@ -436,11 +435,9 @@ function addItem(){
                 if(result === true){
 
                     DOMCONTROLLER.createItem(result.Name, result.Brand, result.Category, result.Stock, result.SellingPrice, result.Discount,result.ReOrderLevel,[checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "", false, false, "inventory")
-                    .then(()=>{
-    
-                        Notifications.showAlert("success", "Successfuly added to inventory")
-    
-                    })
+            
+                    Notifications.showAlert("success", "Successfuly added to inventory")
+
 
                 }
 
@@ -519,15 +516,9 @@ function editMultiple(){
     Modal.openItemForm(currentRow, true)
     .then((result)=>{
 
-        if(result[0] === "edited"){
+        if(result[0] === true){
 
-           
-            // let row, name, brand, category, stock, price;
-
-            let promisedRow = result[1];
-
-
-           let [,row, name, brand, category, stock, price, costPrice] = promisedRow;
+           let [,row, name, brand, category, stock, price, costPrice] = result;
 
 
             let editedInventory = new Promise(
@@ -543,10 +534,25 @@ function editMultiple(){
                 }
             );
 
-            editedInventory.then(
-                (name)=>{
-                         Notifications.showAlert("success", `${itemName} Has Been Successfully Changed To ${name}`);
+            editedInventory.then((name)=>{
+
+                Notifications.showAlert("success", `Changes to ${itemName} have been saved successfully`);
+
+                currentRow.querySelector(".td_cb").querySelector(".selectOne").checked = false;
+
+                if(rowBucket.length === 0 ){
+    
+                    btnEdit.disabled = true;
+                    btnDelete.disabled = true  
+            
                 }
+                else{
+                    editMultiple();
+                }
+
+            }
+
+                
             )
             // .catch(
             //     (error)=>{
@@ -555,17 +561,7 @@ function editMultiple(){
             // );
 
 
-            currentRow.querySelector(".td_cb").querySelector(".selectOne").checked = false;
-
-            if(rowBucket.length === 0 ){
-
-                btnEdit.disabled = true;
-                btnDelete.disabled = true  
-        
-              }
-              else{
-                  editMultiple();
-              }
+           
         }
 
      
@@ -589,40 +585,68 @@ function editMultiple(){
 //Function called on btnDelete Event
 function deleteMultiple(){
 
-    const returnedPromise = new Promise(
-
-        (resolve, reject)=>{
-            Modal.openConfirmationBox("", "", "", `${rowBucket.length} items selected. Deleted items will be recovered, `)
-        }
-
-    )
+   
+    Modal.openConfirmationBox("", "", "", `Do you wish to delete ${rowBucket.length} items from inventory? `)
     .then(
         (result)=>{
 
-            let totalSelectedItems = rowBucket.length;
+
+            const promises = [];
+
             
-            if(result === "verified"){
+            if(result === "confirmed"){
                 rowBucket.forEach((row)=>{
 
-                    // const itemName = item.querySelector(".td_Names").innerText;
-                    // const itemBrand = item.querySelector(".td_Brands").innerText;
+                    promises.push(new Promise((resolve, reject)=>{
 
+                        const itemName = row.querySelector(".td_Name--hidden").innerText;
+                        const itemBrand = row.querySelector(".td_Brand--hidden").innerText
+                        const itemCategory = row.querySelector(".td_Category--hidden").innerText;
 
-                    // TableController.markAsRemove(itemName, itemBrand)
+                        database.deleteItem( 
+                            itemName,
+                            itemBrand,
+                            itemCategory,
+                        )
+                        .then(()=>{
 
-                    if(row.querySelector(".state").innerText === "deleted"){
+                            row.remove();
+                            resolve();
 
-                        deleteItem(row)
-                    }
-                    else{
-                        deleteItem(row, "recover")
-                    }
+                        })
+                        .catch((e)=>{
+                            reject();
+                        })
 
-                    deleteItem(row, )
+                    }))
+
+                   
 
                 })
 
-                rowBucket = [];
+                Promise.all(promises)
+                .then(()=>{
+
+                    Notifications.showAlert("warning", `${rowBucket.length} items have been deleted successfully`);
+
+                    rowBucket = [];
+
+                    btnDelete.disabled = true;
+                    btnEdit.disabled = true;
+
+                    if(tableROWS.length === 0){
+
+                        DOMCONTROLLER.showIsEmpty();
+
+                    }
+
+                })
+                .catch(()=>{
+
+                    Notifications.showAlert("warning", `Sorry. Failed to delete all ${rowBucket.length}`)
+
+                })
+
 
             }
         }

@@ -70,47 +70,58 @@ var myChart = new Chart(ctx, {
                 }
             }]
         }
-    }
+    },
+    // onAnimationComplete: function () {
+    //     var sourceCanvas = this.chart.ctx.canvas;
+    //     // the -5 is so that we don't copy the edges of the line
+    //     var copyWidth = this.scale.xScalePaddingLeft - 5;
+    //     // the +5 is so that the bottommost y axis label is not clipped off
+    //     // we could factor this in using measureText if we wanted to be generic
+    //     var copyHeight = this.scale.endPoint + 5;
+    //     var targetCtx = document.getElementById("myChartAxis").getContext("2d");
+    //     targetCtx.canvas.width = copyWidth;
+    //     targetCtx.drawImage(sourceCanvas, 0, 0, copyWidth, copyHeight, 0, 0, copyWidth, copyHeight);
+    // }
 });
 
 
 
 
-const brandSection = document.querySelector(".brandSection").getContext("2d");
+// const brandSection = document.querySelector(".brandSection").getContext("2d");
 
-const brandSectionChart = new Chart(brandSection, {
+// const brandSectionChart = new Chart(brandSection, {
 
-    type: "doughnut",
-    data: {
-        labels: ['Marshall', 'Fuego', 'Nvidia', 'HP'],
-        datasets:[
-            {
-                label: 'Purchase frequency',
-                data: [500, 1200, 2000, 100],
-                backgroundColor: [
-                    'rgb(102, 75, 64)',
-                    'rgb(53, 89, 75)',
-                    'rgb(73, 179, 18)',
-                    'rgb(53, 190, 98)',
+//     type: "doughnut",
+//     data: {
+//         labels: ['Marshall', 'Fuego', 'Nvidia', 'HP'],
+//         datasets:[
+//             {
+//                 label: 'Purchase frequency',
+//                 data: [500, 1200, 2000, 100],
+//                 backgroundColor: [
+//                     'rgb(102, 75, 64)',
+//                     'rgb(53, 89, 75)',
+//                     'rgb(73, 179, 18)',
+//                     'rgb(53, 190, 98)',
 
-                ]
-            }
-        ]
-    },
-    options: {
-        title: {
-            display: true,
-            text: "Top Brands",
-            fontFamily: `'Roboto', 'sans-serif'`,
-            fontSize: 20,
-            fontColor: ' #35594B'
-        },
-        legend:{
-            position: right
-        }
-    }
+//                 ]
+//             }
+//         ]
+//     },
+//     options: {
+//         title: {
+//             display: true,
+//             text: "Top Brands",
+//             fontFamily: `'Roboto', 'sans-serif'`,
+//             fontSize: 20,
+//             fontColor: ' #35594B'
+//         },
+//         legend:{
+//             position: right
+//         }
+//     }
 
-})
+// })
 
 
 /**************************EVENT LISTENERS***************************/

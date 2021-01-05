@@ -1,8 +1,6 @@
 // const Dexie = require('dexie').default
 const mariadb = require('mysql2');
 const cryptoJS = require('crypto-js');
-const { offset } = require('@popperjs/core');
-const { transform } = require('babel-core');
 
 class DATABASE{
 

@@ -29,7 +29,6 @@ function loadMainWindow() {
 
     mainWindow.on('enter-full-screen', () => {
         mainWindow.webContents.send('isFullScreen');
-        console.log('is fullscreen');
     })
 
 }
