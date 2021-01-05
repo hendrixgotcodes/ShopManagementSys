@@ -1,2 +1,4 @@
 node_modules/
 webpack.config.js
+duffykids-win32-x64/
+*.ico
