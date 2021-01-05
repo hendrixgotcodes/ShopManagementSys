@@ -323,6 +323,15 @@ function loadStore(e) {
         if (faileLoginCount === 3) {
           forgottenPassword.classList.add("forgottenPassword--shown");
         }
+      } else if (error === "disabled account") {
+        warningLabel_pw.innerText = `Your account has been disabled. Contact your admin.`;
+        let img = document.createElement("img");
+        img.setAttribute("src", "../Icons/form/arrow_pointer.svg");
+        img.className = "ico_form";
+        warningLabel_pw.appendChild(img);
+        warningLabel_pw.hidden = false;
+        tbPassword.value = "";
+        faileLoginCount = faileLoginCount + 1;
       } else {
         warningLabel_tb.innerText = `Sorry. An error occurred.`;
         warningLabel_tb.hidden = false;
@@ -1319,6 +1328,8 @@ class DATABASE {
 
           if (user === undefined) {
             reject("incorrect username");
+          } else if (user.Disabled === 1) {
+            reject("disabled account");
           } else if (user) {
             let storedPassword = user.Password;
             verifyPassword(userName, incomingPassword, storedPassword).then(result => {

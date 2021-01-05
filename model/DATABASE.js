@@ -1556,6 +1556,11 @@ class DATABASE{
                     if(user === undefined){
                         reject("incorrect username")
                     }
+                    else if(user.Disabled === 1){
+
+                        reject("disabled account")
+
+                    }
                     else if(user){
 
                         let storedPassword = user.Password;
