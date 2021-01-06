@@ -125,7 +125,7 @@ const loginForm_center = document.querySelector(".loginForm_center"); //Program 
 
 let isFullScreen = false;
 let verifiedFields = false;
-let faileLoginCount = 0;
+let failedLoginCount = 0;
 /*******************EVENT LISTENERS**********************/
 
 window.addEventListener("load", () => {
@@ -318,9 +318,9 @@ function loadStore(e) {
         warningLabel_pw.appendChild(img);
         warningLabel_pw.hidden = false;
         tbPassword.value = "";
-        faileLoginCount = faileLoginCount + 1;
+        failedLoginCount = failedLoginCount + 1;
 
-        if (faileLoginCount === 3) {
+        if (failedLoginCount === 3) {
           forgottenPassword.classList.add("forgottenPassword--shown");
         }
       } else if (error === "disabled account") {
@@ -331,7 +331,7 @@ function loadStore(e) {
         warningLabel_pw.appendChild(img);
         warningLabel_pw.hidden = false;
         tbPassword.value = "";
-        faileLoginCount = faileLoginCount + 1;
+        failedLoginCount = failedLoginCount + 1;
       } else {
         warningLabel_tb.innerText = `Sorry. An error occurred.`;
         warningLabel_tb.hidden = false;

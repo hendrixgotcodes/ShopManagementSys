@@ -31,7 +31,7 @@ const loginForm_center = document.querySelector(".loginForm_center");
 //Program Variables
 let isFullScreen = false;
 let verifiedFields = false;
-let faileLoginCount = 0;
+let failedLoginCount = 0;
 
 
 
@@ -336,10 +336,10 @@ function loadStore(e) {
 
                 tbPassword.value = "";
 
-                faileLoginCount = faileLoginCount + 1;
+                failedLoginCount = failedLoginCount + 1;
 
 
-                if(faileLoginCount === 3){
+                if(failedLoginCount === 3){
 
 
                     forgottenPassword.classList.add("forgottenPassword--shown");
@@ -360,7 +360,7 @@ function loadStore(e) {
 
                 tbPassword.value = "";
 
-                faileLoginCount = faileLoginCount + 1;
+                failedLoginCount = failedLoginCount + 1;
 
             }
             else{

@@ -434,7 +434,10 @@ function addItem(){
 
                 if(result === true){
 
-                    DOMCONTROLLER.createItem(result.Name, result.Brand, result.Category, result.Stock, result.SellingPrice, result.Discount,result.ReOrderLevel,[checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "", false, false, "inventory")
+                    // DOMCONTROLLER.createItem(result.Name, result.Brand, result.Category, result.Stock, result.SellingPrice, result.Discount,result.ReOrderLevel,[checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "", false, false, "inventory")
+                    // DOMCONTROLLER.createItem(result.Name, result.Brand, result.Category, result.Stock, result.sellingPrice, result.Discount, result.ReOrderLevel, [checkCB,editItem, deleteItem, showRowControls], false, result.CostPrice, "", false, false, "inventory")
+
+                    console.log(result);
             
                     Notifications.showAlert("success", "Successfuly added to inventory")
 

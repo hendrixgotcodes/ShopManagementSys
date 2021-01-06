@@ -466,7 +466,8 @@ function addItem() {
 
     database.addNewItem(storeObject, UserName).then(result => {
       if (result === true) {
-        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(result.Name, result.Brand, result.Category, result.Stock, result.SellingPrice, result.Discount, result.ReOrderLevel, [checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "", false, false, "inventory");
+        // DOMCONTROLLER.createItem(result.Name, result.Brand, result.Category, result.Stock, result.SellingPrice, result.Discount,result.ReOrderLevel,[checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "", false, false, "inventory")
+        // DOMCONTROLLER.createItem(result.Name, result.Brand, result.Category, result.Stock, result.sellingPrice, result.Discount, result.ReOrderLevel, [checkCB,editItem, deleteItem, showRowControls], false, result.CostPrice, "", false, false, "inventory")
         _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", "Successfuly added to inventory");
       }
     }).catch(error => {
