@@ -90,12 +90,6 @@ window.addEventListener("load", ()=>{
     //Alert ipcMain of readiness
     ipcRenderer.send("ready");
 
-    if(toolBar_tb !== null){
-
-        toolBar_tb.focus();
-
-    }
-
     
 })
 
@@ -323,7 +317,25 @@ function seekItem(){
                     }
                     else{
 
-                        row.style.display = "none";
+                        currentItem = row.querySelector(".td_Barcode--hidden").innerText.toLowerCase();
+
+                        if(currentItem === null){
+                            return;
+                        }
+
+                        if(currentItem.includes(itemName)){
+
+                            row.scrollIntoView({behavior: 'smooth'});
+                            row.focus();
+            
+                            clearTimeout(timeOutValue)
+                        
+                        }
+                        else{
+
+                            row.style.display = "none";
+
+                        }
 
                     }
 

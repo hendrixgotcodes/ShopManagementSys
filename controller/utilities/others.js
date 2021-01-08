@@ -102,6 +102,10 @@ function parseExcelOutput(formTitle, JSON){
                         <div class="Short">
                             Discount
                         </div>
+
+                        <div class="long">
+                            Barcode
+                        </div>
                     
                     </div>
 
@@ -124,7 +128,7 @@ function parseExcelOutput(formTitle, JSON){
     `
 
     const itemForm = document.createElement('div');
-            itemForm.className = "modal dialog--itemFormBox";
+            itemForm.className = "modal dialog--itemFormBox dialog--excelForm";
             itemForm.classList.add("dialog--promptBox")
             itemForm.setAttribute("aria-placeholder", "Confirm Box");
     
@@ -199,6 +203,10 @@ function parseExcelOutput(formTitle, JSON){
 
                         <div class="Short td" id="discount">
                             ${item.DISCOUNT}
+                        </div>
+
+                        <div class="long td" id="names">
+                            ${item.BARCODE}
                         </div>
 
 
@@ -349,7 +357,7 @@ function isValidForm(item){
         return false
 
     }
-    else if(item.NAMES === undefined || item.BRAND === undefined || item.CATEGORY === undefined || item.QUANTITY === undefined || item.COSTPRICE === undefined || item.SELLINGPRICE === undefined || item.DISCOUNT === undefined || item.REORDER_LEVEL === undefined){
+    else if(item.NAMES === undefined || item.BRAND === undefined || item.CATEGORY === undefined || item.QUANTITY === undefined || item.COSTPRICE === undefined || item.SELLINGPRICE === undefined || item.DISCOUNT === undefined || item.REORDER_LEVEL === undefined || item.BARCODE === undefined){
 
         return false
 

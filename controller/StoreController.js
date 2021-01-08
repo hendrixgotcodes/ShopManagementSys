@@ -81,6 +81,25 @@ window.addEventListener("load", ()=>{
 
 })
 
+document.addEventListener("barcode", (e)=>{
+
+    console.log(e.detail);
+
+    const tableRows = document.querySelector("tbody").querySelectorAll("tr");
+    tableRows.forEach((tr)=>{
+
+        const barcode = tr.querySelector(".td_Barcode--hidden").innerText;
+
+        if(barcode === e.detail){
+
+            toggleRowCB(tr)
+
+        }
+
+    })
+
+})
+
 
 
 
@@ -175,12 +194,12 @@ function initializeStoreItems(){
     
                         if(fetchedItem.Deleted === 1){
     
-                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,"", false, fetchedItem.CostPrice, "", true, true,"Store", false)
+                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,fetchedItem.Barcode,"", false, fetchedItem.CostPrice, "", true, true,"Store", false)
         
                         }
                         else
                         {
-                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,"", false, fetchedItem.CostPrice, "", true, false,"Store", false)
+                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,fetchedItem.Barcode,"", false, fetchedItem.CostPrice, "", true, false,"Store", false)
                         }
     
                     }
@@ -309,7 +328,7 @@ function fetchItemsRecursive(offset = 200){
 
                         if(fetchedItem.Deleted !== 1){
 
-                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,"", false, fetchedItem.CostPrice, "", true, false,"Store", false)
+                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,fetchedItem.Barcode,"", false, fetchedItem.CostPrice, "", true, false,"Store", false)
                             .then((row)=>{    
 
                                 

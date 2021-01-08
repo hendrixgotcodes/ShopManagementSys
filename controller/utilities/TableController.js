@@ -10,10 +10,10 @@ const database = new DATABASE();
 
 class DOMCONTROLLER{
 
-    static createItem(name, brand, category, stock, sellingPrice, discount,reOrderLevel,functions, hasItems,costPrice="", purchased="", dontHighlightAfterCreate = false, isdeletedItem=false, destinationPage="", Scroll=true){
+    static createItem(name, brand, category, stock, sellingPrice, discount,reOrderLevel,barcode,functions, hasItems,costPrice="", purchased="", dontHighlightAfterCreate = false, isdeletedItem=false, destinationPage="", Scroll=true){
 
-            return new Promise((resolve, reject)=>{                
-
+            return new Promise((resolve, reject)=>{    
+                
                 
                 const tableROWS = document.querySelectorAll('tr');
 
@@ -76,6 +76,7 @@ class DOMCONTROLLER{
                     <td hidden class="td_Category--hidden">${category}</td>
                     <td hidden class="td_ReOrderLevel--hidden">${reOrderLevel}</td>
                     <td hidden class="td_Price--hidden">${sellingPrice}</td>
+                    <td hidden class="td_Barcode--hidden">${barcode}</td>
                     <td hidden class="state">visible</td>
                     `;
 

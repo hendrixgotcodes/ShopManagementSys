@@ -277,6 +277,17 @@ window.addEventListener("load", () => {
   initializeStoreItems();
   getUserIssues();
 });
+document.addEventListener("barcode", e => {
+  console.log(e.detail);
+  const tableRows = document.querySelector("tbody").querySelectorAll("tr");
+  tableRows.forEach(tr => {
+    const barcode = tr.querySelector(".td_Barcode--hidden").innerText;
+
+    if (barcode === e.detail) {
+      toggleRowCB(tr);
+    }
+  });
+});
 tip_default.addEventListener('click', () => {
   selectValue_span.innerHTML = "Filter By:";
   selectValue_span.setAttribute("value", "default");
@@ -333,9 +344,9 @@ function initializeStoreItems() {
           //T his will only add items which "InStock" is greater than zero
           if (parseInt(fetchedItem.InStock) > 0) {
             if (fetchedItem.Deleted === 1) {
-              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, "", false, fetchedItem.CostPrice, "", true, true, "Store", false);
+              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, fetchedItem.Barcode, "", false, fetchedItem.CostPrice, "", true, true, "Store", false);
             } else {
-              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, "", false, fetchedItem.CostPrice, "", true, false, "Store", false);
+              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, fetchedItem.Barcode, "", false, fetchedItem.CostPrice, "", true, false, "Store", false);
             }
           }
 
@@ -409,7 +420,7 @@ function fetchItemsRecursive(offset = 200) {
           //T his will only add items which "InStock" is greater than zero
           if (parseInt(fetchedItem.InStock) > 0) {
             if (fetchedItem.Deleted !== 1) {
-              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, "", false, fetchedItem.CostPrice, "", true, false, "Store", false).then(row => {
+              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, fetchedItem.Barcode, "", false, fetchedItem.CostPrice, "", true, false, "Store", false).then(row => {
                 //For "tableBody"
                 row.addEventListener('click', e => {
                   toggleRowCB(row);
@@ -760,7 +771,7 @@ const commaNumber = __webpack_require__(/*! comma-number */ "./node_modules/comm
 const database = new DATABASE();
 
 class DOMCONTROLLER {
-  static createItem(name, brand, category, stock, sellingPrice, discount, reOrderLevel, functions, hasItems, costPrice = "", purchased = "", dontHighlightAfterCreate = false, isdeletedItem = false, destinationPage = "", Scroll = true) {
+  static createItem(name, brand, category, stock, sellingPrice, discount, reOrderLevel, barcode, functions, hasItems, costPrice = "", purchased = "", dontHighlightAfterCreate = false, isdeletedItem = false, destinationPage = "", Scroll = true) {
     return new Promise((resolve, reject) => {
       const tableROWS = document.querySelectorAll('tr');
       tableROWS.forEach(row => {
@@ -810,6 +821,7 @@ class DOMCONTROLLER {
                     <td hidden class="td_Category--hidden">${category}</td>
                     <td hidden class="td_ReOrderLevel--hidden">${reOrderLevel}</td>
                     <td hidden class="td_Price--hidden">${sellingPrice}</td>
+                    <td hidden class="td_Barcode--hidden">${barcode}</td>
                     <td hidden class="state">visible</td>
                     `;
       } else {
@@ -1921,6 +1933,7 @@ class DATABASE {
                         Category VARCHAR(255) NOT NULL,
                         CostPrice DECIMAL(8,2) NOT NULL,
                         SellingPrice DECIMAL(8,2) NOT NULL,
+                        Barcode VARCHAR(255) NOT NULL,
                         InStock INT NOT NULL,
                         Discount INT NOT NULL,
                         Deleted BOOLEAN NOT NULL,
@@ -2150,7 +2163,7 @@ class DATABASE {
   addNewItem(shopItem, userName) {
     return new Promise((resolve, reject) => {
       const array = Object.values(shopItem);
-      let [name, brand, category, stock, sellingPrice, costPrice, discount] = array;
+      let [name, brand, category, stock, sellingPrice, costPrice, discount, barcode] = array;
       let insertCategorySQL = `INSERT INTO  itemCategories SET ? `;
       let categoryValues = {
         Name: category
@@ -2168,7 +2181,8 @@ class DATABASE {
         CostPrice: costPrice,
         SellingPrice: sellingPrice,
         Discount: discount,
-        Deleted: false
+        Deleted: false,
+        Barcode: barcode
       };
       let updateValues = {
         InStock: stock,

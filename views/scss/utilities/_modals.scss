@@ -607,6 +607,7 @@
         box-shadow: 0 3px 6px rgba($color: #000000, $alpha: 0.16);
         padding: .8rem 1rem;
         width: 100%;
+        height: 10%;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -623,7 +624,7 @@
         
 
         & form{
-            height: 76%;
+            height: 100%;
             width: 100%;
             display: inline-block;
 
@@ -649,9 +650,10 @@
             }
 
            
+           
 
             .flexContainer{
-                height: 78%;
+                height: 80%;
                 display: flex;
                 justify-content: space-between;
                 flex-direction: row;
@@ -683,7 +685,7 @@
 
                     .dialogForm_tb{
                         margin-top: .2rem;
-                        height: 72%;
+                        height: 65%;
                         font-size: 1rem;
                         color: $primary_black;
 
@@ -693,6 +695,41 @@
                         }
                     }
                 }
+
+                .quarterwidth{
+
+                    display: block;
+                    height: 25%;
+                    width: 48%;
+                    margin-right: 2%;
+
+                    span{
+                        display: block;
+                        width: 50%;
+                        // margin-bottom: .5rem;
+                    }
+
+                    select{
+                         &:disabled{
+                            opacity: .5;
+                            cursor: default;
+                        }
+                    }
+
+                    .dialogForm_tb{
+                        margin-top: .2rem;
+                        height: 72%;
+                        font-size: 1rem;
+                        color: $primary_black;
+
+                        &:disabled{
+                            opacity: .5;
+                            cursor: default;
+                        }
+                    }
+    
+                }
+    
             }
         }
 
@@ -777,6 +814,27 @@
         }
     }
 }
+
+.dialog--excelForm{
+    width: 65%;
+    left: 15%;
+
+    & .dialogContainer{
+        font-size: 1rem;
+    }
+
+    & .dialogFooter{
+
+        // & .dialogConfirm{
+
+            & img{
+                width: 4%;
+                margin-left: .5rem;
+            }
+        // }
+    }
+}
+
 
 
 .dialog--cartForm{

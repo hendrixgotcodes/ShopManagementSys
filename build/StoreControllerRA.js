@@ -720,7 +720,7 @@ const commaNumber = __webpack_require__(/*! comma-number */ "./node_modules/comm
 const database = new DATABASE();
 
 class DOMCONTROLLER {
-  static createItem(name, brand, category, stock, sellingPrice, discount, reOrderLevel, functions, hasItems, costPrice = "", purchased = "", dontHighlightAfterCreate = false, isdeletedItem = false, destinationPage = "", Scroll = true) {
+  static createItem(name, brand, category, stock, sellingPrice, discount, reOrderLevel, barcode, functions, hasItems, costPrice = "", purchased = "", dontHighlightAfterCreate = false, isdeletedItem = false, destinationPage = "", Scroll = true) {
     return new Promise((resolve, reject) => {
       const tableROWS = document.querySelectorAll('tr');
       tableROWS.forEach(row => {
@@ -770,6 +770,7 @@ class DOMCONTROLLER {
                     <td hidden class="td_Category--hidden">${category}</td>
                     <td hidden class="td_ReOrderLevel--hidden">${reOrderLevel}</td>
                     <td hidden class="td_Price--hidden">${sellingPrice}</td>
+                    <td hidden class="td_Barcode--hidden">${barcode}</td>
                     <td hidden class="state">visible</td>
                     `;
       } else {
@@ -1881,6 +1882,7 @@ class DATABASE {
                         Category VARCHAR(255) NOT NULL,
                         CostPrice DECIMAL(8,2) NOT NULL,
                         SellingPrice DECIMAL(8,2) NOT NULL,
+                        Barcode VARCHAR(255) NOT NULL,
                         InStock INT NOT NULL,
                         Discount INT NOT NULL,
                         Deleted BOOLEAN NOT NULL,
@@ -2110,7 +2112,7 @@ class DATABASE {
   addNewItem(shopItem, userName) {
     return new Promise((resolve, reject) => {
       const array = Object.values(shopItem);
-      let [name, brand, category, stock, sellingPrice, costPrice, discount] = array;
+      let [name, brand, category, stock, sellingPrice, costPrice, discount, barcode] = array;
       let insertCategorySQL = `INSERT INTO  itemCategories SET ? `;
       let categoryValues = {
         Name: category
@@ -2128,7 +2130,8 @@ class DATABASE {
         CostPrice: costPrice,
         SellingPrice: sellingPrice,
         Discount: discount,
-        Deleted: false
+        Deleted: false,
+        Barcode: barcode
       };
       let updateValues = {
         InStock: stock,

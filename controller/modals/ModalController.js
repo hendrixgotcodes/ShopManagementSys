@@ -282,6 +282,7 @@ class Modal {
             let sellingPrice = ""
             let costPrice = ""
             let discount = ""
+            let reorderLevel = "";
 
            
 
@@ -294,6 +295,7 @@ class Modal {
                 sellingPrice = row.querySelector(".td_sellingPrice").innerText;
                 costPrice = row.querySelector(".td_costPrice").innerText
                 discount = row.querySelector(".td_discount").innerText
+                reorderLevel = row.querySelector(".td_reOrderLevel--hidden").innerText;
             }
             
             const boxTemplate = 
@@ -341,9 +343,14 @@ class Modal {
                                 <input type="number" class="dialogForm_tb halfwidth" value="${parseFloat(sellingPrice)}" aria-placeholder="Unit Cost"  id="sellingPrice" />
                             </label>
 
-                            <label class="lbl" id="lbl_discount">
+                            <label class="quarterwidth" id="lbl_discount">
                                 <span>Discount (%)</span>
-                                <input type="number" class="dialogForm_tb halfwidth" value="${parseFloat(discount)}" aria-placeholder="Discount(%)"  id="discount" />
+                                <input type="number" class="dialogForm_tb" value="${parseFloat(discount)}" aria-placeholder="Discount(%)"  id="discount" />
+                            </label>
+
+                            <label class="quarterwidth" id="lbl_reorderlevel">
+                                <span>Reorder Level</span>
+                                <input type="number" class="dialogForm_tb" value="${parseFloat(reorderLevel)}" aria-placeholder="Discount(%)"  id="reorderLevel" />
                             </label>
     
                          </div>
@@ -548,7 +555,9 @@ class Modal {
                     const sellingPrice = itemForm.querySelector('#sellingPrice').value;
                     const costPrice = itemForm.querySelector("#costPrice").value;
 
-                    discount = itemForm.querySelector('#discount').value
+                    discount = itemForm.querySelector('#discount').value;
+
+                    const reorderLevel = itemForm.querySelector("#reorderLevel").value;
 
                     // console.log(name, category, brand, stock, price);
 
@@ -560,7 +569,7 @@ class Modal {
 
                         // openPrompt("",resolve,reject, [true, row, name, brand, category, stock, sellingPrice])
 
-                        resolve([true, row, name, brand, category, stock, sellingPrice, costPrice, discount]);
+                        resolve([true, row, name, brand, category, stock, sellingPrice, costPrice, discount, reorderLevel]);
 
 
                     }

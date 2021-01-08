@@ -273,10 +273,6 @@ ipcRenderer.on("setUserParams", (e, paramsArray) => {
 window.addEventListener("load", () => {
   //Alert ipcMain of readiness
   ipcRenderer.send("ready");
-
-  if (toolBar_tb !== null) {
-    toolBar_tb.focus();
-  }
 });
 window.addEventListener("keyup", e => {
   if (e.code === "F1") {
@@ -440,7 +436,21 @@ function seekItem() {
             row.focus();
             clearTimeout(timeOutValue);
           } else {
-            row.style.display = "none";
+            currentItem = row.querySelector(".td_Barcode--hidden").innerText.toLowerCase();
+
+            if (currentItem === null) {
+              return;
+            }
+
+            if (currentItem.includes(itemName)) {
+              row.scrollIntoView({
+                behavior: 'smooth'
+              });
+              row.focus();
+              clearTimeout(timeOutValue);
+            } else {
+              row.style.display = "none";
+            }
           }
         }
       }
@@ -713,6 +723,7 @@ class Modal {
       let sellingPrice = "";
       let costPrice = "";
       let discount = "";
+      let reorderLevel = "";
 
       if (row !== "") {
         itemName = row.querySelector(".td_Names").innerText;
@@ -722,6 +733,7 @@ class Modal {
         sellingPrice = row.querySelector(".td_sellingPrice").innerText;
         costPrice = row.querySelector(".td_costPrice").innerText;
         discount = row.querySelector(".td_discount").innerText;
+        reorderLevel = row.querySelector(".td_reOrderLevel--hidden").innerText;
       }
 
       const boxTemplate = `
@@ -768,9 +780,14 @@ class Modal {
                                 <input type="number" class="dialogForm_tb halfwidth" value="${parseFloat(sellingPrice)}" aria-placeholder="Unit Cost"  id="sellingPrice" />
                             </label>
 
-                            <label class="lbl" id="lbl_discount">
+                            <label class="quarterwidth" id="lbl_discount">
                                 <span>Discount (%)</span>
-                                <input type="number" class="dialogForm_tb halfwidth" value="${parseFloat(discount)}" aria-placeholder="Discount(%)"  id="discount" />
+                                <input type="number" class="dialogForm_tb" value="${parseFloat(discount)}" aria-placeholder="Discount(%)"  id="discount" />
+                            </label>
+
+                            <label class="quarterwidth" id="lbl_reorderlevel">
+                                <span>Reorder Level</span>
+                                <input type="number" class="dialogForm_tb" value="${parseFloat(reorderLevel)}" aria-placeholder="Discount(%)"  id="reorderLevel" />
                             </label>
     
                          </div>
@@ -897,12 +914,13 @@ class Modal {
         const stock = itemForm.querySelector('#total').value;
         const sellingPrice = itemForm.querySelector('#sellingPrice').value;
         const costPrice = itemForm.querySelector("#costPrice").value;
-        discount = itemForm.querySelector('#discount').value; // console.log(name, category, brand, stock, price);
+        discount = itemForm.querySelector('#discount').value;
+        const reorderLevel = itemForm.querySelector("#reorderLevel").value; // console.log(name, category, brand, stock, price);
 
         if (name !== "" && category !== "" && brand !== "" && stock !== "" && sellingPrice !== "") {
           closeModal(itemForm); // openPrompt("",resolve,reject, [true, row, name, brand, category, stock, sellingPrice])
 
-          resolve([true, row, name, brand, category, stock, sellingPrice, costPrice, discount]);
+          resolve([true, row, name, brand, category, stock, sellingPrice, costPrice, discount, reorderLevel]);
         }
       }
 
@@ -1460,7 +1478,7 @@ const commaNumber = __webpack_require__(/*! comma-number */ "./node_modules/comm
 const database = new DATABASE();
 
 class DOMCONTROLLER {
-  static createItem(name, brand, category, stock, sellingPrice, discount, reOrderLevel, functions, hasItems, costPrice = "", purchased = "", dontHighlightAfterCreate = false, isdeletedItem = false, destinationPage = "", Scroll = true) {
+  static createItem(name, brand, category, stock, sellingPrice, discount, reOrderLevel, barcode, functions, hasItems, costPrice = "", purchased = "", dontHighlightAfterCreate = false, isdeletedItem = false, destinationPage = "", Scroll = true) {
     return new Promise((resolve, reject) => {
       const tableROWS = document.querySelectorAll('tr');
       tableROWS.forEach(row => {
@@ -1510,6 +1528,7 @@ class DOMCONTROLLER {
                     <td hidden class="td_Category--hidden">${category}</td>
                     <td hidden class="td_ReOrderLevel--hidden">${reOrderLevel}</td>
                     <td hidden class="td_Price--hidden">${sellingPrice}</td>
+                    <td hidden class="td_Barcode--hidden">${barcode}</td>
                     <td hidden class="state">visible</td>
                     `;
       } else {
@@ -2621,6 +2640,7 @@ class DATABASE {
                         Category VARCHAR(255) NOT NULL,
                         CostPrice DECIMAL(8,2) NOT NULL,
                         SellingPrice DECIMAL(8,2) NOT NULL,
+                        Barcode VARCHAR(255) NOT NULL,
                         InStock INT NOT NULL,
                         Discount INT NOT NULL,
                         Deleted BOOLEAN NOT NULL,
@@ -2850,7 +2870,7 @@ class DATABASE {
   addNewItem(shopItem, userName) {
     return new Promise((resolve, reject) => {
       const array = Object.values(shopItem);
-      let [name, brand, category, stock, sellingPrice, costPrice, discount] = array;
+      let [name, brand, category, stock, sellingPrice, costPrice, discount, barcode] = array;
       let insertCategorySQL = `INSERT INTO  itemCategories SET ? `;
       let categoryValues = {
         Name: category
@@ -2868,7 +2888,8 @@ class DATABASE {
         CostPrice: costPrice,
         SellingPrice: sellingPrice,
         Discount: discount,
-        Deleted: false
+        Deleted: false,
+        Barcode: barcode
       };
       let updateValues = {
         InStock: stock,

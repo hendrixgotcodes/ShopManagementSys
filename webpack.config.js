@@ -15,7 +15,8 @@ const electron ={
         EmployeesController: './controller/EmployeesController.js',
         ProfitsController: './controller/ProfitsController.js',
         TopItemsController: './controller/TopItemsController.js',
-        EmployeePerformanceController: './controller/EmployeePerformanceController.js'
+        EmployeePerformanceController: './controller/EmployeePerformanceController.js',
+        BarcodeReader: './controller/utilities/BarcodeReader.js'
     },
     output: {
         path: path.resolve(__dirname, 'build'),
@@ -31,6 +32,9 @@ const electron ={
     devtool: 'source-map',
     optimization: {
         minimize: false
+    },
+    externals: {
+        "node-hide": "common-js node-hid"
     }
 }
 

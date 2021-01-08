@@ -26,7 +26,8 @@ class MainWWindow extends BrowserWindow {
             show: false,
             minWidth: 1503,
             minHeight: 800,
-            hasShadow: true
+            hasShadow: true,
+            alwaysOnTop: false
         })
 
         //Program Variables
@@ -39,6 +40,7 @@ class MainWWindow extends BrowserWindow {
         this.loadFile(indexFile);
 
         const that = this;
+        this.allowRendererProcessReuse = false;
         
 
 

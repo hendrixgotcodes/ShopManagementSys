@@ -1066,6 +1066,7 @@ body {
         box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
         padding: .8rem 1rem;
         width: 100%;
+        height: 10%;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -1078,7 +1079,7 @@ body {
         flex-direction: column;
         justify-content: space-between; }
         .main_body .mainBody_content .dialog--itemFormBox .dialogContainer form {
-          height: 76%;
+          height: 100%;
           width: 100%;
           display: inline-block; }
           .main_body .mainBody_content .dialog--itemFormBox .dialogContainer form #lbl_name {
@@ -1094,7 +1095,7 @@ body {
                 opacity: .5;
                 cursor: default; }
           .main_body .mainBody_content .dialog--itemFormBox .dialogContainer form .flexContainer {
-            height: 78%;
+            height: 80%;
             display: flex;
             justify-content: space-between;
             flex-direction: row;
@@ -1116,10 +1117,29 @@ body {
                 cursor: default; }
               .main_body .mainBody_content .dialog--itemFormBox .dialogContainer form .flexContainer .lbl .dialogForm_tb {
                 margin-top: .2rem;
-                height: 72%;
+                height: 65%;
                 font-size: 1rem;
                 color: #646766; }
                 .main_body .mainBody_content .dialog--itemFormBox .dialogContainer form .flexContainer .lbl .dialogForm_tb:disabled {
+                  opacity: .5;
+                  cursor: default; }
+            .main_body .mainBody_content .dialog--itemFormBox .dialogContainer form .flexContainer .quarterwidth {
+              display: block;
+              height: 25%;
+              width: 48%;
+              margin-right: 2%; }
+              .main_body .mainBody_content .dialog--itemFormBox .dialogContainer form .flexContainer .quarterwidth span {
+                display: block;
+                width: 50%; }
+              .main_body .mainBody_content .dialog--itemFormBox .dialogContainer form .flexContainer .quarterwidth select:disabled {
+                opacity: .5;
+                cursor: default; }
+              .main_body .mainBody_content .dialog--itemFormBox .dialogContainer form .flexContainer .quarterwidth .dialogForm_tb {
+                margin-top: .2rem;
+                height: 72%;
+                font-size: 1rem;
+                color: #646766; }
+                .main_body .mainBody_content .dialog--itemFormBox .dialogContainer form .flexContainer .quarterwidth .dialogForm_tb:disabled {
                   opacity: .5;
                   cursor: default; }
         .main_body .mainBody_content .dialog--itemFormBox .dialogContainer .scrollBox {
@@ -1172,6 +1192,14 @@ body {
           .main_body .mainBody_content .dialog--itemFormBox .dialogFooter .dialogConfirm img {
             width: 4%;
             margin-left: .5rem; }
+    .main_body .mainBody_content .dialog--excelForm {
+      width: 65%;
+      left: 15%; }
+      .main_body .mainBody_content .dialog--excelForm .dialogContainer {
+        font-size: 1rem; }
+      .main_body .mainBody_content .dialog--excelForm .dialogFooter img {
+        width: 4%;
+        margin-left: .5rem; }
     .main_body .mainBody_content .dialog--cartForm {
       font-size: 1.2rem;
       width: 40%;

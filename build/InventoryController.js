@@ -308,9 +308,9 @@ function initialzeStoreItems() {
 
       fetchedItems.forEach(fetchedItem => {
         if (fetchedItem.Deleted === 1) {
-          _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory", false);
+          _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, fetchedItem.Barcode, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory", false);
         } else {
-          _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, false, "Inventory", false);
+          _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, fetchedItem.Barcode, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, false, "Inventory", false);
         }
       });
     } else {
@@ -410,9 +410,10 @@ function deleteItem(row, action = "delete") {
 
 
 function editItem(row) {
+  console.log("clicked...", row);
   _controller_modals_ModalController__WEBPACK_IMPORTED_MODULE_1__["default"].openItemForm(row, true).then(result => {
     if (result[0] === true) {
-      let [, row, name, brand, category, stock, sellingPrice, costPrice, discount] = result;
+      let [, row, name, brand, category, stock, sellingPrice, costPrice, discount, reorderLevel] = result;
       let values = {
         Name: name,
         Brand: brand,
@@ -420,7 +421,8 @@ function editItem(row) {
         InStock: stock,
         CostPrice: parseFloat(costPrice),
         SellingPrice: parseFloat(sellingPrice),
-        Discount: parseFloat(discount)
+        Discount: parseFloat(discount),
+        ReOrderLevel: parseInt(reorderLevel)
       };
       database.updateItem(values, UserName).then(result => {
         if (result === true) {
@@ -453,7 +455,7 @@ function addItem() {
 
 
     let promisedRow = result;
-    let [addNew, row, name, brand, category, stock, sellingPrice, costPrice, discount] = promisedRow; //Creating a store object to be added to database
+    let [addNew, row, name, brand, category, stock, sellingPrice, costPrice, discount, reorderLevel, barcode] = promisedRow; //Creating a store object to be added to database
 
     const storeObject = new Object();
     storeObject.Name = name;
@@ -462,12 +464,14 @@ function addItem() {
     storeObject.Stock = stock;
     storeObject.SellingPrice = sellingPrice;
     storeObject.CostPrice = costPrice;
-    storeObject.Discount = discount; // console.log([row, name, brand, category, stock, sellingPrice, costPrice]);
+    storeObject.Discount = discount;
+    storeObject.ReOrderLevel = reorderLevel;
+    storeObject.Barcode = barcode; // console.log([row, name, brand, category, stock, sellingPrice, costPrice]);
 
     database.addNewItem(storeObject, UserName).then(result => {
       if (result === true) {
-        // DOMCONTROLLER.createItem(result.Name, result.Brand, result.Category, result.Stock, result.SellingPrice, result.Discount,result.ReOrderLevel,[checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "", false, false, "inventory")
-        // DOMCONTROLLER.createItem(result.Name, result.Brand, result.Category, result.Stock, result.sellingPrice, result.Discount, result.ReOrderLevel, [checkCB,editItem, deleteItem, showRowControls], false, result.CostPrice, "", false, false, "inventory")
+        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(storeObject.Name, storeObject.Brand, storeObject.Category, storeObject.Stock, storeObject.SellingPrice, storeObject.Discount, reorderLevel, barcode, [checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "", false, false, "inventory"); // DOMCONTROLLER.createItem(result.Name, result.Brand, result.Category, result.Stock, result.sellingPrice, result.Discount, result.ReOrderLevel, [checkCB,editItem, deleteItem, showRowControls], false, result.CostPrice, "", false, false, "inventory")
+
         _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", "Successfuly added to inventory");
       }
     }).catch(error => {
@@ -511,10 +515,10 @@ function checkCB(row) {
 
 function editMultiple() {
   let currentRow = rowBucket.pop();
-  let itemName = currentRow.querySelector(".td_Names").innerText;
+  let itemName = currentRow.querySelector(".td_Name--hidden").innerText;
   _controller_modals_ModalController__WEBPACK_IMPORTED_MODULE_1__["default"].openItemForm(currentRow, true).then(result => {
     if (result[0] === true) {
-      let [, row, name, brand, category, stock, price, costPrice] = result;
+      let [, row, name, brand, category, stock, price, costPrice, reorderLevel] = result;
       let editedInventory = new Promise((resolve, reject) => {
         let done = _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.editItem(row, name, brand, category, stock, Number.parseFloat(price), parseFloat(costPrice));
 
@@ -595,9 +599,9 @@ function fetchItemsRecursive(offset = 200) {
         storeItems.forEach(fetchedItem => {
           if (parseInt(fetchedItem.InStock) > 0) {
             if (fetchedItem.Deleted === 1) {
-              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory", false);
+              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, fetchedItem.Barcode, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory", false);
             } else {
-              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, false, "Inventory", false);
+              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, fetchedItem.Barcode, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, false, "Inventory", false);
             }
           }
         });
@@ -615,7 +619,7 @@ electron__WEBPACK_IMPORTED_MODULE_0__["ipcRenderer"].on('populateTable', (e, Ite
 
   Items.forEach(item => {
     let newArray = Object.values(item);
-    let [name, brand, category, stock, costPrice, sellingPrice, discount, reOrderLevel] = newArray;
+    let [name, brand, category, stock, costPrice, sellingPrice, discount, reOrderLevel, barcode] = newArray;
     itemsArray.push({
       Name: name,
       Brand: brand,
@@ -625,7 +629,8 @@ electron__WEBPACK_IMPORTED_MODULE_0__["ipcRenderer"].on('populateTable', (e, Ite
       CostPrice: costPrice,
       Discount: discount,
       Deleted: "false",
-      ReOrderLevel: reOrderLevel
+      ReOrderLevel: reOrderLevel,
+      Barcode: barcode
     });
   });
   database.addItemsBulk(itemsArray, UserName).then(resolved => {
@@ -652,7 +657,7 @@ electron__WEBPACK_IMPORTED_MODULE_0__["ipcRenderer"].on('populateTable', (e, Ite
     } else if (notInDb.length > 0 && inDb.length === 0) {
       _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", `${notInDb.length} items have been successfully added`);
       notInDb.forEach(item => {
-        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount, item.ReOrderLevel, [checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory");
+        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount, item.ReOrderLevel, item.Barcode[(checkCB, editItem, deleteItem, showRowControls)], "", item.CostPrice, "", false, false, "Inventory");
       });
     }
   }).catch(error => {
@@ -891,6 +896,7 @@ class Modal {
       let sellingPrice = "";
       let costPrice = "";
       let discount = "";
+      let reorderLevel = "";
 
       if (row !== "") {
         itemName = row.querySelector(".td_Names").innerText;
@@ -900,6 +906,7 @@ class Modal {
         sellingPrice = row.querySelector(".td_sellingPrice").innerText;
         costPrice = row.querySelector(".td_costPrice").innerText;
         discount = row.querySelector(".td_discount").innerText;
+        reorderLevel = row.querySelector(".td_reOrderLevel--hidden").innerText;
       }
 
       const boxTemplate = `
@@ -946,9 +953,14 @@ class Modal {
                                 <input type="number" class="dialogForm_tb halfwidth" value="${parseFloat(sellingPrice)}" aria-placeholder="Unit Cost"  id="sellingPrice" />
                             </label>
 
-                            <label class="lbl" id="lbl_discount">
+                            <label class="quarterwidth" id="lbl_discount">
                                 <span>Discount (%)</span>
-                                <input type="number" class="dialogForm_tb halfwidth" value="${parseFloat(discount)}" aria-placeholder="Discount(%)"  id="discount" />
+                                <input type="number" class="dialogForm_tb" value="${parseFloat(discount)}" aria-placeholder="Discount(%)"  id="discount" />
+                            </label>
+
+                            <label class="quarterwidth" id="lbl_reorderlevel">
+                                <span>Reorder Level</span>
+                                <input type="number" class="dialogForm_tb" value="${parseFloat(reorderLevel)}" aria-placeholder="Discount(%)"  id="reorderLevel" />
                             </label>
     
                          </div>
@@ -1075,12 +1087,13 @@ class Modal {
         const stock = itemForm.querySelector('#total').value;
         const sellingPrice = itemForm.querySelector('#sellingPrice').value;
         const costPrice = itemForm.querySelector("#costPrice").value;
-        discount = itemForm.querySelector('#discount').value; // console.log(name, category, brand, stock, price);
+        discount = itemForm.querySelector('#discount').value;
+        const reorderLevel = itemForm.querySelector("#reorderLevel").value; // console.log(name, category, brand, stock, price);
 
         if (name !== "" && category !== "" && brand !== "" && stock !== "" && sellingPrice !== "") {
           closeModal(itemForm); // openPrompt("",resolve,reject, [true, row, name, brand, category, stock, sellingPrice])
 
-          resolve([true, row, name, brand, category, stock, sellingPrice, costPrice, discount]);
+          resolve([true, row, name, brand, category, stock, sellingPrice, costPrice, discount, reorderLevel]);
         }
       }
 
@@ -1638,7 +1651,7 @@ const commaNumber = __webpack_require__(/*! comma-number */ "./node_modules/comm
 const database = new DATABASE();
 
 class DOMCONTROLLER {
-  static createItem(name, brand, category, stock, sellingPrice, discount, reOrderLevel, functions, hasItems, costPrice = "", purchased = "", dontHighlightAfterCreate = false, isdeletedItem = false, destinationPage = "", Scroll = true) {
+  static createItem(name, brand, category, stock, sellingPrice, discount, reOrderLevel, barcode, functions, hasItems, costPrice = "", purchased = "", dontHighlightAfterCreate = false, isdeletedItem = false, destinationPage = "", Scroll = true) {
     return new Promise((resolve, reject) => {
       const tableROWS = document.querySelectorAll('tr');
       tableROWS.forEach(row => {
@@ -1688,6 +1701,7 @@ class DOMCONTROLLER {
                     <td hidden class="td_Category--hidden">${category}</td>
                     <td hidden class="td_ReOrderLevel--hidden">${reOrderLevel}</td>
                     <td hidden class="td_Price--hidden">${sellingPrice}</td>
+                    <td hidden class="td_Barcode--hidden">${barcode}</td>
                     <td hidden class="state">visible</td>
                     `;
       } else {
@@ -2799,6 +2813,7 @@ class DATABASE {
                         Category VARCHAR(255) NOT NULL,
                         CostPrice DECIMAL(8,2) NOT NULL,
                         SellingPrice DECIMAL(8,2) NOT NULL,
+                        Barcode VARCHAR(255) NOT NULL,
                         InStock INT NOT NULL,
                         Discount INT NOT NULL,
                         Deleted BOOLEAN NOT NULL,
@@ -3028,7 +3043,7 @@ class DATABASE {
   addNewItem(shopItem, userName) {
     return new Promise((resolve, reject) => {
       const array = Object.values(shopItem);
-      let [name, brand, category, stock, sellingPrice, costPrice, discount] = array;
+      let [name, brand, category, stock, sellingPrice, costPrice, discount, barcode] = array;
       let insertCategorySQL = `INSERT INTO  itemCategories SET ? `;
       let categoryValues = {
         Name: category
@@ -3046,7 +3061,8 @@ class DATABASE {
         CostPrice: costPrice,
         SellingPrice: sellingPrice,
         Discount: discount,
-        Deleted: false
+        Deleted: false,
+        Barcode: barcode
       };
       let updateValues = {
         InStock: stock,

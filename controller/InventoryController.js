@@ -149,12 +149,12 @@ function initialzeStoreItems(){
 
                 if(fetchedItem.Deleted === 1){
 
-                    DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,[checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory", false)
+                    DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,fetchedItem.Barcode,[checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory", false)
 
                 }
                 else{
 
-                    DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,[checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true,false , "Inventory", false)
+                    DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,fetchedItem.Barcode,[checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true,false , "Inventory", false)
 
                 }
 
@@ -321,6 +321,9 @@ function deleteItem(row, action="delete"){
 //And decide to show or not show an alert based on that result - (Used by event listeners on row ".edit" buttons in Inventory)
 function editItem(row){
 
+    console.log("clicked...", row);
+
+
 
     Modal.openItemForm(row, true)
     .then((result)=>{
@@ -329,7 +332,7 @@ function editItem(row){
         if(result[0] === true){
 
 
-            let [,row, name, brand, category, stock, sellingPrice, costPrice, discount] = result;
+            let [,row, name, brand, category, stock, sellingPrice, costPrice, discount, reorderLevel] = result;
 
            
 
@@ -342,7 +345,8 @@ function editItem(row){
                     InStock: stock,
                     CostPrice: parseFloat(costPrice),
                     SellingPrice: parseFloat(sellingPrice),
-                    Discount: parseFloat(discount)
+                    Discount: parseFloat(discount),
+                    ReOrderLevel: parseInt(reorderLevel)
                 };
 
             
@@ -412,7 +416,7 @@ function addItem(){
             let promisedRow = result;
 
 
-            let [addNew,row, name, brand, category, stock, sellingPrice, costPrice, discount] = promisedRow;
+            let [addNew,row, name, brand, category, stock, sellingPrice, costPrice, discount, reorderLevel, barcode] = promisedRow;
 
             //Creating a store object to be added to database
             const storeObject = new Object();
@@ -423,6 +427,8 @@ function addItem(){
             storeObject.SellingPrice = sellingPrice;
             storeObject.CostPrice = costPrice;
             storeObject.Discount = discount;
+            storeObject.ReOrderLevel = reorderLevel
+            storeObject.Barcode = barcode;
 
             // console.log([row, name, brand, category, stock, sellingPrice, costPrice]);
 
@@ -434,10 +440,10 @@ function addItem(){
 
                 if(result === true){
 
-                    // DOMCONTROLLER.createItem(result.Name, result.Brand, result.Category, result.Stock, result.SellingPrice, result.Discount,result.ReOrderLevel,[checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "", false, false, "inventory")
+                    DOMCONTROLLER.createItem(storeObject.Name, storeObject.Brand, storeObject.Category, storeObject.Stock, storeObject.SellingPrice, storeObject.Discount,reorderLevel,barcode,[checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "", false, false, "inventory")
                     // DOMCONTROLLER.createItem(result.Name, result.Brand, result.Category, result.Stock, result.sellingPrice, result.Discount, result.ReOrderLevel, [checkCB,editItem, deleteItem, showRowControls], false, result.CostPrice, "", false, false, "inventory")
 
-                    console.log(result);
+                    
             
                     Notifications.showAlert("success", "Successfuly added to inventory")
 
@@ -514,14 +520,14 @@ function editMultiple(){
 
     let currentRow = rowBucket.pop();
 
-    let itemName = currentRow.querySelector(".td_Names").innerText;
+    let itemName = currentRow.querySelector(".td_Name--hidden").innerText;
 
     Modal.openItemForm(currentRow, true)
     .then((result)=>{
 
         if(result[0] === true){
 
-           let [,row, name, brand, category, stock, price, costPrice] = result;
+           let [,row, name, brand, category, stock, price, costPrice, reorderLevel] = result;
 
 
             let editedInventory = new Promise(
@@ -681,12 +687,12 @@ function fetchItemsRecursive(offset = 200){
 
                         if(fetchedItem.Deleted === 1){
 
-                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,[checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory", false)
+                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,fetchedItem.Barcode,[checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory", false)
         
                         }
                         else{
         
-                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,[checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true,false , "Inventory", false)
+                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,fetchedItem.Barcode,[checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true,false , "Inventory", false)
         
                         }
 
@@ -728,7 +734,7 @@ ipcRenderer.on('populateTable',(e, Items)=>{
             let newArray = Object.values(item);
 
 
-            let [name, brand, category, stock, costPrice, sellingPrice, discount, reOrderLevel] = newArray;
+            let [name, brand, category, stock, costPrice, sellingPrice, discount, reOrderLevel, barcode] = newArray;
 
 
             itemsArray.push({
@@ -740,7 +746,8 @@ ipcRenderer.on('populateTable',(e, Items)=>{
                 CostPrice: costPrice,
                 Discount: discount,
                 Deleted : "false",
-                ReOrderLevel: reOrderLevel
+                ReOrderLevel: reOrderLevel,
+                Barcode: barcode
             })
 
         })
@@ -796,7 +803,7 @@ ipcRenderer.on('populateTable',(e, Items)=>{
 
                 notInDb.forEach((item)=>{
 
-                    DOMCONTROLLER.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount,item.ReOrderLevel,[checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory")
+                    DOMCONTROLLER.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount,item.ReOrderLevel,item.Barcode[checkCB, editItem, deleteItem, showRowControls], "", item.CostPrice, "", false, false, "Inventory")
 
                 })
 
