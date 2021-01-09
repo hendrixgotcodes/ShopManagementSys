@@ -71,6 +71,10 @@ const footerBell_notIcon = footerBell.querySelector(".footerBell_notIcon")
 let sellingItem = {     // Represents an instance of a store item being added to cart
 }
 
+let buffer = [];
+let string = "";
+
+let SelectedRows = [];
 
 
 /*********************************EVent Listeners********************* */
@@ -79,6 +83,85 @@ window.addEventListener("load", ()=>{
     initializeStoreItems();
 
 })
+
+
+
+document.addEventListener("keydown", (e)=>{
+
+
+    if(e.key === "" || e.key === "Control" || e.key === "Enter" || e.key === "Shift" || e.key === "Alt"){
+        return
+    }
+
+    buffer.push(e.key);
+
+
+    setTimeout(()=>{
+
+        console.log(buffer);
+
+        if(buffer.length > 0){
+
+
+            buffer.forEach((char)=>{
+
+                string = string + char
+
+            })
+
+            if( buffer.length >= 12){
+
+                const tableRows = document.querySelector("tbody").querySelectorAll("tr");
+                tableRows.forEach((row)=>{
+
+                    const barcode = row.querySelector(".td_Barcode--hidden").innerText;
+                    let CB = row.querySelector('.td_cb').querySelector('.selectOne');
+                    
+
+                    if(CB.checked === true){
+                        SelectedRows.push(row)
+                    }
+                    else{
+
+                        if(barcode === string){
+
+                            SelectedRows.push(row)    
+    
+    
+                        }
+
+                    }
+
+                   
+
+
+
+                })
+
+                SelectedRows.forEach((row)=>{
+
+                    toggleRowCB(row)
+
+                })
+                
+
+            }
+            else{
+                console.log(buffer.length);
+            }
+
+
+           
+
+        }
+
+        buffer = [];
+        string = "";
+    
+    }, 500)
+
+})
+
 
 
 
@@ -174,12 +257,12 @@ function initializeStoreItems(){
     
                         if(fetchedItem.Deleted === 1){
     
-                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,"", false, fetchedItem.CostPrice, "", true, true,"Store", false)
+                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel, fetchedItem.Barcode,"", false, fetchedItem.CostPrice, "", true, true,"Store", false)
         
                         }
                         else
                         {
-                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,"", false, fetchedItem.CostPrice, "", true, false,"Store", false)
+                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,fetchedItem.Barcode,"", false, fetchedItem.CostPrice, "", true, false,"Store", false)
                         }
     
                     }
@@ -308,7 +391,7 @@ function fetchItemsRecursive(offset = 200){
 
                         if(fetchedItem.Deleted !== 1){
 
-                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,"", false, fetchedItem.CostPrice, "", true, false,"Store", false)
+                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,fetchedItem.Barcode,"", false, fetchedItem.CostPrice, "", true, false,"Store", false)
                             .then((row)=>{    
 
                                 
@@ -421,39 +504,36 @@ function toggleRowCB(row){
 
     if(CB.checked === true){
 
-        //Unchecking checkbox in clicked
-        CB.checked = false;
-
         //Item being unchecked
         let itemName =row.querySelector('.td_Names').innerText;
         let itemBrand = row.querySelector('.td_Brands').innerText;
+
+        console.log("already checked");
         
-        cart.forEach((item)=>{
+        // cart.forEach((item)=>{
 
 
-            let currentItemIndex;
+        //     let currentItemIndex;+
 
-            if(item.name === itemName && item.brand === itemBrand){
-
-
-                currentItemIndex = cart.indexOf(item);
-
-                cart.splice(currentItemIndex, 1)
+        //     if(item.name === itemName && item.brand === itemBrand){
 
 
+        //         currentItemIndex = cart.indexOf(item);
 
-            }
-        })
+        //         cart.splice(currentItemIndex, 1)
 
 
 
+        //     }
+        // })
+
+        console.log(cart, "niji");
 
 
-        if(totalSelectedRows > 0){
-            totalSelectedRows = totalSelectedRows -1;
-        }
+        console.log(totalSelectedRows);
 
-        DOMCONTROLLER.addToCart(row, cart, btnCart_sell, btnCart_clear, subtractItem)
+
+        // DOMCONTROLLER.addToCart(row, cart, btnCart_sell, btnCart_clear, subtractItem)
 
 
     }
@@ -464,9 +544,12 @@ function toggleRowCB(row){
 
         DOMCONTROLLER.addToCart(row, cart, btnCart_sell, btnCart_clear, subtractItem)
 
+        console.log("not checked");
+
 
     }
 }
+
 
 
 //-----------------------------------------------------------------------------------------------

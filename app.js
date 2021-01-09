@@ -43,8 +43,6 @@ app.on('window-all-closed',()=>{
     app.quit();
 })
 
-app.allowRendererProcessReuse = false;
-
 //Listening To Events Sent By the loginController
 ipcMain.on('minimize', () => {
     mainWindow.minimize();

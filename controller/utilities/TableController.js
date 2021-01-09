@@ -113,6 +113,7 @@ class DOMCONTROLLER{
                     <td hidden class="td_Brand--hidden">${brand}</td>
                     <td hidden class="td_Category--hidden">${category}</td>
                     <td hidden class="state">visible</td>
+                    <td hidden class="td_Barcode--hidden">${barcode}</td>
                     `;
 
                 }
@@ -1344,42 +1345,46 @@ class DOMCONTROLLER{
         btnCart_clear.disabled = false;
         btnCart_sell.disabled = false
 
+        addToCart();
+
 
         //Iterate through cart items to remove if already exists
-        cartItems.forEach((cartItem)=>{
+        // cartItems.forEach((cartItem)=>{
 
-            if(cartItem.querySelector(".hidden_itemName").innerText === rowItemName && cartItem.querySelector(".hidden_itemBrand").innerText === rowItemBrand && cartItem.querySelector(".hidden_itemCategory").innerText === rowItemCategory ){
+        //     if(cartItem.querySelector(".hidden_itemName").innerText === rowItemName && cartItem.querySelector(".hidden_itemBrand").innerText === rowItemBrand && cartItem.querySelector(".hidden_itemCategory").innerText === rowItemCategory ){
 
-                cartItem.classList.remove("cartItem--shown")
-                itemExists = true
+        //         // cartItem.classList.remove("cartItem--shown")
+        //         // itemExists = true
 
-                setTimeout(()=>{
-                    cartItem.remove()
-                }, 300)
+        //         // setTimeout(()=>{
+        //         //     cartItem.remove()
+        //         // }, 300)
 
-                subtractItem(cartItem)
+        //         // subtractItem(cartItem)
 
-                if(cartItems.length === 0){
+        //         console.log(cartItem);
 
-                    btnCart_clear.disabled = false;
-                    btnCart_sell.disabled = false
-                    cartInfo.style.display = "block"
+        //         if(cartItems.length === 0){
 
-                }
+        //             btnCart_clear.disabled = false;
+        //             btnCart_sell.disabled = false
+        //             cartInfo.style.display = "block"
 
-            }
+        //         }
 
-        })
+        //     }
 
-        if(itemExists === true){
-            return
-        }
-        else{
+        // })
 
-            addToCart();
+        // if(itemExists === true){
+        //     return
+        // }
+        // else{
+
+        //     addToCart();
 
 
-        }
+        // }
 
 
         
@@ -1390,7 +1395,6 @@ class DOMCONTROLLER{
     /****************************FUNCTIONS***********************/
     function addToCart(){
 
-        console.log(reOrderLevel);
 
         const cartItemTemplate = 
         `
@@ -1698,7 +1702,7 @@ class DOMCONTROLLER{
     
                     mainTotal.innerText = newRevenue
     
-                    toolBar_tb.focus()
+                    btnCart_sell.focus()
     
                 }
     
@@ -1790,7 +1794,7 @@ class DOMCONTROLLER{
 
                 mainTotal.innerText = newRevenue
 
-                toolBar_tb.focus()
+                btnCart_sell.focus()
 
             }
 

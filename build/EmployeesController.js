@@ -527,9 +527,9 @@ function openNewUserForm() {
       }
 
       DOMCONTROLLER.createEmployeeItem(`${user.First_Name} ${user.Last_Name}`, user.IsAdmin, "Never", user.User_Name, false, [disableEmployee, deleteEmploye, enableEmployee, editEmployee], false);
-      _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_3___default.a.showAlert("success", `${user.First_Name} has successfully employed`);
+      _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_3___default.a.showAlert("success", `${user.First_Name} has been successfully employed`);
     }).catch(error => {
-      _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_3___default.a.showAlert("error", "Failed to add user");
+      _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_3___default.a.showAlert("error", "Sorry. Failed to add user");
       throw error;
     });
   });
@@ -550,7 +550,7 @@ function disableEmployee(userName, employeeName) {
   });
   getUserConfirmation.then(() => {
     database.disableEmployee(userName).then(() => {
-      _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_3___default.a.showAlert("success", `${employeeName}'s account have been disabled.`);
+      _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_3___default.a.showAlert("success", `${employeeName}'s account has been disabled successfully.`);
       setTimeout(() => {
         let btnEnable = document.createElement("div");
         btnEnable.className = "enable";
@@ -586,7 +586,7 @@ function enableEmployee(userName, employeeName) {
   });
   getUserConfirmation.then(() => {
     database.enableEmployee(userName).then(() => {
-      _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_3___default.a.showAlert("success", `${employeeName}'s account have been enabled.`);
+      _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_3___default.a.showAlert("success", `${employeeName}'s account has been enabled successfully.`);
       setTimeout(() => {
         let btnDisable = document.createElement("div");
         btnDisable.className = "disable";
@@ -620,7 +620,7 @@ function editEmployee(userName) {
     user = user.pop();
     _modals_ModalController__WEBPACK_IMPORTED_MODULE_4__["default"].openUserForm(false, user.User_Name, user.First_Name, user.Last_Name, user.IsAdmin).then(user => {
       database.removeEmployeeFromReported(user.User_Name, user.Password).then(() => {
-        _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_3___default.a.showAlert("success", `${user.First_Name}'s password modified successfully`);
+        _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_3___default.a.showAlert("success", `${user.First_Name}'s password has modified successfully`);
         row.style.backgroundColor = "#fff";
         row.querySelector(".controls").querySelector(".edit").disabled = true;
       }).catch(() => {
@@ -645,7 +645,7 @@ function deleteEmploye(userName, employeeName) {
   });
   getUserConfirmation.then(() => {
     database.deleteEmployee(userName).then(() => {
-      _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_3___default.a.showAlert("success", `${employeeName}'s account have been deleted.`);
+      _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_3___default.a.showAlert("success", `${employeeName}'s account has been deleted successfully.`);
       setTimeout(() => {
         row.style.transform = "translateX(115%)";
         setTimeout(() => {
@@ -904,7 +904,7 @@ class Modal {
   /************************************************************************************************************************************************************************/
 
 
-  static openItemForm(row = "", editForm) {
+  static openItemForm(row = "", editForm, barcode = "") {
     return new Promise((resolve, reject) => {
       let formTitle;
       let disableField;
@@ -989,6 +989,11 @@ class Modal {
                             <label class="quarterwidth" id="lbl_reorderlevel">
                                 <span>Reorder Level</span>
                                 <input type="number" class="dialogForm_tb" value="${parseFloat(reorderLevel)}" aria-placeholder="Discount(%)"  id="reorderLevel" />
+                            </label>
+
+                            <label class="quarterwidth" id="lbl_barcode">
+                                <span>Barcode</span>
+                                <input type="number" class="dialogForm_tb" value="${barcode}" aria-placeholder="Barcode"  id="barcode" />
                             </label>
     
                          </div>
@@ -1762,6 +1767,7 @@ class DOMCONTROLLER {
                     <td hidden class="td_Brand--hidden">${brand}</td>
                     <td hidden class="td_Category--hidden">${category}</td>
                     <td hidden class="state">visible</td>
+                    <td hidden class="td_Barcode--hidden">${barcode}</td>
                     `;
       }
 
@@ -2540,37 +2546,36 @@ class DOMCONTROLLER {
     cartInfo.style.display = "none"; //disble buttons
 
     btnCart_clear.disabled = false;
-    btnCart_sell.disabled = false; //Iterate through cart items to remove if already exists
+    btnCart_sell.disabled = false;
+    addToCart(); //Iterate through cart items to remove if already exists
+    // cartItems.forEach((cartItem)=>{
+    //     if(cartItem.querySelector(".hidden_itemName").innerText === rowItemName && cartItem.querySelector(".hidden_itemBrand").innerText === rowItemBrand && cartItem.querySelector(".hidden_itemCategory").innerText === rowItemCategory ){
+    //         // cartItem.classList.remove("cartItem--shown")
+    //         // itemExists = true
+    //         // setTimeout(()=>{
+    //         //     cartItem.remove()
+    //         // }, 300)
+    //         // subtractItem(cartItem)
+    //         console.log(cartItem);
+    //         if(cartItems.length === 0){
+    //             btnCart_clear.disabled = false;
+    //             btnCart_sell.disabled = false
+    //             cartInfo.style.display = "block"
+    //         }
+    //     }
+    // })
+    // if(itemExists === true){
+    //     return
+    // }
+    // else{
+    //     addToCart();
+    // }
 
-    cartItems.forEach(cartItem => {
-      if (cartItem.querySelector(".hidden_itemName").innerText === rowItemName && cartItem.querySelector(".hidden_itemBrand").innerText === rowItemBrand && cartItem.querySelector(".hidden_itemCategory").innerText === rowItemCategory) {
-        cartItem.classList.remove("cartItem--shown");
-        itemExists = true;
-        setTimeout(() => {
-          cartItem.remove();
-        }, 300);
-        subtractItem(cartItem);
-
-        if (cartItems.length === 0) {
-          btnCart_clear.disabled = false;
-          btnCart_sell.disabled = false;
-          cartInfo.style.display = "block";
-        }
-      }
-    });
-
-    if (itemExists === true) {
-      return;
-    } else {
-      addToCart();
-    }
     /********************************EVENT LISTENERS*****************************************/
 
     /****************************FUNCTIONS***********************/
 
-
     function addToCart() {
-      console.log(reOrderLevel);
       const cartItemTemplate = `
             <div class="cartItem_details">
                 <div class="cartItem_Name">${clip(rowItemName, 18)}</div>
@@ -2751,7 +2756,7 @@ class DOMCONTROLLER {
 
             subTotal.innerText = newRevenue;
             mainTotal.innerText = newRevenue;
-            toolBar_tb.focus();
+            btnCart_sell.focus();
           }
         }
       });
@@ -2801,7 +2806,7 @@ class DOMCONTROLLER {
 
           subTotal.innerText = newRevenue;
           mainTotal.innerText = newRevenue;
-          toolBar_tb.focus();
+          btnCart_sell.focus();
         }
       });
     }
@@ -4311,6 +4316,20 @@ class DATABASE {
           throw error;
         }
 
+        resolve(result);
+      });
+    });
+  }
+
+  getItemByBarcode(barcode) {
+    return new Promise((resolve, reject) => {
+      this.connector.query("SELECT * FROM `items` WHERE `items`.`Barcode` = ?", barcode, (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        console.log(result);
         resolve(result);
       });
     });

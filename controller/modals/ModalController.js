@@ -257,7 +257,7 @@ class Modal {
 /************************************************************************************************************************************************************************/  
  
 
-    static openItemForm(row="", editForm){
+    static openItemForm(row="", editForm, barcode=""){
 
         return new Promise((resolve, reject)=>{
 
@@ -351,6 +351,11 @@ class Modal {
                             <label class="quarterwidth" id="lbl_reorderlevel">
                                 <span>Reorder Level</span>
                                 <input type="number" class="dialogForm_tb" value="${parseFloat(reorderLevel)}" aria-placeholder="Discount(%)"  id="reorderLevel" />
+                            </label>
+
+                            <label class="quarterwidth" id="lbl_barcode">
+                                <span>Barcode</span>
+                                <input type="number" class="dialogForm_tb" value="${barcode}" aria-placeholder="Barcode"  id="barcode" />
                             </label>
     
                          </div>

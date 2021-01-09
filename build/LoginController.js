@@ -1931,6 +1931,20 @@ class DATABASE {
     });
   }
 
+  getItemByBarcode(barcode) {
+    return new Promise((resolve, reject) => {
+      this.connector.query("SELECT * FROM `items` WHERE `items`.`Barcode` = ?", barcode, (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        console.log(result);
+        resolve(result);
+      });
+    });
+  }
+
 } //FUNCTIONS
 
 

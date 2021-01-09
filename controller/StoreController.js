@@ -28,11 +28,15 @@ let cart = [];     // Array of store objects
 let lostAccounts = [];
 let itemsOnReOrderLevels = [];
 
+let buffer = [];
+let string = "";
+
 
 
 
 //Holds the amount of table rows selected so that disabling and enabling of elements can be done based on that amount
 let totalSelectedRows = 0;
+let SelectedRows = [];
 
 
 
@@ -81,22 +85,79 @@ window.addEventListener("load", ()=>{
 
 })
 
-document.addEventListener("barcode", (e)=>{
+document.addEventListener("keydown", (e)=>{
 
-    console.log(e.detail);
 
-    const tableRows = document.querySelector("tbody").querySelectorAll("tr");
-    tableRows.forEach((tr)=>{
+    if(e.key === "" || e.key === "Control" || e.key === "Enter" || e.key === "Shift" || e.key === "Alt"){
+        return
+    }
 
-        const barcode = tr.querySelector(".td_Barcode--hidden").innerText;
+    buffer.push(e.key);
 
-        if(barcode === e.detail){
 
-            toggleRowCB(tr)
+    setTimeout(()=>{
+
+        console.log(buffer);
+
+        if(buffer.length > 0){
+
+
+            buffer.forEach((char)=>{
+
+                string = string + char
+
+            })
+
+            if( buffer.length >= 12){
+
+                const tableRows = document.querySelector("tbody").querySelectorAll("tr");
+                tableRows.forEach((row)=>{
+
+                    const barcode = row.querySelector(".td_Barcode--hidden").innerText;
+                    let CB = row.querySelector('.td_cb').querySelector('.selectOne');
+                    
+
+                    if(CB.checked === true){
+                        SelectedRows.push(row)
+                    }
+                    else{
+
+                        if(barcode === string){
+
+                            SelectedRows.push(row)    
+    
+    
+                        }
+
+                    }
+
+                   
+
+
+
+                })
+
+                SelectedRows.forEach((row)=>{
+
+                    toggleRowCB(row)
+
+                })
+                
+
+            }
+            else{
+                console.log(buffer.length);
+            }
+
+
+           
 
         }
 
-    })
+        buffer = [];
+        string = "";
+    
+    }, 500)
 
 })
 
@@ -245,13 +306,28 @@ function initializeStoreItems(){
             //For "tableBody"
             tableRows.forEach((row)=>{
                 row.addEventListener('click',(e)=>{
+
+                    let CB = row.querySelector('.td_cb').querySelector('.selectOne');
+
+                    if(CB.checked === false){
+                        SelectedRows.push(row);
+                    }
+                    
+
                     toggleRowCB(row);
                     setSellingItemProperties(row);
+                    
+
+
                 })
     
                 row.addEventListener('keydown',(e)=>{
     
                     if(e.code === "Enter"){
+
+                        if(CB.checked === false){
+                            SelectedRows.push(row);
+                        }
     
                         toggleRowCB(row);
                         setSellingItemProperties(row);
@@ -335,6 +411,11 @@ function fetchItemsRecursive(offset = 200){
     
                                 //For "tableBody"
                                 row.addEventListener('click',(e)=>{
+
+                                    if(CB.checked === false){
+                                        SelectedRows.push(row);
+                                    }
+
                                     toggleRowCB(row);
                                     setSellingItemProperties(row);
                                 })
@@ -342,6 +423,10 @@ function fetchItemsRecursive(offset = 200){
                                 row.addEventListener('keydown',(e)=>{
                     
                                     if(e.code === "Enter"){
+
+                                        if(CB.checked === false){
+                                            SelectedRows.push(row);
+                                        }
                     
                                         toggleRowCB(row);
                                         setSellingItemProperties(row);
@@ -441,39 +526,36 @@ function toggleRowCB(row){
 
     if(CB.checked === true){
 
-        //Unchecking checkbox in clicked
-        CB.checked = false;
-
         //Item being unchecked
         let itemName =row.querySelector('.td_Names').innerText;
         let itemBrand = row.querySelector('.td_Brands').innerText;
+
+        console.log("already checked");
         
-        cart.forEach((item)=>{
+        // cart.forEach((item)=>{
 
 
-            let currentItemIndex;
+        //     let currentItemIndex;+
 
-            if(item.name === itemName && item.brand === itemBrand){
-
-
-                currentItemIndex = cart.indexOf(item);
-
-                cart.splice(currentItemIndex, 1)
+        //     if(item.name === itemName && item.brand === itemBrand){
 
 
+        //         currentItemIndex = cart.indexOf(item);
 
-            }
-        })
+        //         cart.splice(currentItemIndex, 1)
 
 
 
+        //     }
+        // })
+
+        console.log(cart, "niji");
 
 
-        if(totalSelectedRows > 0){
-            totalSelectedRows = totalSelectedRows -1;
-        }
+        console.log(totalSelectedRows);
 
-        DOMCONTROLLER.addToCart(row, cart, btnCart_sell, btnCart_clear, subtractItem)
+
+        // DOMCONTROLLER.addToCart(row, cart, btnCart_sell, btnCart_clear, subtractItem)
 
 
     }
@@ -483,6 +565,8 @@ function toggleRowCB(row){
         totalSelectedRows = totalSelectedRows +1;
 
         DOMCONTROLLER.addToCart(row, cart, btnCart_sell, btnCart_clear, subtractItem)
+
+        console.log("not checked");
 
 
     }
@@ -535,9 +619,11 @@ function clearAllItems(){
     * the function is being used. If it is after a sale,     
     */
 
+        SelectedRows = []
 
         const itemsInCart = domCart.querySelectorAll(".cartItem");
         const allAnimationsDone = []
+
 
 
         //disbling cart buttons

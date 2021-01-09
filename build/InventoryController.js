@@ -243,7 +243,9 @@ const btnDropDown = document.querySelector(".btn_dropDown");
 let UserName;
 let UserType;
 const listItemForm = document.querySelector(".dd_listItem--form");
-let rowBucket = []; //Initializing Database
+let rowBucket = [];
+let barcodeBuffer = [];
+let barcode = ""; //Initializing Database
 
 const database = new _model_DATABASE_js__WEBPACK_IMPORTED_MODULE_4___default.a();
 /************Initializers************/
@@ -254,6 +256,83 @@ initialzeStoreItems();
 checkBtn.addEventListener('mouseover', toggleTBbtn_white);
 checkBtn.addEventListener('mouseleave', toggleTBbtn_default);
 checkBtn.addEventListener("click", toggleDropDown);
+document.addEventListener("keydown", e => {
+  if (e.key === "" || e.key === "Control" || e.key === "Enter" || e.key === "Shift" || e.key === "Alt") {
+    return;
+  }
+
+  barcodeBuffer.push(e.key);
+  setTimeout(() => {
+    if (barcodeBuffer.length > 10) {
+      barcodeBuffer.forEach(char => {
+        barcode = barcode + char;
+      });
+      database.getItemByBarcode(barcode).then(result => {
+        if (result.length === 0) {
+          console.log(barcode);
+          _controller_modals_ModalController__WEBPACK_IMPORTED_MODULE_1__["default"].openItemForm("", false, barcode).then(result => {
+            if (result === null) {
+              return;
+            } // let row, name, brand, category, stock, sellingPrice, costPrice;
+
+
+            let promisedRow = result;
+            let [addNew, row, name, brand, category, stock, sellingPrice, costPrice, discount, reorderLevel, barcode] = promisedRow; //Creating a store object to be added to database
+
+            const storeObject = new Object();
+            storeObject.Name = name;
+            storeObject.Brand = brand;
+            storeObject.Category = category;
+            storeObject.Stock = stock;
+            storeObject.SellingPrice = sellingPrice;
+            storeObject.CostPrice = costPrice;
+            storeObject.Discount = discount;
+            storeObject.ReOrderLevel = reorderLevel;
+            storeObject.Barcode = barcode; // console.log([row, name, brand, category, stock, sellingPrice, costPrice]);
+
+            database.addNewItem(storeObject, UserName).then(result => {
+              if (result === true) {
+                _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(storeObject.Name, storeObject.Brand, storeObject.Category, storeObject.Stock, storeObject.SellingPrice, storeObject.Discount, reorderLevel, barcode, [checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "", false, false, "inventory"); // DOMCONTROLLER.createItem(result.Name, result.Brand, result.Category, result.Stock, result.sellingPrice, result.Discount, result.ReOrderLevel, [checkCB,editItem, deleteItem, showRowControls], false, result.CostPrice, "", false, false, "inventory")
+
+                _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", "Successfuly added to inventory");
+              }
+            }).catch(error => {
+              if (error === "duplicate") {
+                _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("error", `Sorry, failed to add ${storeObject.Name} of brand ${storeObject.Brand} to inventory. This item already exists`);
+                return;
+              } else {
+                _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("error", `Sorry, failed to add ${storeObject.Name} of brand ${storeObject.Brand} to inventory due to an unknown error`);
+              }
+            });
+          });
+        }
+      }); // if( buffer.length >= 12){
+      //     const tableRows = document.querySelector("tbody").querySelectorAll("tr");
+      //     tableRows.forEach((row)=>{
+      //         const barcode = row.querySelector(".td_Barcode--hidden").innerText;
+      //         let CB = row.querySelector('.td_cb').querySelector('.selectOne');
+      //         if(CB.checked === true){
+      //             SelectedRows.push(row)
+      //         }
+      //         else{
+      //             if(barcode === string){
+      //                 SelectedRows.push(row)    
+      //             }
+      //         }
+      //     })
+      //     SelectedRows.forEach((row)=>{
+      //         toggleRowCB(row)
+      //     })
+      // }
+      // else{
+      //     console.log(buffer.length);
+      // }
+    }
+
+    barcodeBuffer = [];
+    barcode = "";
+  }, 500);
+});
 tableROWS.forEach(row => {
   //Right Click event lister for each row
   row.addEventListener("contextmenu", e => {
@@ -876,7 +955,7 @@ class Modal {
   /************************************************************************************************************************************************************************/
 
 
-  static openItemForm(row = "", editForm) {
+  static openItemForm(row = "", editForm, barcode = "") {
     return new Promise((resolve, reject) => {
       let formTitle;
       let disableField;
@@ -961,6 +1040,11 @@ class Modal {
                             <label class="quarterwidth" id="lbl_reorderlevel">
                                 <span>Reorder Level</span>
                                 <input type="number" class="dialogForm_tb" value="${parseFloat(reorderLevel)}" aria-placeholder="Discount(%)"  id="reorderLevel" />
+                            </label>
+
+                            <label class="quarterwidth" id="lbl_barcode">
+                                <span>Barcode</span>
+                                <input type="number" class="dialogForm_tb" value="${barcode}" aria-placeholder="Barcode"  id="barcode" />
                             </label>
     
                          </div>
@@ -1734,6 +1818,7 @@ class DOMCONTROLLER {
                     <td hidden class="td_Brand--hidden">${brand}</td>
                     <td hidden class="td_Category--hidden">${category}</td>
                     <td hidden class="state">visible</td>
+                    <td hidden class="td_Barcode--hidden">${barcode}</td>
                     `;
       }
 
@@ -2512,37 +2597,36 @@ class DOMCONTROLLER {
     cartInfo.style.display = "none"; //disble buttons
 
     btnCart_clear.disabled = false;
-    btnCart_sell.disabled = false; //Iterate through cart items to remove if already exists
+    btnCart_sell.disabled = false;
+    addToCart(); //Iterate through cart items to remove if already exists
+    // cartItems.forEach((cartItem)=>{
+    //     if(cartItem.querySelector(".hidden_itemName").innerText === rowItemName && cartItem.querySelector(".hidden_itemBrand").innerText === rowItemBrand && cartItem.querySelector(".hidden_itemCategory").innerText === rowItemCategory ){
+    //         // cartItem.classList.remove("cartItem--shown")
+    //         // itemExists = true
+    //         // setTimeout(()=>{
+    //         //     cartItem.remove()
+    //         // }, 300)
+    //         // subtractItem(cartItem)
+    //         console.log(cartItem);
+    //         if(cartItems.length === 0){
+    //             btnCart_clear.disabled = false;
+    //             btnCart_sell.disabled = false
+    //             cartInfo.style.display = "block"
+    //         }
+    //     }
+    // })
+    // if(itemExists === true){
+    //     return
+    // }
+    // else{
+    //     addToCart();
+    // }
 
-    cartItems.forEach(cartItem => {
-      if (cartItem.querySelector(".hidden_itemName").innerText === rowItemName && cartItem.querySelector(".hidden_itemBrand").innerText === rowItemBrand && cartItem.querySelector(".hidden_itemCategory").innerText === rowItemCategory) {
-        cartItem.classList.remove("cartItem--shown");
-        itemExists = true;
-        setTimeout(() => {
-          cartItem.remove();
-        }, 300);
-        subtractItem(cartItem);
-
-        if (cartItems.length === 0) {
-          btnCart_clear.disabled = false;
-          btnCart_sell.disabled = false;
-          cartInfo.style.display = "block";
-        }
-      }
-    });
-
-    if (itemExists === true) {
-      return;
-    } else {
-      addToCart();
-    }
     /********************************EVENT LISTENERS*****************************************/
 
     /****************************FUNCTIONS***********************/
 
-
     function addToCart() {
-      console.log(reOrderLevel);
       const cartItemTemplate = `
             <div class="cartItem_details">
                 <div class="cartItem_Name">${clip(rowItemName, 18)}</div>
@@ -2723,7 +2807,7 @@ class DOMCONTROLLER {
 
             subTotal.innerText = newRevenue;
             mainTotal.innerText = newRevenue;
-            toolBar_tb.focus();
+            btnCart_sell.focus();
           }
         }
       });
@@ -2773,7 +2857,7 @@ class DOMCONTROLLER {
 
           subTotal.innerText = newRevenue;
           mainTotal.innerText = newRevenue;
-          toolBar_tb.focus();
+          btnCart_sell.focus();
         }
       });
     }
@@ -4283,6 +4367,20 @@ class DATABASE {
           throw error;
         }
 
+        resolve(result);
+      });
+    });
+  }
+
+  getItemByBarcode(barcode) {
+    return new Promise((resolve, reject) => {
+      this.connector.query("SELECT * FROM `items` WHERE `items`.`Barcode` = ?", barcode, (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        console.log(result);
         resolve(result);
       });
     });

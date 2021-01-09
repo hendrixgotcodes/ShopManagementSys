@@ -32,6 +32,9 @@ let UserType;
 const listItemForm = document.querySelector(".dd_listItem--form");
 
 let rowBucket = [];
+let barcodeBuffer = [];
+let barcode = "";
+
 
 //Initializing Database
 const database = new DATABASE()
@@ -45,6 +48,161 @@ initialzeStoreItems();
 checkBtn.addEventListener('mouseover',toggleTBbtn_white)
 checkBtn.addEventListener('mouseleave',toggleTBbtn_default)
 checkBtn.addEventListener("click", toggleDropDown)
+
+
+
+document.addEventListener("keydown", (e)=>{
+
+
+    if(e.key === "" || e.key === "Control" || e.key === "Enter" || e.key === "Shift" || e.key === "Alt"){
+        return
+    }
+
+    barcodeBuffer.push(e.key);
+
+
+    setTimeout(()=>{
+
+
+        if(barcodeBuffer.length >= 10){
+
+
+            barcodeBuffer.forEach((char)=>{
+
+                barcode = barcode + char
+
+            })
+
+            database.getItemByBarcode(barcode)
+            .then((result)=>{
+
+                if(result.length === 0){
+
+                    console.log(barcode);
+
+                    Modal.openItemForm("", false, barcode)
+                    .then((result)=>{
+
+                        if(result === null){
+                            return;
+                        }
+                
+                           
+                            // let row, name, brand, category, stock, sellingPrice, costPrice;
+                
+                            let promisedRow = result;
+                
+                
+                            let [addNew,row, name, brand, category, stock, sellingPrice, costPrice, discount, reorderLevel, barcode] = promisedRow;
+                
+                            //Creating a store object to be added to database
+                            const storeObject = new Object();
+                            storeObject.Name = name;
+                            storeObject.Brand = brand;
+                            storeObject.Category = category;
+                            storeObject.Stock = stock;
+                            storeObject.SellingPrice = sellingPrice;
+                            storeObject.CostPrice = costPrice;
+                            storeObject.Discount = discount;
+                            storeObject.ReOrderLevel = reorderLevel
+                            storeObject.Barcode = barcode;
+                
+                            // console.log([row, name, brand, category, stock, sellingPrice, costPrice]);
+                
+                           
+                
+                                
+                            database.addNewItem(storeObject, UserName)
+                            .then((result)=>{
+                
+                                if(result === true){
+                
+                                    DOMCONTROLLER.createItem(storeObject.Name, storeObject.Brand, storeObject.Category, storeObject.Stock, storeObject.SellingPrice, storeObject.Discount,reorderLevel,barcode,[checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "", false, false, "inventory")
+                                    // DOMCONTROLLER.createItem(result.Name, result.Brand, result.Category, result.Stock, result.sellingPrice, result.Discount, result.ReOrderLevel, [checkCB,editItem, deleteItem, showRowControls], false, result.CostPrice, "", false, false, "inventory")
+                
+                                    
+                            
+                                    Notifications.showAlert("success", "Successfuly added to inventory")
+                
+                
+                                }
+                
+                            
+                            })
+                            .catch((error)=>{
+                
+                                if(error === "duplicate"){
+                                    Notifications.showAlert("error", `Sorry, failed to add ${storeObject.Name} of brand ${storeObject.Brand} to inventory. This item already exists`)
+                                    return;
+                                }
+                                else{
+                
+                                    Notifications.showAlert("error", `Sorry, failed to add ${storeObject.Name} of brand ${storeObject.Brand} to inventory due to an unknown error`)
+                
+                                }
+                
+                            })
+                
+                
+                
+                    })
+
+                }
+
+            })
+
+            if( buffer.length >= 12){
+
+                const tableRows = document.querySelector("tbody").querySelectorAll("tr");
+                tableRows.forEach((row)=>{
+
+                    const barcode = row.querySelector(".td_Barcode--hidden").innerText;
+                    let CB = row.querySelector('.td_cb').querySelector('.selectOne');
+                    
+
+                    if(CB.checked === true){
+                        SelectedRows.push(row)
+                    }
+                    else{
+
+                        if(barcode === string){
+
+                            SelectedRows.push(row)    
+    
+    
+                        }
+
+                    }
+
+                   
+
+
+
+                })
+
+                SelectedRows.forEach((row)=>{
+
+                    toggleRowCB(row)
+
+                })
+                
+
+            }
+            else{
+                console.log(buffer.length);
+            }
+
+
+           
+
+        }
+
+        barcodeBuffer = [];
+        barcode = "";
+    
+    }, 500)
+
+})
 
 
 

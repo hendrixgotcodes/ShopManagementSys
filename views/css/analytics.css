@@ -888,11 +888,11 @@ body {
           .main_body .mainBody_content .dialog--itemFormBox .dialogContainer form #lbl_name {
             display: block;
             width: 100%;
-            height: 20%; }
+            height: 18%; }
             .main_body .mainBody_content .dialog--itemFormBox .dialogContainer form #lbl_name #name {
               width: 100%;
               height: 72%;
-              font-size: 1rem;
+              font-size: .8rem;
               color: #646766; }
               .main_body .mainBody_content .dialog--itemFormBox .dialogContainer form #lbl_name #name:disabled {
                 opacity: .5;
@@ -906,10 +906,11 @@ body {
             width: 100%;
             flex-wrap: wrap;
             margin-top: .5rem;
-            margin-bottom: 1rem; }
+            margin-bottom: 1rem;
+            font-size: 1.1rem; }
             .main_body .mainBody_content .dialog--itemFormBox .dialogContainer form .flexContainer .lbl {
               display: block;
-              height: 25%;
+              height: 24%;
               width: 48%;
               margin-right: 2%; }
               .main_body .mainBody_content .dialog--itemFormBox .dialogContainer form .flexContainer .lbl span {
@@ -928,7 +929,7 @@ body {
                   cursor: default; }
             .main_body .mainBody_content .dialog--itemFormBox .dialogContainer form .flexContainer .quarterwidth {
               display: block;
-              height: 25%;
+              height: 20%;
               width: 48%;
               margin-right: 2%; }
               .main_body .mainBody_content .dialog--itemFormBox .dialogContainer form .flexContainer .quarterwidth span {

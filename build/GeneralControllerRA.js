@@ -618,7 +618,7 @@ class Modal {
   /************************************************************************************************************************************************************************/
 
 
-  static openItemForm(row = "", editForm) {
+  static openItemForm(row = "", editForm, barcode = "") {
     return new Promise((resolve, reject) => {
       let formTitle;
       let disableField;
@@ -703,6 +703,11 @@ class Modal {
                             <label class="quarterwidth" id="lbl_reorderlevel">
                                 <span>Reorder Level</span>
                                 <input type="number" class="dialogForm_tb" value="${parseFloat(reorderLevel)}" aria-placeholder="Discount(%)"  id="reorderLevel" />
+                            </label>
+
+                            <label class="quarterwidth" id="lbl_barcode">
+                                <span>Barcode</span>
+                                <input type="number" class="dialogForm_tb" value="${barcode}" aria-placeholder="Barcode"  id="barcode" />
                             </label>
     
                          </div>
@@ -1476,6 +1481,7 @@ class DOMCONTROLLER {
                     <td hidden class="td_Brand--hidden">${brand}</td>
                     <td hidden class="td_Category--hidden">${category}</td>
                     <td hidden class="state">visible</td>
+                    <td hidden class="td_Barcode--hidden">${barcode}</td>
                     `;
       }
 
@@ -2254,37 +2260,36 @@ class DOMCONTROLLER {
     cartInfo.style.display = "none"; //disble buttons
 
     btnCart_clear.disabled = false;
-    btnCart_sell.disabled = false; //Iterate through cart items to remove if already exists
+    btnCart_sell.disabled = false;
+    addToCart(); //Iterate through cart items to remove if already exists
+    // cartItems.forEach((cartItem)=>{
+    //     if(cartItem.querySelector(".hidden_itemName").innerText === rowItemName && cartItem.querySelector(".hidden_itemBrand").innerText === rowItemBrand && cartItem.querySelector(".hidden_itemCategory").innerText === rowItemCategory ){
+    //         // cartItem.classList.remove("cartItem--shown")
+    //         // itemExists = true
+    //         // setTimeout(()=>{
+    //         //     cartItem.remove()
+    //         // }, 300)
+    //         // subtractItem(cartItem)
+    //         console.log(cartItem);
+    //         if(cartItems.length === 0){
+    //             btnCart_clear.disabled = false;
+    //             btnCart_sell.disabled = false
+    //             cartInfo.style.display = "block"
+    //         }
+    //     }
+    // })
+    // if(itemExists === true){
+    //     return
+    // }
+    // else{
+    //     addToCart();
+    // }
 
-    cartItems.forEach(cartItem => {
-      if (cartItem.querySelector(".hidden_itemName").innerText === rowItemName && cartItem.querySelector(".hidden_itemBrand").innerText === rowItemBrand && cartItem.querySelector(".hidden_itemCategory").innerText === rowItemCategory) {
-        cartItem.classList.remove("cartItem--shown");
-        itemExists = true;
-        setTimeout(() => {
-          cartItem.remove();
-        }, 300);
-        subtractItem(cartItem);
-
-        if (cartItems.length === 0) {
-          btnCart_clear.disabled = false;
-          btnCart_sell.disabled = false;
-          cartInfo.style.display = "block";
-        }
-      }
-    });
-
-    if (itemExists === true) {
-      return;
-    } else {
-      addToCart();
-    }
     /********************************EVENT LISTENERS*****************************************/
 
     /****************************FUNCTIONS***********************/
 
-
     function addToCart() {
-      console.log(reOrderLevel);
       const cartItemTemplate = `
             <div class="cartItem_details">
                 <div class="cartItem_Name">${clip(rowItemName, 18)}</div>
@@ -2465,7 +2470,7 @@ class DOMCONTROLLER {
 
             subTotal.innerText = newRevenue;
             mainTotal.innerText = newRevenue;
-            toolBar_tb.focus();
+            btnCart_sell.focus();
           }
         }
       });
@@ -2515,7 +2520,7 @@ class DOMCONTROLLER {
 
           subTotal.innerText = newRevenue;
           mainTotal.innerText = newRevenue;
-          toolBar_tb.focus();
+          btnCart_sell.focus();
         }
       });
     }
@@ -4025,6 +4030,20 @@ class DATABASE {
           throw error;
         }
 
+        resolve(result);
+      });
+    });
+  }
+
+  getItemByBarcode(barcode) {
+    return new Promise((resolve, reject) => {
+      this.connector.query("SELECT * FROM `items` WHERE `items`.`Barcode` = ?", barcode, (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        console.log(result);
         resolve(result);
       });
     });

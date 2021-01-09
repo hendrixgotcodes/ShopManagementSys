@@ -449,12 +449,12 @@ function openNewUserForm(){
 
             DOMCONTROLLER.createEmployeeItem(`${user.First_Name} ${user.Last_Name}`, user.IsAdmin, "Never", user.User_Name, false, [disableEmployee, deleteEmploye, enableEmployee, editEmployee], false);
 
-            Notifications.showAlert("success", `${user.First_Name} has successfully employed`)
+            Notifications.showAlert("success", `${user.First_Name} has been successfully employed`)
 
         })
         .catch((error)=>{
 
-           Notifications.showAlert("error", "Failed to add user")
+           Notifications.showAlert("error", "Sorry. Failed to add user")
 
            throw error
 
@@ -495,7 +495,7 @@ function disableEmployee(userName, employeeName){
         database.disableEmployee(userName)
         .then(()=>{
 
-            Notifications.showAlert("success", `${employeeName}'s account have been disabled.`)
+            Notifications.showAlert("success", `${employeeName}'s account has been disabled successfully.`)
 
             setTimeout(() => {
 
@@ -566,7 +566,7 @@ function enableEmployee(userName, employeeName){
         database.enableEmployee(userName)
         .then(()=>{
 
-            Notifications.showAlert("success", `${employeeName}'s account have been enabled.`)
+            Notifications.showAlert("success", `${employeeName}'s account has been enabled successfully.`)
 
             setTimeout(() => {
 
@@ -634,7 +634,7 @@ function editEmployee(userName){
             database.removeEmployeeFromReported(user.User_Name, user.Password)
             .then(()=>{
 
-                Notifications.showAlert("success", `${user.First_Name}'s password modified successfully`);
+                Notifications.showAlert("success", `${user.First_Name}'s password has modified successfully`);
 
                 row.style.backgroundColor = "#fff";
 
@@ -684,7 +684,7 @@ function deleteEmploye(userName,employeeName){
         database.deleteEmployee(userName)
         .then(()=>{
 
-            Notifications.showAlert("success", `${employeeName}'s account have been deleted.`)
+            Notifications.showAlert("success", `${employeeName}'s account has been deleted successfully.`)
 
             setTimeout(() => {
 

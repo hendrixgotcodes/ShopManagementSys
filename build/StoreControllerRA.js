@@ -271,10 +271,53 @@ const footerBell_notIcon = footerBell.querySelector(".footerBell_notIcon");
 
 let sellingItem = {// Represents an instance of a store item being added to cart
 };
+let buffer = [];
+let string = "";
+let SelectedRows = [];
 /*********************************EVent Listeners********************* */
 
 window.addEventListener("load", () => {
   initializeStoreItems();
+});
+document.addEventListener("keydown", e => {
+  if (e.key === "" || e.key === "Control" || e.key === "Enter" || e.key === "Shift" || e.key === "Alt") {
+    return;
+  }
+
+  buffer.push(e.key);
+  setTimeout(() => {
+    console.log(buffer);
+
+    if (buffer.length > 0) {
+      buffer.forEach(char => {
+        string = string + char;
+      });
+
+      if (buffer.length >= 12) {
+        const tableRows = document.querySelector("tbody").querySelectorAll("tr");
+        tableRows.forEach(row => {
+          const barcode = row.querySelector(".td_Barcode--hidden").innerText;
+          let CB = row.querySelector('.td_cb').querySelector('.selectOne');
+
+          if (CB.checked === true) {
+            SelectedRows.push(row);
+          } else {
+            if (barcode === string) {
+              SelectedRows.push(row);
+            }
+          }
+        });
+        SelectedRows.forEach(row => {
+          toggleRowCB(row);
+        });
+      } else {
+        console.log(buffer.length);
+      }
+    }
+
+    buffer = [];
+    string = "";
+  }, 500);
 });
 tip_default.addEventListener('click', () => {
   selectValue_span.innerHTML = "Filter By:";
@@ -332,9 +375,9 @@ function initializeStoreItems() {
           //T his will only add items which "InStock" is greater than zero
           if (parseInt(fetchedItem.InStock) > 0) {
             if (fetchedItem.Deleted === 1) {
-              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, "", false, fetchedItem.CostPrice, "", true, true, "Store", false);
+              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, fetchedItem.Barcode, "", false, fetchedItem.CostPrice, "", true, true, "Store", false);
             } else {
-              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, "", false, fetchedItem.CostPrice, "", true, false, "Store", false);
+              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, fetchedItem.Barcode, "", false, fetchedItem.CostPrice, "", true, false, "Store", false);
             }
           }
 
@@ -408,7 +451,7 @@ function fetchItemsRecursive(offset = 200) {
           //T his will only add items which "InStock" is greater than zero
           if (parseInt(fetchedItem.InStock) > 0) {
             if (fetchedItem.Deleted !== 1) {
-              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, "", false, fetchedItem.CostPrice, "", true, false, "Store", false).then(row => {
+              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, fetchedItem.Barcode, "", false, fetchedItem.CostPrice, "", true, false, "Store", false).then(row => {
                 //For "tableBody"
                 row.addEventListener('click', e => {
                   toggleRowCB(row);
@@ -474,29 +517,24 @@ function toggleRowCB(row) {
   let CB = row.querySelector('.td_cb').querySelector('.selectOne');
 
   if (CB.checked === true) {
-    //Unchecking checkbox in clicked
-    CB.checked = false; //Item being unchecked
-
+    //Item being unchecked
     let itemName = row.querySelector('.td_Names').innerText;
     let itemBrand = row.querySelector('.td_Brands').innerText;
-    cart.forEach(item => {
-      let currentItemIndex;
+    console.log("already checked"); // cart.forEach((item)=>{
+    //     let currentItemIndex;+
+    //     if(item.name === itemName && item.brand === itemBrand){
+    //         currentItemIndex = cart.indexOf(item);
+    //         cart.splice(currentItemIndex, 1)
+    //     }
+    // })
 
-      if (item.name === itemName && item.brand === itemBrand) {
-        currentItemIndex = cart.indexOf(item);
-        cart.splice(currentItemIndex, 1);
-      }
-    });
-
-    if (totalSelectedRows > 0) {
-      totalSelectedRows = totalSelectedRows - 1;
-    }
-
-    _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.addToCart(row, cart, btnCart_sell, btnCart_clear, subtractItem);
+    console.log(cart, "niji");
+    console.log(totalSelectedRows); // DOMCONTROLLER.addToCart(row, cart, btnCart_sell, btnCart_clear, subtractItem)
   } else {
     CB.checked = true;
     totalSelectedRows = totalSelectedRows + 1;
     _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.addToCart(row, cart, btnCart_sell, btnCart_clear, subtractItem);
+    console.log("not checked");
   }
 } //-----------------------------------------------------------------------------------------------
 
@@ -803,6 +841,7 @@ class DOMCONTROLLER {
                     <td hidden class="td_Brand--hidden">${brand}</td>
                     <td hidden class="td_Category--hidden">${category}</td>
                     <td hidden class="state">visible</td>
+                    <td hidden class="td_Barcode--hidden">${barcode}</td>
                     `;
       }
 
@@ -1581,37 +1620,36 @@ class DOMCONTROLLER {
     cartInfo.style.display = "none"; //disble buttons
 
     btnCart_clear.disabled = false;
-    btnCart_sell.disabled = false; //Iterate through cart items to remove if already exists
+    btnCart_sell.disabled = false;
+    addToCart(); //Iterate through cart items to remove if already exists
+    // cartItems.forEach((cartItem)=>{
+    //     if(cartItem.querySelector(".hidden_itemName").innerText === rowItemName && cartItem.querySelector(".hidden_itemBrand").innerText === rowItemBrand && cartItem.querySelector(".hidden_itemCategory").innerText === rowItemCategory ){
+    //         // cartItem.classList.remove("cartItem--shown")
+    //         // itemExists = true
+    //         // setTimeout(()=>{
+    //         //     cartItem.remove()
+    //         // }, 300)
+    //         // subtractItem(cartItem)
+    //         console.log(cartItem);
+    //         if(cartItems.length === 0){
+    //             btnCart_clear.disabled = false;
+    //             btnCart_sell.disabled = false
+    //             cartInfo.style.display = "block"
+    //         }
+    //     }
+    // })
+    // if(itemExists === true){
+    //     return
+    // }
+    // else{
+    //     addToCart();
+    // }
 
-    cartItems.forEach(cartItem => {
-      if (cartItem.querySelector(".hidden_itemName").innerText === rowItemName && cartItem.querySelector(".hidden_itemBrand").innerText === rowItemBrand && cartItem.querySelector(".hidden_itemCategory").innerText === rowItemCategory) {
-        cartItem.classList.remove("cartItem--shown");
-        itemExists = true;
-        setTimeout(() => {
-          cartItem.remove();
-        }, 300);
-        subtractItem(cartItem);
-
-        if (cartItems.length === 0) {
-          btnCart_clear.disabled = false;
-          btnCart_sell.disabled = false;
-          cartInfo.style.display = "block";
-        }
-      }
-    });
-
-    if (itemExists === true) {
-      return;
-    } else {
-      addToCart();
-    }
     /********************************EVENT LISTENERS*****************************************/
 
     /****************************FUNCTIONS***********************/
 
-
     function addToCart() {
-      console.log(reOrderLevel);
       const cartItemTemplate = `
             <div class="cartItem_details">
                 <div class="cartItem_Name">${clip(rowItemName, 18)}</div>
@@ -1792,7 +1830,7 @@ class DOMCONTROLLER {
 
             subTotal.innerText = newRevenue;
             mainTotal.innerText = newRevenue;
-            toolBar_tb.focus();
+            btnCart_sell.focus();
           }
         }
       });
@@ -1842,7 +1880,7 @@ class DOMCONTROLLER {
 
           subTotal.innerText = newRevenue;
           mainTotal.innerText = newRevenue;
-          toolBar_tb.focus();
+          btnCart_sell.focus();
         }
       });
     }
@@ -3352,6 +3390,20 @@ class DATABASE {
           throw error;
         }
 
+        resolve(result);
+      });
+    });
+  }
+
+  getItemByBarcode(barcode) {
+    return new Promise((resolve, reject) => {
+      this.connector.query("SELECT * FROM `items` WHERE `items`.`Barcode` = ?", barcode, (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+
+        console.log(result);
         resolve(result);
       });
     });
