@@ -112,6 +112,8 @@ class DOMCONTROLLER{
                     <td hidden class="td_Name--hidden">${name}</td>
                     <td hidden class="td_Brand--hidden">${brand}</td>
                     <td hidden class="td_Category--hidden">${category}</td>
+                    <td hidden class="td_sellingPrice--hidden">${sellingPrice}</td>
+                    <td hidden class="td_costPrice--hidden">${costPrice}</td>
                     <td hidden class="state">visible</td>
                     <td hidden class="td_Barcode--hidden">${barcode}</td>
                     `;
@@ -1004,17 +1006,65 @@ class DOMCONTROLLER{
 
     }
 
-    static updateItem(name, brand, category, sellingPrice, costPrice, discount){
+    static updateItem(row="",name, brand, category, sellingPrice="", costPrice="", stock="",discount="", reOrderLevel="", barcode=""){
 
         const tableRows = document.querySelector("tbody").querySelectorAll("tr");
 
-        console.log(name, brand, category, stock);
+        if(row !== ""){
+
+            row.querySelector('.td_Names').innerHTML = 
+                `
+                    ${clip(name, 23)}
+                    <div class ="td_toolTip" id="tp_Name">GH¢ ${commaNumber(sellingPrice)}</div>
+
+                `
+            ;
+            row.querySelector('.td_Name--hidden').innerText = name;
+
+            row.querySelector('.td_Brands').innerText = brand;
+            row.querySelector('.td_Brand--hidden').innerText = brand;
+
+            row.querySelector('.td_Category').innerText = category;
+            row.querySelector('.td_Category--hidden').innerText = category;
+
+       
+            row.querySelector(".td_sellingPrice").innerHTML = 
+                `
+                    ${Millify(sellingPrice)}
+                    <div class ="td_toolTip">GH¢ ${commaNumber(sellingPrice)}</div>
+                `
+            ;
+            row.querySelector(".td_sellingPrice--hidden").innerText = sellingPrice;
+
+
+            row.querySelector(".td_costPrice").innerHTML =
+            `
+                ${Millify(costPrice)}
+                <div class ="td_toolTip">GH¢ ${commaNumber(costPrice)}</div>
+            `
+            row.querySelector(".td_costPrice--hidden").innerText = costPrice;
+
+
+            row.querySelector(".td_discount").innerText = discount;
+
+            row.querySelector('.td_Stock').innerText = stock;
+
+            row.querySelector(".td_ReOrderLevel").innerText = reOrderLevel;
+            row.querySelector(".td_Barcode--hidden").innerText = barcode;
+
+        }
       
         tableRows.forEach((row)=>{
 
             if(row.querySelector('.td_Name--hidden').innerText === name && row.querySelector('.td_Brand--hidden').innerText === brand && row.querySelector('.td_Category--hidden').innerText === category){
 
-                row.querySelector('.td_Names').innerText = name;
+                row.querySelector('.td_Names').innerHTML = 
+                    `
+                        ${clip(name, 23)}
+                        <div class ="td_toolTip" id="tp_Name">GH¢ ${commaNumber(sellingPrice)}</div>
+
+                    `
+                ;
                 row.querySelector('.td_Name--hidden').innerText = name;
 
                 row.querySelector('.td_Brands').innerText = brand;
@@ -1023,11 +1073,30 @@ class DOMCONTROLLER{
                 row.querySelector('.td_Category').innerText = category;
                 row.querySelector('.td_Category--hidden').innerText = category;
 
-                row.querySelector(".td_sellingPrice").innerText = sellingPrice;
-                row.querySelector(".td_costPrice").innerText = costPrice;
+               
+                row.querySelector(".td_sellingPrice").innerHTML = 
+                    `
+                        ${Millify(sellingPrice)}
+                        <div class ="td_toolTip">GH¢ ${commaNumber(sellingPrice)}</div>
+                    `
+                ;
+                row.querySelector(".td_sellingPrice--hidden").innerText = sellingPrice;
+
+
+                row.querySelector(".td_costPrice").innerHTML =
+                `
+                    ${Millify(costPrice)}
+                    <div class ="td_toolTip">GH¢ ${commaNumber(costPrice)}</div>
+                `
+                row.querySelector(".td_costPrice--hidden").innerText = costPrice;
+
+
                 row.querySelector(".td_discount").innerText = discount;
 
                 row.querySelector('.td_Stock').innerText = stock;
+
+                row.querySelector(".td_ReOrderLevel").innerText = reOrderLevel;
+                row.querySelector(".td_Barcode--hidden").innerText = barcode;
 
                 return;
             }

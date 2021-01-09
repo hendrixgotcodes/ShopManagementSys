@@ -261,6 +261,8 @@ class Modal {
 
         return new Promise((resolve, reject)=>{
 
+            console.log("barcode:", barcode);
+
 
             let formTitle;
             let disableField
@@ -283,19 +285,21 @@ class Modal {
             let costPrice = ""
             let discount = ""
             let reorderLevel = "";
+            // let barcode = "";
 
            
 
             if(row !==""){
     
-                itemName = row.querySelector(".td_Names").innerText;
-                brand  =  row.querySelector(".td_Brands").innerText;
-                category = row.querySelector(".td_Category").innerText;
+                itemName = row.querySelector(".td_Name--hidden").innerText;
+                brand  =  row.querySelector(".td_Brand--hidden").innerText;
+                category = row.querySelector(".td_Category--hidden").innerText;
                 itemQuantity = row.querySelector(".td_Stock").innerText;
-                sellingPrice = row.querySelector(".td_sellingPrice").innerText;
-                costPrice = row.querySelector(".td_costPrice").innerText
+                sellingPrice = row.querySelector(".td_sellingPrice--hidden").innerText;
+                costPrice = row.querySelector(".td_costPrice--hidden").innerText
                 discount = row.querySelector(".td_discount").innerText
-                reorderLevel = row.querySelector(".td_reOrderLevel--hidden").innerText;
+                reorderLevel = row.querySelector(".td_ReOrderLevel").innerText;
+                barcode = row.querySelector(".td_Barcode--hidden").innerText;
             }
             
             const boxTemplate = 
@@ -355,7 +359,7 @@ class Modal {
 
                             <label class="quarterwidth" id="lbl_barcode">
                                 <span>Barcode</span>
-                                <input type="number" class="dialogForm_tb" value="${barcode}" aria-placeholder="Barcode"  id="barcode" />
+                                <input type="text" class="dialogForm_tb" value="${barcode}" aria-placeholder="Barcode"  id="barcode" />
                             </label>
     
                          </div>
@@ -563,10 +567,11 @@ class Modal {
                     discount = itemForm.querySelector('#discount').value;
 
                     const reorderLevel = itemForm.querySelector("#reorderLevel").value;
+                    const barcode = itemForm.querySelector("#barcode").value;
 
                     // console.log(name, category, brand, stock, price);
 
-                    if(name !== "" && category !== "" && brand !== "" && stock !== "" && sellingPrice !== ""){
+                    if(name !== "" && category !== "" && brand !== "" && stock !== "" && sellingPrice !== "" && barcode !== "" && costPrice !== "" && discount !== "" && reorderLevel !==""){
 
                         
 
@@ -574,7 +579,7 @@ class Modal {
 
                         // openPrompt("",resolve,reject, [true, row, name, brand, category, stock, sellingPrice])
 
-                        resolve([true, row, name, brand, category, stock, sellingPrice, costPrice, discount, reorderLevel]);
+                        resolve([true, row, name, brand, category, stock, sellingPrice, costPrice, discount, reorderLevel, barcode]);
 
 
                     }

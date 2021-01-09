@@ -814,7 +814,9 @@ class DATABASE {
         InStock: change.InStock,
         CostPrice: change.CostPrice,
         SellingPrice: change.SellingPrice,
-        Discount: change.Discount
+        Discount: change.Discount,
+        ReOrderLevel: change.ReOrderLevel,
+        Barcode: change.Barcode
       };
       let updateItemSQL = `UPDATE  items SET ? WHERE Name = '${change.Name}' AND Brand = '${change.Brand}' AND Category = '${change.Category}'`;
       this.connector.beginTransaction(error => {

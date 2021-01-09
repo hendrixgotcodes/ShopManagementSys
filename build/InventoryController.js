@@ -263,80 +263,79 @@ document.addEventListener("keydown", e => {
 
   barcodeBuffer.push(e.key);
   setTimeout(() => {
-    if (barcodeBuffer.length > 10) {
+    if (barcodeBuffer.length >= 10) {
       barcodeBuffer.forEach(char => {
         barcode = barcode + char;
       });
-      database.getItemByBarcode(barcode).then(result => {
-        if (result.length === 0) {
-          console.log(barcode);
-          _controller_modals_ModalController__WEBPACK_IMPORTED_MODULE_1__["default"].openItemForm("", false, barcode).then(result => {
-            if (result === null) {
-              return;
-            } // let row, name, brand, category, stock, sellingPrice, costPrice;
 
+      if (barcode.length >= 10) {
+        const tableRows = document.querySelector("tbody").querySelectorAll("tr");
+        tableRows.forEach(row => {
+          const itemBarcode = row.querySelector(".td_Barcode--hidden").innerText;
+          let CB = row.querySelector('.td_cb').querySelector('.selectOne');
 
-            let promisedRow = result;
-            let [addNew, row, name, brand, category, stock, sellingPrice, costPrice, discount, reorderLevel, barcode] = promisedRow; //Creating a store object to be added to database
+          if (itemBarcode === barcode) {
+            // rowBucket.push(row) 
+            checkCB(row);
+          } else {
+            addItem(barcode);
+          }
+        }); // rowBucket.forEach((row)=>{
+        //     toggleRowCB(row)
+        // })
+      }
 
-            const storeObject = new Object();
-            storeObject.Name = name;
-            storeObject.Brand = brand;
-            storeObject.Category = category;
-            storeObject.Stock = stock;
-            storeObject.SellingPrice = sellingPrice;
-            storeObject.CostPrice = costPrice;
-            storeObject.Discount = discount;
-            storeObject.ReOrderLevel = reorderLevel;
-            storeObject.Barcode = barcode; // console.log([row, name, brand, category, stock, sellingPrice, costPrice]);
-
-            database.addNewItem(storeObject, UserName).then(result => {
-              if (result === true) {
-                _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(storeObject.Name, storeObject.Brand, storeObject.Category, storeObject.Stock, storeObject.SellingPrice, storeObject.Discount, reorderLevel, barcode, [checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "", false, false, "inventory"); // DOMCONTROLLER.createItem(result.Name, result.Brand, result.Category, result.Stock, result.sellingPrice, result.Discount, result.ReOrderLevel, [checkCB,editItem, deleteItem, showRowControls], false, result.CostPrice, "", false, false, "inventory")
-
-                _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", "Successfuly added to inventory");
-              }
-            }).catch(error => {
-              if (error === "duplicate") {
-                _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("error", `Sorry, failed to add ${storeObject.Name} of brand ${storeObject.Brand} to inventory. This item already exists`);
-                return;
-              } else {
-                _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("error", `Sorry, failed to add ${storeObject.Name} of brand ${storeObject.Brand} to inventory due to an unknown error`);
-              }
-            });
-          });
-        }
-      }); // if( buffer.length >= 12){
-      //     const tableRows = document.querySelector("tbody").querySelectorAll("tr");
-      //     tableRows.forEach((row)=>{
-      //         const barcode = row.querySelector(".td_Barcode--hidden").innerText;
-      //         let CB = row.querySelector('.td_cb').querySelector('.selectOne');
-      //         if(CB.checked === true){
-      //             SelectedRows.push(row)
-      //         }
-      //         else{
-      //             if(barcode === string){
-      //                 SelectedRows.push(row)    
+      barcodeBuffer = [];
+      barcode = ""; // database.getItemByBarcode(barcode)
+      // .then((result)=>{
+      //     if(result.length === 0){
+      //         Modal.openItemForm("", false, barcode)
+      //         .then((result)=>{
+      //             if(result === null){
+      //                 return;
       //             }
-      //         }
-      //     })
-      //     SelectedRows.forEach((row)=>{
-      //         toggleRowCB(row)
-      //     })
-      // }
-      // else{
-      //     console.log(buffer.length);
-      // }
+      //                 // let row, name, brand, category, stock, sellingPrice, costPrice;
+      //                 let promisedRow = result;
+      //                 let [addNew,row, name, brand, category, stock, sellingPrice, costPrice, discount, reorderLevel, barcode] = promisedRow;
+      //                 //Creating a store object to be added to database
+      //                 const storeObject = new Object();
+      //                 storeObject.Name = name;
+      //                 storeObject.Brand = brand;
+      //                 storeObject.Category = category;
+      //                 storeObject.Stock = stock;
+      //                 storeObject.SellingPrice = sellingPrice;
+      //                 storeObject.CostPrice = costPrice;
+      //                 storeObject.Discount = discount;
+      //                 storeObject.ReOrderLevel = reorderLevel
+      //                 storeObject.Barcode = barcode;
+      //                 // console.log([row, name, brand, category, stock, sellingPrice, costPrice]);
+      //                 database.addNewItem(storeObject, UserName)
+      //                 .then((result)=>{
+      //                     if(result === true){
+      //                         DOMCONTROLLER.createItem(storeObject.Name, storeObject.Brand, storeObject.Category, storeObject.Stock, storeObject.SellingPrice, storeObject.Discount,reorderLevel,barcode,[checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "", false, false, "inventory")
+      //                         // DOMCONTROLLER.createItem(result.Name, result.Brand, result.Category, result.Stock, result.sellingPrice, result.Discount, result.ReOrderLevel, [checkCB,editItem, deleteItem, showRowControls], false, result.CostPrice, "", false, false, "inventory")
+      //                         Notifications.showAlert("success", "Successfuly added to inventory")
+      //                     }
+      //                 })
+      //                 .catch((error)=>{
+      //                     if(error === "duplicate"){
+      //                         Notifications.showAlert("error", `Sorry, failed to add ${storeObject.Name} of brand ${storeObject.Brand} to inventory. This item already exists`)
+      //                         return;
+      //                     }
+      //                     else{
+      //                         Notifications.showAlert("error", `Sorry, failed to add ${storeObject.Name} of brand ${storeObject.Brand} to inventory due to an unknown error`)
+      //                     }
+      //                 })
+      //         })
+      //     }
+      // })
     }
-
-    barcodeBuffer = [];
-    barcode = "";
   }, 500);
 });
 tableROWS.forEach(row => {
   //Right Click event lister for each row
   row.addEventListener("contextmenu", e => {
-    showRowControls(row);
+    toggleRowControls(row);
   }); //.del button in "Control" box of every row
 
   row.querySelector(".controls").querySelector(".del").addEventListener("click", e => {
@@ -387,9 +386,9 @@ function initialzeStoreItems() {
 
       fetchedItems.forEach(fetchedItem => {
         if (fetchedItem.Deleted === 1) {
-          _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, fetchedItem.Barcode, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory", false);
+          _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, fetchedItem.Barcode, [checkCB, editItem, deleteItem, toggleRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory", false);
         } else {
-          _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, fetchedItem.Barcode, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, false, "Inventory", false);
+          _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, fetchedItem.Barcode, [checkCB, editItem, deleteItem, toggleRowControls], false, fetchedItem.CostPrice, "", true, false, "Inventory", false);
         }
       });
     } else {
@@ -435,7 +434,7 @@ function toggleDropDown() {
 //Responsible for swiping table row to right - (Used by event listeners appended on each row in  Inventory)
 
 
-function showRowControls(row) {
+function toggleRowControls(row) {
   if (row.classList.contains("controlShown")) {
     row.style.transform = "translateX(0px)";
     row.classList.remove("controlShown");
@@ -489,10 +488,10 @@ function deleteItem(row, action = "delete") {
 
 
 function editItem(row) {
-  console.log("clicked...", row);
+  toggleRowControls(row);
   _controller_modals_ModalController__WEBPACK_IMPORTED_MODULE_1__["default"].openItemForm(row, true).then(result => {
     if (result[0] === true) {
-      let [, row, name, brand, category, stock, sellingPrice, costPrice, discount, reorderLevel] = result;
+      let [, row, name, brand, category, stock, sellingPrice, costPrice, discount, reorderLevel, barcode] = result;
       let values = {
         Name: name,
         Brand: brand,
@@ -501,12 +500,13 @@ function editItem(row) {
         CostPrice: parseFloat(costPrice),
         SellingPrice: parseFloat(sellingPrice),
         Discount: parseFloat(discount),
-        ReOrderLevel: parseInt(reorderLevel)
+        ReOrderLevel: parseInt(reorderLevel),
+        Barcode: barcode
       };
       database.updateItem(values, UserName).then(result => {
         if (result === true) {
           _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", `${name} has been successfully updated.`);
-          _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.editItem(row, name, brand, category, stock, parseFloat(sellingPrice), parseFloat(costPrice), parseFloat(discount));
+          _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.updateItem(row, name, brand, category, stock, parseFloat(sellingPrice), parseFloat(costPrice), discount, reorderLevel, barcode);
         }
       }).catch(e => {
         if (e.message === "unknown error") {
@@ -517,17 +517,18 @@ function editItem(row) {
       });
     }
   }).catch(error => {
+    throw error;
     if (error.message === "wrongPassword") _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("error", "Sorry, Incorrect Password!");
   });
 }
 
-function addItem() {
+function addItem(barcode = "") {
   if (checkBtn.checked === true) {
     btnDropDown.hidden = true;
     checkBtn.checked === false;
   }
 
-  _controller_modals_ModalController__WEBPACK_IMPORTED_MODULE_1__["default"].openItemForm("", false, true).then(result => {
+  _controller_modals_ModalController__WEBPACK_IMPORTED_MODULE_1__["default"].openItemForm("", false, barcode).then(result => {
     if (result === null) {
       return;
     } // let row, name, brand, category, stock, sellingPrice, costPrice;
@@ -549,7 +550,7 @@ function addItem() {
 
     database.addNewItem(storeObject, UserName).then(result => {
       if (result === true) {
-        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(storeObject.Name, storeObject.Brand, storeObject.Category, storeObject.Stock, storeObject.SellingPrice, storeObject.Discount, reorderLevel, barcode, [checkCB, editItem, deleteItem, showRowControls], false, storeObject.CostPrice, "", false, false, "inventory"); // DOMCONTROLLER.createItem(result.Name, result.Brand, result.Category, result.Stock, result.sellingPrice, result.Discount, result.ReOrderLevel, [checkCB,editItem, deleteItem, showRowControls], false, result.CostPrice, "", false, false, "inventory")
+        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(storeObject.Name, storeObject.Brand, storeObject.Category, storeObject.Stock, storeObject.SellingPrice, storeObject.Discount, reorderLevel, barcode, [checkCB, editItem, deleteItem, toggleRowControls], false, storeObject.CostPrice, "", false, false, "inventory"); // DOMCONTROLLER.createItem(result.Name, result.Brand, result.Category, result.Stock, result.sellingPrice, result.Discount, result.ReOrderLevel, [checkCB,editItem, deleteItem, showRowControls], false, result.CostPrice, "", false, false, "inventory")
 
         _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", "Successfuly added to inventory");
       }
@@ -595,20 +596,25 @@ function checkCB(row) {
 function editMultiple() {
   let currentRow = rowBucket.pop();
   let itemName = currentRow.querySelector(".td_Name--hidden").innerText;
+  toggleRowControls(currentRow);
   _controller_modals_ModalController__WEBPACK_IMPORTED_MODULE_1__["default"].openItemForm(currentRow, true).then(result => {
     if (result[0] === true) {
-      let [, row, name, brand, category, stock, price, costPrice, reorderLevel] = result;
-      let editedInventory = new Promise((resolve, reject) => {
-        let done = _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.editItem(row, name, brand, category, stock, Number.parseFloat(price), parseFloat(costPrice));
-
-        if (done) {
-          resolve(name);
-        } else {
-          reject(new Error("Sorry, An Error Occured"));
-        }
-      });
-      editedInventory.then(name => {
+      let [, row, name, brand, category, stock, price, costPrice, discount, reorderLevel, barcode] = result;
+      let change = {
+        Name: name,
+        Brand: brand,
+        Category: category,
+        InStock: stock,
+        Discount: discount,
+        SellingPrice: price,
+        CostPrice: costPrice,
+        ReOrderLevel: reorderLevel,
+        Barcode: barcode
+      };
+      database.updateItem(change, UserName).then(() => {
+        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.updateItem(currentRow, name, brand, category, price, costPrice, stock, discount, reorderLevel, barcode);
         _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", `Changes to ${itemName} have been saved successfully`);
+      }).then(() => {
         currentRow.querySelector(".td_cb").querySelector(".selectOne").checked = false;
 
         if (rowBucket.length === 0) {
@@ -617,7 +623,24 @@ function editMultiple() {
         } else {
           editMultiple();
         }
-      }); // .catch(
+      }).catch(e => {
+        if (e.message === "unknown error") {
+          _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("error", "Sorry, an unknown error occurred with the database during update");
+        } else if (e.message == "ERR_DUP_ENTRY") {
+          _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("error", `Sorry, ${values.Name} of brand ${values.Brand} in the ${values.Category} category already exists in database`);
+        }
+      }); // let editedInventory = new Promise(
+      //     (resolve, reject)=>{
+      //        let done =  DOMCONTROLLER.editItem(row, name, brand, category, stock, Number.parseFloat(price), parseFloat(costPrice) );
+      //        if(done){
+      //            resolve(name);
+      //        }
+      //        else{
+      //            reject(new Error("Sorry, An Error Occured"));
+      //        }
+      //     }
+      // );
+      // .catch(
       //     (error)=>{
       //         Notifications.showAlert("error", error);
       //     }
@@ -678,9 +701,9 @@ function fetchItemsRecursive(offset = 200) {
         storeItems.forEach(fetchedItem => {
           if (parseInt(fetchedItem.InStock) > 0) {
             if (fetchedItem.Deleted === 1) {
-              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, fetchedItem.Barcode, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory", false);
+              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, fetchedItem.Barcode, [checkCB, editItem, deleteItem, toggleRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory", false);
             } else {
-              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, fetchedItem.Barcode, [checkCB, editItem, deleteItem, showRowControls], false, fetchedItem.CostPrice, "", true, false, "Inventory", false);
+              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, fetchedItem.Barcode, [checkCB, editItem, deleteItem, toggleRowControls], false, fetchedItem.CostPrice, "", true, false, "Inventory", false);
             }
           }
         });
@@ -736,7 +759,7 @@ electron__WEBPACK_IMPORTED_MODULE_0__["ipcRenderer"].on('populateTable', (e, Ite
     } else if (notInDb.length > 0 && inDb.length === 0) {
       _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", `${notInDb.length} items have been successfully added`);
       notInDb.forEach(item => {
-        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount, item.ReOrderLevel, item.Barcode[(checkCB, editItem, deleteItem, showRowControls)], "", item.CostPrice, "", false, false, "Inventory");
+        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount, item.ReOrderLevel, item.Barcode[(checkCB, editItem, deleteItem, toggleRowControls)], "", item.CostPrice, "", false, false, "Inventory");
       });
     }
   }).catch(error => {
@@ -957,6 +980,7 @@ class Modal {
 
   static openItemForm(row = "", editForm, barcode = "") {
     return new Promise((resolve, reject) => {
+      console.log("barcode:", barcode);
       let formTitle;
       let disableField;
 
@@ -975,17 +999,18 @@ class Modal {
       let sellingPrice = "";
       let costPrice = "";
       let discount = "";
-      let reorderLevel = "";
+      let reorderLevel = ""; // let barcode = "";
 
       if (row !== "") {
-        itemName = row.querySelector(".td_Names").innerText;
-        brand = row.querySelector(".td_Brands").innerText;
-        category = row.querySelector(".td_Category").innerText;
+        itemName = row.querySelector(".td_Name--hidden").innerText;
+        brand = row.querySelector(".td_Brand--hidden").innerText;
+        category = row.querySelector(".td_Category--hidden").innerText;
         itemQuantity = row.querySelector(".td_Stock").innerText;
-        sellingPrice = row.querySelector(".td_sellingPrice").innerText;
-        costPrice = row.querySelector(".td_costPrice").innerText;
+        sellingPrice = row.querySelector(".td_sellingPrice--hidden").innerText;
+        costPrice = row.querySelector(".td_costPrice--hidden").innerText;
         discount = row.querySelector(".td_discount").innerText;
-        reorderLevel = row.querySelector(".td_reOrderLevel--hidden").innerText;
+        reorderLevel = row.querySelector(".td_ReOrderLevel").innerText;
+        barcode = row.querySelector(".td_Barcode--hidden").innerText;
       }
 
       const boxTemplate = `
@@ -1044,7 +1069,7 @@ class Modal {
 
                             <label class="quarterwidth" id="lbl_barcode">
                                 <span>Barcode</span>
-                                <input type="number" class="dialogForm_tb" value="${barcode}" aria-placeholder="Barcode"  id="barcode" />
+                                <input type="text" class="dialogForm_tb" value="${barcode}" aria-placeholder="Barcode"  id="barcode" />
                             </label>
     
                          </div>
@@ -1172,12 +1197,13 @@ class Modal {
         const sellingPrice = itemForm.querySelector('#sellingPrice').value;
         const costPrice = itemForm.querySelector("#costPrice").value;
         discount = itemForm.querySelector('#discount').value;
-        const reorderLevel = itemForm.querySelector("#reorderLevel").value; // console.log(name, category, brand, stock, price);
+        const reorderLevel = itemForm.querySelector("#reorderLevel").value;
+        const barcode = itemForm.querySelector("#barcode").value; // console.log(name, category, brand, stock, price);
 
-        if (name !== "" && category !== "" && brand !== "" && stock !== "" && sellingPrice !== "") {
+        if (name !== "" && category !== "" && brand !== "" && stock !== "" && sellingPrice !== "" && barcode !== "" && costPrice !== "" && discount !== "" && reorderLevel !== "") {
           closeModal(itemForm); // openPrompt("",resolve,reject, [true, row, name, brand, category, stock, sellingPrice])
 
-          resolve([true, row, name, brand, category, stock, sellingPrice, costPrice, discount, reorderLevel]);
+          resolve([true, row, name, brand, category, stock, sellingPrice, costPrice, discount, reorderLevel, barcode]);
         }
       }
 
@@ -1817,6 +1843,8 @@ class DOMCONTROLLER {
                     <td hidden class="td_Name--hidden">${name}</td>
                     <td hidden class="td_Brand--hidden">${brand}</td>
                     <td hidden class="td_Category--hidden">${category}</td>
+                    <td hidden class="td_sellingPrice--hidden">${sellingPrice}</td>
+                    <td hidden class="td_costPrice--hidden">${costPrice}</td>
                     <td hidden class="state">visible</td>
                     <td hidden class="td_Barcode--hidden">${barcode}</td>
                     `;
@@ -2377,21 +2405,62 @@ class DOMCONTROLLER {
     });
   }
 
-  static updateItem(name, brand, category, sellingPrice, costPrice, discount) {
+  static updateItem(row = "", name, brand, category, sellingPrice = "", costPrice = "", stock = "", discount = "", reOrderLevel = "", barcode = "") {
     const tableRows = document.querySelector("tbody").querySelectorAll("tr");
-    console.log(name, brand, category, stock);
+
+    if (row !== "") {
+      row.querySelector('.td_Names').innerHTML = `
+                    ${clip(name, 23)}
+                    <div class ="td_toolTip" id="tp_Name">GH¢ ${commaNumber(sellingPrice)}</div>
+
+                `;
+      row.querySelector('.td_Name--hidden').innerText = name;
+      row.querySelector('.td_Brands').innerText = brand;
+      row.querySelector('.td_Brand--hidden').innerText = brand;
+      row.querySelector('.td_Category').innerText = category;
+      row.querySelector('.td_Category--hidden').innerText = category;
+      row.querySelector(".td_sellingPrice").innerHTML = `
+                    ${Millify(sellingPrice)}
+                    <div class ="td_toolTip">GH¢ ${commaNumber(sellingPrice)}</div>
+                `;
+      row.querySelector(".td_sellingPrice--hidden").innerText = sellingPrice;
+      row.querySelector(".td_costPrice").innerHTML = `
+                ${Millify(costPrice)}
+                <div class ="td_toolTip">GH¢ ${commaNumber(costPrice)}</div>
+            `;
+      row.querySelector(".td_costPrice--hidden").innerText = costPrice;
+      row.querySelector(".td_discount").innerText = discount;
+      row.querySelector('.td_Stock').innerText = stock;
+      row.querySelector(".td_ReOrderLevel").innerText = reOrderLevel;
+      row.querySelector(".td_Barcode--hidden").innerText = barcode;
+    }
+
     tableRows.forEach(row => {
       if (row.querySelector('.td_Name--hidden').innerText === name && row.querySelector('.td_Brand--hidden').innerText === brand && row.querySelector('.td_Category--hidden').innerText === category) {
-        row.querySelector('.td_Names').innerText = name;
+        row.querySelector('.td_Names').innerHTML = `
+                        ${clip(name, 23)}
+                        <div class ="td_toolTip" id="tp_Name">GH¢ ${commaNumber(sellingPrice)}</div>
+
+                    `;
         row.querySelector('.td_Name--hidden').innerText = name;
         row.querySelector('.td_Brands').innerText = brand;
         row.querySelector('.td_Brand--hidden').innerText = brand;
         row.querySelector('.td_Category').innerText = category;
         row.querySelector('.td_Category--hidden').innerText = category;
-        row.querySelector(".td_sellingPrice").innerText = sellingPrice;
-        row.querySelector(".td_costPrice").innerText = costPrice;
+        row.querySelector(".td_sellingPrice").innerHTML = `
+                        ${Millify(sellingPrice)}
+                        <div class ="td_toolTip">GH¢ ${commaNumber(sellingPrice)}</div>
+                    `;
+        row.querySelector(".td_sellingPrice--hidden").innerText = sellingPrice;
+        row.querySelector(".td_costPrice").innerHTML = `
+                    ${Millify(costPrice)}
+                    <div class ="td_toolTip">GH¢ ${commaNumber(costPrice)}</div>
+                `;
+        row.querySelector(".td_costPrice--hidden").innerText = costPrice;
         row.querySelector(".td_discount").innerText = discount;
         row.querySelector('.td_Stock').innerText = stock;
+        row.querySelector(".td_ReOrderLevel").innerText = reOrderLevel;
+        row.querySelector(".td_Barcode--hidden").innerText = barcode;
         return;
       }
     });
@@ -3255,7 +3324,9 @@ class DATABASE {
         InStock: change.InStock,
         CostPrice: change.CostPrice,
         SellingPrice: change.SellingPrice,
-        Discount: change.Discount
+        Discount: change.Discount,
+        ReOrderLevel: change.ReOrderLevel,
+        Barcode: change.Barcode
       };
       let updateItemSQL = `UPDATE  items SET ? WHERE Name = '${change.Name}' AND Brand = '${change.Brand}' AND Category = '${change.Category}'`;
       this.connector.beginTransaction(error => {

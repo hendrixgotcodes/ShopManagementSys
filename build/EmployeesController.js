@@ -906,6 +906,7 @@ class Modal {
 
   static openItemForm(row = "", editForm, barcode = "") {
     return new Promise((resolve, reject) => {
+      console.log("barcode:", barcode);
       let formTitle;
       let disableField;
 
@@ -924,17 +925,18 @@ class Modal {
       let sellingPrice = "";
       let costPrice = "";
       let discount = "";
-      let reorderLevel = "";
+      let reorderLevel = ""; // let barcode = "";
 
       if (row !== "") {
-        itemName = row.querySelector(".td_Names").innerText;
-        brand = row.querySelector(".td_Brands").innerText;
-        category = row.querySelector(".td_Category").innerText;
+        itemName = row.querySelector(".td_Name--hidden").innerText;
+        brand = row.querySelector(".td_Brand--hidden").innerText;
+        category = row.querySelector(".td_Category--hidden").innerText;
         itemQuantity = row.querySelector(".td_Stock").innerText;
-        sellingPrice = row.querySelector(".td_sellingPrice").innerText;
-        costPrice = row.querySelector(".td_costPrice").innerText;
+        sellingPrice = row.querySelector(".td_sellingPrice--hidden").innerText;
+        costPrice = row.querySelector(".td_costPrice--hidden").innerText;
         discount = row.querySelector(".td_discount").innerText;
-        reorderLevel = row.querySelector(".td_reOrderLevel--hidden").innerText;
+        reorderLevel = row.querySelector(".td_ReOrderLevel").innerText;
+        barcode = row.querySelector(".td_Barcode--hidden").innerText;
       }
 
       const boxTemplate = `
@@ -993,7 +995,7 @@ class Modal {
 
                             <label class="quarterwidth" id="lbl_barcode">
                                 <span>Barcode</span>
-                                <input type="number" class="dialogForm_tb" value="${barcode}" aria-placeholder="Barcode"  id="barcode" />
+                                <input type="text" class="dialogForm_tb" value="${barcode}" aria-placeholder="Barcode"  id="barcode" />
                             </label>
     
                          </div>
@@ -1121,12 +1123,13 @@ class Modal {
         const sellingPrice = itemForm.querySelector('#sellingPrice').value;
         const costPrice = itemForm.querySelector("#costPrice").value;
         discount = itemForm.querySelector('#discount').value;
-        const reorderLevel = itemForm.querySelector("#reorderLevel").value; // console.log(name, category, brand, stock, price);
+        const reorderLevel = itemForm.querySelector("#reorderLevel").value;
+        const barcode = itemForm.querySelector("#barcode").value; // console.log(name, category, brand, stock, price);
 
-        if (name !== "" && category !== "" && brand !== "" && stock !== "" && sellingPrice !== "") {
+        if (name !== "" && category !== "" && brand !== "" && stock !== "" && sellingPrice !== "" && barcode !== "" && costPrice !== "" && discount !== "" && reorderLevel !== "") {
           closeModal(itemForm); // openPrompt("",resolve,reject, [true, row, name, brand, category, stock, sellingPrice])
 
-          resolve([true, row, name, brand, category, stock, sellingPrice, costPrice, discount, reorderLevel]);
+          resolve([true, row, name, brand, category, stock, sellingPrice, costPrice, discount, reorderLevel, barcode]);
         }
       }
 
@@ -1766,6 +1769,8 @@ class DOMCONTROLLER {
                     <td hidden class="td_Name--hidden">${name}</td>
                     <td hidden class="td_Brand--hidden">${brand}</td>
                     <td hidden class="td_Category--hidden">${category}</td>
+                    <td hidden class="td_sellingPrice--hidden">${sellingPrice}</td>
+                    <td hidden class="td_costPrice--hidden">${costPrice}</td>
                     <td hidden class="state">visible</td>
                     <td hidden class="td_Barcode--hidden">${barcode}</td>
                     `;
@@ -2326,21 +2331,62 @@ class DOMCONTROLLER {
     });
   }
 
-  static updateItem(name, brand, category, sellingPrice, costPrice, discount) {
+  static updateItem(row = "", name, brand, category, sellingPrice = "", costPrice = "", stock = "", discount = "", reOrderLevel = "", barcode = "") {
     const tableRows = document.querySelector("tbody").querySelectorAll("tr");
-    console.log(name, brand, category, stock);
+
+    if (row !== "") {
+      row.querySelector('.td_Names').innerHTML = `
+                    ${clip(name, 23)}
+                    <div class ="td_toolTip" id="tp_Name">GH¢ ${commaNumber(sellingPrice)}</div>
+
+                `;
+      row.querySelector('.td_Name--hidden').innerText = name;
+      row.querySelector('.td_Brands').innerText = brand;
+      row.querySelector('.td_Brand--hidden').innerText = brand;
+      row.querySelector('.td_Category').innerText = category;
+      row.querySelector('.td_Category--hidden').innerText = category;
+      row.querySelector(".td_sellingPrice").innerHTML = `
+                    ${Millify(sellingPrice)}
+                    <div class ="td_toolTip">GH¢ ${commaNumber(sellingPrice)}</div>
+                `;
+      row.querySelector(".td_sellingPrice--hidden").innerText = sellingPrice;
+      row.querySelector(".td_costPrice").innerHTML = `
+                ${Millify(costPrice)}
+                <div class ="td_toolTip">GH¢ ${commaNumber(costPrice)}</div>
+            `;
+      row.querySelector(".td_costPrice--hidden").innerText = costPrice;
+      row.querySelector(".td_discount").innerText = discount;
+      row.querySelector('.td_Stock').innerText = stock;
+      row.querySelector(".td_ReOrderLevel").innerText = reOrderLevel;
+      row.querySelector(".td_Barcode--hidden").innerText = barcode;
+    }
+
     tableRows.forEach(row => {
       if (row.querySelector('.td_Name--hidden').innerText === name && row.querySelector('.td_Brand--hidden').innerText === brand && row.querySelector('.td_Category--hidden').innerText === category) {
-        row.querySelector('.td_Names').innerText = name;
+        row.querySelector('.td_Names').innerHTML = `
+                        ${clip(name, 23)}
+                        <div class ="td_toolTip" id="tp_Name">GH¢ ${commaNumber(sellingPrice)}</div>
+
+                    `;
         row.querySelector('.td_Name--hidden').innerText = name;
         row.querySelector('.td_Brands').innerText = brand;
         row.querySelector('.td_Brand--hidden').innerText = brand;
         row.querySelector('.td_Category').innerText = category;
         row.querySelector('.td_Category--hidden').innerText = category;
-        row.querySelector(".td_sellingPrice").innerText = sellingPrice;
-        row.querySelector(".td_costPrice").innerText = costPrice;
+        row.querySelector(".td_sellingPrice").innerHTML = `
+                        ${Millify(sellingPrice)}
+                        <div class ="td_toolTip">GH¢ ${commaNumber(sellingPrice)}</div>
+                    `;
+        row.querySelector(".td_sellingPrice--hidden").innerText = sellingPrice;
+        row.querySelector(".td_costPrice").innerHTML = `
+                    ${Millify(costPrice)}
+                    <div class ="td_toolTip">GH¢ ${commaNumber(costPrice)}</div>
+                `;
+        row.querySelector(".td_costPrice--hidden").innerText = costPrice;
         row.querySelector(".td_discount").innerText = discount;
         row.querySelector('.td_Stock').innerText = stock;
+        row.querySelector(".td_ReOrderLevel").innerText = reOrderLevel;
+        row.querySelector(".td_Barcode--hidden").innerText = barcode;
         return;
       }
     });
@@ -3204,7 +3250,9 @@ class DATABASE {
         InStock: change.InStock,
         CostPrice: change.CostPrice,
         SellingPrice: change.SellingPrice,
-        Discount: change.Discount
+        Discount: change.Discount,
+        ReOrderLevel: change.ReOrderLevel,
+        Barcode: change.Barcode
       };
       let updateItemSQL = `UPDATE  items SET ? WHERE Name = '${change.Name}' AND Brand = '${change.Brand}' AND Category = '${change.Category}'`;
       this.connector.beginTransaction(error => {
