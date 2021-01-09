@@ -1395,14 +1395,36 @@ class DOMCONTROLLER{
             const itemName = item.querySelector(".hidden_itemName").innerText;
             const itemBrand = item.querySelector(".hidden_itemBrand").innerText;
             const itemCategory = item.querySelector(".hidden_itemCategory").innerText;
+            const tb_itemCount = item.querySelector(".cartItem_count");
 
 
             if(itemName === rowItemName && itemBrand === rowItemBrand && itemCategory === rowItemCategory){
 
-                item.querySelector(".cartItem_count").value = parseInt(item.querySelector(".cartItem_count").value) + 1
+                tb_itemCount.value = parseInt(tb_itemCount.value) + 1
                 cartItemExists = true
 
-                console.log(item.querySelector(".cartItem_count"));
+
+                let newRevenue = 0;
+
+                totalItemSellingPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemSellingPrice))
+                totalItemCostPrice = parseFloat(parseInt(tb_itemCount.value) * parseFloat(rowItemCostPrice))
+
+
+                if(item.Item.Name === itemName && item.Item.Brand === itemBrand && item.Item.Category === itemCategory){
+
+                    item.Purchased = parseInt(tb_itemCount.value);
+                    item.Revenue = totalItemSellingPrice;
+                    item.Profit = totalItemSellingPrice - totalItemCostPrice
+
+                }
+
+                newRevenue = parseFloat(item.Revenue + newRevenue);
+
+
+
+                subTotal.innerText = newRevenue;
+
+                mainTotal.innerText = newRevenue
 
             }
 
