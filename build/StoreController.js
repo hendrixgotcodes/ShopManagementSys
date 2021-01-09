@@ -247,11 +247,11 @@ let cart = []; // Array of store objects
 
 let lostAccounts = [];
 let itemsOnReOrderLevels = [];
+let SelectedRows = [];
 let buffer = [];
-let string = ""; //Holds the amount of table rows selected so that disabling and enabling of elements can be done based on that amount
+let barcode = ""; //Holds the amount of table rows selected so that disabling and enabling of elements can be done based on that amount
 
 let totalSelectedRows = 0;
-let SelectedRows = [];
 /*********************************DOM ELEMENTS********************* */
 
 const tip_default = document.querySelector('.tip_default');
@@ -286,40 +286,66 @@ document.addEventListener("keydown", e => {
   }
 
   buffer.push(e.key);
+  console.log(SelectedRows);
+  console.log(barcode, "jhjh");
   setTimeout(() => {
-    console.log(buffer);
-
     if (buffer.length > 0) {
       buffer.forEach(char => {
-        string = string + char;
+        barcode = barcode + char;
       });
 
       if (buffer.length >= 12) {
         const tableRows = document.querySelector("tbody").querySelectorAll("tr");
         tableRows.forEach(row => {
-          const barcode = row.querySelector(".td_Barcode--hidden").innerText;
-          let CB = row.querySelector('.td_cb').querySelector('.selectOne');
+          const itemBarcode = row.querySelector(".td_Barcode--hidden").innerText;
 
-          if (CB.checked === true) {
+          if (itemBarcode === barcode) {
+            console.log(SelectedRows);
             SelectedRows.push(row);
-          } else {
-            if (barcode === string) {
-              SelectedRows.push(row);
-            }
           }
         });
         SelectedRows.forEach(row => {
-          toggleRowCB(row);
+          const CB = row.querySelector(".td_cb").querySelector(".selectOne");
+          CB.checked = true; // toggleRowCB(row)
+
+          Object(_utilities_TableController__WEBPACK_IMPORTED_MODULE_3__["addToCart"])(row, cart, btnCart_sell, btnCart_clear, subtractItem);
         });
+        console.log(SelectedRows);
       } else {
         console.log(buffer.length);
       }
     }
 
     buffer = [];
-    string = "";
+    barcode = "";
   }, 500);
 });
+
+function checkCB(row) {
+  const CB = row.querySelector(".td_cb").querySelector(".selectOne");
+
+  if (CB.checked !== true) {
+    SelectedRows.push(row);
+    CB.checked = true;
+  } // else{
+  //     SelectedRows.forEach((element)=>{
+  //         if(element.querySelector(".td_Names").innerText === row.querySelector(".td_Names").innerText){
+  //               let index =  (SelectedRows.indexOf(element));
+  //               SelectedRows.splice(index,1)
+  //             //   if(rowBucket.length === 0){
+  //             //         btnEdit.disabled = true;
+  //             //         btnDelete.disabled = true  
+  //             //   }
+  //         }
+  //     })
+  //     CB.checked = false;
+  // }
+  // SelectedRows.forEach((row)=>{
+  // addToCart(row, cart, btnCart_clear, btnCart_clear, subtractItem)
+  // })
+
+}
+
 tip_default.addEventListener('click', () => {
   selectValue_span.innerHTML = "Filter By:";
   selectValue_span.setAttribute("value", "default");
@@ -584,7 +610,7 @@ function clearAllItems() {
    * Since this function "clearAllItems", can be called after a sale or just to clear the cart the afterSale boolean is there to indicate which situation 
    * the function is being used. If it is after a sale,     
    */
-  SelectedRows = [];
+  // SelectedRows = []
   const itemsInCart = domCart.querySelectorAll(".cartItem");
   const allAnimationsDone = []; //disbling cart buttons
 
@@ -1699,7 +1725,7 @@ class DOMCONTROLLER {
      *
      *
      */
-    const toolBar_tb = document.querySelector(".toolBar_tb"); //Cart Content
+    let cartItemExists = false; //Cart Content
 
     const cart = document.querySelector(".cart");
     const subTotal = cart.querySelector(".subTotal").querySelector(".value");
@@ -1711,6 +1737,22 @@ class DOMCONTROLLER {
 
     let [rowItemName, rowItemBrand, rowItemCategory, rowItemDiscount, rowItemSellingPrice, rowItemStock, rowItemCostPrice, reOrderLevel] = [row.querySelector(".td_Name--hidden").innerText, row.querySelector(".td_Brand--hidden").innerText, row.querySelector(".td_Category--hidden").innerText, row.querySelector('.td_discount').innerText, row.querySelector(".td_Price--hidden").innerText, row.querySelector('.td_Stock').innerText, row.querySelector('.td_costPrice').innerText, row.querySelector(".td_ReOrderLevel--hidden").innerText];
     rowItemSellingPrice = parseFloat(rowItemSellingPrice);
+    cartItems.forEach(item => {
+      const itemName = item.querySelector(".hidden_itemName").innerText;
+      const itemBrand = item.querySelector(".hidden_itemBrand").innerText;
+      const itemCategory = item.querySelector(".hidden_itemCategory").innerText;
+
+      if (itemName === rowItemName && itemBrand === rowItemBrand && itemCategory === rowItemCategory) {
+        item.querySelector(".cartItem_count").value = parseInt(item.querySelector(".cartItem_count").value) + 1;
+        cartItemExists = true;
+        console.log(item.querySelector(".cartItem_count"));
+      }
+    });
+
+    if (cartItemExists) {
+      return;
+    }
+
     let itemQuanityDB = 0; //Getting total quantity left. User's input will be checked against this to prevent sale of quantity more than what is actually left.
 
     database.getItemQuantity(rowItemName, rowItemBrand, rowItemCategory).then(result => {
@@ -1802,10 +1844,10 @@ class DOMCONTROLLER {
         item = item.pop();
         tb_itemCount.max = parseInt(item.InStock);
       });
-      cartItem.appendChild(tb_itemCount);
-      setTimeout(() => {
-        tb_itemCount.focus();
-      }, 500);
+      cartItem.appendChild(tb_itemCount); // setTimeout(()=>{
+      //     tb_itemCount.focus();
+      // }, 500)
+
       const cartItemCost = document.createElement("div");
       cartItemCost.className = "cartItem_cost";
       cartItemCost.innerText = `GH¢ ${Millify(rowItemSellingPrice, {

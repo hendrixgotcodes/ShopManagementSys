@@ -11,7 +11,7 @@ const { ipcRenderer } = require("electron");
 import clip from 'text-clipper';
 import Notifications from '../controller/Alerts/NotificationController'
 import DATABASE from '../model/DATABASE';
-import DOMCONTROLLER from './utilities/TableController';
+import DOMCONTROLLER, { addToCart } from './utilities/TableController';
 const cryptoJS = require("crypto-js")
 //Intitalizing DB
 const database = new DATABASE();
@@ -27,17 +27,17 @@ let TotalItems;
 let cart = [];     // Array of store objects
 let lostAccounts = [];
 let itemsOnReOrderLevels = [];
+let SelectedRows = [];
+
 
 let buffer = [];
-let string = "";
+let barcode = "";
 
 
 
 
 //Holds the amount of table rows selected so that disabling and enabling of elements can be done based on that amount
 let totalSelectedRows = 0;
-let SelectedRows = [];
-
 
 
 
@@ -94,54 +94,52 @@ document.addEventListener("keydown", (e)=>{
 
     buffer.push(e.key);
 
+    console.log(SelectedRows);
+    console.log(barcode, "jhjh");
+
 
     setTimeout(()=>{
-
-        console.log(buffer);
 
         if(buffer.length > 0){
 
 
             buffer.forEach((char)=>{
 
-                string = string + char
+                barcode = barcode + char
 
             })
 
             if( buffer.length >= 12){
 
+
                 const tableRows = document.querySelector("tbody").querySelectorAll("tr");
                 tableRows.forEach((row)=>{
 
-                    const barcode = row.querySelector(".td_Barcode--hidden").innerText;
-                    let CB = row.querySelector('.td_cb').querySelector('.selectOne');
-                    
+                    const itemBarcode = row.querySelector(".td_Barcode--hidden").innerText;
 
-                    if(CB.checked === true){
+                    if(itemBarcode === barcode){
+
+                        console.log(SelectedRows);
+
                         SelectedRows.push(row)
-                    }
-                    else{
-
-                        if(barcode === string){
-
-                            SelectedRows.push(row)    
-    
-    
-                        }
-
-                    }
-
-                   
+                        
+                    }         
 
 
-
-                })
+                })   
 
                 SelectedRows.forEach((row)=>{
 
-                    toggleRowCB(row)
+                    const CB = row.querySelector(".td_cb").querySelector(".selectOne");
+                    CB.checked = true;
 
+                    // toggleRowCB(row)
+        
+                    addToCart(row, cart, btnCart_sell, btnCart_clear, subtractItem)
+        
                 })
+
+                console.log(SelectedRows);
                 
 
             }
@@ -150,16 +148,58 @@ document.addEventListener("keydown", (e)=>{
             }
 
 
+
            
 
         }
 
+                
+       
+
         buffer = [];
-        string = "";
+        barcode = "";
     
     }, 500)
 
 })
+
+function checkCB(row){
+    const CB = row.querySelector(".td_cb").querySelector(".selectOne");
+   
+
+
+    if(CB.checked !== true){
+            SelectedRows.push(row);
+
+            CB.checked = true;
+    }
+    // else{
+        
+    //     SelectedRows.forEach((element)=>{
+
+    //         if(element.querySelector(".td_Names").innerText === row.querySelector(".td_Names").innerText){
+    //               let index =  (SelectedRows.indexOf(element));
+
+    //               SelectedRows.splice(index,1)
+
+    //             //   if(rowBucket.length === 0){
+    //             //         btnEdit.disabled = true;
+    //             //         btnDelete.disabled = true  
+    //             //   }
+
+    //         }
+
+    //     })
+
+    //     CB.checked = false;
+    // }
+
+    // SelectedRows.forEach((row)=>{
+
+        // addToCart(row, cart, btnCart_clear, btnCart_clear, subtractItem)
+
+    // })
+}
 
 
 
@@ -619,7 +659,7 @@ function clearAllItems(){
     * the function is being used. If it is after a sale,     
     */
 
-        SelectedRows = []
+        // SelectedRows = []
 
         const itemsInCart = domCart.querySelectorAll(".cartItem");
         const allAnimationsDone = []

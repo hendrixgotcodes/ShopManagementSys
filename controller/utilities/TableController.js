@@ -1370,7 +1370,8 @@ class DOMCONTROLLER{
      *
      */
 
-        const toolBar_tb = document.querySelector(".toolBar_tb")
+
+        let cartItemExists = false;
 
 
         //Cart Content
@@ -1383,11 +1384,34 @@ class DOMCONTROLLER{
 
 
 
-
         /*-----------------------------------------------------------------------------------------------*/
 
         let [rowItemName, rowItemBrand,rowItemCategory, rowItemDiscount, rowItemSellingPrice, rowItemStock, rowItemCostPrice, reOrderLevel] = [row.querySelector(".td_Name--hidden").innerText, row.querySelector(".td_Brand--hidden").innerText, row.querySelector(".td_Category--hidden").innerText,row.querySelector('.td_discount').innerText, row.querySelector(".td_Price--hidden").innerText, row.querySelector('.td_Stock').innerText,  row.querySelector('.td_costPrice').innerText, row.querySelector(".td_ReOrderLevel--hidden").innerText]
         rowItemSellingPrice = parseFloat(rowItemSellingPrice)
+
+
+        cartItems.forEach((item)=>{
+
+            const itemName = item.querySelector(".hidden_itemName").innerText;
+            const itemBrand = item.querySelector(".hidden_itemBrand").innerText;
+            const itemCategory = item.querySelector(".hidden_itemCategory").innerText;
+
+
+            if(itemName === rowItemName && itemBrand === rowItemBrand && itemCategory === rowItemCategory){
+
+                item.querySelector(".cartItem_count").value = parseInt(item.querySelector(".cartItem_count").value) + 1
+                cartItemExists = true
+
+                console.log(item.querySelector(".cartItem_count"));
+
+            }
+
+        })
+
+        if(cartItemExists){
+            return;
+        }
+
 
         let itemQuanityDB = 0;
         
@@ -1400,9 +1424,6 @@ class DOMCONTROLLER{
             itemQuanityDB =  parseInt(result.InStock)
 
         })
-
-
-        let itemExists = false;
 
     
       
@@ -1537,9 +1558,9 @@ class DOMCONTROLLER{
 
         cartItem.appendChild(tb_itemCount)
 
-        setTimeout(()=>{
-            tb_itemCount.focus();
-        }, 500)
+        // setTimeout(()=>{
+        //     tb_itemCount.focus();
+        // }, 500)
     
 
         const cartItemCost = document.createElement("div");
