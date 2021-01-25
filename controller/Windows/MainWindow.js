@@ -1,4 +1,5 @@
 const {
+    app,
     BrowserWindow,
     globalShortcut,
     dialog,
@@ -10,11 +11,11 @@ const {
 
 
 class MainWWindow extends BrowserWindow {
-    constructor(indexFile, staticURL, icon) {
+    constructor(indexFile, staticURL, icon, width, height) {
         //Passing parameter to actual electron BrowserWindow Object
         super({
-            width: 1500,
-            height: 800,
+            width,
+            height,
             webPreferences: {
                 nodeIntegration: true,
                 enableRemoteModule: true
@@ -24,8 +25,8 @@ class MainWWindow extends BrowserWindow {
             frame: false,
             icon: icon,
             show: false,
-            minWidth: 1503,
-            minHeight: 800,
+            minWidth: width/2,
+            minHeight: height/2,
             hasShadow: true,
             alwaysOnTop: false
         })

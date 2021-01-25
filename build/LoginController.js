@@ -1563,6 +1563,7 @@ class DATABASE {
 
   getUser(userName) {
     return new Promise((resolve, reject) => {
+      console.log(userName);
       this.connector.query("SELECT First_Name, Last_Name, User_Name FROM users WHERE ?", {
         User_Name: userName
       }, (error, result) => {
@@ -1572,6 +1573,20 @@ class DATABASE {
         }
 
         resolve(result);
+      });
+    });
+  }
+
+  getUserPassword(username) {
+    return new Promise((resolve, reject) => {
+      console.log(username);
+      this.connector.query("SELECT Password FROM `users` WHERE User_Name = ?", username, (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        } else {
+          resolve(result);
+        }
       });
     });
   }

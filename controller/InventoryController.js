@@ -190,10 +190,6 @@ ipcRenderer.on("setUserParams", (e, userParamsArray)=>{
 })
 
 
-
-
-
-
 /*****************************************************FUNCTIONS***************************************************/
 
 //Function to load store items
@@ -918,7 +914,7 @@ ipcRenderer.on('populateTable',(e, Items)=>{
 
                 notInDb.forEach((item)=>{
 
-                    DOMCONTROLLER.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount,item.ReOrderLevel,item.Barcode[checkCB, editItem, deleteItem, toggleRowControls], "", item.CostPrice, "", false, false, "Inventory")
+                    DOMCONTROLLER.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount,item.ReOrderLevel,item.Barcode,[checkCB, editItem, deleteItem, toggleRowControls], "", item.CostPrice, "", false, false, "Inventory")
 
                 })
 

@@ -1,9 +1,7 @@
 const {
     app,
     ipcMain,
-    ipcRenderer,
-    dialog,
-    remote
+    screen
 } = require('electron');
 const MainWWindow = require('./controller/Windows/MainWindow');
 let mainWindow;
@@ -23,13 +21,22 @@ function loadMainWindow() {
         path: require('path').join(__dirname, 'views', 'icons', 'logo', 'logo.png')
     })
 
+    app.whenReady()
+    .then(()=>{
 
-    mainWindow = new MainWWindow('./views/html/index.html', staticURL, icon);
+        const {width, height} = screen.getPrimaryDisplay().workAreaSize;
+
+        mainWindow = new MainWWindow('./views/html/index.html', staticURL, icon, width, height);
+        mainWindow.on('enter-full-screen', () => {
+            mainWindow.webContents.send('isFullScreen');
+        })
+
+    })
+
+   
     // mainWindow.loadFile('./views/html/index.html')
 
-    mainWindow.on('enter-full-screen', () => {
-        mainWindow.webContents.send('isFullScreen');
-    })
+   
 
 }
 

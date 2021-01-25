@@ -1191,7 +1191,7 @@ body {
               .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .modalContent_settings {
                 position: relative;
                 width: 100%;
-                height: 50%;
+                height: 100%;
                 overflow-y: hidden; }
                 .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .modalContent_settings .settingsAlert {
                   width: 100%;
@@ -1214,6 +1214,22 @@ body {
               .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .accSettings {
                 margin-top: 10%;
                 padding: 1rem; }
+                .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .accSettings .notif_bar {
+                  position: absolute;
+                  top: -10%;
+                  left: 0;
+                  width: 100%;
+                  background-color: #12A89D;
+                  color: #fff;
+                  height: 8%;
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  transition: .3s; }
+                .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .accSettings .notif_bar--shown {
+                  top: 0; }
+                .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .accSettings .notif_bar--error {
+                  background-color: #e16161; }
                 .main_body .mainBody_content .settingsModal .settingsContainer .modalPage .modal_content .slider .accSettings center {
                   width: 100%;
                   height: 80%;

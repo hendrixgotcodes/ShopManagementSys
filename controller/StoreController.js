@@ -237,7 +237,10 @@ ipcRenderer.on("setUserParams", (e, userParamsArray)=>{
 // btnCart_sell
 btnCart_sell.addEventListener("click", checkout);
 
-btnCart_clear.addEventListener("click", clearAllItems);
+btnCart_clear.addEventListener("click", ()=>{
+    SelectedRows = [];
+     clearAllItems();
+});
 
 footerBell.addEventListener("click", showIssues);
 footerBell.addEventListener("ReOrderLevel_Reached", function alertUserReOrderLevel(){
@@ -636,6 +639,7 @@ function checkout(){
             salesMadeAmount.innerText = parseFloat(salesMadeAmount.innerText);
 
             clearAllItems()
+            SelectedRows = [];
             Notifications.showAlert("success", "Sale successful")
 
 

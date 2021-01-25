@@ -142,7 +142,7 @@
                     .modalContent_settings {
                         position: relative;
                         width: 100%;
-                        height: 50%;
+                        height: 100%;
                         overflow-y: hidden;
 
                         .settingsAlert{
@@ -176,6 +176,30 @@
                     .accSettings {
                         margin-top: 10%;
                         padding: 1rem;
+
+                        .notif_bar{
+
+                            position: absolute;
+                            top: -10%;
+                            left: 0;
+                            width: 100%;
+                            background-color: $secondary_green;
+                            color: $WHITE;
+                            height: 8%;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            transition: .3s;
+
+                        }
+
+                        .notif_bar--shown{
+                            top: 0;
+                        }
+
+                        .notif_bar--error{
+                            background-color: $secondary_red;
+                        }
 
                         center {
                             width: 100%;

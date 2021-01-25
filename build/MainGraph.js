@@ -1432,11 +1432,11 @@ class DOMCONTROLLER {
                         <input disabled type="checkbox" class="selectOne" aria-placeholder="select one">
                     </td>
                     <td class="td_Names">
-                        ${clip(name, 23)}
+                        ${clip(name, 20)}
                         <div class ="td_toolTip" id="tp_Name">${name}</div>
                     </td>
-                    <td class="td_Brands">${clip(brand, 23)}</td>
-                    <td class="td_Category">${clip(category, 23)}</td>
+                    <td class="td_Brands">${clip(brand, 20)}</td>
+                    <td class="td_Category">${clip(category, 20)}</td>
                     <td hidden class="td_Stock">
                         ${stock}
                     </td>
@@ -1466,11 +1466,11 @@ class DOMCONTROLLER {
                         <input disabled type="checkbox" class="selectOne" aria-placeholder="select one">
                     </td>
                     <td class="td_Names">
-                        ${clip(name, 23)}
+                        ${clip(name, 20)}
                         <div class ="td_toolTip" id="tp_Name">${name}</div>
                     </td>
-                    <td class="td_Brands">${clip(brand, 23)}</td>
-                    <td class="td_Category">${clip(category, 23)}</td>
+                    <td class="td_Brands">${clip(brand, 20)}</td>
+                    <td class="td_Category">${clip(category, 20)}</td>
                     <td class="td_Stock">${stock}</td>
                     <td class="td_ReOrderLevel">${reOrderLevel}</td>
                     <td class="td_costPrice">
@@ -2301,11 +2301,25 @@ class DOMCONTROLLER {
       const itemName = item.querySelector(".hidden_itemName").innerText;
       const itemBrand = item.querySelector(".hidden_itemBrand").innerText;
       const itemCategory = item.querySelector(".hidden_itemCategory").innerText;
+      const itemCount = item.querySelector(".cartItem_count");
 
       if (itemName === rowItemName && itemBrand === rowItemBrand && itemCategory === rowItemCategory) {
-        item.querySelector(".cartItem_count").value = parseInt(item.querySelector(".cartItem_count").value) + 1;
+        itemCount.value = parseInt(itemCount.value) + 1;
         cartItemExists = true;
-        console.log(item.querySelector(".cartItem_count"));
+        let newRevenue = 0;
+        let totalItemSellingPrice = parseInt(itemCount.value) * parseFloat(rowItemSellingPrice);
+        let totalItemCostPrice = parseFloat(rowItemCostPrice) * parseInt(itemCount.value);
+        inCart.forEach(item => {
+          if (item.Item.Name === itemName && item.Item.Brand === itemBrand && item.Item.Category === itemCategory) {
+            item.Purchased = parseInt(itemCount.value);
+            item.Revenue = totalItemSellingPrice;
+            item.Profit = totalItemSellingPrice - totalItemCostPrice;
+          }
+
+          newRevenue = parseFloat(item.Revenue + newRevenue);
+        });
+        subTotal.innerText = newRevenue;
+        mainTotal.innerText = subTotal.innerText;
       }
     });
 
@@ -2318,8 +2332,7 @@ class DOMCONTROLLER {
     database.getItemQuantity(rowItemName, rowItemBrand, rowItemCategory).then(result => {
       result = result.pop();
       itemQuanityDB = parseInt(result.InStock);
-    });
-    let itemExists = false; //Set "no items in cart yet" invisble
+    }); //Set "no items in cart yet" invisble
 
     cartInfo.style.display = "none"; //disble buttons
 
@@ -3731,6 +3744,7 @@ class DATABASE {
 
   getUser(userName) {
     return new Promise((resolve, reject) => {
+      console.log(userName);
       this.connector.query("SELECT First_Name, Last_Name, User_Name FROM users WHERE ?", {
         User_Name: userName
       }, (error, result) => {
@@ -3740,6 +3754,20 @@ class DATABASE {
         }
 
         resolve(result);
+      });
+    });
+  }
+
+  getUserPassword(username) {
+    return new Promise((resolve, reject) => {
+      console.log(username);
+      this.connector.query("SELECT Password FROM `users` WHERE User_Name = ?", username, (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        } else {
+          resolve(result);
+        }
       });
     });
   }

@@ -64,6 +64,7 @@ const settingsModalTemplate =
                     </header>
                     <div class="modalContent_body slider slider--onAdmin">
                         <div class="modalContent_settings accSettings">
+                            <div class="notif_bar">Info</div>
                             <center>
                                 <label class="settingsLabel">
                                     Username
@@ -81,6 +82,7 @@ const settingsModalTemplate =
                                 <label class="settingsLabel">
                                     Confirm New Password
                                     <input type="password" placeholder="Repeat your new password here" class="confirmPassword">
+                                    <div hidden class="password--hidden"></div>
                                 </label>
                             </center>
                             <button class="modal_btn_submit">Change</button>
@@ -149,8 +151,175 @@ const oldPassword = accSettings.querySelector(".oldPassword");
 const newPassword = accSettings.querySelector(".newPassword");
 const confirmPassword = accSettings.querySelector(".confirmPassword");
 const btnSumbit = accSettings.querySelector(".modal_btn_submit");
+const password_hidden = accSettings.querySelector(".password--hidden")
 
-console.log(accSettings, userName, oldPassword, newPassword, confirmPassword, btnSumbit);
+let oldUserPassword;
+
+
+btnSumbit.addEventListener("click", ()=>{
+
+    const notifBar = accSettings.querySelector(".notif_bar");
+
+    if(oldPassword.value == "" || newPassword.value === "" || confirmPassword === ""){
+
+        notifBar.classList.add("notif_bar--shown");
+        notifBar.innerText = "Please make sure to complete the form";
+        notifBar.classList.add("notif_bar--error")
+
+        setTimeout(()=>{
+
+            notifBar.classList.remove("notif_bar--shown");
+            notifBar.classList.remove("notif_bar--error")
+            notifBar.innerText = "";
+
+
+        }, 3000)
+
+    }
+    else if(oldUserPassword !== oldPassword.value){
+
+        notifBar.classList.add("notif_bar--shown");
+        notifBar.innerText = "The password you provided as your old password does not match your old password";
+        notifBar.classList.add("notif_bar--error")
+
+        setTimeout(()=>{
+
+            notifBar.classList.remove("notif_bar--shown");
+            notifBar.classList.remove("notif_bar--error")
+            notifBar.innerText = "";
+
+
+        }, 3000)
+
+    }
+    else if(oldPassword.value === newPassword.value){
+
+        notifBar.classList.add("notif_bar--shown");
+        notifBar.innerText = "New password matches old password";
+        notifBar.classList.add("notif_bar--error")
+
+        setTimeout(()=>{
+
+            notifBar.classList.remove("notif_bar--shown");
+            notifBar.classList.remove("notif_bar--error")
+            notifBar.innerText = "";
+
+
+        }, 3000)
+
+    }
+    else if(newPassword.value !== confirmPassword.value){
+
+        notifBar.classList.add("notif_bar--shown");
+        notifBar.innerText = "First password does not match with confirmation password";
+        notifBar.classList.add("notif_bar--error")
+
+        setTimeout(()=>{
+
+            notifBar.classList.remove("notif_bar--shown");
+            notifBar.classList.remove("notif_bar--error")
+            notifBar.innerText = "";
+
+
+        }, 3000)
+
+    }
+    else{
+
+        generateHash(userName.value, confirmPassword.value)
+        .then(()=>{
+
+             database.updateUserInfo(userName.value, confirmPassword.value)
+            .then(()=>{
+
+                notifBar.classList.add("notif_bar--shown");
+                notifBar.innerText = "Password changed successfully"
+
+                setTimeout(()=>{
+
+                    notifBar.classList.remove("notif_bar--shown");
+                    notifBar.innerText = "";
+
+                }, 3000)
+
+                newPassword.value = "";
+                oldPassword.value = "";
+                confirmPassword.value = "";
+
+
+            })
+
+        })
+
+       
+
+    }
+
+    
+
+})
+
+    function generateHash(userName, password){
+
+        return new Promise((resolve, reject)=>{
+
+            const hash = cryptoJS.AES.encrypt(password, userName).toString()
+
+            resolve(hash)
+
+        })
+
+
+    }
+
+    function decryptHash(userName, password){
+
+        return new Promise((resolve, reject)=>{
+
+            let hashed = cryptoJS.AES.decrypt(password, userName)
+            hashed = hashed.toString(cryptoJS.enc.Utf8)
+
+            resolve(hashed)
+
+        })
+
+    }
+
+
+    database.getUser(USERNAME)
+    .then((user)=>{
+
+
+        user = user.pop();
+
+        userName.value = user.User_Name;
+        userName.disabled = true;
+
+    })
+    .then(()=>{
+
+        database.getUserPassword(USERNAME)
+        .then((password)=>{
+
+            password = password.pop();
+            password = password.Password;
+
+            decryptHash(USERNAME, password)
+            .then((password)=>{
+
+
+                oldUserPassword = password
+
+
+            })
+
+        })
+        .catch((eror)=>{
+            throw error
+        })
+
+    })
+
 
 /***********************************INITIALIZERS**************************************** */
 
@@ -202,15 +371,6 @@ store.get("timeOutPref")
 
 })
 
-database.getUser(USERNAME)
-.then((user)=>{
-
-    user = user.pop();
-
-    userName.value = user.User_Name;
-    userName.disabled = true;
-
-})
 
 
 
@@ -338,7 +498,6 @@ function saveGenSettings(){
 
         let date = new Date();
 
-        console.log("alerted ", date.getSeconds(), date.getMilliseconds());
 
         alertSaved("genSettings","ToolTips")
         .then(()=>{

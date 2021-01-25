@@ -156,6 +156,7 @@ function openSettings() {
                     </header>
                     <div class="modalContent_body slider slider--onAdmin">
                         <div class="modalContent_settings accSettings">
+                            <div class="notif_bar">Info</div>
                             <center>
                                 <label class="settingsLabel">
                                     Username
@@ -173,6 +174,7 @@ function openSettings() {
                                 <label class="settingsLabel">
                                     Confirm New Password
                                     <input type="password" placeholder="Repeat your new password here" class="confirmPassword">
+                                    <div hidden class="password--hidden"></div>
                                 </label>
                             </center>
                             <button class="modal_btn_submit">Change</button>
@@ -231,7 +233,94 @@ function openSettings() {
   const newPassword = accSettings.querySelector(".newPassword");
   const confirmPassword = accSettings.querySelector(".confirmPassword");
   const btnSumbit = accSettings.querySelector(".modal_btn_submit");
-  console.log(accSettings, userName, oldPassword, newPassword, confirmPassword, btnSumbit);
+  const password_hidden = accSettings.querySelector(".password--hidden");
+  let oldUserPassword;
+  btnSumbit.addEventListener("click", () => {
+    const notifBar = accSettings.querySelector(".notif_bar");
+
+    if (oldPassword.value == "" || newPassword.value === "" || confirmPassword === "") {
+      notifBar.classList.add("notif_bar--shown");
+      notifBar.innerText = "Please make sure to complete the form";
+      notifBar.classList.add("notif_bar--error");
+      setTimeout(() => {
+        notifBar.classList.remove("notif_bar--shown");
+        notifBar.classList.remove("notif_bar--error");
+        notifBar.innerText = "";
+      }, 3000);
+    } else if (oldUserPassword !== oldPassword.value) {
+      notifBar.classList.add("notif_bar--shown");
+      notifBar.innerText = "The password you provided as your old password does not match your old password";
+      notifBar.classList.add("notif_bar--error");
+      setTimeout(() => {
+        notifBar.classList.remove("notif_bar--shown");
+        notifBar.classList.remove("notif_bar--error");
+        notifBar.innerText = "";
+      }, 3000);
+    } else if (oldPassword.value === newPassword.value) {
+      notifBar.classList.add("notif_bar--shown");
+      notifBar.innerText = "New password matches old password";
+      notifBar.classList.add("notif_bar--error");
+      setTimeout(() => {
+        notifBar.classList.remove("notif_bar--shown");
+        notifBar.classList.remove("notif_bar--error");
+        notifBar.innerText = "";
+      }, 3000);
+    } else if (newPassword.value !== confirmPassword.value) {
+      notifBar.classList.add("notif_bar--shown");
+      notifBar.innerText = "First password does not match with confirmation password";
+      notifBar.classList.add("notif_bar--error");
+      setTimeout(() => {
+        notifBar.classList.remove("notif_bar--shown");
+        notifBar.classList.remove("notif_bar--error");
+        notifBar.innerText = "";
+      }, 3000);
+    } else {
+      generateHash(userName.value, confirmPassword.value).then(() => {
+        database.updateUserInfo(userName.value, confirmPassword.value).then(() => {
+          notifBar.classList.add("notif_bar--shown");
+          notifBar.innerText = "Password changed successfully";
+          setTimeout(() => {
+            notifBar.classList.remove("notif_bar--shown");
+            notifBar.innerText = "";
+          }, 3000);
+          newPassword.value = "";
+          oldPassword.value = "";
+          confirmPassword.value = "";
+        });
+      });
+    }
+  });
+
+  function generateHash(userName, password) {
+    return new Promise((resolve, reject) => {
+      const hash = cryptoJS.AES.encrypt(password, userName).toString();
+      resolve(hash);
+    });
+  }
+
+  function decryptHash(userName, password) {
+    return new Promise((resolve, reject) => {
+      let hashed = cryptoJS.AES.decrypt(password, userName);
+      hashed = hashed.toString(cryptoJS.enc.Utf8);
+      resolve(hashed);
+    });
+  }
+
+  database.getUser(USERNAME).then(user => {
+    user = user.pop();
+    userName.value = user.User_Name;
+    userName.disabled = true;
+  }).then(() => {
+    database.getUserPassword(USERNAME).then(password => {
+      password = password.pop();
+      password = password.Password;
+      decryptHash(USERNAME, password).then(password => {
+        oldUserPassword = password;
+      });
+    }).catch(eror => {
+      throw error;
+    });
+  });
   /***********************************INITIALIZERS**************************************** */
 
   store.get("toolTipsPref").then(userPref => {
@@ -274,11 +363,6 @@ function openSettings() {
       default:
         timeOutPref.selectedIndex = "0";
     }
-  });
-  database.getUser(USERNAME).then(user => {
-    user = user.pop();
-    userName.value = user.User_Name;
-    userName.disabled = true;
   });
   /***********************************FUNCTIONS**************************************** */
   //Notification/Alert
@@ -356,7 +440,6 @@ function openSettings() {
     store.set("toolTipsPref", toolTipsPref).then(() => {
       ipcRenderer.send("ready");
       let date = new Date();
-      console.log("alerted ", date.getSeconds(), date.getMilliseconds());
       alertSaved("genSettings", "ToolTips").then(() => {
         store.set("timeOutPref", timeOut).then(() => {
           alertSaved("genSettings", "TimeOut");
@@ -1625,6 +1708,7 @@ class DATABASE {
 
   getUser(userName) {
     return new Promise((resolve, reject) => {
+      console.log(userName);
       this.connector.query("SELECT First_Name, Last_Name, User_Name FROM users WHERE ?", {
         User_Name: userName
       }, (error, result) => {
@@ -1634,6 +1718,20 @@ class DATABASE {
         }
 
         resolve(result);
+      });
+    });
+  }
+
+  getUserPassword(username) {
+    return new Promise((resolve, reject) => {
+      console.log(username);
+      this.connector.query("SELECT Password FROM `users` WHERE User_Name = ?", username, (error, result) => {
+        if (error) {
+          reject(error);
+          throw error;
+        } else {
+          resolve(result);
+        }
       });
     });
   }
