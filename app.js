@@ -18,7 +18,7 @@ function loadMainWindow() {
     const icon = require('url').format({
         protocol: 'file',
         slashes: true,
-        path: require('path').join(__dirname, 'views', 'icons', 'logo', 'logo.png')
+        path: require('path').join(__dirname, 'icon.ico')
     })
 
     app.whenReady()

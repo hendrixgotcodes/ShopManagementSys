@@ -85,7 +85,7 @@ body {
             transition: 0.3s;
 
             & img {
-                width: 48%;
+                width: 28%;
                 height: 45%;
             }
 
@@ -93,10 +93,11 @@ body {
                 background-color: darken($color: $primary_green, $amount: 5);
             }
         }
+       
 
         #menuIcon_png {
-            width: 28%;
-            height: 41%;
+            width: 25%;
+            height: 35%;
         }
     }
 }

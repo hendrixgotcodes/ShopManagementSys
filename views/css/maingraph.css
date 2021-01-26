@@ -175,13 +175,13 @@ body {
       align-items: center;
       transition: 0.3s; }
       .menu_a .menu_iconsContainer .menu_icons img {
-        width: 48%;
+        width: 28%;
         height: 45%; }
       .menu_a .menu_iconsContainer .menu_icons:hover {
         background-color: #2b493e; }
     .menu_a .menu_iconsContainer #menuIcon_png {
-      width: 28%;
-      height: 41%; }
+      width: 25%;
+      height: 35%; }
 
 .menu_b {
   width: 100%;
@@ -1537,7 +1537,7 @@ body {
         align-items: center;
         font-size: 1rem;
         padding: .8rem;
-        box-shadow: 1px 3px 5px rgba(100, 103, 102, 0.3); }
+        box-shadow: 1px 3px 5px rgba(0, 0, 0, 0.3); }
       .main_body .mainBody_content .exitPromptBox center {
         width: 100%;
         height: 70%;

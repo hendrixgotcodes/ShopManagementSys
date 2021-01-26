@@ -28,7 +28,7 @@ class MainWWindow extends BrowserWindow {
             minWidth: width/2,
             minHeight: height/2,
             hasShadow: true,
-            alwaysOnTop: false
+            transparent: true
         })
 
         //Program Variables

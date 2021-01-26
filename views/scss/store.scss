@@ -91,7 +91,7 @@ body {
             transition: 0.3s;
 
             & img {
-                width: 48%;
+                width: 28%;
                 height: 45%;
             }
 
@@ -102,8 +102,8 @@ body {
        
 
         #menuIcon_png {
-            width: 28%;
-            height: 41%;
+            width: 25%;
+            height: 35%;
         }
     }
 }
@@ -127,7 +127,7 @@ body {
         position: relative;
 
         & .menu_items {
-            height: 13%;
+            height: 11%;
             cursor: pointer;
 
             &:nth-child(1) {
