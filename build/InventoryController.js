@@ -519,7 +519,7 @@ function addItem(barcode = "") {
     });
   });
 } //---------------------------------------------------------------------------------------------------------------
-// Adds and removes shop items to rowBucket on checkbox tick and untick respectively
+// Adds and removes shop items to rowBucket on checkbox tick and untick respectively  
 
 
 function checkCB(row) {

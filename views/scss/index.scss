@@ -104,7 +104,7 @@ body {
                 height: 85%;
                 margin-top: .0rem;
                 border: 5px solid rgba($color: #61E0AE, $alpha: 0.3);
-                border-radius: 4px;
+                border-radius: 16px;
                 padding: .5rem;
                 outline: none;
                 font-size: 1.2rem;
@@ -129,7 +129,7 @@ body {
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                border-radius: 0 2px 2px 0;
+                border-radius: 0 16px 16px 0;
                 cursor: pointer;
 
 
@@ -145,11 +145,12 @@ body {
                 position: absolute;
                 width: 10%;
                 height: 72%;
-                right: 1%;
+                right: -1%;
                 top: 45%;
                 opacity: 0;
                 cursor: pointer;
                 transition: .5s;
+               
             }
 
             .warningLabel{
