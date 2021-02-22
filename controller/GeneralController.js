@@ -291,7 +291,6 @@ function seekItem(){
 
                 if(currentItem.includes(itemName)){
 
-                    row.scrollIntoView({behavior: 'smooth'})
                     row.focus()
     
     
@@ -308,7 +307,6 @@ function seekItem(){
 
                     if(currentItem.includes(itemName)){
 
-                        row.scrollIntoView({behavior: 'smooth'});
                         row.focus();
         
                         clearTimeout(timeOutValue)
@@ -324,7 +322,6 @@ function seekItem(){
 
                         if(currentItem.includes(itemName)){
 
-                            row.scrollIntoView({behavior: 'smooth'});
                             row.focus();
             
                             clearTimeout(timeOutValue)
