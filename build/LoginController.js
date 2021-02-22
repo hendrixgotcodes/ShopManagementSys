@@ -461,7 +461,7 @@ class DATABASE {
                         Discount INT NOT NULL,
                         Deleted BOOLEAN NOT NULL,
                         ReOrderLevel INT NOT NULL,
-                        UNIQUE(Name, Brand, Category),
+                        UNIQUE(Name, Brand, Category, CostPrice),
                         PRIMARY KEY (id),
                         FOREIGN KEY (Brand) REFERENCES itemBrands(Name),
                         FOREIGN KEY (Category) REFERENCES  itemCategories(Name)

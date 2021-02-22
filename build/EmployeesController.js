@@ -1687,7 +1687,7 @@ const commaNumber = __webpack_require__(/*! comma-number */ "./node_modules/comm
 const database = new DATABASE();
 
 class DOMCONTROLLER {
-  static createItem(name, brand, category, stock, sellingPrice, discount, reOrderLevel, barcode, functions, hasItems, costPrice = "", purchased = "", dontHighlightAfterCreate = false, isdeletedItem = false, destinationPage = "", Scroll = true) {
+  static createItem(name, brand, category, stock, sellingPrice, discount, reOrderLevel, barcode, functions, hasItems, costPrice = "", purchased = "", dontHighlightAfterCreate = false, isdeletedItem = false, destinationPage = "", Scroll = true, appendToDom = true) {
     return new Promise((resolve, reject) => {
       const tableROWS = document.querySelectorAll('tr');
       tableROWS.forEach(row => {
@@ -1787,11 +1787,23 @@ class DOMCONTROLLER {
             document.querySelector('.tableBody').replaceChild(row, tableRow);
             returnedValue = 1;
           } else {
-            document.querySelector(".tableBody").appendChild(row); // ToolTipsController.generateToolTip('row.id', name);
+            if (appendToDom === true) {
+              document.querySelector(".tableBody").appendChild(row);
+            } else {
+              resolve(row);
+              return;
+            } // ToolTipsController.generateToolTip('row.id', name);
+
           }
         });
       } else if (hasItems !== true) {
-        document.querySelector(".tableBody").appendChild(row); // returnedValue = true;
+        if (appendToDom === true) {
+          document.querySelector(".tableBody").appendChild(row);
+        } else {
+          resolve(row);
+          return;
+        } // returnedValue = true;
+
       }
 
       if (Scroll === true) {
@@ -2926,7 +2938,7 @@ class DATABASE {
                         Discount INT NOT NULL,
                         Deleted BOOLEAN NOT NULL,
                         ReOrderLevel INT NOT NULL,
-                        UNIQUE(Name, Brand, Category),
+                        UNIQUE(Name, Brand, Category, CostPrice),
                         PRIMARY KEY (id),
                         FOREIGN KEY (Brand) REFERENCES itemBrands(Name),
                         FOREIGN KEY (Category) REFERENCES  itemCategories(Name)

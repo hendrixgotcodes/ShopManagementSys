@@ -28,6 +28,7 @@ let cart = [];     // Array of store objects
 let lostAccounts = [];
 let itemsOnReOrderLevels = [];
 let SelectedRows = [];
+let itemCounter = 0;
 
 
 let buffer = [];
@@ -57,7 +58,8 @@ const contentCover = document.querySelector(".contentCover");
 const mainBodyContent = document.querySelector('.mainBody_content');
 const domCart = document.querySelector(".cart")
 const mainTotal = document.querySelector(".mainTotal").querySelector(".value")
-const salesMadeAmount = document.querySelector("#salesMade_amount")
+const salesMadeAmount = document.querySelector("#salesMade_amount");
+const domItemConter = document.querySelector("#itemCounter");
 
 //Buttons
 const btnCart_sell = domCart.querySelector(".btnCart_sell")
@@ -272,6 +274,9 @@ function initializeStoreItems(){
 
     DOMCONTROLLER.showLoadingBanner("Please wait. Attempting to fetch items from database...")
 
+    //Setting Item Counter to zero
+    domItemConter.innerText = itemCounter;
+
 
     database.getTotalItems()
     .then((totalItems)=>{
@@ -289,6 +294,11 @@ function initializeStoreItems(){
     
                 //Remove loading banner
                 DOMCONTROLLER.removeOldBanners();
+
+                //Setting total item count to the dom
+                console.log(fetchedItems.length);
+                itemCounter += parseInt(fetchedItems.length);
+                domItemConter.innerText = itemCounter;
                 
                 //then add each item to the table in the DOM
                 fetchedItems.forEach((fetchedItem)=>{
@@ -440,6 +450,8 @@ function fetchItemsRecursive(offset = 200){
 
                 offset = offset+offset;
 
+                const fragment = document.createElement("div");
+
                 storeItems.forEach((fetchedItem)=>{
 
                     //T his will only add items which "InStock" is greater than zero
@@ -447,26 +459,32 @@ function fetchItemsRecursive(offset = 200){
 
                         if(fetchedItem.Deleted !== 1){
 
-                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,fetchedItem.Barcode,"", false, fetchedItem.CostPrice, "", true, false,"Store", false)
+                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,fetchedItem.Barcode,"", false, fetchedItem.CostPrice, "", true, false,"Store", false,false)
                             .then((row)=>{    
 
-                                
+                                itemCounter += 1
+                                domItemConter.innerText = itemCounter;
     
-                                //For "tableBody"
                                 row.addEventListener('click',(e)=>{
 
+                                    let CB = row.querySelector('.td_cb').querySelector('.selectOne');
+                
                                     if(CB.checked === false){
                                         SelectedRows.push(row);
                                     }
-
+                                    
+                
                                     toggleRowCB(row);
                                     setSellingItemProperties(row);
+                                    
+                
+                
                                 })
                     
                                 row.addEventListener('keydown',(e)=>{
                     
                                     if(e.code === "Enter"){
-
+                
                                         if(CB.checked === false){
                                             SelectedRows.push(row);
                                         }
@@ -476,7 +494,9 @@ function fetchItemsRecursive(offset = 200){
                     
                                     }
                     
-                                })                                    
+                                })
+                                
+                                fragment.appendChild(row)
                                 
 
                             })
@@ -502,6 +522,8 @@ function fetchItemsRecursive(offset = 200){
 
 
                  })
+
+                 document.querySelector(".tableBody").appendChild(fragment);
 
                 fetchItemsRecursive(offset)
 

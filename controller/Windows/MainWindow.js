@@ -5,6 +5,7 @@ const {
     dialog,
     ipcMain,
     remote,
+    webContents,
 } = require('electron');
 
 //Loading directory which contains static files
@@ -27,8 +28,7 @@ class MainWWindow extends BrowserWindow {
             show: false,
             minWidth: width/2,
             minHeight: height/2,
-            hasShadow: true,
-            transparent: true
+            hasShadow: true
         })
 
         //Program Variables
@@ -56,7 +56,6 @@ class MainWWindow extends BrowserWindow {
                 this.userName = userName;
                 this.userType = userType;
 
-                
 
             });
 

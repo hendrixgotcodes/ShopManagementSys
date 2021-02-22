@@ -10,7 +10,7 @@ const database = new DATABASE();
 
 class DOMCONTROLLER{
 
-    static createItem(name, brand, category, stock, sellingPrice, discount,reOrderLevel,barcode,functions, hasItems,costPrice="", purchased="", dontHighlightAfterCreate = false, isdeletedItem=false, destinationPage="", Scroll=true){
+    static createItem(name, brand, category, stock, sellingPrice, discount,reOrderLevel,barcode,functions, hasItems,costPrice="", purchased="", dontHighlightAfterCreate = false, isdeletedItem=false, destinationPage="", Scroll=true, appendToDom=true){
 
             return new Promise((resolve, reject)=>{    
                 
@@ -138,7 +138,19 @@ class DOMCONTROLLER{
 
                         }
                         else{
-                            document.querySelector(".tableBody").appendChild(row);
+
+                            if(appendToDom===true){
+
+                                document.querySelector(".tableBody").appendChild(row);
+
+                            }
+                            else{
+
+                                resolve(row);
+                                return;
+
+                            }
+
 
                             // ToolTipsController.generateToolTip('row.id', name);
 
@@ -148,7 +160,17 @@ class DOMCONTROLLER{
                 }
                 else if(hasItems !== true) {
 
-                    document.querySelector(".tableBody").appendChild(row);
+                    if(appendToDom===true){
+
+                        document.querySelector(".tableBody").appendChild(row);
+
+                    }
+                    else{
+
+                        resolve(row);
+                        return;
+
+                    }
                     // returnedValue = true;
                 }
 
