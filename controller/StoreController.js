@@ -60,6 +60,9 @@ const domCart = document.querySelector(".cart")
 const mainTotal = document.querySelector(".mainTotal").querySelector(".value")
 const salesMadeAmount = document.querySelector("#salesMade_amount");
 const domItemConter = document.querySelector("#itemCounter");
+const cartItems = document.querySelector(".cartItems");
+const cartInfo = document.createElement("span");
+cartInfo.className = "cartInfo";
 
 //Buttons
 const btnCart_sell = domCart.querySelector(".btnCart_sell")
@@ -96,9 +99,6 @@ document.addEventListener("keydown", (e)=>{
 
     buffer.push(e.key);
 
-    console.log(SelectedRows);
-    console.log(barcode, "jhjh");
-
 
     setTimeout(()=>{
 
@@ -121,8 +121,6 @@ document.addEventListener("keydown", (e)=>{
 
                     if(itemBarcode === barcode){
 
-                        console.log(SelectedRows);
-
                         SelectedRows.push(row)
                         
                     }         
@@ -141,16 +139,9 @@ document.addEventListener("keydown", (e)=>{
         
                 })
 
-                console.log(SelectedRows);
                 
 
             }
-            else{
-                console.log(buffer.length);
-            }
-
-
-
            
 
         }
@@ -247,8 +238,6 @@ btnCart_clear.addEventListener("click", ()=>{
 footerBell.addEventListener("click", showIssues);
 footerBell.addEventListener("ReOrderLevel_Reached", function alertUserReOrderLevel(){
 
-    console.log("evt dispatched");
-
     footerBell_notIcon.innerText = parseInt(footerBell_notIcon.innerText) + 1;
     footerBell_notIcon.style.opacity = "1";
 
@@ -296,7 +285,6 @@ function initializeStoreItems(){
                 DOMCONTROLLER.removeOldBanners();
 
                 //Setting total item count to the dom
-                console.log(fetchedItems.length);
                 itemCounter += parseInt(fetchedItems.length);
                 domItemConter.innerText = itemCounter;
                 
@@ -525,6 +513,8 @@ function fetchItemsRecursive(offset = 200){
 
                  document.querySelector(".tableBody").appendChild(fragment);
 
+                 tableRows = document.querySelector("tbody").querySelectorAll(".bodyRow");
+
                 fetchItemsRecursive(offset)
 
             }
@@ -589,52 +579,22 @@ function toggleRowCB(row){
 
 
 
-    if(CB.checked === true){
+    // if(CB.checked === true){
 
-        //Item being unchecked
-        let itemName =row.querySelector('.td_Names').innerText;
-        let itemBrand = row.querySelector('.td_Brands').innerText;
+    //     //Item being unchecked
+    //     let itemName =row.querySelector('.td_Names').innerText;
+    //     let itemBrand = row.querySelector('.td_Brands').innerText;
 
-        console.log("already checked");
-        
-        // cart.forEach((item)=>{
-
-
-        //     let currentItemIndex;+
-
-        //     if(item.name === itemName && item.brand === itemBrand){
-
-
-        //         currentItemIndex = cart.indexOf(item);
-
-        //         cart.splice(currentItemIndex, 1)
-
-
-
-        //     }
-        // })
-
-        console.log(cart, "niji");
-
-
-        console.log(totalSelectedRows);
-
-
-        // DOMCONTROLLER.addToCart(row, cart, btnCart_sell, btnCart_clear, subtractItem)
-
-
-    }
-    else{
+    // }
+    // else{
         CB.checked = true
 
         totalSelectedRows = totalSelectedRows +1;
 
         DOMCONTROLLER.addToCart(row, cart, btnCart_sell, btnCart_clear, subtractItem)
 
-        console.log("not checked");
 
-
-    }
+    // }
 }
 
 
@@ -661,7 +621,6 @@ function checkout(){
             salesMadeAmount.innerText = parseFloat(salesMadeAmount.innerText);
 
             clearAllItems()
-            SelectedRows = [];
             Notifications.showAlert("success", "Sale successful")
 
 
@@ -671,6 +630,8 @@ function checkout(){
 
     })
     .catch((error)=>{
+
+        console.log(error);
 
         Notifications.showAlert("error", "Sorry. Failed to make sale due to an unknown error")
 
@@ -688,113 +649,87 @@ function clearAllItems(){
         // SelectedRows = []
 
         const itemsInCart = domCart.querySelectorAll(".cartItem");
-        const allAnimationsDone = []
-
 
 
         //disbling cart buttons
         btnCart_clear.disabled = true;
         btnCart_sell.disabled = true;
 
-        for(let i = itemsInCart.length-1; i >=0; i--){
-
-            allAnimationsDone.push(new Promise((resolve, reject)=>{
-    
-                const afterAnimation = new Promise((resolve, reject)=>{
-    
-                    const itemName = itemsInCart[i].querySelector(".hidden_itemName").innerText;
-                    const itemBrand = itemsInCart[i].querySelector(".hidden_itemBrand").innerText;
-                    const itemCategory = itemsInCart[i].querySelector(".hidden_itemCategory").innerText;
-                    const itemSold = itemsInCart[i].querySelector(".cartItem_count").value;
-                    const reOrderLevel = itemsInCart[i].querySelector(".hidden_reOrderLevel").innerText;
-
-    
-                    tableRows.forEach((row)=>{
-
-                        let rowName = row.querySelector('.td_Name--hidden').innerText;
-                        let rowBrand = row.querySelector('.td_Brand--hidden').innerText;
-                        let rowCategory = row.querySelector('.td_Category--hidden').innerText;
-                        let checkbox = row.querySelector('.td_cb').querySelector('.selectOne')
-
-                        let InStock = row.querySelector(".td_Stock");
-
-
-                        if(rowName === itemName && rowBrand === itemBrand && rowCategory === itemCategory){
-
-                                checkbox.checked = false;
-
-                                InStock.innerText = parseInt(InStock.innerText) - parseInt(itemSold); 
-
-                                if(parseInt(InStock.innerText) === 0){
-
-                                    row.remove();
-
-                                }
-
-                                if(parseInt(InStock.innerText) <= parseInt(reOrderLevel)){
-
-                                    itemsOnReOrderLevels.forEach((item)=>{
-
-                                        itemsOnReOrderLevels.push(
-                                            {
-                                                Name: rowName,
-                                                Brand: rowBrand,
-                                                Category: rowCategory
-                                            }
-                                        );
-                                            
-                                        const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached")
-
-                                        footerBell.dispatchEvent(ReOrderLevel_Reached);    
-
-
-                                    })
-
-                                    
-
-                                    
-
-                                }
 
 
 
-                        }
+        SelectedRows.forEach((row)=>{
 
-                    })
-                    
+            let rowName = row.querySelector('.td_Name--hidden').innerText;
+            let rowBrand = row.querySelector('.td_Brand--hidden').innerText;
+            let rowCategory = row.querySelector('.td_Category--hidden').innerText;
+            let checkbox = row.querySelector('.td_cb').querySelector('.selectOne')
 
-                    resolve()
-        
-    
-                })
-    
-                afterAnimation.then(()=>{
-    
-                    subtractItem(itemsInCart[i], cart)
-    
-    
-                    itemsInCart[i].remove()
+            let InStockDOM = row.querySelector(".td_Stock");
 
-                    resolve()
-        
-    
-    
-                })
-    
-            }))
-    
-        }
 
-        Promise.all(allAnimationsDone)
-        .then(()=>{
+            checkbox.checked = false;
 
-            domCart.querySelector(".cartInfo").style.display = "block"
+            itemsInCart.forEach((cartItem)=>{
+
+                let currentCartItemName = cartItem.querySelector(".cartItem_details").querySelector(".hidden_itemName");
+                let currentCartItemBrand = cartItem.querySelector(".cartItem_details").querySelector(".hidden_itemBrand");
+                let currentCartItemCategory = cartItem.querySelector(".cartItem_details").querySelector(".hidden_itemCategory");
+
+                if(rowName === currentCartItemName.innerText && rowBrand === currentCartItemBrand.innerText && rowCategory === currentCartItemCategory.innerText)
+                {
+
+                    const itemSold = cartItem.querySelector(".cartItem_count").value;
+
+                    const reOrderLevel = cartItem.querySelector(".hidden_reOrderLevel").innerText;
+
+                    InStockDOM.innerText = parseInt(InStockDOM.innerText) - parseInt(itemSold); 
+
+                    if(parseInt(InStockDOM.innerText) === 0){
+
+                        row.remove();
+
+                    }
+
+                    if(parseInt(InStockDOM.innerText) <= parseInt(reOrderLevel)){
+
+
+                        itemsOnReOrderLevels.forEach((item)=>{
+
+                            if(item.length !==0 && item.Name === rowName && item.Brand === rowBrand && item.Category == rowCategory)
+                            {
+
+                                itemsOnReOrderLevels.push(
+                                    {
+                                        Name: rowName,
+                                        Brand: rowBrand,
+                                        Category: rowCategory
+                                    }
+                                );
+
+                            }
+
+
+                        })
+                        
+
+                    }
+
+                }    
+                
+            }) 
+          
 
         })
 
+        const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached")
 
+        footerBell.dispatchEvent(ReOrderLevel_Reached);    
 
-
+        cartInfo.innerText = "No items in cart yet.";
+        cartItems.innerHTML = "";
+        cartItems.appendChild(cartInfo)
+    
 }
 
 function subtractItem(item, inCart=""){
@@ -891,8 +826,6 @@ function getUserIssues(){
 }
 
 function showIssues(){
-
-    let modalOpened = false;
 
     contentCover.classList.add("contentCover--shown");
 

@@ -266,7 +266,10 @@ const mainBodyContent = document.querySelector('.mainBody_content');
 const domCart = document.querySelector(".cart");
 const mainTotal = document.querySelector(".mainTotal").querySelector(".value");
 const salesMadeAmount = document.querySelector("#salesMade_amount");
-const domItemConter = document.querySelector("#itemCounter"); //Buttons
+const domItemConter = document.querySelector("#itemCounter");
+const cartItems = document.querySelector(".cartItems");
+const cartInfo = document.createElement("span");
+cartInfo.className = "cartInfo"; //Buttons
 
 const btnCart_sell = domCart.querySelector(".btnCart_sell");
 const btnCart_clear = domCart.querySelector(".btnCart_clear");
@@ -288,8 +291,6 @@ document.addEventListener("keydown", e => {
   }
 
   buffer.push(e.key);
-  console.log(SelectedRows);
-  console.log(barcode, "jhjh");
   setTimeout(() => {
     if (buffer.length > 0) {
       buffer.forEach(char => {
@@ -302,7 +303,6 @@ document.addEventListener("keydown", e => {
           const itemBarcode = row.querySelector(".td_Barcode--hidden").innerText;
 
           if (itemBarcode === barcode) {
-            console.log(SelectedRows);
             SelectedRows.push(row);
           }
         });
@@ -312,9 +312,6 @@ document.addEventListener("keydown", e => {
 
           Object(_utilities_TableController__WEBPACK_IMPORTED_MODULE_3__["addToCart"])(row, cart, btnCart_sell, btnCart_clear, subtractItem);
         });
-        console.log(SelectedRows);
-      } else {
-        console.log(buffer.length);
       }
     }
 
@@ -375,7 +372,6 @@ btnCart_clear.addEventListener("click", () => {
 });
 footerBell.addEventListener("click", showIssues);
 footerBell.addEventListener("ReOrderLevel_Reached", function alertUserReOrderLevel() {
-  console.log("evt dispatched");
   footerBell_notIcon.innerText = parseInt(footerBell_notIcon.innerText) + 1;
   footerBell_notIcon.style.opacity = "1";
 });
@@ -405,7 +401,6 @@ function initializeStoreItems() {
         //Remove loading banner
         _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.removeOldBanners(); //Setting total item count to the dom
 
-        console.log(fetchedItems.length);
         itemCounter += parseInt(fetchedItems.length);
         domItemConter.innerText = itemCounter; //then add each item to the table in the DOM
 
@@ -539,6 +534,7 @@ function fetchItemsRecursive(offset = 200) {
           }
         });
         document.querySelector(".tableBody").appendChild(fragment);
+        tableRows = document.querySelector("tbody").querySelectorAll(".bodyRow");
         fetchItemsRecursive(offset);
       }
     });
@@ -576,28 +572,16 @@ function seek(variable) {
 
 function toggleRowCB(row) {
   //Checkbox
-  let CB = row.querySelector('.td_cb').querySelector('.selectOne');
+  let CB = row.querySelector('.td_cb').querySelector('.selectOne'); // if(CB.checked === true){
+  //     //Item being unchecked
+  //     let itemName =row.querySelector('.td_Names').innerText;
+  //     let itemBrand = row.querySelector('.td_Brands').innerText;
+  // }
+  // else{
 
-  if (CB.checked === true) {
-    //Item being unchecked
-    let itemName = row.querySelector('.td_Names').innerText;
-    let itemBrand = row.querySelector('.td_Brands').innerText;
-    console.log("already checked"); // cart.forEach((item)=>{
-    //     let currentItemIndex;+
-    //     if(item.name === itemName && item.brand === itemBrand){
-    //         currentItemIndex = cart.indexOf(item);
-    //         cart.splice(currentItemIndex, 1)
-    //     }
-    // })
-
-    console.log(cart, "niji");
-    console.log(totalSelectedRows); // DOMCONTROLLER.addToCart(row, cart, btnCart_sell, btnCart_clear, subtractItem)
-  } else {
-    CB.checked = true;
-    totalSelectedRows = totalSelectedRows + 1;
-    _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.addToCart(row, cart, btnCart_sell, btnCart_clear, subtractItem);
-    console.log("not checked");
-  }
+  CB.checked = true;
+  totalSelectedRows = totalSelectedRows + 1;
+  _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.addToCart(row, cart, btnCart_sell, btnCart_clear, subtractItem); // }
 } //-----------------------------------------------------------------------------------------------
 
 
@@ -615,10 +599,10 @@ function checkout() {
       salesMadeAmount.innerText = parseFloat(salesMadeAmount.innerText) + parseFloat(mainTotal.innerText);
       salesMadeAmount.innerText = parseFloat(salesMadeAmount.innerText);
       clearAllItems();
-      SelectedRows = [];
       _controller_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_1___default.a.showAlert("success", "Sale successful");
     }
   }).catch(error => {
+    console.log(error);
     _controller_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_1___default.a.showAlert("error", "Sorry. Failed to make sale due to an unknown error");
   });
 }
@@ -629,61 +613,50 @@ function clearAllItems() {
    * the function is being used. If it is after a sale,     
    */
   // SelectedRows = []
-  const itemsInCart = domCart.querySelectorAll(".cartItem");
-  const allAnimationsDone = []; //disbling cart buttons
+  const itemsInCart = domCart.querySelectorAll(".cartItem"); //disbling cart buttons
 
   btnCart_clear.disabled = true;
   btnCart_sell.disabled = true;
+  SelectedRows.forEach(row => {
+    let rowName = row.querySelector('.td_Name--hidden').innerText;
+    let rowBrand = row.querySelector('.td_Brand--hidden').innerText;
+    let rowCategory = row.querySelector('.td_Category--hidden').innerText;
+    let checkbox = row.querySelector('.td_cb').querySelector('.selectOne');
+    let InStockDOM = row.querySelector(".td_Stock");
+    checkbox.checked = false;
+    itemsInCart.forEach(cartItem => {
+      let currentCartItemName = cartItem.querySelector(".cartItem_details").querySelector(".hidden_itemName");
+      let currentCartItemBrand = cartItem.querySelector(".cartItem_details").querySelector(".hidden_itemBrand");
+      let currentCartItemCategory = cartItem.querySelector(".cartItem_details").querySelector(".hidden_itemCategory");
 
-  for (let i = itemsInCart.length - 1; i >= 0; i--) {
-    allAnimationsDone.push(new Promise((resolve, reject) => {
-      const afterAnimation = new Promise((resolve, reject) => {
-        const itemName = itemsInCart[i].querySelector(".hidden_itemName").innerText;
-        const itemBrand = itemsInCart[i].querySelector(".hidden_itemBrand").innerText;
-        const itemCategory = itemsInCart[i].querySelector(".hidden_itemCategory").innerText;
-        const itemSold = itemsInCart[i].querySelector(".cartItem_count").value;
-        const reOrderLevel = itemsInCart[i].querySelector(".hidden_reOrderLevel").innerText;
-        tableRows.forEach(row => {
-          let rowName = row.querySelector('.td_Name--hidden').innerText;
-          let rowBrand = row.querySelector('.td_Brand--hidden').innerText;
-          let rowCategory = row.querySelector('.td_Category--hidden').innerText;
-          let checkbox = row.querySelector('.td_cb').querySelector('.selectOne');
-          let InStock = row.querySelector(".td_Stock");
+      if (rowName === currentCartItemName.innerText && rowBrand === currentCartItemBrand.innerText && rowCategory === currentCartItemCategory.innerText) {
+        const itemSold = cartItem.querySelector(".cartItem_count").value;
+        const reOrderLevel = cartItem.querySelector(".hidden_reOrderLevel").innerText;
+        InStockDOM.innerText = parseInt(InStockDOM.innerText) - parseInt(itemSold);
 
-          if (rowName === itemName && rowBrand === itemBrand && rowCategory === itemCategory) {
-            checkbox.checked = false;
-            InStock.innerText = parseInt(InStock.innerText) - parseInt(itemSold);
+        if (parseInt(InStockDOM.innerText) === 0) {
+          row.remove();
+        }
 
-            if (parseInt(InStock.innerText) === 0) {
-              row.remove();
-            }
-
-            if (parseInt(InStock.innerText) <= parseInt(reOrderLevel)) {
-              itemsOnReOrderLevels.forEach(item => {
-                itemsOnReOrderLevels.push({
-                  Name: rowName,
-                  Brand: rowBrand,
-                  Category: rowCategory
-                });
-                const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached");
-                footerBell.dispatchEvent(ReOrderLevel_Reached);
+        if (parseInt(InStockDOM.innerText) <= parseInt(reOrderLevel)) {
+          itemsOnReOrderLevels.forEach(item => {
+            if (item.length !== 0 && item.Name === rowName && item.Brand === rowBrand && item.Category == rowCategory) {
+              itemsOnReOrderLevels.push({
+                Name: rowName,
+                Brand: rowBrand,
+                Category: rowCategory
               });
             }
-          }
-        });
-        resolve();
-      });
-      afterAnimation.then(() => {
-        subtractItem(itemsInCart[i], cart);
-        itemsInCart[i].remove();
-        resolve();
-      });
-    }));
-  }
-
-  Promise.all(allAnimationsDone).then(() => {
-    domCart.querySelector(".cartInfo").style.display = "block";
+          });
+        }
+      }
+    });
   });
+  const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached");
+  footerBell.dispatchEvent(ReOrderLevel_Reached);
+  cartInfo.innerText = "No items in cart yet.";
+  cartItems.innerHTML = "";
+  cartItems.appendChild(cartInfo);
 }
 
 function subtractItem(item, inCart = "") {
@@ -737,7 +710,6 @@ function getUserIssues() {
 }
 
 function showIssues() {
-  let modalOpened = false;
   contentCover.classList.add("contentCover--shown");
   let notificationContainer = document.createElement("div");
   notificationContainer.className = "notificationsContainer modal";
