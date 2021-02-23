@@ -1002,13 +1002,59 @@ ipcRenderer.on('populateTable',(e, Items)=>{
            }
            else if(notInDb.length > 0 && inDb.length === 0){
 
-                Notifications.showAlert("success", `${notInDb.length} items have been successfully added`)
+
+                const fragment = document.createElement("div");
 
                 notInDb.forEach((item)=>{
 
-                    DOMCONTROLLER.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount,item.ReOrderLevel,item.Barcode,[checkCB, editItem, deleteItem, toggleRowControls], "", item.CostPrice, "", false, false, "Inventory")
+                    DOMCONTROLLER.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount,item.ReOrderLevel,item.Barcode,[checkCB, editItem, deleteItem, toggleRowControls], "", item.CostPrice, "", false, false, "Inventory",false, false)
+                    .then((row)=>{
+
+                        row.addEventListener("click", ()=>{
+
+                            checkCB(row)
+
+                        });
+
+                        row.querySelector(".controls").querySelector(".edit").addEventListener("click",()=>{
+
+                            editItem(row)
+
+                        })
+
+                        row.querySelector(".controls").querySelector(".del").addEventListener("click",()=>{
+
+                            const rowState = row.querySelector(".state").innerText;
+
+                            if(rowState === "visible"){
+                    
+                                deleteItem(row);
+                    
+                            }
+                            else if(rowState === "deleted"){
+                    
+                                deleteItem(row, "recover");
+                                
+                            }
+
+                        });
+
+                        row.addEventListener("contextmenu", ()=>{
+
+                            toggleRowControls(row)
+
+                        });   
+
+                        fragment.appendChild(row);
+
+                    })
+
 
                 })
+
+                document.querySelector("tbody").appendChild(fragment);
+                Notifications.showAlert("success", `${notInDb.length} items have been successfully added`);
+
 
 
 

@@ -756,10 +756,32 @@ electron__WEBPACK_IMPORTED_MODULE_0__["ipcRenderer"].on('populateTable', (e, Ite
         _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.updateStock(item.Name, item.Brand, item.Category, item.InStock);
       });
     } else if (notInDb.length > 0 && inDb.length === 0) {
-      _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", `${notInDb.length} items have been successfully added`);
+      const fragment = document.createElement("div");
       notInDb.forEach(item => {
-        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount, item.ReOrderLevel, item.Barcode, [checkCB, editItem, deleteItem, toggleRowControls], "", item.CostPrice, "", false, false, "Inventory");
+        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount, item.ReOrderLevel, item.Barcode, [checkCB, editItem, deleteItem, toggleRowControls], "", item.CostPrice, "", false, false, "Inventory", false, false).then(row => {
+          row.addEventListener("click", () => {
+            checkCB(row);
+          });
+          row.querySelector(".controls").querySelector(".edit").addEventListener("click", () => {
+            editItem(row);
+          });
+          row.querySelector(".controls").querySelector(".del").addEventListener("click", () => {
+            const rowState = row.querySelector(".state").innerText;
+
+            if (rowState === "visible") {
+              deleteItem(row);
+            } else if (rowState === "deleted") {
+              deleteItem(row, "recover");
+            }
+          });
+          row.addEventListener("contextmenu", () => {
+            toggleRowControls(row);
+          });
+          fragment.appendChild(row);
+        });
       });
+      document.querySelector("tbody").appendChild(fragment);
+      _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("success", `${notInDb.length} items have been successfully added`);
     }
   }).catch(error => {
     _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("error", "Sorry an error occured");
