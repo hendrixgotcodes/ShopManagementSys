@@ -272,8 +272,6 @@ function fetchAnalyticsData(e){
 
             items.forEach((item)=>{
 
-                console.log();
-
                 DOMCONTROLLER.createProfitsItem(item.Name, item.Brand, item.Avg_Stock, item.Avg_Sale, item.Total_Sold, item.Revenue, item.Profit)
 
             })

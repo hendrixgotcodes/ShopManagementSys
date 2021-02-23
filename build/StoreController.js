@@ -265,11 +265,10 @@ const contentCover = document.querySelector(".contentCover");
 const mainBodyContent = document.querySelector('.mainBody_content');
 const domCart = document.querySelector(".cart");
 const mainTotal = document.querySelector(".mainTotal").querySelector(".value");
+const subTotal = document.querySelector(".subTotal").querySelector(".value");
 const salesMadeAmount = document.querySelector("#salesMade_amount");
 const domItemConter = document.querySelector("#itemCounter");
-const cartItems = document.querySelector(".cartItems");
-const cartInfo = document.createElement("span");
-cartInfo.className = "cartInfo"; //Buttons
+const cartItems = document.querySelector(".cartItems"); //Buttons
 
 const btnCart_sell = domCart.querySelector(".btnCart_sell");
 const btnCart_clear = domCart.querySelector(".btnCart_clear");
@@ -366,10 +365,7 @@ ipcRenderer.on("setUserParams", (e, userParamsArray) => {
 }); // btnCart_sell
 
 btnCart_sell.addEventListener("click", checkout);
-btnCart_clear.addEventListener("click", () => {
-  SelectedRows = [];
-  clearAllItems();
-});
+btnCart_clear.addEventListener("click", clearAllItems);
 footerBell.addEventListener("click", showIssues);
 footerBell.addEventListener("ReOrderLevel_Reached", function alertUserReOrderLevel() {
   footerBell_notIcon.innerText = parseInt(footerBell_notIcon.innerText) + 1;
@@ -389,9 +385,7 @@ footerBell.addEventListener("ReOrderLevel_Reached", function alertUserReOrderLev
 
 function initializeStoreItems() {
   ipcRenderer.send("sendUserParams");
-  _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.showLoadingBanner("Please wait. Attempting to fetch items from database..."); //Setting Item Counter to zero
-
-  domItemConter.innerText = itemCounter;
+  _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.showLoadingBanner("Please wait. Attempting to fetch items from database...");
   database.getTotalItems().then(totalItems => {
     totalItems = totalItems.pop();
     TotalItems = totalItems.Total;
@@ -399,37 +393,61 @@ function initializeStoreItems() {
       //If returned array contains any store item
       if (fetchedItems.length > 0) {
         //Remove loading banner
-        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.removeOldBanners(); //Setting total item count to the dom
+        _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.removeOldBanners(); //then add each item to the table in the DOM
 
-        itemCounter += parseInt(fetchedItems.length);
-        domItemConter.innerText = itemCounter; //then add each item to the table in the DOM
-
+        const fragment = document.createElement("div");
         fetchedItems.forEach(fetchedItem => {
           //T his will only add items which "InStock" is greater than zero
           if (parseInt(fetchedItem.InStock) > 0) {
-            if (fetchedItem.Deleted === 1) {
-              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, fetchedItem.Barcode, "", false, fetchedItem.CostPrice, "", true, true, "Store", false);
-            } else {
-              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, fetchedItem.Barcode, "", false, fetchedItem.CostPrice, "", true, false, "Store", false);
+            if (fetchedItem.Deleted !== 1) {
+              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, fetchedItem.Barcode, "", false, fetchedItem.CostPrice, "", true, false, "Store", false, false).then(row => {
+                itemCounter += 1;
+                domItemConter.innerText = itemCounter;
+                row.addEventListener('click', e => {
+                  let CB = row.querySelector('.td_cb').querySelector('.selectOne');
+
+                  if (CB.checked === false) {
+                    SelectedRows.push(row);
+                  }
+
+                  toggleRowCB(row);
+                  setSellingItemProperties(row);
+                });
+                row.addEventListener('keydown', e => {
+                  if (e.code === "Enter") {
+                    if (CB.checked === false) {
+                      SelectedRows.push(row);
+                    }
+
+                    toggleRowCB(row);
+                    setSellingItemProperties(row);
+                  }
+                });
+                fragment.appendChild(row);
+              });
+            }
+
+            if (parseInt(fetchedItem.InStock) <= parseInt(fetchedItem.ReOrderLevel)) {
+              itemsOnReOrderLevels.push({
+                Name: fetchedItem.Name,
+                Brand: fetchedItem.Brand,
+                Category: fetchedItem.Category
+              });
+              const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached");
+              footerBell.dispatchEvent(ReOrderLevel_Reached);
             }
           }
-
-          if (parseInt(fetchedItem.InStock) <= parseInt(fetchedItem.ReOrderLevel)) {
-            itemsOnReOrderLevels.push({
-              Name: fetchedItem.Name,
-              Brand: fetchedItem.Brand,
-              Category: fetchedItem.Category
-            });
-            const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached");
-            footerBell.dispatchEvent(ReOrderLevel_Reached);
-          }
         });
+        document.querySelector(".tableBody").appendChild(fragment);
       } else {
         //Remove loading banner
         _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.removeOldBanners(); // Show isEmpty banner
 
         _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.showIsEmpty();
       }
+
+      const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached");
+      footerBell.dispatchEvent(ReOrderLevel_Reached);
     }).then(() => {
       TotalItems - 2;
       tableRows = document.querySelector('.tableBody').querySelectorAll('.bodyRow'); //For "tableBody"
@@ -602,7 +620,6 @@ function checkout() {
       _controller_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_1___default.a.showAlert("success", "Sale successful");
     }
   }).catch(error => {
-    console.log(error);
     _controller_Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_1___default.a.showAlert("error", "Sorry. Failed to make sale due to an unknown error");
   });
 }
@@ -624,6 +641,7 @@ function clearAllItems() {
     let checkbox = row.querySelector('.td_cb').querySelector('.selectOne');
     let InStockDOM = row.querySelector(".td_Stock");
     checkbox.checked = false;
+    console.log(checkbox.checked);
     itemsInCart.forEach(cartItem => {
       let currentCartItemName = cartItem.querySelector(".cartItem_details").querySelector(".hidden_itemName");
       let currentCartItemBrand = cartItem.querySelector(".cartItem_details").querySelector(".hidden_itemBrand");
@@ -654,9 +672,13 @@ function clearAllItems() {
   });
   const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached");
   footerBell.dispatchEvent(ReOrderLevel_Reached);
+  const cartInfo = document.createElement("span");
+  cartInfo.className = "cartInfo";
   cartInfo.innerText = "No items in cart yet.";
   cartItems.innerHTML = "";
   cartItems.appendChild(cartInfo);
+  mainTotal.innerText = "0.00";
+  subTotal.innerText = "0.00";
 }
 
 function subtractItem(item, inCart = "") {

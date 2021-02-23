@@ -157,8 +157,6 @@ function loadAnalytics(){
 
 function loadEmployees(){
 
-    console.log("...loading employees");
-
     ipcRenderer.send('loadEmployees')
 
 }
@@ -774,8 +772,5 @@ ipcRenderer.on("setUserParams", (e, userParamsArray)=>{
 
 
     database.setUserLastSeen(UserName, lastSeen)
-    .then((result)=>{
-        console.log(result);
-    })
 
 })

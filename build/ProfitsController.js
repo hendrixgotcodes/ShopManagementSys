@@ -390,7 +390,6 @@ function fetchAnalyticsData(e) {
     });
     database.getItems(toolBarDate_from.value, toolBarDate_to.value).then(items => {
       items.forEach(item => {
-        console.log();
         DOMCONTROLLER.createProfitsItem(item.Name, item.Brand, item.Avg_Stock, item.Avg_Sale, item.Total_Sold, item.Revenue, item.Profit);
       });
       DOMCONTROLLER.removeOldBanners();

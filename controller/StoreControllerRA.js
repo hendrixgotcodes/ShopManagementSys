@@ -27,7 +27,7 @@ let TotalItems;
 let cart = [];     // Array of store objects
 let lostAccounts = [];
 let itemsOnReOrderLevels = [];
-
+let itemCounter = 0;
 
 
 
@@ -53,7 +53,8 @@ const contentCover = document.querySelector(".contentCover");
 const mainBodyContent = document.querySelector('.mainBody_content');
 const domCart = document.querySelector(".cart")
 const mainTotal = document.querySelector(".mainTotal").querySelector(".value")
-const salesMadeAmount = document.querySelector("#salesMade_amount")
+const salesMadeAmount = document.querySelector("#salesMade_amount");
+const domItemConter = document.querySelector("#itemCounter");
 
 //Buttons
 const btnCart_sell = domCart.querySelector(".btnCart_sell")
@@ -231,6 +232,9 @@ function initializeStoreItems(){
 
     DOMCONTROLLER.showLoadingBanner("Please wait. Attempting to fetch items from database...")
 
+    //Setting Item Counter to zero
+    domItemConter.innerText = itemCounter;
+
 
     database.getTotalItems()
     .then((totalItems)=>{
@@ -248,43 +252,86 @@ function initializeStoreItems(){
     
                 //Remove loading banner
                 DOMCONTROLLER.removeOldBanners();
+
+                //Setting total item count to the dom
+                itemCounter += parseInt(fetchedItems.length);
+                domItemConter.innerText = itemCounter;
                 
                 //then add each item to the table in the DOM
+                const fragment = document.createElement("div");
+
                 fetchedItems.forEach((fetchedItem)=>{
-    
+
                     //T his will only add items which "InStock" is greater than zero
                     if(parseInt(fetchedItem.InStock) > 0){
+
+                        if(fetchedItem.Deleted !== 1){
+
+                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,fetchedItem.Barcode,"", false, fetchedItem.CostPrice, "", true, false,"Store", false,false)
+                            .then((row)=>{    
+
+                                itemCounter += 1
+                                domItemConter.innerText = itemCounter;
     
-                        if(fetchedItem.Deleted === 1){
-    
-                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel, fetchedItem.Barcode,"", false, fetchedItem.CostPrice, "", true, true,"Store", false)
-        
-                        }
-                        else
-                        {
-                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,fetchedItem.Barcode,"", false, fetchedItem.CostPrice, "", true, false,"Store", false)
-                        }
-    
-                    }
+                                row.addEventListener('click',(e)=>{
 
-                    if(parseInt(fetchedItem.InStock) <= parseInt(fetchedItem.ReOrderLevel)){
-
-                        itemsOnReOrderLevels.push({
-                            Name: fetchedItem.Name,
-                            Brand: fetchedItem.Brand,
-                            Category: fetchedItem.Category
-                        })
-
-                        const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached")
-
-                        footerBell.dispatchEvent(ReOrderLevel_Reached);    
-
-
-                    }
-    
-    
-                })
+                                    let CB = row.querySelector('.td_cb').querySelector('.selectOne');
                 
+                                    if(CB.checked === false){
+                                        SelectedRows.push(row);
+                                    }
+                                    
+                
+                                    toggleRowCB(row);
+                                    setSellingItemProperties(row);
+                                    
+                
+                
+                                })
+                    
+                                row.addEventListener('keydown',(e)=>{
+                    
+                                    if(e.code === "Enter"){
+                
+                                        if(CB.checked === false){
+                                            SelectedRows.push(row);
+                                        }
+                    
+                                        toggleRowCB(row);
+                                        setSellingItemProperties(row);
+                    
+                                    }
+                    
+                                })
+                                
+                                fragment.appendChild(row)
+                                
+
+                            })
+                            
+                        }
+
+                        if(parseInt(fetchedItem.InStock) <= parseInt(fetchedItem.ReOrderLevel)){
+
+                            itemsOnReOrderLevels.push({
+                                Name: fetchedItem.Name,
+                                Brand: fetchedItem.Brand,
+                                Category: fetchedItem.Category
+                            })
+    
+                            const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached")
+    
+                            footerBell.dispatchEvent(ReOrderLevel_Reached);    
+    
+    
+                        }
+
+                    }
+
+
+                 })
+
+                 document.querySelector(".tableBody").appendChild(fragment);
     
             }
             else{
@@ -296,6 +343,10 @@ function initializeStoreItems(){
                     DOMCONTROLLER.showIsEmpty();
     
             }
+
+            const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached")
+    
+            footerBell.dispatchEvent(ReOrderLevel_Reached);   
     
         })
         .then(()=>{
@@ -308,13 +359,28 @@ function initializeStoreItems(){
             //For "tableBody"
             tableRows.forEach((row)=>{
                 row.addEventListener('click',(e)=>{
+
+                    let CB = row.querySelector('.td_cb').querySelector('.selectOne');
+
+                    if(CB.checked === false){
+                        SelectedRows.push(row);
+                    }
+                    
+
                     toggleRowCB(row);
                     setSellingItemProperties(row);
+                    
+
+
                 })
     
                 row.addEventListener('keydown',(e)=>{
     
                     if(e.code === "Enter"){
+
+                        if(CB.checked === false){
+                            SelectedRows.push(row);
+                        }
     
                         toggleRowCB(row);
                         setSellingItemProperties(row);
@@ -343,6 +409,7 @@ function initializeStoreItems(){
     })
 
 }
+
 
 function initializeTodaySales(){
 
@@ -384,6 +451,8 @@ function fetchItemsRecursive(offset = 200){
 
                 offset = offset+offset;
 
+                const fragment = document.createElement("div");
+
                 storeItems.forEach((fetchedItem)=>{
 
                     //T his will only add items which "InStock" is greater than zero
@@ -391,27 +460,44 @@ function fetchItemsRecursive(offset = 200){
 
                         if(fetchedItem.Deleted !== 1){
 
-                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,fetchedItem.Barcode,"", false, fetchedItem.CostPrice, "", true, false,"Store", false)
+                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,fetchedItem.Barcode,"", false, fetchedItem.CostPrice, "", true, false,"Store", false,false)
                             .then((row)=>{    
 
-                                
+                                itemCounter += 1
+                                domItemConter.innerText = itemCounter;
     
-                                //For "tableBody"
                                 row.addEventListener('click',(e)=>{
+
+                                    let CB = row.querySelector('.td_cb').querySelector('.selectOne');
+                
+                                    if(CB.checked === false){
+                                        SelectedRows.push(row);
+                                    }
+                                    
+                
                                     toggleRowCB(row);
                                     setSellingItemProperties(row);
+                                    
+                
+                
                                 })
                     
                                 row.addEventListener('keydown',(e)=>{
                     
                                     if(e.code === "Enter"){
+                
+                                        if(CB.checked === false){
+                                            SelectedRows.push(row);
+                                        }
                     
                                         toggleRowCB(row);
                                         setSellingItemProperties(row);
                     
                                     }
                     
-                                })                                    
+                                })
+                                
+                                fragment.appendChild(row)
                                 
 
                             })
@@ -438,6 +524,10 @@ function fetchItemsRecursive(offset = 200){
 
                  })
 
+                 document.querySelector(".tableBody").appendChild(fragment);
+
+                 tableRows = document.querySelector("tbody").querySelectorAll(".bodyRow");
+
                 fetchItemsRecursive(offset)
 
             }
@@ -453,6 +543,7 @@ function fetchItemsRecursive(offset = 200){
     }, 5000)
 
 }
+
 
 
 //-----------------------------------------------------------------------------------------------
@@ -508,8 +599,6 @@ function toggleRowCB(row){
         let itemName =row.querySelector('.td_Names').innerText;
         let itemBrand = row.querySelector('.td_Brands').innerText;
 
-        console.log("already checked");
-        
         // cart.forEach((item)=>{
 
 

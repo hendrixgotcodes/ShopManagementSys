@@ -57,12 +57,11 @@ const contentContainer = document.querySelector(".contentContainer");
 const contentCover = document.querySelector(".contentCover");
 const mainBodyContent = document.querySelector('.mainBody_content');
 const domCart = document.querySelector(".cart")
-const mainTotal = document.querySelector(".mainTotal").querySelector(".value")
+const mainTotal = document.querySelector(".mainTotal").querySelector(".value");
+const subTotal = document.querySelector(".subTotal").querySelector(".value");
 const salesMadeAmount = document.querySelector("#salesMade_amount");
 const domItemConter = document.querySelector("#itemCounter");
 const cartItems = document.querySelector(".cartItems");
-const cartInfo = document.createElement("span");
-cartInfo.className = "cartInfo";
 
 //Buttons
 const btnCart_sell = domCart.querySelector(".btnCart_sell")
@@ -230,10 +229,7 @@ ipcRenderer.on("setUserParams", (e, userParamsArray)=>{
 // btnCart_sell
 btnCart_sell.addEventListener("click", checkout);
 
-btnCart_clear.addEventListener("click", ()=>{
-    SelectedRows = [];
-     clearAllItems();
-});
+btnCart_clear.addEventListener("click", clearAllItems);
 
 footerBell.addEventListener("click", showIssues);
 footerBell.addEventListener("ReOrderLevel_Reached", function alertUserReOrderLevel(){
@@ -263,9 +259,6 @@ function initializeStoreItems(){
 
     DOMCONTROLLER.showLoadingBanner("Please wait. Attempting to fetch items from database...")
 
-    //Setting Item Counter to zero
-    domItemConter.innerText = itemCounter;
-
 
     database.getTotalItems()
     .then((totalItems)=>{
@@ -284,46 +277,81 @@ function initializeStoreItems(){
                 //Remove loading banner
                 DOMCONTROLLER.removeOldBanners();
 
-                //Setting total item count to the dom
-                itemCounter += parseInt(fetchedItems.length);
-                domItemConter.innerText = itemCounter;
-                
                 //then add each item to the table in the DOM
+                const fragment = document.createElement("div");
+
                 fetchedItems.forEach((fetchedItem)=>{
-    
+
                     //T his will only add items which "InStock" is greater than zero
                     if(parseInt(fetchedItem.InStock) > 0){
+
+                        if(fetchedItem.Deleted !== 1){
+
+                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,fetchedItem.Barcode,"", false, fetchedItem.CostPrice, "", true, false,"Store", false,false)
+                            .then((row)=>{    
+
+                                itemCounter += 1
+                                domItemConter.innerText = itemCounter;
     
-                        if(fetchedItem.Deleted === 1){
-    
-                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,fetchedItem.Barcode,"", false, fetchedItem.CostPrice, "", true, true,"Store", false)
-        
-                        }
-                        else
-                        {
-                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,fetchedItem.Barcode,"", false, fetchedItem.CostPrice, "", true, false,"Store", false)
-                        }
-    
-                    }
+                                row.addEventListener('click',(e)=>{
 
-                    if(parseInt(fetchedItem.InStock) <= parseInt(fetchedItem.ReOrderLevel)){
-
-                        itemsOnReOrderLevels.push({
-                            Name: fetchedItem.Name,
-                            Brand: fetchedItem.Brand,
-                            Category: fetchedItem.Category
-                        })
-
-                        const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached")
-
-                        footerBell.dispatchEvent(ReOrderLevel_Reached);    
-
-
-                    }
-    
-    
-                })
+                                    let CB = row.querySelector('.td_cb').querySelector('.selectOne');
                 
+                                    if(CB.checked === false){
+                                        SelectedRows.push(row);
+                                    }
+                                    
+                
+                                    toggleRowCB(row);
+                                    setSellingItemProperties(row);
+                                    
+                
+                
+                                })
+                    
+                                row.addEventListener('keydown',(e)=>{
+                    
+                                    if(e.code === "Enter"){
+                
+                                        if(CB.checked === false){
+                                            SelectedRows.push(row);
+                                        }
+                    
+                                        toggleRowCB(row);
+                                        setSellingItemProperties(row);
+                    
+                                    }
+                    
+                                })
+                                
+                                fragment.appendChild(row)
+                                
+
+                            })
+                            
+                        }
+
+                        if(parseInt(fetchedItem.InStock) <= parseInt(fetchedItem.ReOrderLevel)){
+
+                            itemsOnReOrderLevels.push({
+                                Name: fetchedItem.Name,
+                                Brand: fetchedItem.Brand,
+                                Category: fetchedItem.Category
+                            })
+    
+                            const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached")
+    
+                            footerBell.dispatchEvent(ReOrderLevel_Reached);    
+    
+    
+                        }
+
+                    }
+
+
+                 })
+
+                 document.querySelector(".tableBody").appendChild(fragment);
     
             }
             else{
@@ -335,6 +363,10 @@ function initializeStoreItems(){
                     DOMCONTROLLER.showIsEmpty();
     
             }
+
+            const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached")
+    
+            footerBell.dispatchEvent(ReOrderLevel_Reached);   
     
         })
         .then(()=>{
@@ -631,8 +663,6 @@ function checkout(){
     })
     .catch((error)=>{
 
-        console.log(error);
-
         Notifications.showAlert("error", "Sorry. Failed to make sale due to an unknown error")
 
     })
@@ -669,6 +699,7 @@ function clearAllItems(){
 
 
             checkbox.checked = false;
+            console.log(checkbox.checked);
 
             itemsInCart.forEach((cartItem)=>{
 
@@ -726,9 +757,14 @@ function clearAllItems(){
 
         footerBell.dispatchEvent(ReOrderLevel_Reached);    
 
+        const cartInfo = document.createElement("span");
+        cartInfo.className = "cartInfo";
         cartInfo.innerText = "No items in cart yet.";
         cartItems.innerHTML = "";
-        cartItems.appendChild(cartInfo)
+        cartItems.appendChild(cartInfo);
+
+        mainTotal.innerText = "0.00";
+        subTotal.innerText = "0.00"
     
 }
 

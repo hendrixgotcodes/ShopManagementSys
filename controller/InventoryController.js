@@ -207,25 +207,38 @@ function initialzeStoreItems(){
         //If returned array contains any store item
         if(fetchedItems.length > 0){
 
-            //Remove loading banner
+            const fragment = document.createElement("div");
             DOMCONTROLLER.removeOldBanners();
-            
-            //then add each item to the table in the DOM
-            fetchedItems.forEach((fetchedItem)=>{
 
+            //Remove loading banner
+            fetchedItems.forEach((fetchedItem)=>{            
+            //then add each item to the table in the DOM
+
+                
                 if(fetchedItem.Deleted === 1){
 
-                    DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,fetchedItem.Barcode,[checkCB, editItem, deleteItem, toggleRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory", false)
+                    DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,fetchedItem.Barcode,[checkCB, editItem, deleteItem, toggleRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory", false, false)
+                    .then((row)=>{
 
-                }
-                else{
+                        fragment.appendChild(row)
 
-                    DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,fetchedItem.Barcode,[checkCB, editItem, deleteItem, toggleRowControls], false, fetchedItem.CostPrice, "", true,false , "Inventory", false)
+                    })
 
-                }
+                    }
+                    else{
+
+                        DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,fetchedItem.Barcode,[checkCB, editItem, deleteItem, toggleRowControls], false, fetchedItem.CostPrice, "", true,false , "Inventory", false)
+                        .then((row)=>{
+
+                            fragment.appendChild(row);
+
+                        })
+
+                    }
 
             })
-            
+
+            document.querySelector(".tableBody").appendChild(fragment);   
 
         }
         else{
@@ -246,8 +259,6 @@ function initialzeStoreItems(){
     })
     .catch((e)=>{
 
-        console.log("ee", e);
-       
         if(e === "ECONNREFUSED"){
             DOMCONTROLLER.removeOldBanners();
             DOMCONTROLLER.showErrorBanner("Failed to connect to database. Please try reloading or contacting us");
@@ -691,9 +702,6 @@ function editMultiple(){
         if(error.message=== "wrongPassword"){
             Notifications.showAlert("error", "Sorry, Incorrect Password!")
         }
-        else{
-            console.log(error);
-        }
     })
 
   
@@ -792,18 +800,100 @@ function fetchItemsRecursive(offset = 200){
 
                 offset = offset + offset;
 
+                const fragment = document.createElement("div");
+
                 storeItems.forEach((fetchedItem)=>{
 
                     if(parseInt(fetchedItem.InStock) > 0){
 
                         if(fetchedItem.Deleted === 1){
 
-                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,fetchedItem.Barcode,[checkCB, editItem, deleteItem, toggleRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory", false)
+                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,fetchedItem.Barcode,[checkCB, editItem, deleteItem, toggleRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory", false, false)
+                            .then((row)=>{
+
+                                row.addEventListener("click", ()=>{
+
+                                    checkCB(row)
+
+                                });
+
+                                row.querySelector(".controls").querySelector(".edit").addEventListener("click",(e)=>{
+
+                                    e.stopPropagation();
+
+                                    editItem(row)
+
+                                })
+
+                                row.querySelector(".controls").querySelector(".del").addEventListener("click",(e)=>{
+
+                                    e.stopPropagation();
+
+                                    const rowState = row.querySelector(".state").innerText;
+
+                                    if(rowState === "visible"){
+                            
+                                        deleteItem(row);
+                            
+                                    }
+                                    else if(rowState === "deleted"){
+                            
+                                        deleteItem(row, "recover");
+                                        
+                                    }
+
+                                });
+
+                                row.addEventListener("contextmenu",toggleRowControls);   
+
+                                fragment.appendChild(row)
+
+                            })
         
                         }
                         else{
         
-                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,fetchedItem.Barcode,[checkCB, editItem, deleteItem, toggleRowControls], false, fetchedItem.CostPrice, "", true,false , "Inventory", false)
+                            DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,fetchedItem.Barcode,[checkCB, editItem, deleteItem, toggleRowControls], false, fetchedItem.CostPrice, "", true,false , "Inventory", false, false)
+                            .then((row)=>{
+
+                                row.addEventListener("click", ()=>{
+
+                                    checkCB(row)
+
+                                });
+
+                                row.querySelector(".controls").querySelector(".edit").addEventListener("click",()=>{
+
+                                    editItem(row)
+
+                                })
+
+                                row.querySelector(".controls").querySelector(".del").addEventListener("click",()=>{
+
+                                    const rowState = row.querySelector(".state").innerText;
+
+                                    if(rowState === "visible"){
+                            
+                                        deleteItem(row);
+                            
+                                    }
+                                    else if(rowState === "deleted"){
+                            
+                                        deleteItem(row, "recover");
+                                        
+                                    }
+
+                                });
+
+                                row.addEventListener("contextmenu", ()=>{
+
+                                    toggleRowControls(row)
+
+                                });   
+
+                                fragment.appendChild(row)
+
+                            })
         
                         }
 
@@ -811,6 +901,8 @@ function fetchItemsRecursive(offset = 200){
 
 
                  })
+
+                 document.querySelector("tbody").appendChild(fragment);
 
                 fetchItemsRecursive(offset)
 
@@ -925,7 +1017,6 @@ ipcRenderer.on('populateTable',(e, Items)=>{
         })
         .catch((error)=>{
             Notifications.showAlert("error", "Sorry an error occured")
-            console.log(error);
         })
 
 })

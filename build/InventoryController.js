@@ -336,16 +336,22 @@ function initialzeStoreItems() {
   database.fetchItems().then(fetchedItems => {
     //If returned array contains any store item
     if (fetchedItems.length > 0) {
-      //Remove loading banner
-      _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.removeOldBanners(); //then add each item to the table in the DOM
+      const fragment = document.createElement("div");
+      _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.removeOldBanners(); //Remove loading banner
 
       fetchedItems.forEach(fetchedItem => {
+        //then add each item to the table in the DOM
         if (fetchedItem.Deleted === 1) {
-          _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, fetchedItem.Barcode, [checkCB, editItem, deleteItem, toggleRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory", false);
+          _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, fetchedItem.Barcode, [checkCB, editItem, deleteItem, toggleRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory", false, false).then(row => {
+            fragment.appendChild(row);
+          });
         } else {
-          _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, fetchedItem.Barcode, [checkCB, editItem, deleteItem, toggleRowControls], false, fetchedItem.CostPrice, "", true, false, "Inventory", false);
+          _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, fetchedItem.Barcode, [checkCB, editItem, deleteItem, toggleRowControls], false, fetchedItem.CostPrice, "", true, false, "Inventory", false).then(row => {
+            fragment.appendChild(row);
+          });
         }
       });
+      document.querySelector(".tableBody").appendChild(fragment);
     } else {
       //Remove loading banner
       _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.removeOldBanners(); // Show isEmpty banner
@@ -355,8 +361,6 @@ function initialzeStoreItems() {
   }).then(() => {
     fetchItemsRecursive();
   }).catch(e => {
-    console.log("ee", e);
-
     if (e === "ECONNREFUSED") {
       _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.removeOldBanners();
       _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.showErrorBanner("Failed to connect to database. Please try reloading or contacting us");
@@ -604,8 +608,6 @@ function editMultiple() {
   }).catch(error => {
     if (error.message === "wrongPassword") {
       _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("error", "Sorry, Incorrect Password!");
-    } else {
-      console.log(error);
     }
   });
 } //Function called on btnDelete Event
@@ -653,15 +655,57 @@ function fetchItemsRecursive(offset = 200) {
         return;
       } else {
         offset = offset + offset;
+        const fragment = document.createElement("div");
         storeItems.forEach(fetchedItem => {
           if (parseInt(fetchedItem.InStock) > 0) {
             if (fetchedItem.Deleted === 1) {
-              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, fetchedItem.Barcode, [checkCB, editItem, deleteItem, toggleRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory", false);
+              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, fetchedItem.Barcode, [checkCB, editItem, deleteItem, toggleRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory", false, false).then(row => {
+                row.addEventListener("click", () => {
+                  checkCB(row);
+                });
+                row.querySelector(".controls").querySelector(".edit").addEventListener("click", e => {
+                  e.stopPropagation();
+                  editItem(row);
+                });
+                row.querySelector(".controls").querySelector(".del").addEventListener("click", e => {
+                  e.stopPropagation();
+                  const rowState = row.querySelector(".state").innerText;
+
+                  if (rowState === "visible") {
+                    deleteItem(row);
+                  } else if (rowState === "deleted") {
+                    deleteItem(row, "recover");
+                  }
+                });
+                row.addEventListener("contextmenu", toggleRowControls);
+                fragment.appendChild(row);
+              });
             } else {
-              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, fetchedItem.Barcode, [checkCB, editItem, deleteItem, toggleRowControls], false, fetchedItem.CostPrice, "", true, false, "Inventory", false);
+              _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, fetchedItem.Barcode, [checkCB, editItem, deleteItem, toggleRowControls], false, fetchedItem.CostPrice, "", true, false, "Inventory", false, false).then(row => {
+                row.addEventListener("click", () => {
+                  checkCB(row);
+                });
+                row.querySelector(".controls").querySelector(".edit").addEventListener("click", () => {
+                  editItem(row);
+                });
+                row.querySelector(".controls").querySelector(".del").addEventListener("click", () => {
+                  const rowState = row.querySelector(".state").innerText;
+
+                  if (rowState === "visible") {
+                    deleteItem(row);
+                  } else if (rowState === "deleted") {
+                    deleteItem(row, "recover");
+                  }
+                });
+                row.addEventListener("contextmenu", () => {
+                  toggleRowControls(row);
+                });
+                fragment.appendChild(row);
+              });
             }
           }
         });
+        document.querySelector("tbody").appendChild(fragment);
         fetchItemsRecursive(offset);
       }
     });
@@ -719,7 +763,6 @@ electron__WEBPACK_IMPORTED_MODULE_0__["ipcRenderer"].on('populateTable', (e, Ite
     }
   }).catch(error => {
     _Alerts_NotificationController__WEBPACK_IMPORTED_MODULE_2___default.a.showAlert("error", "Sorry an error occured");
-    console.log(error);
   });
 });
 

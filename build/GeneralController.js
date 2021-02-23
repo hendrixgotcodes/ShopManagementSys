@@ -348,7 +348,6 @@ function loadAnalytics() {
 }
 
 function loadEmployees() {
-  console.log("...loading employees");
   ipcRenderer.send('loadEmployees');
 }
 
@@ -404,9 +403,6 @@ function seekItem() {
       let currentItem = row.querySelector(".td_Name--hidden").innerText.toLowerCase();
 
       if (currentItem.includes(itemName)) {
-        row.scrollIntoView({
-          behavior: 'smooth'
-        });
         row.focus();
         setTimeout(() => {
           row.style.backgroundColor = initBGcolor;
@@ -417,9 +413,6 @@ function seekItem() {
         currentItem = row.querySelector(".td_Brand--hidden").innerText.toLowerCase();
 
         if (currentItem.includes(itemName)) {
-          row.scrollIntoView({
-            behavior: 'smooth'
-          });
           row.focus();
           clearTimeout(timeOutValue);
         } else {
@@ -430,9 +423,6 @@ function seekItem() {
           }
 
           if (currentItem.includes(itemName)) {
-            row.scrollIntoView({
-              behavior: 'smooth'
-            });
             row.focus();
             clearTimeout(timeOutValue);
           } else {
@@ -443,9 +433,6 @@ function seekItem() {
             }
 
             if (currentItem.includes(itemName)) {
-              row.scrollIntoView({
-                behavior: 'smooth'
-              });
               row.focus();
               clearTimeout(timeOutValue);
             } else {
@@ -488,9 +475,7 @@ ipcRenderer.on("setUserParams", (e, userParamsArray) => {
 
   const now = new Date();
   const lastSeen = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
-  database.setUserLastSeen(UserName, lastSeen).then(result => {
-    console.log(result);
-  });
+  database.setUserLastSeen(UserName, lastSeen);
 });
 
 /***/ }),

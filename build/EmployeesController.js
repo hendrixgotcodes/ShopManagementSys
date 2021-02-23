@@ -337,7 +337,6 @@ function loadAnalytics() {
 }
 
 function loadEmployees() {
-  console.log("...loading employees");
   ipcRenderer.send('loadEmployees');
 }
 
@@ -689,9 +688,7 @@ ipcRenderer.on("setUserParams", (e, userParamsArray) => {
 
   const now = new Date();
   const lastSeen = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
-  database.setUserLastSeen(UserName, lastSeen).then(result => {
-    console.log(result);
-  });
+  database.setUserLastSeen(UserName, lastSeen);
 });
 
 /***/ }),
