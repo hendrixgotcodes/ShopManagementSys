@@ -811,40 +811,40 @@ function fetchItemsRecursive(offset = 200){
                             DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,fetchedItem.Barcode,[checkCB, editItem, deleteItem, toggleRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory", false, false)
                             .then((row)=>{
 
-                                row.addEventListener("click", ()=>{
+                                // row.addEventListener("click", ()=>{
 
-                                    checkCB(row)
+                                //     checkCB(row)
 
-                                });
+                                // });
 
-                                row.querySelector(".controls").querySelector(".edit").addEventListener("click",(e)=>{
+                                // row.querySelector(".controls").querySelector(".edit").addEventListener("click",(e)=>{
 
-                                    e.stopPropagation();
+                                //     e.stopPropagation();
 
-                                    editItem(row)
+                                //     editItem(row)
 
-                                })
+                                // })
 
-                                row.querySelector(".controls").querySelector(".del").addEventListener("click",(e)=>{
+                                // row.querySelector(".controls").querySelector(".del").addEventListener("click",(e)=>{
 
-                                    e.stopPropagation();
+                                //     e.stopPropagation();
 
-                                    const rowState = row.querySelector(".state").innerText;
+                                //     const rowState = row.querySelector(".state").innerText;
 
-                                    if(rowState === "visible"){
+                                //     if(rowState === "visible"){
                             
-                                        deleteItem(row);
+                                //         deleteItem(row);
                             
-                                    }
-                                    else if(rowState === "deleted"){
+                                //     }
+                                //     else if(rowState === "deleted"){
                             
-                                        deleteItem(row, "recover");
+                                //         deleteItem(row, "recover");
                                         
-                                    }
+                                //     }
 
-                                });
+                                // });
 
-                                row.addEventListener("contextmenu",toggleRowControls);   
+                                // row.addEventListener("contextmenu",toggleRowControls);   
 
                                 fragment.appendChild(row)
 
@@ -856,40 +856,40 @@ function fetchItemsRecursive(offset = 200){
                             DOMCONTROLLER.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount,fetchedItem.ReOrderLevel,fetchedItem.Barcode,[checkCB, editItem, deleteItem, toggleRowControls], false, fetchedItem.CostPrice, "", true,false , "Inventory", false, false)
                             .then((row)=>{
 
-                                row.addEventListener("click", ()=>{
+                                // row.addEventListener("click", ()=>{
 
-                                    checkCB(row)
+                                //     checkCB(row)
 
-                                });
+                                // });
 
-                                row.querySelector(".controls").querySelector(".edit").addEventListener("click",()=>{
+                                // row.querySelector(".controls").querySelector(".edit").addEventListener("click",()=>{
 
-                                    editItem(row)
+                                //     editItem(row)
 
-                                })
+                                // })
 
-                                row.querySelector(".controls").querySelector(".del").addEventListener("click",()=>{
+                                // row.querySelector(".controls").querySelector(".del").addEventListener("click",()=>{
 
-                                    const rowState = row.querySelector(".state").innerText;
+                                //     const rowState = row.querySelector(".state").innerText;
 
-                                    if(rowState === "visible"){
+                                //     if(rowState === "visible"){
                             
-                                        deleteItem(row);
+                                //         deleteItem(row);
                             
-                                    }
-                                    else if(rowState === "deleted"){
+                                //     }
+                                //     else if(rowState === "deleted"){
                             
-                                        deleteItem(row, "recover");
+                                //         deleteItem(row, "recover");
                                         
-                                    }
+                                //     }
 
-                                });
+                                // });
 
-                                row.addEventListener("contextmenu", ()=>{
+                                // row.addEventListener("contextmenu", ()=>{
 
-                                    toggleRowControls(row)
+                                //     toggleRowControls(row)
 
-                                });   
+                                // });   
 
                                 fragment.appendChild(row)
 
@@ -1010,40 +1010,40 @@ ipcRenderer.on('populateTable',(e, Items)=>{
                     DOMCONTROLLER.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount,item.ReOrderLevel,item.Barcode,[checkCB, editItem, deleteItem, toggleRowControls], "", item.CostPrice, "", false, false, "Inventory",false, false)
                     .then((row)=>{
 
-                        row.addEventListener("click", ()=>{
+                        // row.addEventListener("click", ()=>{
 
-                            checkCB(row)
+                        //     checkCB(row)
 
-                        });
+                        // });
 
-                        row.querySelector(".controls").querySelector(".edit").addEventListener("click",()=>{
+                        // row.querySelector(".controls").querySelector(".edit").addEventListener("click",()=>{
 
-                            editItem(row)
+                        //     editItem(row)
 
-                        })
+                        // })
 
-                        row.querySelector(".controls").querySelector(".del").addEventListener("click",()=>{
+                        // row.querySelector(".controls").querySelector(".del").addEventListener("click",()=>{
 
-                            const rowState = row.querySelector(".state").innerText;
+                        //     const rowState = row.querySelector(".state").innerText;
 
-                            if(rowState === "visible"){
+                        //     if(rowState === "visible"){
                     
-                                deleteItem(row);
+                        //         deleteItem(row);
                     
-                            }
-                            else if(rowState === "deleted"){
+                        //     }
+                        //     else if(rowState === "deleted"){
                     
-                                deleteItem(row, "recover");
+                        //         deleteItem(row, "recover");
                                 
-                            }
+                        //     }
 
-                        });
+                        // });
 
-                        row.addEventListener("contextmenu", ()=>{
+                        // row.addEventListener("contextmenu", ()=>{
 
-                            toggleRowControls(row)
+                        //     toggleRowControls(row)
 
-                        });   
+                        // });   
 
                         fragment.appendChild(row);
 

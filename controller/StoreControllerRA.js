@@ -207,7 +207,7 @@ footerBell.addEventListener("ReOrderLevel_Reached", function alertUserReOrderLev
 
     console.log("evt dispatched");
 
-    footerBell_notIcon.innerText = parseInt(footerBell_notIcon.innerText) + 1;
+    footerBell_notIcon.innerText = parseInt(itemsOnReOrderLevels.length);
     footerBell_notIcon.style.opacity = "1";
 
 
@@ -232,9 +232,6 @@ function initializeStoreItems(){
 
     DOMCONTROLLER.showLoadingBanner("Please wait. Attempting to fetch items from database...")
 
-    //Setting Item Counter to zero
-    domItemConter.innerText = itemCounter;
-
 
     database.getTotalItems()
     .then((totalItems)=>{
@@ -245,7 +242,7 @@ function initializeStoreItems(){
 
         database.fetchItems()
         .then((fetchedItems)=>{
-    
+
     
             //If returned array contains any store item
             if(fetchedItems.length > 0){
@@ -253,10 +250,6 @@ function initializeStoreItems(){
                 //Remove loading banner
                 DOMCONTROLLER.removeOldBanners();
 
-                //Setting total item count to the dom
-                itemCounter += parseInt(fetchedItems.length);
-                domItemConter.innerText = itemCounter;
-                
                 //then add each item to the table in the DOM
                 const fragment = document.createElement("div");
 
@@ -317,12 +310,7 @@ function initializeStoreItems(){
                                 Name: fetchedItem.Name,
                                 Brand: fetchedItem.Brand,
                                 Category: fetchedItem.Category
-                            })
-    
-                            const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached")
-    
-                            footerBell.dispatchEvent(ReOrderLevel_Reached);    
-    
+                            })    
     
                         }
 
@@ -332,6 +320,10 @@ function initializeStoreItems(){
                  })
 
                  document.querySelector(".tableBody").appendChild(fragment);
+
+                 const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached")
+    
+                 footerBell.dispatchEvent(ReOrderLevel_Reached);   
     
             }
             else{
@@ -343,10 +335,6 @@ function initializeStoreItems(){
                     DOMCONTROLLER.showIsEmpty();
     
             }
-
-            const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached")
-    
-            footerBell.dispatchEvent(ReOrderLevel_Reached);   
     
         })
         .then(()=>{
@@ -510,12 +498,7 @@ function fetchItemsRecursive(offset = 200){
                                 Name: fetchedItem.Name,
                                 Brand: fetchedItem.Brand,
                                 Category: fetchedItem.Category
-                            })
-    
-                            const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached")
-    
-                            footerBell.dispatchEvent(ReOrderLevel_Reached);    
-    
+                            })    
     
                         }
 
@@ -523,6 +506,10 @@ function fetchItemsRecursive(offset = 200){
 
 
                  })
+
+                const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached")
+    
+                footerBell.dispatchEvent(ReOrderLevel_Reached);  
 
                  document.querySelector(".tableBody").appendChild(fragment);
 
@@ -543,6 +530,7 @@ function fetchItemsRecursive(offset = 200){
     }, 5000)
 
 }
+
 
 
 

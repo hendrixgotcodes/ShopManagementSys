@@ -368,7 +368,8 @@ btnCart_sell.addEventListener("click", checkout);
 btnCart_clear.addEventListener("click", clearAllItems);
 footerBell.addEventListener("click", showIssues);
 footerBell.addEventListener("ReOrderLevel_Reached", function alertUserReOrderLevel() {
-  footerBell_notIcon.innerText = parseInt(footerBell_notIcon.innerText) + 1;
+  // footerBell_notIcon.innerText = parseInt(footerBell_notIcon.innerText) + 1;
+  footerBell_notIcon.innerText = parseInt(itemsOnReOrderLevels.length);
   footerBell_notIcon.style.opacity = "1";
 });
 /*************************************FUNCTIONS********************* */
@@ -433,21 +434,18 @@ function initializeStoreItems() {
                 Brand: fetchedItem.Brand,
                 Category: fetchedItem.Category
               });
-              const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached");
-              footerBell.dispatchEvent(ReOrderLevel_Reached);
             }
           }
         });
         document.querySelector(".tableBody").appendChild(fragment);
+        const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached");
+        footerBell.dispatchEvent(ReOrderLevel_Reached);
       } else {
         //Remove loading banner
         _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.removeOldBanners(); // Show isEmpty banner
 
         _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.showIsEmpty();
       }
-
-      const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached");
-      footerBell.dispatchEvent(ReOrderLevel_Reached);
     }).then(() => {
       TotalItems - 2;
       tableRows = document.querySelector('.tableBody').querySelectorAll('.bodyRow'); //For "tableBody"
@@ -546,11 +544,11 @@ function fetchItemsRecursive(offset = 200) {
                 Brand: fetchedItem.Brand,
                 Category: fetchedItem.Category
               });
-              const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached");
-              footerBell.dispatchEvent(ReOrderLevel_Reached);
             }
           }
         });
+        const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached");
+        footerBell.dispatchEvent(ReOrderLevel_Reached);
         document.querySelector(".tableBody").appendChild(fragment);
         tableRows = document.querySelector("tbody").querySelectorAll(".bodyRow");
         fetchItemsRecursive(offset);
@@ -954,24 +952,24 @@ class DOMCONTROLLER {
           if (tableRow.querySelector('.td_Names').innerText === row.querySelector('.td_Names').innerText) {
             document.querySelector('.tableBody').replaceChild(row, tableRow);
             returnedValue = 1;
-          } else {
-            if (appendToDom === true) {
-              document.querySelector(".tableBody").appendChild(row);
-            } else {
-              resolve(row);
-              return;
-            } // ToolTipsController.generateToolTip('row.id', name);
-
+          } else {// if(appendToDom===true){
+            //     document.querySelector(".tableBody").appendChild(row);
+            // }
+            // else{
+            //     resolve(row);
+            //     return;
+            // }
+            // ToolTipsController.generateToolTip('row.id', name);
           }
         });
-      } else if (hasItems !== true) {
-        if (appendToDom === true) {
-          document.querySelector(".tableBody").appendChild(row);
-        } else {
-          resolve(row);
-          return;
-        } // returnedValue = true;
-
+      } else if (hasItems !== true) {// if(appendToDom===true){
+        //     document.querySelector(".tableBody").appendChild(row);
+        // }
+        // else{
+        //     resolve(row);
+        //     return;
+        // }
+        // returnedValue = true;
       }
 
       if (Scroll === true) {
@@ -1127,8 +1125,13 @@ class DOMCONTROLLER {
 
 
       if (dontHighlightAfterCreate === true) {
-        resolve(row);
-        return;
+        if (appendToDom === true) {
+          document.querySelector(".tableBody").appendChild(row);
+          return;
+        } else {
+          resolve(row);
+          return;
+        }
       }
 
       const initBGcolor = row.style.backgroundColor;
@@ -1139,8 +1142,15 @@ class DOMCONTROLLER {
         row.style.backgroundColor = initBGcolor;
         row.style.color = initColor;
       }, 3000);
-      resolve();
+
+      if (appendToDom === true) {
+        document.querySelector(".tableBody").appendChild(row);
+      } else {
+        resolve(row);
+        return;
+      }
       /******************************************* */
+
     });
   }
 

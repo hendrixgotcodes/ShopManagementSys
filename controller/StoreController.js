@@ -234,7 +234,8 @@ btnCart_clear.addEventListener("click", clearAllItems);
 footerBell.addEventListener("click", showIssues);
 footerBell.addEventListener("ReOrderLevel_Reached", function alertUserReOrderLevel(){
 
-    footerBell_notIcon.innerText = parseInt(footerBell_notIcon.innerText) + 1;
+    // footerBell_notIcon.innerText = parseInt(footerBell_notIcon.innerText) + 1;
+    footerBell_notIcon.innerText = parseInt(itemsOnReOrderLevels.length);
     footerBell_notIcon.style.opacity = "1";
 
 
@@ -269,7 +270,7 @@ function initializeStoreItems(){
 
         database.fetchItems()
         .then((fetchedItems)=>{
-    
+
     
             //If returned array contains any store item
             if(fetchedItems.length > 0){
@@ -337,12 +338,7 @@ function initializeStoreItems(){
                                 Name: fetchedItem.Name,
                                 Brand: fetchedItem.Brand,
                                 Category: fetchedItem.Category
-                            })
-    
-                            const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached")
-    
-                            footerBell.dispatchEvent(ReOrderLevel_Reached);    
-    
+                            })    
     
                         }
 
@@ -352,6 +348,10 @@ function initializeStoreItems(){
                  })
 
                  document.querySelector(".tableBody").appendChild(fragment);
+
+                 const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached")
+    
+                 footerBell.dispatchEvent(ReOrderLevel_Reached);   
     
             }
             else{
@@ -363,10 +363,6 @@ function initializeStoreItems(){
                     DOMCONTROLLER.showIsEmpty();
     
             }
-
-            const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached")
-    
-            footerBell.dispatchEvent(ReOrderLevel_Reached);   
     
         })
         .then(()=>{
@@ -529,11 +525,7 @@ function fetchItemsRecursive(offset = 200){
                                 Name: fetchedItem.Name,
                                 Brand: fetchedItem.Brand,
                                 Category: fetchedItem.Category
-                            })
-    
-                            const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached")
-    
-                            footerBell.dispatchEvent(ReOrderLevel_Reached);    
+                            })  
     
     
                         }
@@ -542,6 +534,10 @@ function fetchItemsRecursive(offset = 200){
 
 
                  })
+
+                 const ReOrderLevel_Reached = new Event("ReOrderLevel_Reached")
+    
+                footerBell.dispatchEvent(ReOrderLevel_Reached);  
 
                  document.querySelector(".tableBody").appendChild(fragment);
 

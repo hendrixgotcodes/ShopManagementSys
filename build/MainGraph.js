@@ -1502,24 +1502,24 @@ class DOMCONTROLLER {
           if (tableRow.querySelector('.td_Names').innerText === row.querySelector('.td_Names').innerText) {
             document.querySelector('.tableBody').replaceChild(row, tableRow);
             returnedValue = 1;
-          } else {
-            if (appendToDom === true) {
-              document.querySelector(".tableBody").appendChild(row);
-            } else {
-              resolve(row);
-              return;
-            } // ToolTipsController.generateToolTip('row.id', name);
-
+          } else {// if(appendToDom===true){
+            //     document.querySelector(".tableBody").appendChild(row);
+            // }
+            // else{
+            //     resolve(row);
+            //     return;
+            // }
+            // ToolTipsController.generateToolTip('row.id', name);
           }
         });
-      } else if (hasItems !== true) {
-        if (appendToDom === true) {
-          document.querySelector(".tableBody").appendChild(row);
-        } else {
-          resolve(row);
-          return;
-        } // returnedValue = true;
-
+      } else if (hasItems !== true) {// if(appendToDom===true){
+        //     document.querySelector(".tableBody").appendChild(row);
+        // }
+        // else{
+        //     resolve(row);
+        //     return;
+        // }
+        // returnedValue = true;
       }
 
       if (Scroll === true) {
@@ -1675,8 +1675,13 @@ class DOMCONTROLLER {
 
 
       if (dontHighlightAfterCreate === true) {
-        resolve(row);
-        return;
+        if (appendToDom === true) {
+          document.querySelector(".tableBody").appendChild(row);
+          return;
+        } else {
+          resolve(row);
+          return;
+        }
       }
 
       const initBGcolor = row.style.backgroundColor;
@@ -1687,8 +1692,15 @@ class DOMCONTROLLER {
         row.style.backgroundColor = initBGcolor;
         row.style.color = initColor;
       }, 3000);
-      resolve();
+
+      if (appendToDom === true) {
+        document.querySelector(".tableBody").appendChild(row);
+      } else {
+        resolve(row);
+        return;
+      }
       /******************************************* */
+
     });
   }
 

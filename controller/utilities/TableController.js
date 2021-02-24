@@ -139,17 +139,17 @@ class DOMCONTROLLER{
                         }
                         else{
 
-                            if(appendToDom===true){
+                            // if(appendToDom===true){
 
-                                document.querySelector(".tableBody").appendChild(row);
+                            //     document.querySelector(".tableBody").appendChild(row);
 
-                            }
-                            else{
+                            // }
+                            // else{
 
-                                resolve(row);
-                                return;
+                            //     resolve(row);
+                            //     return;
 
-                            }
+                            // }
 
 
                             // ToolTipsController.generateToolTip('row.id', name);
@@ -160,17 +160,17 @@ class DOMCONTROLLER{
                 }
                 else if(hasItems !== true) {
 
-                    if(appendToDom===true){
+                    // if(appendToDom===true){
 
-                        document.querySelector(".tableBody").appendChild(row);
+                    //     document.querySelector(".tableBody").appendChild(row);
 
-                    }
-                    else{
+                    // }
+                    // else{
 
-                        resolve(row);
-                        return;
+                    //     resolve(row);
+                    //     return;
 
-                    }
+                    // }
                     // returnedValue = true;
                 }
 
@@ -358,6 +358,7 @@ class DOMCONTROLLER{
                         td_costPrice.querySelector(".td_toolTip").style.display = "none";
                 
                     })
+                    
 
 
                 }
@@ -434,9 +435,18 @@ class DOMCONTROLLER{
 
             if(dontHighlightAfterCreate === true){
 
+                if(appendToDom===true){
 
-                resolve(row);
-                return
+                    document.querySelector(".tableBody").appendChild(row);
+                    return;
+
+                }
+                else{
+
+                    resolve(row);
+                    return;
+
+                }
 
             }
 
@@ -453,7 +463,21 @@ class DOMCONTROLLER{
                 row.style.color = initColor;
             },3000)
 
-            resolve()
+            
+
+            if(appendToDom===true){
+
+                document.querySelector(".tableBody").appendChild(row);
+
+            }
+            else{
+
+                resolve(row);
+                return;
+
+            }
+
+
 
                 
 

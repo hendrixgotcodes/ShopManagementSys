@@ -660,46 +660,46 @@ function fetchItemsRecursive(offset = 200) {
           if (parseInt(fetchedItem.InStock) > 0) {
             if (fetchedItem.Deleted === 1) {
               _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, fetchedItem.Barcode, [checkCB, editItem, deleteItem, toggleRowControls], false, fetchedItem.CostPrice, "", true, true, "Inventory", false, false).then(row => {
-                row.addEventListener("click", () => {
-                  checkCB(row);
-                });
-                row.querySelector(".controls").querySelector(".edit").addEventListener("click", e => {
-                  e.stopPropagation();
-                  editItem(row);
-                });
-                row.querySelector(".controls").querySelector(".del").addEventListener("click", e => {
-                  e.stopPropagation();
-                  const rowState = row.querySelector(".state").innerText;
-
-                  if (rowState === "visible") {
-                    deleteItem(row);
-                  } else if (rowState === "deleted") {
-                    deleteItem(row, "recover");
-                  }
-                });
-                row.addEventListener("contextmenu", toggleRowControls);
+                // row.addEventListener("click", ()=>{
+                //     checkCB(row)
+                // });
+                // row.querySelector(".controls").querySelector(".edit").addEventListener("click",(e)=>{
+                //     e.stopPropagation();
+                //     editItem(row)
+                // })
+                // row.querySelector(".controls").querySelector(".del").addEventListener("click",(e)=>{
+                //     e.stopPropagation();
+                //     const rowState = row.querySelector(".state").innerText;
+                //     if(rowState === "visible"){
+                //         deleteItem(row);
+                //     }
+                //     else if(rowState === "deleted"){
+                //         deleteItem(row, "recover");
+                //     }
+                // });
+                // row.addEventListener("contextmenu",toggleRowControls);   
                 fragment.appendChild(row);
               });
             } else {
               _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(fetchedItem.Name, fetchedItem.Brand, fetchedItem.Category, fetchedItem.InStock, fetchedItem.SellingPrice, fetchedItem.Discount, fetchedItem.ReOrderLevel, fetchedItem.Barcode, [checkCB, editItem, deleteItem, toggleRowControls], false, fetchedItem.CostPrice, "", true, false, "Inventory", false, false).then(row => {
-                row.addEventListener("click", () => {
-                  checkCB(row);
-                });
-                row.querySelector(".controls").querySelector(".edit").addEventListener("click", () => {
-                  editItem(row);
-                });
-                row.querySelector(".controls").querySelector(".del").addEventListener("click", () => {
-                  const rowState = row.querySelector(".state").innerText;
-
-                  if (rowState === "visible") {
-                    deleteItem(row);
-                  } else if (rowState === "deleted") {
-                    deleteItem(row, "recover");
-                  }
-                });
-                row.addEventListener("contextmenu", () => {
-                  toggleRowControls(row);
-                });
+                // row.addEventListener("click", ()=>{
+                //     checkCB(row)
+                // });
+                // row.querySelector(".controls").querySelector(".edit").addEventListener("click",()=>{
+                //     editItem(row)
+                // })
+                // row.querySelector(".controls").querySelector(".del").addEventListener("click",()=>{
+                //     const rowState = row.querySelector(".state").innerText;
+                //     if(rowState === "visible"){
+                //         deleteItem(row);
+                //     }
+                //     else if(rowState === "deleted"){
+                //         deleteItem(row, "recover");
+                //     }
+                // });
+                // row.addEventListener("contextmenu", ()=>{
+                //     toggleRowControls(row)
+                // });   
                 fragment.appendChild(row);
               });
             }
@@ -759,24 +759,24 @@ electron__WEBPACK_IMPORTED_MODULE_0__["ipcRenderer"].on('populateTable', (e, Ite
       const fragment = document.createElement("div");
       notInDb.forEach(item => {
         _utilities_TableController__WEBPACK_IMPORTED_MODULE_3___default.a.createItem(item.Name, item.Brand, item.Category, item.InStock, item.SellingPrice, item.Discount, item.ReOrderLevel, item.Barcode, [checkCB, editItem, deleteItem, toggleRowControls], "", item.CostPrice, "", false, false, "Inventory", false, false).then(row => {
-          row.addEventListener("click", () => {
-            checkCB(row);
-          });
-          row.querySelector(".controls").querySelector(".edit").addEventListener("click", () => {
-            editItem(row);
-          });
-          row.querySelector(".controls").querySelector(".del").addEventListener("click", () => {
-            const rowState = row.querySelector(".state").innerText;
-
-            if (rowState === "visible") {
-              deleteItem(row);
-            } else if (rowState === "deleted") {
-              deleteItem(row, "recover");
-            }
-          });
-          row.addEventListener("contextmenu", () => {
-            toggleRowControls(row);
-          });
+          // row.addEventListener("click", ()=>{
+          //     checkCB(row)
+          // });
+          // row.querySelector(".controls").querySelector(".edit").addEventListener("click",()=>{
+          //     editItem(row)
+          // })
+          // row.querySelector(".controls").querySelector(".del").addEventListener("click",()=>{
+          //     const rowState = row.querySelector(".state").innerText;
+          //     if(rowState === "visible"){
+          //         deleteItem(row);
+          //     }
+          //     else if(rowState === "deleted"){
+          //         deleteItem(row, "recover");
+          //     }
+          // });
+          // row.addEventListener("contextmenu", ()=>{
+          //     toggleRowControls(row)
+          // });   
           fragment.appendChild(row);
         });
       });
@@ -1880,24 +1880,24 @@ class DOMCONTROLLER {
           if (tableRow.querySelector('.td_Names').innerText === row.querySelector('.td_Names').innerText) {
             document.querySelector('.tableBody').replaceChild(row, tableRow);
             returnedValue = 1;
-          } else {
-            if (appendToDom === true) {
-              document.querySelector(".tableBody").appendChild(row);
-            } else {
-              resolve(row);
-              return;
-            } // ToolTipsController.generateToolTip('row.id', name);
-
+          } else {// if(appendToDom===true){
+            //     document.querySelector(".tableBody").appendChild(row);
+            // }
+            // else{
+            //     resolve(row);
+            //     return;
+            // }
+            // ToolTipsController.generateToolTip('row.id', name);
           }
         });
-      } else if (hasItems !== true) {
-        if (appendToDom === true) {
-          document.querySelector(".tableBody").appendChild(row);
-        } else {
-          resolve(row);
-          return;
-        } // returnedValue = true;
-
+      } else if (hasItems !== true) {// if(appendToDom===true){
+        //     document.querySelector(".tableBody").appendChild(row);
+        // }
+        // else{
+        //     resolve(row);
+        //     return;
+        // }
+        // returnedValue = true;
       }
 
       if (Scroll === true) {
@@ -2053,8 +2053,13 @@ class DOMCONTROLLER {
 
 
       if (dontHighlightAfterCreate === true) {
-        resolve(row);
-        return;
+        if (appendToDom === true) {
+          document.querySelector(".tableBody").appendChild(row);
+          return;
+        } else {
+          resolve(row);
+          return;
+        }
       }
 
       const initBGcolor = row.style.backgroundColor;
@@ -2065,8 +2070,15 @@ class DOMCONTROLLER {
         row.style.backgroundColor = initBGcolor;
         row.style.color = initColor;
       }, 3000);
-      resolve();
+
+      if (appendToDom === true) {
+        document.querySelector(".tableBody").appendChild(row);
+      } else {
+        resolve(row);
+        return;
+      }
       /******************************************* */
+
     });
   }
 
